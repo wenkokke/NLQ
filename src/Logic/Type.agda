@@ -4,8 +4,10 @@
 ------------------------------------------------------------------------
 
 
-open import Function using (_∘_)
+open import Category
+open import Function using (flip; _∘_)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
+open import Data.Unit using (⊤; tt)
 open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
