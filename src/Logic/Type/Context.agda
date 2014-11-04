@@ -4,9 +4,10 @@
 ------------------------------------------------------------------------
 
 
+open import Category using (Category; Functor; monoid→category; set→category)
 open import Algebra using (Monoid)
 open import Function using (_∘_)
-open import Data.Product using (_×_; _,_; proj₁; proj₂)
+open import Data.Product using (_×_; _,_; proj₁; proj₂; uncurry)
 open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
@@ -77,116 +78,138 @@ data Context : Set ℓ where
 <⇚-injective refl = refl , refl
 
 
--- Apply a context to a type by plugging the type into the context.
-_[_] : Context → Type → Type
-[]       [ A ] = A
-(B ⊗> C) [ A ] = B ⊗ (C [ A ])
-(B ⇒> C) [ A ] = B ⇒ (C [ A ])
-(B ⇐> C) [ A ] = B ⇐ (C [ A ])
-(B ⊕> C) [ A ] = B ⊕ (C [ A ])
-(B ⇛> C) [ A ] = B ⇛ (C [ A ])
-(B ⇚> C) [ A ] = B ⇚ (C [ A ])
-(C <⊗ B) [ A ] = (C [ A ]) ⊗ B
-(C <⇒ B) [ A ] = (C [ A ]) ⇒ B
-(C <⇐ B) [ A ] = (C [ A ]) ⇐ B
-(C <⊕ B) [ A ] = (C [ A ]) ⊕ B
-(C <⇛ B) [ A ] = (C [ A ]) ⇛ B
-(C <⇚ B) [ A ] = (C [ A ]) ⇚ B
+module Simple where
+
+  -- Apply a context to a type by plugging the type into the context.
+  _[_] : Context → Type → Type
+  []       [ A ] = A
+  (B ⊗> C) [ A ] = B ⊗ (C [ A ])
+  (B ⇒> C) [ A ] = B ⇒ (C [ A ])
+  (B ⇐> C) [ A ] = B ⇐ (C [ A ])
+  (B ⊕> C) [ A ] = B ⊕ (C [ A ])
+  (B ⇛> C) [ A ] = B ⇛ (C [ A ])
+  (B ⇚> C) [ A ] = B ⇚ (C [ A ])
+  (C <⊗ B) [ A ] = (C [ A ]) ⊗ B
+  (C <⇒ B) [ A ] = (C [ A ]) ⇒ B
+  (C <⇐ B) [ A ] = (C [ A ]) ⇐ B
+  (C <⊕ B) [ A ] = (C [ A ]) ⊕ B
+  (C <⇛ B) [ A ] = (C [ A ]) ⇛ B
+  (C <⇚ B) [ A ] = (C [ A ]) ⇚ B
+
+  -- Compose two contexts to form a new context.
+  _<_> : Context → Context → Context
+  []       < A > = A
+  (B ⊗> C) < A > = B ⊗> (C < A >)
+  (B ⇒> C) < A > = B ⇒> (C < A >)
+  (B ⇐> C) < A > = B ⇐> (C < A >)
+  (B ⊕> C) < A > = B ⊕> (C < A >)
+  (B ⇛> C) < A > = B ⇛> (C < A >)
+  (B ⇚> C) < A > = B ⇚> (C < A >)
+  (C <⊗ B) < A > = (C < A >) <⊗ B
+  (C <⇒ B) < A > = (C < A >) <⇒ B
+  (C <⇐ B) < A > = (C < A >) <⇐ B
+  (C <⊕ B) < A > = (C < A >) <⊕ B
+  (C <⇛ B) < A > = (C < A >) <⇛ B
+  (C <⇚ B) < A > = (C < A >) <⇚ B
 
 
--- Compose two contexts to form a new context.
-_<_> : Context → Context → Context
-[]       < A > = A
-(B ⊗> C) < A > = B ⊗> (C < A >)
-(B ⇒> C) < A > = B ⇒> (C < A >)
-(B ⇐> C) < A > = B ⇐> (C < A >)
-(B ⊕> C) < A > = B ⊕> (C < A >)
-(B ⇛> C) < A > = B ⇛> (C < A >)
-(B ⇚> C) < A > = B ⇚> (C < A >)
-(C <⊗ B) < A > = (C < A >) <⊗ B
-(C <⇒ B) < A > = (C < A >) <⇒ B
-(C <⇐ B) < A > = (C < A >) <⇐ B
-(C <⊕ B) < A > = (C < A >) <⊕ B
-(C <⇛ B) < A > = (C < A >) <⇛ B
-(C <⇚ B) < A > = (C < A >) <⇚ B
+  -- Lemma which shows how context composition `_<_>` and context
+  -- application `_[_]` interact.
+  <>-def : ∀ A B C → A < B > [ C ] ≡ A [ B [ C ] ]
+  <>-def [] B C = refl
+  <>-def (_ ⊗> A) B C rewrite <>-def A B C = refl
+  <>-def (_ ⇒> A) B C rewrite <>-def A B C = refl
+  <>-def (_ ⇐> A) B C rewrite <>-def A B C = refl
+  <>-def (_ ⊕> A) B C rewrite <>-def A B C = refl
+  <>-def (_ ⇛> A) B C rewrite <>-def A B C = refl
+  <>-def (_ ⇚> A) B C rewrite <>-def A B C = refl
+  <>-def (A <⊗ _) B C rewrite <>-def A B C = refl
+  <>-def (A <⇒ _) B C rewrite <>-def A B C = refl
+  <>-def (A <⇐ _) B C rewrite <>-def A B C = refl
+  <>-def (A <⊕ _) B C rewrite <>-def A B C = refl
+  <>-def (A <⇛ _) B C rewrite <>-def A B C = refl
+  <>-def (A <⇚ _) B C rewrite <>-def A B C = refl
 
 
--- Lemma which shows how context composition `_<_>` and context
--- application `_[_]` interact.
-<>-def : ∀ A B C → A < B > [ C ] ≡ A [ B [ C ] ]
-<>-def [] B C = refl
-<>-def (_ ⊗> A) B C rewrite <>-def A B C = refl
-<>-def (_ ⇒> A) B C rewrite <>-def A B C = refl
-<>-def (_ ⇐> A) B C rewrite <>-def A B C = refl
-<>-def (_ ⊕> A) B C rewrite <>-def A B C = refl
-<>-def (_ ⇛> A) B C rewrite <>-def A B C = refl
-<>-def (_ ⇚> A) B C rewrite <>-def A B C = refl
-<>-def (A <⊗ _) B C rewrite <>-def A B C = refl
-<>-def (A <⇒ _) B C rewrite <>-def A B C = refl
-<>-def (A <⇐ _) B C rewrite <>-def A B C = refl
-<>-def (A <⊕ _) B C rewrite <>-def A B C = refl
-<>-def (A <⇛ _) B C rewrite <>-def A B C = refl
-<>-def (A <⇚ _) B C rewrite <>-def A B C = refl
+  -- Lemma which shows that context composition respects propositional
+  -- equality.
+  <>-cong : ∀ {Γ Δ Π Σ} → Γ ≡ Δ → Π ≡ Σ → Γ < Π > ≡ Δ < Σ >
+  <>-cong Γ=Δ Π=Σ rewrite Γ=Δ | Π=Σ = refl
 
 
--- Lemma which shows that context composition respects propositional
--- equality.
-<>-cong : ∀ {Γ Δ Π Σ} → Γ ≡ Δ → Π ≡ Σ → Γ < Π > ≡ Δ < Σ >
-<>-cong Γ=Δ Π=Σ rewrite Γ=Δ | Π=Σ = refl
+  -- Lemma which shows that the context composition function `_<_>` is
+  -- associative.x
+  <>-assoc : ∀ A B C → A < B > < C > ≡ A < B < C > >
+  <>-assoc []       B C = refl
+  <>-assoc (_ ⊗> A) B C rewrite <>-assoc A B C = refl
+  <>-assoc (_ ⇒> A) B C rewrite <>-assoc A B C = refl
+  <>-assoc (_ ⇐> A) B C rewrite <>-assoc A B C = refl
+  <>-assoc (_ ⊕> A) B C rewrite <>-assoc A B C = refl
+  <>-assoc (_ ⇛> A) B C rewrite <>-assoc A B C = refl
+  <>-assoc (_ ⇚> A) B C rewrite <>-assoc A B C = refl
+  <>-assoc (A <⊗ _) B C rewrite <>-assoc A B C = refl
+  <>-assoc (A <⇒ _) B C rewrite <>-assoc A B C = refl
+  <>-assoc (A <⇐ _) B C rewrite <>-assoc A B C = refl
+  <>-assoc (A <⊕ _) B C rewrite <>-assoc A B C = refl
+  <>-assoc (A <⇛ _) B C rewrite <>-assoc A B C = refl
+  <>-assoc (A <⇚ _) B C rewrite <>-assoc A B C = refl
 
 
--- Lemma which shows that the context composition function `_<_>` is
--- associative.x
-<>-assoc : ∀ A B C → A < B > < C > ≡ A < B < C > >
-<>-assoc []       B C = refl
-<>-assoc (_ ⊗> A) B C rewrite <>-assoc A B C = refl
-<>-assoc (_ ⇒> A) B C rewrite <>-assoc A B C = refl
-<>-assoc (_ ⇐> A) B C rewrite <>-assoc A B C = refl
-<>-assoc (_ ⊕> A) B C rewrite <>-assoc A B C = refl
-<>-assoc (_ ⇛> A) B C rewrite <>-assoc A B C = refl
-<>-assoc (_ ⇚> A) B C rewrite <>-assoc A B C = refl
-<>-assoc (A <⊗ _) B C rewrite <>-assoc A B C = refl
-<>-assoc (A <⇒ _) B C rewrite <>-assoc A B C = refl
-<>-assoc (A <⇐ _) B C rewrite <>-assoc A B C = refl
-<>-assoc (A <⊕ _) B C rewrite <>-assoc A B C = refl
-<>-assoc (A <⇛ _) B C rewrite <>-assoc A B C = refl
-<>-assoc (A <⇚ _) B C rewrite <>-assoc A B C = refl
+  -- Lemma which shows that `[]` is the identity element for the context
+  -- composition function `_<_>`.
+  <>-identityˡ : ∀ Γ → [] < Γ > ≡ Γ
+  <>-identityˡ _ = refl
 
-
--- Lemma which shows that `[]` is the identity element for the context
--- composition function `_<_>`.
-<>-identity : ∀ Γ → Γ < [] > ≡ Γ
-<>-identity [] = refl
-<>-identity (A ⊗> Γ) rewrite <>-identity Γ = refl
-<>-identity (A ⇒> Γ) rewrite <>-identity Γ = refl
-<>-identity (A ⇐> Γ) rewrite <>-identity Γ = refl
-<>-identity (A ⊕> Γ) rewrite <>-identity Γ = refl
-<>-identity (A ⇛> Γ) rewrite <>-identity Γ = refl
-<>-identity (A ⇚> Γ) rewrite <>-identity Γ = refl
-<>-identity (Γ <⊗ A) rewrite <>-identity Γ = refl
-<>-identity (Γ <⇒ A) rewrite <>-identity Γ = refl
-<>-identity (Γ <⇐ A) rewrite <>-identity Γ = refl
-<>-identity (Γ <⊕ A) rewrite <>-identity Γ = refl
-<>-identity (Γ <⇛ A) rewrite <>-identity Γ = refl
-<>-identity (Γ <⇚ A) rewrite <>-identity Γ = refl
+  <>-identityʳ : ∀ Γ → Γ < [] > ≡ Γ
+  <>-identityʳ [] = refl
+  <>-identityʳ (A ⊗> Γ) rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (A ⇒> Γ) rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (A ⇐> Γ) rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (A ⊕> Γ) rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (A ⇛> Γ) rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (A ⇚> Γ) rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (Γ <⊗ A) rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (Γ <⇒ A) rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (Γ <⇐ A) rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (Γ <⊕ A) rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (Γ <⇛ A) rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (Γ <⇚ A) rewrite <>-identityʳ Γ = refl
 
 
 -- Proof that `_<_>` and `[]` form a monoid over contexts.
-monoid : Monoid _ _
-monoid = record
-  { Carrier  = Context
-  ; _≈_      = _≡_
-  ; _∙_      = _<_>
-  ; ε        = []
-  ; isMonoid = record
-    { identity    = ((λ x → refl) , <>-identity)
-    ; isSemigroup = record
-      { isEquivalence = P.isEquivalence
-      ; assoc         = <>-assoc
-      ; ∙-cong        = <>-cong
+instance
+  monoid : Monoid _ _
+  monoid = record
+    { Carrier  = Context
+    ; _≈_      = _≡_
+    ; _∙_      = _<_>
+    ; ε        = []
+    ; isMonoid = record
+      { identity    = (<>-identityˡ , <>-identityʳ)
+      ; isSemigroup = record
+        { isEquivalence = P.isEquivalence
+        ; assoc         = <>-assoc
+        ; ∙-cong        = <>-cong
+        }
       }
     }
+    where
+      open Simple
+
+
+-- Proof that `_[_]` forms a functor from contexts into types
+functor : Functor (monoid→category monoid) (set→category ℓ)
+functor = record
+  { F₀           = λ {tt → Type}
+  ; F₁           = _[_]
+  ; identity     = refl
+  ; homomorphism = λ {_} {_} {_} {f} {g} → <>-def g f _
+  ; F-resp-≈     = F-resp-≈
   }
+  where
+    open Simple
+    F-resp-≈ : ∀ {A B} → A ≡ B → ∀ {C} → A [ C ] ≡ B [ C ]
+    F-resp-≈ refl = refl
 
 
 -- Proof that if the given universe has decidable equality, then so do contexts.

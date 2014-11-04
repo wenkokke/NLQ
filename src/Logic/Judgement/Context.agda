@@ -4,9 +4,11 @@
 ------------------------------------------------------------------------
 
 
+open import Category
 open import Algebra using (module Monoid; Monoid)
 open import Function using (_∘_)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
+open import Data.Unit using (⊤; tt)
 open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
@@ -15,8 +17,9 @@ module Logic.Judgement.Context {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Type Univ
-open import Logic.Type.Context Univ hiding (_[_]; _<_>)
+open import Logic.Type.Context Univ as Context hiding (functor)
 open import Logic.Judgement Type Type
+open Functor Context.functor renaming (F₁ to _[_]′)
 
 
 infix 5 _<⊢_ _⊢>_
@@ -38,9 +41,8 @@ data JudgementContext : Set ℓ where
 
 -- Apply a context to a type by plugging the type into the context.
 _[_] : JudgementContext → Type → Judgement
-(A <⊢ B) [ C ] = {!!}
-(A ⊢> B) [ C ] = {!!}
-
+(A <⊢ B) [ C ] = A [ C ]′ ⊢ B
+(A ⊢> B) [ C ] = A ⊢ B [ C ]′
 
 
 -- Proofs regarding "structural contexts", i.e. contexts that can be
