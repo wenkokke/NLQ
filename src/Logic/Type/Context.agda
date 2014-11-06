@@ -4,7 +4,7 @@
 ------------------------------------------------------------------------
 
 
-open import Category using (Category; Functor; monoid→category; set→category)
+open import Category using (Category; Functor; Monoids; Sets)
 open import Algebra using (Monoid)
 open import Function using (_∘_)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; uncurry)
@@ -16,6 +16,11 @@ module Logic.Type.Context {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Type Univ renaming (module DecEq to DecEqType)
+
+
+infixr 30 _⊗>_ _<⊗_ _⊕>_ _<⊕_
+infixr 20 _⇛>_ _<⇛_ _⇒>_ _<⇒_
+infixl 20 _⇚>_ _<⇚_ _⇐>_ _<⇐_
 
 
 -- Contexts encode incomplete types with a single hole.
@@ -198,7 +203,7 @@ instance
 
 
 -- Proof that `_[_]` forms a functor from contexts into types
-functor : Functor (monoid→category monoid) (set→category ℓ)
+functor : Functor (Monoids monoid) (Sets ℓ)
 functor = record
   { F₀           = λ {tt → Type}
   ; F₁           = _[_]
@@ -213,9 +218,7 @@ functor = record
 
 
 -- Proof that if the given universe has decidable equality, then so do contexts.
-module DecEq
-       (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B))
-       where
+module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
 
   open DecEqType _≟-Univ_
 

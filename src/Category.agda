@@ -50,11 +50,11 @@ _[_∙_] : ∀ {o ℓ h} (C : Category o ℓ h) {x y z : Category.Obj C} (f : C 
 _[_∙_] = Category._∙_
 
 
--- Proof that monoids are categories
-monoid→category : ∀ {c ℓ} → Monoid c ℓ → Category zero ℓ c
-monoid→category M = record
+-- Define the category of monoids
+Monoids : ∀ {c ℓ} → Monoid c ℓ → Category zero ℓ c
+Monoids M = record
   { Obj           = ⊤
-  ; Hom           = λ _ _ → M.Carrier
+  ; Hom           = λ {tt tt → M.Carrier}
   ; ε             = M.ε
   ; _∙_           = M._∙_
   ; _≈_           = M._≈_
@@ -70,7 +70,7 @@ monoid→category M = record
 
 instance
   monoid→category′ : ∀ {c ℓ} {{M : Monoid c ℓ}} → Category zero ℓ c
-  monoid→category′ {{M}} = monoid→category M
+  monoid→category′ {{M}} = Monoids M
 
 
 -- Proof that types are categories
@@ -89,9 +89,9 @@ discrete A = record
   }
 
 
--- Proof that Set is a category
-set→category : ∀ o → Category _ _ _
-set→category o = record
+-- Define the category of Agda Sets
+Sets : ∀ o → Category _ _ _
+Sets o = record
   { Obj           = Set o
   ; Hom           = λ x y → x → y
   ; ε             = λ x → x
@@ -143,6 +143,11 @@ product C D = record
               → S (proj₁ x ∙ proj₁ y) (proj₂ x ∘ proj₂ y)
     zipWith _∙_ _∘_ _*_ (a , p) (b , q) = (a ∙ b) * (p ∘ q)
     syntax zipWith f g h = f -< h >- g
+
+
+[_×_] : ∀ {o₁ ℓ₁ h₁ o₂ ℓ₂ h₂} (C : Category o₁ ℓ₁ h₁) (D : Category o₂ ℓ₂ h₂)
+      → Category (o₁ ⊔ o₂) (ℓ₁ ⊔ ℓ₂) (h₁ ⊔ h₂)
+[_×_] = product
 
 
 record Functor {o₁ ℓ₁ h₁ o₂ ℓ₂ h₂}

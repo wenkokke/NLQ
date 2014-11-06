@@ -4,7 +4,7 @@
 ------------------------------------------------------------------------
 
 
-open import Category using (Category; Functor; set→category)
+open import Category using (Category; Functor; Sets)
 open import Function using (_∘_)
 open import Data.Product using (∃; _,_)
 open import Relation.Nullary using (Dec; yes; no)
@@ -25,16 +25,18 @@ infix 3 NL_⋯_
 
 data NL_⋯_ : (I J : Judgement) → Set ℓ where
   []     : ∀ {J}         → NL J ⋯ J
+
+  -- rules for residuation and monotonicity
+  res-⇒⊗ : ∀ {J A B C}   → NL J ⋯ B ⊢ A ⇒ C → NL J ⋯ A ⊗ B ⊢ C
+  res-⊗⇒ : ∀ {J A B C}   → NL J ⋯ A ⊗ B ⊢ C → NL J ⋯ B ⊢ A ⇒ C
+  res-⇐⊗ : ∀ {J A B C}   → NL J ⋯ A ⊢ C ⇐ B → NL J ⋯ A ⊗ B ⊢ C
+  res-⊗⇐ : ∀ {J A B C}   → NL J ⋯ A ⊗ B ⊢ C → NL J ⋯ A ⊢ C ⇐ B
   mon-⊗ᴸ : ∀ {J A B C D} → NL J ⋯ A ⊢ B → NL C ⊢ D → NL J ⋯ A ⊗ C ⊢ B ⊗ D
   mon-⊗ᴿ : ∀ {J A B C D} → NL A ⊢ B → NL J ⋯ C ⊢ D → NL J ⋯ A ⊗ C ⊢ B ⊗ D
   mon-⇒ᴸ : ∀ {J A B C D} → NL J ⋯ A ⊢ B → NL C ⊢ D → NL J ⋯ B ⇒ C ⊢ A ⇒ D
   mon-⇒ᴿ : ∀ {J A B C D} → NL A ⊢ B → NL J ⋯ C ⊢ D → NL J ⋯ B ⇒ C ⊢ A ⇒ D
   mon-⇐ᴸ : ∀ {J A B C D} → NL J ⋯ A ⊢ B → NL C ⊢ D → NL J ⋯ A ⇐ D ⊢ B ⇐ C
   mon-⇐ᴿ : ∀ {J A B C D} → NL A ⊢ B → NL J ⋯ C ⊢ D → NL J ⋯ A ⇐ D ⊢ B ⇐ C
-  res-⇒⊗ : ∀ {J A B C}   → NL J ⋯ B ⊢ A ⇒ C → NL J ⋯ A ⊗ B ⊢ C
-  res-⊗⇒ : ∀ {J A B C}   → NL J ⋯ A ⊗ B ⊢ C → NL J ⋯ B ⊢ A ⇒ C
-  res-⇐⊗ : ∀ {J A B C}   → NL J ⋯ A ⊢ C ⇐ B → NL J ⋯ A ⊗ B ⊢ C
-  res-⊗⇐ : ∀ {J A B C}   → NL J ⋯ A ⊗ B ⊢ C → NL J ⋯ A ⊢ C ⇐ B
 
 
 infix 5 is-[]_ is-[]?_
@@ -160,7 +162,7 @@ instance
     }
 
 instance
-  functor : Functor category (set→category ℓ)
+  functor : Functor category (Sets ℓ)
   functor = record
     { F₀           = NL_
     ; F₁           = _[_]
