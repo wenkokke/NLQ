@@ -23,13 +23,15 @@ infix 3 NL_
 
 data NL_ : Judgement → Set ℓ where
   id     : ∀ {A}       → NL el A ⊢ el A
-  mon-⊗  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL A ⊗ C ⊢ B ⊗ D
-  mon-⇒  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL B ⇒ C ⊢ A ⇒ D
-  mon-⇐  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL A ⇐ D ⊢ B ⇐ C
+
+  -- rules for residuation and monotonicity
   res-⇒⊗ : ∀ {A B C}   → NL B ⊢ A ⇒ C → NL A ⊗ B ⊢ C
   res-⊗⇒ : ∀ {A B C}   → NL A ⊗ B ⊢ C → NL B ⊢ A ⇒ C
   res-⇐⊗ : ∀ {A B C}   → NL A ⊢ C ⇐ B → NL A ⊗ B ⊢ C
   res-⊗⇐ : ∀ {A B C}   → NL A ⊗ B ⊢ C → NL A ⊢ C ⇐ B
+  mon-⊗  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL A ⊗ C ⊢ B ⊗ D
+  mon-⇒  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL B ⇒ C ⊢ A ⇒ D
+  mon-⇐  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL A ⇐ D ⊢ B ⇐ C
 
 
 -- Derived rule for identity, which holds as long as the type A only
@@ -50,10 +52,10 @@ res-⇒⇐′ = res-⊗⇐ ∘ res-⇒⊗
 
 
 -- Derived rules for application.
-appl-⇒ : ∀ {A B} {{p : True (is-valid? A ⇒ B)}} → NL A ⊗ (A ⇒ B) ⊢ B
-appl-⇒ = res-⇒⊗ id′
-appl-⇐ : ∀ {A B} {{p : True (is-valid? B ⇐ A)}} → NL (B ⇐ A) ⊗ A ⊢ B
-appl-⇐ = res-⇐⊗ id′
+appl-⇒′ : ∀ {A B} {{p : True (is-valid? A ⇒ B)}} → NL A ⊗ (A ⇒ B) ⊢ B
+appl-⇒′ = res-⇒⊗ id′
+appl-⇐′ : ∀ {A B} {{p : True (is-valid? B ⇐ A)}} → NL (B ⇐ A) ⊗ A ⊢ B
+appl-⇐′ = res-⇐⊗ id′
 
 
 infix 5 is-id_ is-id?_

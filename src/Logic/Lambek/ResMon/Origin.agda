@@ -25,7 +25,6 @@ open import Logic.Judgement Type Type
 open import Logic.Judgement.Context Univ
 open import Logic.Lambek.ResMon.Base Univ
 open import Logic.Lambek.ResMon.Derivation Univ
-     renaming (_[_] to _$_; _<_> to _∘_)
 
 
 -- The origin of a ⊗-connective implements the following view:
@@ -49,11 +48,9 @@ open import Logic.Lambek.ResMon.Derivation Univ
 --
 --    O ≔ [] | F ⇒ O | O ⇐ F
 --
-data Origin-⊗ {J} (D⁻ : is-output-rhs D) (f : NL A ⊢ D [ B ⊗ C ]) : Set ℓ where
-  origin-⊗ : ∀ {E F} (h₁ : NL E ⊢ B) (h₂ : NL F ⊢ C)
-                     (f′ : ∀ {G} → NL E ⊗ F ⊢ G ⋯ A ⊢ D [ G ])
-                     (eq : f ≡ f′ $ mon-⊗ h₁ h₂)
-                     → Origin-⊗ D⁻ f
 
-find-mon-⊗ : ∀ {J B C} (J⁻ : is-output J) (f : NL J [ B ⊗ C ]) → Origin-⊗ J⁻ f
-find-mon-⊗ J⁻ f = ?
+--data Origin-⊗ {J} (D⁻ : is-output-rhs D) (f : NL A ⊢ D [ B ⊗ C ]) : Set ℓ where
+--  origin-⊗ : ∀ {E F} (h₁ : NL E ⊢ B) (h₂ : NL F ⊢ C)
+--                     (f′ : ∀ {G} → NL E ⊗ F ⊢ G ⋯ A ⊢ D [ G ])
+--                     (eq : f ≡ f′ $ mon-⊗ h₁ h₂)
+--                     → Origin-⊗ D⁻ f
