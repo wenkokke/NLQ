@@ -12,10 +12,10 @@ open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Type.Context {ℓ} (Univ : Set ℓ) where
+module Logic.LambekGrishin.Type.Context {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type Univ renaming (module DecEq to DecEqType)
+open import Logic.LambekGrishin.Type Univ renaming (module DecEq to DecEqType)
 
 
 infixr 30 _⊗>_ _<⊗_ _⊕>_ _<⊕_

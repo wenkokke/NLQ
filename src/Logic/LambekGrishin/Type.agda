@@ -13,7 +13,7 @@ open import Relation.Binary using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Type {ℓ} (Univ : Set ℓ) where
+module Logic.LambekGrishin.Type {ℓ} (Univ : Set ℓ) where
 
 
 infixr 30 _⊗_ _⊕_
