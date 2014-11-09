@@ -5,16 +5,17 @@
 
 
 open import Function using (_∘_)
-open import Data.Product using (∃; _,_)
+open import Data.Product using (∃; _×_; _,_)
 open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Nullary.Decidable using (True; toWitness; fromWitness)
+open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 open import Relation.Binary.HeterogeneousEquality as H using (_≅_)
 
 
 module Logic.LambekGrishin.ResMon.Base {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type Univ
+open import Logic.LambekGrishin.Type Univ
 open import Logic.Judgement Type Type
 
 
@@ -48,6 +49,50 @@ data LG_ : Judgement → Set ℓ where
   grish₃ : ∀ {A B C D} → LG A ⊗ B ⊢ C ⊕ D → LG B ⇚ D ⊢ A ⇒ C
   grish₄ : ∀ {A B C D} → LG A ⊗ B ⊢ C ⊕ D → LG A ⇚ D ⊢ C ⇐ B
 
+
+-- Proofs which show that constructors of terms (as all Agda
+-- data-constructors) respect equality.
+
+mon-⊗-injective : ∀ {A B C D f₁ f₂ g₁ g₂} → mon-⊗ {A} {B} {C} {D} f₁ f₂ ≡ mon-⊗ g₁ g₂ → f₁ ≡ g₁ × f₂ ≡ g₂
+mon-⊗-injective refl = refl , refl
+mon-⇒-injective : ∀ {A B C D f₁ f₂ g₁ g₂} → mon-⇒ {A} {B} {C} {D} f₁ f₂ ≡ mon-⇒ g₁ g₂ → f₁ ≡ g₁ × f₂ ≡ g₂
+mon-⇒-injective refl = refl , refl
+mon-⇐-injective : ∀ {A B C D f₁ f₂ g₁ g₂} → mon-⇐ {A} {B} {C} {D} f₁ f₂ ≡ mon-⇐ g₁ g₂ → f₁ ≡ g₁ × f₂ ≡ g₂
+mon-⇐-injective refl = refl , refl
+
+res-⇒⊗-injective : ∀ {A B C f g} → res-⇒⊗ {A} {B} {C} f ≡ res-⇒⊗ g → f ≡ g
+res-⇒⊗-injective refl = refl
+res-⊗⇒-injective : ∀ {A B C f g} → res-⊗⇒ {A} {B} {C} f ≡ res-⊗⇒ g → f ≡ g
+res-⊗⇒-injective refl = refl
+res-⇐⊗-injective : ∀ {A B C f g} → res-⇐⊗ {A} {B} {C} f ≡ res-⇐⊗ g → f ≡ g
+res-⇐⊗-injective refl = refl
+res-⊗⇐-injective : ∀ {A B C f g} → res-⊗⇐ {A} {B} {C} f ≡ res-⊗⇐ g → f ≡ g
+res-⊗⇐-injective refl = refl
+
+mon-⊕-injective : ∀ {A B C D f₁ f₂ g₁ g₂} → mon-⊕ {A} {B} {C} {D} f₁ f₂ ≡ mon-⊕ g₁ g₂ → f₁ ≡ g₁ × f₂ ≡ g₂
+mon-⊕-injective refl = refl , refl
+mon-⇛-injective : ∀ {A B C D f₁ f₂ g₁ g₂} → mon-⇛ {A} {B} {C} {D} f₁ f₂ ≡ mon-⇛ g₁ g₂ → f₁ ≡ g₁ × f₂ ≡ g₂
+mon-⇛-injective refl = refl , refl
+mon-⇚-injective : ∀ {A B C D f₁ f₂ g₁ g₂} → mon-⇚ {A} {B} {C} {D} f₁ f₂ ≡ mon-⇚ g₁ g₂ → f₁ ≡ g₁ × f₂ ≡ g₂
+mon-⇚-injective refl = refl , refl
+
+res-⇛⊕-injective : ∀ {A B C f g} → res-⇛⊕ {A} {B} {C} f ≡ res-⇛⊕ g → f ≡ g
+res-⇛⊕-injective refl = refl
+res-⊕⇛-injective : ∀ {A B C f g} → res-⊕⇛ {A} {B} {C} f ≡ res-⊕⇛ g → f ≡ g
+res-⊕⇛-injective refl = refl
+res-⊕⇚-injective : ∀ {A B C f g} → res-⊕⇚ {A} {B} {C} f ≡ res-⊕⇚ g → f ≡ g
+res-⊕⇚-injective refl = refl
+res-⇚⊕-injective : ∀ {A B C f g} → res-⇚⊕ {A} {B} {C} f ≡ res-⇚⊕ g → f ≡ g
+res-⇚⊕-injective refl = refl
+
+grish₁-injective : ∀ {A B C D f g} → grish₁ {A} {B} {C} {D} f ≡ grish₁ g → f ≡ g
+grish₁-injective refl = refl
+grish₂-injective : ∀ {A B C D f g} → grish₂ {A} {B} {C} {D} f ≡ grish₂ g → f ≡ g
+grish₂-injective refl = refl
+grish₃-injective : ∀ {A B C D f g} → grish₃ {A} {B} {C} {D} f ≡ grish₃ g → f ≡ g
+grish₃-injective refl = refl
+grish₄-injective : ∀ {A B C D f g} → grish₄ {A} {B} {C} {D} f ≡ grish₄ g → f ≡ g
+grish₄-injective refl = refl
 
 
 -- Derived rule for identity, which holds as long as the type A only
@@ -116,3 +161,7 @@ is-id? grish₁ _   = no (λ {(_ , ())})
 is-id? grish₂ _   = no (λ {(_ , ())})
 is-id? grish₃ _   = no (λ {(_ , ())})
 is-id? grish₄ _   = no (λ {(_ , ())})
+
+
+f:elA⊢elA→f≡id : ∀ {A} (f : LG el A ⊢ el A) → f ≡ id
+f:elA⊢elA→f≡id id = refl

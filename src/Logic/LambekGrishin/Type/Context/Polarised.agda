@@ -12,13 +12,13 @@ open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Type.Context.Polarised {ℓ} (Univ : Set ℓ) where
+module Logic.LambekGrishin.Type.Context.Polarised {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type Univ
-open import Logic.Type.Context Univ as Context hiding (module Simple)
-open Context.Simple renaming (_[_] to _[_]′; _<_> to _<_>′)
 open import Logic.Polarity
+open import Logic.LambekGrishin.Type Univ
+open import Logic.LambekGrishin.Type.Context Univ as Context hiding (module Simple)
+open Context.Simple renaming (_[_] to _[_]′; _<_> to _<_>′)
 
 
 -- The below definition for polarised context enforces the top polarity
