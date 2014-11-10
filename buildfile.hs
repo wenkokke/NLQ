@@ -2,6 +2,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
+import           Control.Monad (when)
 import           Data.Attoparsec.Text (Parser)
 import qualified Data.Attoparsec.Text as P
 import           Data.Char as C (isSpace)
@@ -34,35 +35,45 @@ main = shakeArgs shakeOptions $ do
     let src = toLambekGrishin target
     need [src]
     liftIO $
-      T.writeFile target . handle =<< T.readFile src
-
-
--- |Map a filename to a file in the Lambek Grishin sub-directory.
-toLambekGrishin :: FilePath -> FilePath
-toLambekGrishin  = joinPath . map go . splitDirectories
-  where
-    go "Lambek" = "LambekGrishin"
-    go path     = path
+      T.writeFile target . handle replacementListForLambek blacklistForLambek =<< T.readFile src
 
 
 -- |Parse a file and remove all groups which contain illegal symbols.
-handle :: Text -> Text
-handle input = let
+handle :: [(Text, Text)] -> [Text] -> Text -> Text
+handle replacements blacklist input = let
 
-  -- The idea is to get the groups separated by blank lines and then
-  -- delete the entire group when it contains a type signature
-  -- containing one or more of the blacklisted terms.
-  -- In all other case, it will only erase the line.
+  -- The algorithm to remove illegal lines is as follows:
+  -- First we divide the text up by lines, and group the lines that
+  -- are separated by one or more blank lines.
+  lines   = T.lines input
+  groups  = L.splitWhen isBlank lines
+  groups' = map (filter (not . isBlank)) groups
+
+  -- Then we scan over all the groups, and remove those which have a
+  -- type signature which mentions one of the blacklisted characters.
+  -- The idea here is to remove functions that implement an illegal
+  -- type signature.
+  noIllegalTS = filter (all (not . isIllegalTS)) groups'
+
+  -- The remaining groups are concatenated back together, now
+  -- separated by a single blank line (the reason it has 80 spaces in
+  -- there will become apparent soon).
+  concatted = L.intercalate [T.append (T.replicate 80 " ") "\n"] noIllegalTS
+
+  -- We then traverse the lines a single time and mark any line
+  -- mentioning a blacklisted character.
   --
-  -- The reason I feel that this is a sensible algorithm is that it
-  -- promotes a sensible coding style (separating definitions by a
-  -- blank line, and keeping documentation connected to the functions).
-
-  lines        = T.lines input
-  groups       = L.splitWhen isBlank lines
-  groups'      = map (filter (not . isBlank)) groups
-  noIllegalTS  = filter (all (not . isIllegalTS)) groups'
-  concatted    = L.intercalate [T.append (T.replicate 80 " ") "\n"] noIllegalTS
+  -- After that, we traverse the lines a second time. This time with
+  -- an accumulating parameter which keeps track of the status of the
+  -- previous line. If the previous line was marked as illegal, but
+  -- the current line isn't, we check if:
+  --   a. the current line is a with statement, in which case it'd be
+  --      the continuation of the previous line, or;
+  --   b. the current line is more deeply indented than the previous
+  --      line, in which case it'd be the direct continuation or in a
+  --      where-clause. This case explains the 80 spaces mentioned above.
+  --
+  -- We then remove all marked lines.
   markIllegal  = zip (map isLegal concatted) concatted
   markIllegal' :: [(Bool, Text)]
   markIllegal' = snd (L.mapAccumL go (True , 0) markIllegal)
@@ -76,46 +87,70 @@ handle input = let
               notWithClause = "..." /= T.take 3 (T.stripStart lnY)
   stripMarked  = map snd (filter fst markIllegal')
   stripEnd     = map T.stripEnd stripMarked
-  output       = T.unlines stripEnd
-  replace1     = T.replace "LambekGrishin" "Lambek" output
-  replace2     = T.replace "LG" "NL" replace1
 
-  in replace2
+  -- We then perform a number of in-place substitutions, which
+  -- replace references to the Lambek Grishin calculus with
+  -- references to the Lambek calculus.
+  replaced = replaceAll (T.unlines stripEnd)
 
+  in replaced
 
--- |Get the indentation for a line.
-indent :: Text -> Int
-indent = T.length . T.takeWhile isSpace
-
-
--- |Check if a text is completely blank.
-isBlank :: Text -> Bool
-isBlank = T.all isSpace
-
-
--- |Check if text is a type signature containing blacklisted items.
-isIllegalTS :: Text -> Bool
-isIllegalTS = isRight . P.parseOnly p
   where
-    p :: Parser ()
-    p = do
-      P.takeWhile (not . isSpace)
-      P.space
-      P.many1 (P.char ':')
-      rest <- P.takeText
-      if isLegal rest
-        then fail "Type signature contains no blacklisted items."
-        else return ()
+
+  -- |Check if text contains any blacklisted items.
+  isLegal :: Text -> Bool
+  isLegal  = not . foldr (\x f y -> f y || x `T.isInfixOf` y) (const False) blacklist
+
+  -- |Check if text is a type signature containing blacklisted items.
+  isIllegalTS :: Text -> Bool
+  isIllegalTS = isRight . P.parseOnly p
+    where
+      p :: Parser ()
+      p = do
+        _ <- P.takeWhile (not . isSpace)
+        _ <- P.many1 P.space
+        _ <- P.char ':'
+        rest <- P.takeText
+
+        when (isLegal rest) $
+          fail "Type signature contains no blacklisted items."
 
 
--- |Check if text contains any blacklisted items.
-isLegal :: Text -> Bool
-isLegal  = not . foldr (\x f y -> f y || x `T.isInfixOf` y) (const False) blacklist
+  -- |Perform all replacements given in the `replacements` paramter.
+  replaceAll :: Text -> Text
+  replaceAll = foldr (\(x,y) f -> f . T.replace x y) id replacements
+
+  -- |Get the indentation for a line.
+  indent :: Text -> Int
+  indent = T.length . T.takeWhile isSpace
+
+  -- |Check if a text is completely blank.
+  isBlank :: Text -> Bool
+  isBlank = T.all isSpace
+
+
+--------------------------------------------------------------------------------
+-- Constants which are specific to the "Lambek Grishin" => "Lambek" transition
+--------------------------------------------------------------------------------
+
+-- |Map a filename to a file in the Lambek Grishin sub-directory.
+toLambekGrishin :: FilePath -> FilePath
+toLambekGrishin  = joinPath . map go . splitDirectories
+  where
+    go "Lambek" = "LambekGrishin"
+    go path     = path
+
+-- |Set of replacement rules for the Lambek Grishin to Lambek conversion.
+replacementListForLambek :: [(Text, Text)]
+replacementListForLambek =
+  [ ("LambekGrishin" , "Lambek")
+  , ("LG", "NL")
+  ]
 
 
 -- |Set of inference rules which may not occur in the Lambek calculus.
-blacklist :: [Text]
-blacklist =
+blacklistForLambek :: [Text]
+blacklistForLambek =
   [ "⊕"      , "⇛"      , "⇚"
 --, "mon-⊕"  , "mon-⇛"  , "mon-⇚"
 --, "res-⇛⊕" , "res-⊕⇛" , "res-⊕⇚" , "res-⇚⊕"
