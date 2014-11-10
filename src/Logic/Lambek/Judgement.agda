@@ -12,29 +12,29 @@ open import Relation.Binary using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Judgement {ℓ₁ ℓ₂} (Anta : Set ℓ₁) (Succ : Set ℓ₂) where
+module Logic.Lambek.Judgement {ℓ} (Univ : Set ℓ) where
+
+
+open import Logic.Lambek.Type Univ hiding (module DecEq)
 
 
 infix 5 _⊢_
 
-data Judgement : Set (ℓ₁ ⊔ ℓ₂) where
-  _⊢_ : Anta → Succ → Judgement
+data Judgement : Set ℓ where
+  _⊢_ : Type → Type → Judgement
 
 
-⊢-injective : ∀ {A₁ A₂ S₁ S₂} → A₁ ⊢ S₁ ≡ A₂ ⊢ S₂ → A₁ ≡ A₂ × S₁ ≡ S₂
+⊢-injective : ∀ {A₁ A₂ B₁ B₂} → A₁ ⊢ B₁ ≡ A₂ ⊢ B₂ → A₁ ≡ A₂ × B₁ ≡ B₂
 ⊢-injective refl = refl , refl
 
 
-module DecEq
-       (_≟-Anta_ : (X Y : Anta) → Dec (X ≡ Y))
-       (_≟-Succ_ : (X Y : Succ) → Dec (X ≡ Y)) where
-
+module DecEq (_≟-Type_ : (X Y : Type) → Dec (X ≡ Y)) where
 
   _≟-Judgement_ : (I J : Judgement) → Dec (I ≡ J)
-  (A₁ ⊢ S₁) ≟-Judgement (A₂ ⊢ S₂) with (A₁ ≟-Anta A₂) | (S₁ ≟-Succ S₂)
-  ... | yes A₁≡A₂ | yes S₁≡S₂ rewrite A₁≡A₂ | S₁≡S₂ = yes refl
+  (A₁ ⊢ B₁) ≟-Judgement (A₂ ⊢ B₂) with (A₁ ≟-Type A₂) | (B₁ ≟-Type B₂)
+  ... | yes A₁≡A₂ | yes B₁≡B₂ rewrite A₁≡A₂ | B₁≡B₂ = yes refl
   ... | no  A₁≢A₂ | _         = no (A₁≢A₂ ∘ proj₁ ∘ ⊢-injective)
-  ... | _         | no  S₁≢S₂ = no (S₁≢S₂ ∘ proj₂ ∘ ⊢-injective)
+  ... | _         | no  B₁≢B₂ = no (B₁≢B₂ ∘ proj₂ ∘ ⊢-injective)
 
 
   decSetoid : DecSetoid _ _

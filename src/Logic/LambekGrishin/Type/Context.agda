@@ -4,9 +4,10 @@
 ------------------------------------------------------------------------
 
 
-open import Category using (Category; Functor; Monoids; Sets)
+open import Categories
 open import Algebra using (Monoid)
 open import Function using (_∘_)
+open import Data.Unit using (⊤; tt)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; uncurry)
 open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
@@ -203,18 +204,19 @@ instance
 
 
 -- Proof that `_[_]` forms a functor from contexts into types
-functor : Functor (Monoids monoid) (Sets ℓ)
-functor = record
-  { F₀           = λ {tt → Type}
-  ; F₁           = _[_]
-  ; identity     = refl
-  ; homomorphism = λ {_} {_} {_} {f} {g} → <>-def g f _
-  ; F-resp-≈     = F-resp-≈
-  }
-  where
-    open Simple
-    F-resp-≈ : ∀ {A B} → A ≡ B → ∀ {C} → A [ C ] ≡ B [ C ]
-    F-resp-≈ refl = refl
+instance
+  functor : Functor (Monoids monoid) (Sets ℓ)
+  functor = record
+    { F₀           = λ {tt → Type}
+    ; F₁           = _[_]
+    ; identity     = refl
+    ; homomorphism = λ {_} {_} {_} {f} {g} → <>-def g f _
+    ; F-resp-≈     = F-resp-≈
+    }
+    where
+      open Simple
+      F-resp-≈ : ∀ {A B} → A ≡ B → ∀ {C} → A [ C ] ≡ B [ C ]
+      F-resp-≈ refl = refl
 
 
 -- Proof that if the given universe has decidable equality, then so do contexts.

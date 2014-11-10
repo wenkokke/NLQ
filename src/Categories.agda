@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------
--- The Agda standard library
+-- The Lambek Calculus in Agda
 --
 -- Definitions categories and functors.
 ------------------------------------------------------------------------
 
-module Category where
+module Categories where
 
 open import Level
 open import Algebra using (module Monoid; Monoid)

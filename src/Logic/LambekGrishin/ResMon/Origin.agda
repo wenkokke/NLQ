@@ -25,32 +25,29 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; cong)
 module Logic.LambekGrishin.ResMon.Origin {ℓ} (Univ : Set ℓ) where
 
 open import Logic.Polarity
-open import Logic.LambekGrishin.Type                   Univ as LGT
-open import Logic.LambekGrishin.Type.Context           Univ as LGC using (Context)
-open import Logic.LambekGrishin.Type.Context.Polarised Univ as LGCP
-open import Logic.LambekGrishin.ResMon.Base            Univ as LGB
-open import Logic.LambekGrishin.ResMon.Derivation      Univ as LGD
-open LGD.Simple using () renaming (_[_] to _[_]ᴰ; _<_> to _<_>ᴰ; <>-def to <>ᴰ-def)
+open import Logic.LambekGrishin.Type                        Univ as T
+open import Logic.LambekGrishin.Type.Context                Univ as TC
+open import Logic.LambekGrishin.Type.Context.Polarised      Univ as TCP hiding (Polarised)
+open import Logic.LambekGrishin.Judgement                   Univ as J
+open import Logic.LambekGrishin.Judgement.Context           Univ as JC
+open import Logic.LambekGrishin.Judgement.Context.Polarised Univ as JCP
+open import Logic.LambekGrishin.ResMon.Base                 Univ as RMB
+open import Logic.LambekGrishin.ResMon.Derivation           Univ as RMD
 
-open import Logic.Judgement Type Type using (_⊢_)
-open import Logic.Judgement.Context
-     Type Context LGC.Simple._[_] LGC.Simple._<_>
-     as JC using () renaming (_[_] to _[_]ᴶ)
-open import Logic.Judgement.Context.Polarised
-     Type Context LGC.Simple._[_] LGC.Simple._<_>
-     Polarised LGCP.Simple._[_] LGCP.Simple._<_>
-     renaming (Polarised to JudgementContext)
+
+open JC.Simple renaming (_[_] to _[_]ᴶ)
+open RMD.Simple renaming (_[_] to _[_]ᴰ; _<_> to _<_>ᴰ; <>-def to <>ᴰ-def)
 
 
 module el where
 
-  data Origin {J B} (J⁺ : JudgementContext + J) (f : LG J [ el B ]ᴶ) : Set ℓ where
+  data Origin {J B} (J⁺ : Polarised + J) (f : LG J [ el B ]ᴶ) : Set ℓ where
        origin : (f′ : ∀ {G} → LG G ⊢ el B ⋯ J [ G ]ᴶ)
               → (pr : f ≡ f′ [ id ]ᴰ)
               → Origin J⁺ f
 
   mutual
-    viewOrigin : ∀ {J B} (J⁺ : JudgementContext + J) (f : LG J [ el B ]ᴶ) → Origin J⁺ f
+    viewOrigin : ∀ {J B} (J⁺ : Polarised + J) (f : LG J [ el B ]ᴶ) → Origin J⁺ f
     viewOrigin ([] <⊢ ._)       id             = origin [] refl
     viewOrigin ([] <⊢ ._)       (res-⊗⇒ f)     = go ((_ ⊗> []) <⊢ _)       f  (res-⊗⇒ [])
     viewOrigin ([] <⊢ ._)       (res-⊗⇐ f)     = go (([] <⊗ _) <⊢ _)       f  (res-⊗⇐ [])
@@ -151,8 +148,8 @@ module el where
 
     private
       go : ∀ {I J B}
-                     → (I⁺ : JudgementContext + I) (f : LG I [ el B ]ᴶ)
-                     → {J⁺ : JudgementContext + J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
+                     → (I⁺ : Polarised + I) (f : LG I [ el B ]ᴶ)
+                     → {J⁺ : Polarised + J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
                      → Origin J⁺ (g [ f ]ᴰ)
       go I⁺ f {J⁺} g with viewOrigin I⁺ f
       ... | origin f′ pr = origin (g < f′ >ᴰ) pr′
@@ -166,7 +163,7 @@ module el where
 
 module ⊗ where
 
-  data Origin {J B C} (J⁻ : JudgementContext - J) (f : LG J [ B ⊗ C ]ᴶ) : Set ℓ where
+  data Origin {J B C} (J⁻ : Polarised - J) (f : LG J [ B ⊗ C ]ᴶ) : Set ℓ where
        origin : ∀ {E F}
                 → (h₁ : LG E ⊢ B) (h₂ : LG F ⊢ C)
                 → (f′ : ∀ {G} → LG E ⊗ F ⊢ G ⋯ J [ G ]ᴶ)
@@ -174,7 +171,7 @@ module ⊗ where
                 → Origin J⁻ f
 
   mutual
-    viewOrigin : ∀ {J B C} (J⁻ : JudgementContext - J) (f : LG J [ B ⊗ C ]ᴶ) → Origin J⁻ f
+    viewOrigin : ∀ {J B C} (J⁻ : Polarised - J) (f : LG J [ B ⊗ C ]ᴶ) → Origin J⁻ f
     viewOrigin (._ ⊢> [])       (mon-⊗  f₁ f₂) = origin f₁ f₂ [] refl
     viewOrigin (._ ⊢> [])       (res-⇒⊗ f)     = go (_ ⊢> (_ ⇒> []))       f  (res-⇒⊗ [])
     viewOrigin (._ ⊢> [])       (res-⇐⊗ f)     = go (_ ⊢> ([] <⇐ _))       f  (res-⇐⊗ [])
@@ -275,8 +272,8 @@ module ⊗ where
 
     private
       go : ∀ {I J B C}
-                     → (I⁻ : JudgementContext - I) (f : LG I [ B ⊗ C ]ᴶ)
-                     → {J⁻ : JudgementContext - J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
+                     → (I⁻ : Polarised - I) (f : LG I [ B ⊗ C ]ᴶ)
+                     → {J⁻ : Polarised - J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
                      → Origin J⁻ (g [ f ]ᴰ)
       go I⁻ f {J⁻} g with viewOrigin I⁻ f
       ... | origin h₁ h₂ f′ pr = origin h₁ h₂ (g < f′ >ᴰ) pr′
@@ -290,7 +287,7 @@ module ⊗ where
 
 module ⇚ where
 
-  data Origin {J B C} (J⁻ : JudgementContext - J) (f : LG J [ B ⇚ C ]ᴶ) : Set ℓ where
+  data Origin {J B C} (J⁻ : Polarised - J) (f : LG J [ B ⇚ C ]ᴶ) : Set ℓ where
        origin : ∀ {E F}
                 → (h₁ : LG E ⊢ B) (h₂ : LG C ⊢ F)
                 → (f′ : ∀ {G} → LG E ⇚ F ⊢ G ⋯ J [ G ]ᴶ)
@@ -298,7 +295,7 @@ module ⇚ where
                 → Origin J⁻ f
 
   mutual
-    viewOrigin : ∀ {J B C} (J⁻ : JudgementContext - J) (f : LG J [ B ⇚ C ]ᴶ) → Origin J⁻ f
+    viewOrigin : ∀ {J B C} (J⁻ : Polarised - J) (f : LG J [ B ⇚ C ]ᴶ) → Origin J⁻ f
     viewOrigin (._ ⊢> [])       (mon-⇚  f₁ f₂) = origin f₁ f₂ [] refl
     viewOrigin (._ ⊢> [])       (res-⇒⊗ f)     = go (_ ⊢> (_ ⇒> []))       f  (res-⇒⊗ [])
     viewOrigin (._ ⊢> [])       (res-⇐⊗ f)     = go (_ ⊢> ([] <⇐ _))       f  (res-⇐⊗ [])
@@ -399,8 +396,8 @@ module ⇚ where
 
     private
       go : ∀ {I J B C}
-                     → (I⁻ : JudgementContext - I) (f : LG I [ B ⇚ C ]ᴶ)
-                     → {J⁻ : JudgementContext - J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
+                     → (I⁻ : Polarised - I) (f : LG I [ B ⇚ C ]ᴶ)
+                     → {J⁻ : Polarised - J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
                      → Origin J⁻ (g [ f ]ᴰ)
       go I⁻ f {J⁻} g with viewOrigin I⁻ f
       ... | origin h₁ h₂ f′ pr = origin h₁ h₂ (g < f′ >ᴰ) pr′
@@ -414,7 +411,7 @@ module ⇚ where
 
 module ⇛ where
 
-  data Origin {J B C} (J⁻ : JudgementContext - J) (f : LG J [ B ⇛ C ]ᴶ) : Set ℓ where
+  data Origin {J B C} (J⁻ : Polarised - J) (f : LG J [ B ⇛ C ]ᴶ) : Set ℓ where
        origin : ∀ {E F}
                 → (h₁ : LG F ⊢ C) (h₂ : LG B ⊢ E)
                 → (f′ : ∀ {G} → LG E ⇛ F ⊢ G ⋯ J [ G ]ᴶ)
@@ -422,7 +419,7 @@ module ⇛ where
                 → Origin J⁻ f
 
   mutual
-    viewOrigin : ∀ {J B C} (J⁻ : JudgementContext - J) (f : LG J [ B ⇛ C ]ᴶ) → Origin J⁻ f
+    viewOrigin : ∀ {J B C} (J⁻ : Polarised - J) (f : LG J [ B ⇛ C ]ᴶ) → Origin J⁻ f
     viewOrigin (._ ⊢> [])       (mon-⇛  f₁ f₂) = origin f₁ f₂ [] refl
     viewOrigin (._ ⊢> [])       (res-⇒⊗ f)     = go (_ ⊢> (_ ⇒> []))       f  (res-⇒⊗ [])
     viewOrigin (._ ⊢> [])       (res-⇐⊗ f)     = go (_ ⊢> ([] <⇐ _))       f  (res-⇐⊗ [])
@@ -523,8 +520,8 @@ module ⇛ where
 
     private
       go : ∀ {I J B C}
-                     → (I⁻ : JudgementContext - I) (f : LG I [ B ⇛ C ]ᴶ)
-                     → {J⁻ : JudgementContext - J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
+                     → (I⁻ : Polarised - I) (f : LG I [ B ⇛ C ]ᴶ)
+                     → {J⁻ : Polarised - J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
                      → Origin J⁻ (g [ f ]ᴰ)
       go I⁻ f {J⁻} g with viewOrigin I⁻ f
       ... | origin h₁ h₂ f′ pr = origin h₁ h₂ (g < f′ >ᴰ) pr′
@@ -537,7 +534,7 @@ module ⇛ where
 
 module ⊕ where
 
-  data Origin {J B C} (J⁺ : JudgementContext + J) (f : LG J [ B ⊕ C ]ᴶ) : Set ℓ where
+  data Origin {J B C} (J⁺ : Polarised + J) (f : LG J [ B ⊕ C ]ᴶ) : Set ℓ where
        origin : ∀ {E F}
                 → (h₁ : LG B ⊢ E) (h₂ : LG C ⊢ F)
                 → (f′ : ∀ {G} → LG G ⊢ E ⊕ F ⋯ J [ G ]ᴶ)
@@ -545,7 +542,7 @@ module ⊕ where
                 → Origin J⁺ f
 
   mutual
-    viewOrigin : ∀ {J B C} (J⁺ : JudgementContext + J) (f : LG J [ B ⊕ C ]ᴶ) → Origin J⁺ f
+    viewOrigin : ∀ {J B C} (J⁺ : Polarised + J) (f : LG J [ B ⊕ C ]ᴶ) → Origin J⁺ f
     viewOrigin ([] <⊢ ._)       (mon-⊕  f₁ f₂) = origin f₁ f₂ [] refl
     viewOrigin ([] <⊢ ._)       (res-⊗⇒ f)     = go ((_ ⊗> []) <⊢ _)       f  (res-⊗⇒ [])
     viewOrigin ([] <⊢ ._)       (res-⊗⇐ f)     = go (([] <⊗ _) <⊢ _)       f  (res-⊗⇐ [])
@@ -646,8 +643,8 @@ module ⊕ where
 
     private
       go : ∀ {I J B C}
-                     → (I⁺ : JudgementContext + I) (f : LG I [ B ⊕ C ]ᴶ)
-                     → {J⁺ : JudgementContext + J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
+                     → (I⁺ : Polarised + I) (f : LG I [ B ⊕ C ]ᴶ)
+                     → {J⁺ : Polarised + J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
                      → Origin J⁺ (g [ f ]ᴰ)
       go I⁺ f {J⁺} g with viewOrigin I⁺ f
       ... | origin h₁ h₂ f′ pr = origin h₁ h₂ (g < f′ >ᴰ) pr′
@@ -660,7 +657,7 @@ module ⊕ where
 
 module ⇐ where
 
-  data Origin {J B C} (J⁺ : JudgementContext + J) (f : LG J [ B ⇐ C ]ᴶ) : Set ℓ where
+  data Origin {J B C} (J⁺ : Polarised + J) (f : LG J [ B ⇐ C ]ᴶ) : Set ℓ where
        origin : ∀ {E F}
                 → (h₁ : LG B ⊢ E) (h₂ : LG F ⊢ C)
                 → (f′ : ∀ {G} → LG G ⊢ E ⇐ F ⋯ J [ G ]ᴶ)
@@ -668,7 +665,7 @@ module ⇐ where
                 → Origin J⁺ f
 
   mutual
-    viewOrigin : ∀ {J B C} (J⁺ : JudgementContext + J) (f : LG J [ B ⇐ C ]ᴶ) → Origin J⁺ f
+    viewOrigin : ∀ {J B C} (J⁺ : Polarised + J) (f : LG J [ B ⇐ C ]ᴶ) → Origin J⁺ f
     viewOrigin ([] <⊢ ._)       (mon-⇐  f₁ f₂) = origin f₁ f₂ [] refl
     viewOrigin ([] <⊢ ._)       (res-⊗⇒ f)     = go ((_ ⊗> []) <⊢ _)       f  (res-⊗⇒ [])
     viewOrigin ([] <⊢ ._)       (res-⊗⇐ f)     = go (([] <⊗ _) <⊢ _)       f  (res-⊗⇐ [])
@@ -769,8 +766,8 @@ module ⇐ where
 
     private
       go : ∀ {I J B C}
-                     → (I⁺ : JudgementContext + I) (f : LG I [ B ⇐ C ]ᴶ)
-                     → {J⁺ : JudgementContext + J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
+                     → (I⁺ : Polarised + I) (f : LG I [ B ⇐ C ]ᴶ)
+                     → {J⁺ : Polarised + J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
                      → Origin J⁺ (g [ f ]ᴰ)
       go I⁺ f {J⁺} g with viewOrigin I⁺ f
       ... | origin h₁ h₂ f′ pr = origin h₁ h₂ (g < f′ >ᴰ) pr′
@@ -783,7 +780,7 @@ module ⇐ where
 
 module ⇒ where
 
-  data Origin {J B C} (J⁺ : JudgementContext + J) (f : LG J [ B ⇒ C ]ᴶ) : Set ℓ where
+  data Origin {J B C} (J⁺ : Polarised + J) (f : LG J [ B ⇒ C ]ᴶ) : Set ℓ where
        origin : ∀ {E F}
                 → (h₁ : LG E ⊢ B) (h₂ : LG C ⊢ F)
                 → (f′ : ∀ {G} → LG G ⊢ E ⇒ F ⋯ J [ G ]ᴶ)
@@ -791,7 +788,7 @@ module ⇒ where
                 → Origin J⁺ f
 
   mutual
-    viewOrigin : ∀ {J B C} (J⁺ : JudgementContext + J) (f : LG J [ B ⇒ C ]ᴶ) → Origin J⁺ f
+    viewOrigin : ∀ {J B C} (J⁺ : Polarised + J) (f : LG J [ B ⇒ C ]ᴶ) → Origin J⁺ f
     viewOrigin ([] <⊢ ._)       (mon-⇒  f₁ f₂) = origin f₁ f₂ [] refl
     viewOrigin ([] <⊢ ._)       (res-⊗⇒ f)     = go ((_ ⊗> []) <⊢ _)       f  (res-⊗⇒ [])
     viewOrigin ([] <⊢ ._)       (res-⊗⇐ f)     = go (([] <⊗ _) <⊢ _)       f  (res-⊗⇐ [])
@@ -892,8 +889,8 @@ module ⇒ where
 
     private
       go : ∀ {I J B C}
-                     → (I⁺ : JudgementContext + I) (f : LG I [ B ⇒ C ]ᴶ)
-                     → {J⁺ : JudgementContext + J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
+                     → (I⁺ : Polarised + I) (f : LG I [ B ⇒ C ]ᴶ)
+                     → {J⁺ : Polarised + J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
                      → Origin J⁺ (g [ f ]ᴰ)
       go I⁺ f {J⁺} g with viewOrigin I⁺ f
       ... | origin h₁ h₂ f′ pr = origin h₁ h₂ (g < f′ >ᴰ) pr′

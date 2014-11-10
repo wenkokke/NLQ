@@ -7,23 +7,17 @@
 module Logic.LambekGrishin.ResMon.Trans {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.LambekGrishin.Type                   Univ as LGT
-open import Logic.LambekGrishin.Type.Context           Univ as LGC
-open import Logic.LambekGrishin.Type.Context.Polarised Univ as LGCP
-open import Logic.LambekGrishin.ResMon.Base            Univ as LGB
-open import Logic.LambekGrishin.ResMon.Derivation      Univ as LGD
-open import Logic.LambekGrishin.ResMon.Origin          Univ as LGO
-open LGD.Simple using () renaming (_[_] to _[_]ᴰ)
+open import Logic.Polarity
+open import Logic.LambekGrishin.Type                        Univ as T
+open import Logic.LambekGrishin.Type.Context.Polarised      Univ as TCP using ([])
+open import Logic.LambekGrishin.Judgement                   Univ as J
+open import Logic.LambekGrishin.Judgement.Context.Polarised Univ as JCP
+open import Logic.LambekGrishin.ResMon.Base                 Univ as RMB
+open import Logic.LambekGrishin.ResMon.Derivation           Univ as RMD
+open import Logic.LambekGrishin.ResMon.Origin               Univ as RMO
 
 
-open import Logic.Judgement Type Type using (_⊢_)
-open import Logic.Judgement.Context
-  Type Context LGC.Simple._[_] LGC.Simple._<_>
-  as JC using () renaming (_[_] to _[_]ᴶ)
-open import Logic.Judgement.Context.Polarised
-  Type Context LGC.Simple._[_] LGC.Simple._<_>
-  Polarised LGCP.Simple._[_] LGCP.Simple._<_>
-  using (_⊢>_; _<⊢_)
+open RMD.Simple renaming (_[_] to _[_]ᴰ)
 
 
 trans′ : ∀ {A B C} (f : LG A ⊢ B) (g : LG B ⊢ C) → LG A ⊢ C

@@ -4,7 +4,7 @@
 ------------------------------------------------------------------------
 
 
-open import Category using (Category; Functor; Sets)
+open import Categories using (Category; Functor; Sets)
 open import Function using (_∘_)
 open import Data.Product using (∃; _,_)
 open import Relation.Nullary using (Dec; yes; no)
@@ -16,7 +16,7 @@ module Logic.LambekGrishin.ResMon.Derivation {ℓ} (Univ : Set ℓ) where
 
 open import Logic.LambekGrishin.Type Univ
 open import Logic.LambekGrishin.ResMon.Base Univ
-open import Logic.Judgement Type Type
+open import Logic.LambekGrishin.Judgement Univ
 
 
 infix 3 LG_⋯_
