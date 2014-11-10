@@ -1,6 +1,18 @@
 ------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
 --
+-- Implements derivations---also known as partial proofs or term
+-- contexts---which are generally written as:
+--
+--     A ⊢ B
+--     -----
+--       ⋮
+--     -----
+--     C ⊢ D
+--
+-- This definition guarantees that there is exactly *one* sub-proof
+-- missing. In addition, this module provides proofs that these
+-- contexts form a category, and thus behave function-like.
 ------------------------------------------------------------------------
 
 
