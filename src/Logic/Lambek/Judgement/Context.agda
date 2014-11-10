@@ -4,23 +4,21 @@
 ------------------------------------------------------------------------
 
 
-open import Category
+open import Categories
+open import Level using (zero)
 open import Algebra using (module Monoid; Monoid)
-open import Function using (_∘_)
+open import Function using (id; _∘_)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
-open import Data.Unit using (⊤; tt)
 open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
+open import Data.Unit as Unit using (⊤; tt)
 
 
-module Logic.Judgement.Context
-  {ℓ} (Type : Set ℓ) (Context : Set ℓ)
-  (_[_]′ : Context → Type → Type)
-  (_<_>′ : Context → Context → Context)
-  where
+module Logic.Lambek.Judgement.Context {ℓ} (Univ : Set ℓ) where
 
-
-open import Logic.Judgement Type Type
+open import Logic.Lambek.Type         Univ as T
+open import Logic.Lambek.Type.Context Univ as TC hiding (module Simple)
+open import Logic.Lambek.Judgement    Univ as J
 
 
 infix 5 _<⊢_ _⊢>_
@@ -40,12 +38,16 @@ data JudgementContext : Set ℓ where
 ⊢>-injective refl = refl , refl
 
 
--- Apply a context to a type by plugging the type into the context.
-_[_] : JudgementContext → Type → Judgement
-(A <⊢ B) [ C ] = A [ C ]′ ⊢ B
-(A ⊢> B) [ C ] = A ⊢ B [ C ]′
+module Simple where
 
--- Insert a context into a judgement context
-_<_> : JudgementContext → Context → JudgementContext
-_<_> (A <⊢ B) C = A < C >′ <⊢ B
-_<_> (A ⊢> B) C = A ⊢> B < C >′
+  open TC.Simple renaming (_[_] to _[_]′; _<_> to _<_>′)
+
+  -- Apply a context to a type by plugging the type into the context.
+  _[_] : JudgementContext → Type → Judgement
+  (A <⊢ B) [ C ] = A [ C ]′ ⊢ B
+  (A ⊢> B) [ C ] = A ⊢ B [ C ]′
+
+  -- Insert a context into a judgement context
+  _<_> : JudgementContext → Context → JudgementContext
+  _<_> (A <⊢ B) C = A < C >′ <⊢ B
+  _<_> (A ⊢> B) C = A ⊢> B < C >′

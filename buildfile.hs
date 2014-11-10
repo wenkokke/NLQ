@@ -11,6 +11,7 @@ import qualified Data.List.Split as L (splitWhen)
 import           Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
+import           Debug.Trace (traceShow)
 import           Development.Shake
 import           Development.Shake.FilePath
 
@@ -18,23 +19,30 @@ import           Development.Shake.FilePath
 main :: IO ()
 main = shakeArgs shakeOptions $ do
 
-  want (map toLambek ["Base","Derivation","Origin","Trans"])
+  want ["src/Logic/Lambek/Type.agda"
+       ,"src/Logic/Lambek/Type/Context.agda"
+       ,"src/Logic/Lambek/Type/Context/Polarised.agda"
+       ,"src/Logic/Lambek/Judgement.agda"
+       ,"src/Logic/Lambek/Judgement/Context.agda"
+       ,"src/Logic/Lambek/Judgement/Context/Polarised.agda"
+       ,"src/Logic/Lambek/ResMon/Base.agda"
+       ,"src/Logic/Lambek/ResMon/Derivation.agda"
+       ,"src/Logic/Lambek/ResMon/Origin.agda"
+       ,"src/Logic/Lambek/ResMon/Trans.agda"]
 
-  toLambek "*" *> \target -> do
+  "src/Logic/Lambek//*.agda" *> \target -> do
     let src = toLambekGrishin target
     need [src]
     liftIO $
       T.writeFile target . handle =<< T.readFile src
 
 
--- |Map a filename to a file in the Lambek sub-directory.
-toLambek :: FilePath -> FilePath
-toLambek file = "src/Logic/Lambek/ResMon" </> takeFileName file -<.> "agda"
-
-
 -- |Map a filename to a file in the Lambek Grishin sub-directory.
 toLambekGrishin :: FilePath -> FilePath
-toLambekGrishin file = "src/Logic/LambekGrishin/ResMon" </> takeFileName file -<.> "agda"
+toLambekGrishin  = joinPath . map go . splitDirectories
+  where
+    go "Lambek" = "LambekGrishin"
+    go path     = path
 
 
 -- |Parse a file and remove all groups which contain illegal symbols.
@@ -49,13 +57,34 @@ handle input = let
   -- The reason I feel that this is a sensible algorithm is that it
   -- promotes a sensible coding style (separating definitions by a
   -- blank line, and keeping documentation connected to the functions).
-  lines    = T.lines input
-  groups   = L.splitWhen isBlank lines
-  filter1  = filter (all (not . isIllegalTS)) groups
-  filter2  = map (filter isLegal) filter1
-  output   = T.unlines (L.intersperse "\n" (map T.unlines filter2))
 
-  in output
+  lines        = T.lines input
+  groups       = L.splitWhen isBlank lines
+  groups'      = map (filter (not . isBlank)) groups
+  noIllegalTS  = filter (all (not . isIllegalTS)) groups'
+  concatted    = L.intercalate [T.append (T.replicate 80 " ") "\n"] noIllegalTS
+  markIllegal  = zip (map isLegal concatted) concatted
+  markIllegal' :: [(Bool, Text)]
+  markIllegal' = snd (L.mapAccumL go (True , T.empty) markIllegal)
+    where go :: (Bool , Text) -> (Bool , Text) -> ((Bool , Text) , (Bool , Text))
+          go (_     , _) y@(False , _)   = (y , y)
+          go (True  , _) y@(True  , _)   = (y , y)
+          go (False , lnX) (True  , lnY) = let y = (notDeeper && notWithClause , lnY) in (y , y)
+            where
+              notDeeper     = indent lnX >= indent lnY
+              notWithClause = "..." /= T.take 3 (T.stripStart lnY)
+  stripMarked  = map snd (filter fst markIllegal')
+  stripEnd     = map T.stripEnd stripMarked
+  output       = T.unlines stripEnd
+  replace1     = T.replace "LambekGrishin" "Lambek" output
+  replace2     = T.replace "LG" "NL" replace1
+
+  in replace2
+
+
+-- |Get the indentation for a line.
+indent :: Text -> Int
+indent = T.length . T.takeWhile isSpace
 
 
 -- |Check if a text is completely blank.

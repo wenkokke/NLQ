@@ -4,39 +4,77 @@
 ------------------------------------------------------------------------
 
 
+open import Function using (flip; _∘_)
+open import Data.Product using (_×_; _,_; proj₁; proj₂)
+open import Data.Unit using (⊤; tt)
 open import Relation.Nullary using (Dec; yes; no)
+open import Relation.Binary using (DecSetoid)
+open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
 module Logic.Lambek.Type {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type Univ
+
+data Type : Set ℓ where
+  el   : Univ → Type
+  _⊗_  : Type → Type → Type
+  _⇐_  : Type → Type → Type
+  _⇒_  : Type → Type → Type
 
 
-infix 5 is-valid_ is-valid?_
+-- Proofs which show that constructors of types (as all Agda
+-- data-constructors) respect equality.
+
+el-injective : ∀ {A B} → el A ≡ el B → A ≡ B
+el-injective refl = refl
+
+⊗-injective : ∀ {A B C D} → A ⊗ C ≡ B ⊗ D → A ≡ B × C ≡ D
+⊗-injective refl = refl , refl
+
+⇒-injective : ∀ {A B C D} → A ⇒ C ≡ B ⇒ D → A ≡ B × C ≡ D
+⇒-injective refl = refl , refl
+
+⇐-injective : ∀ {A B C D} → A ⇐ C ≡ B ⇐ D → A ≡ B × C ≡ D
+⇐-injective refl = refl , refl
 
 
-data is-valid_ : Type → Set ℓ where
-  el   : (A : Univ) → is-valid (el A)
-  _⊗_  : ∀ {A B} → is-valid A → is-valid B → is-valid (A ⊗ B)
-  _⇐_  : ∀ {A B} → is-valid A → is-valid B → is-valid (A ⇐ B)
-  _⇒_  : ∀ {A B} → is-valid A → is-valid B → is-valid (A ⇒ B)
+-- Proof that if the given universe has decidable equality, then so do types.
+module DecEq
+       (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B))
+       where
+
+  infix 4 _≟-Type_
+
+  _≟-Type_ : (A B : Type) → Dec (A ≡ B)
+  el A  ≟-Type el C  with (A ≟-Univ C)
+  ... | yes A≡C rewrite A≡C = yes refl
+  ... | no  A≢C = no (A≢C ∘ el-injective)
+  el A  ≟-Type C ⊗ D = no (λ ())
+  el A  ≟-Type C ⇐ D = no (λ ())
+  el A  ≟-Type C ⇒ D = no (λ ())
+  A ⊗ B ≟-Type el C  = no (λ ())
+  A ⇐ B ≟-Type el C  = no (λ ())
+  A ⇒ B ≟-Type el C  = no (λ ())
+  A ⊗ B ≟-Type C ⊗ D with (A ≟-Type C) | (B ≟-Type D)
+  ... | yes A≡C | yes B≡D rewrite A≡C | B≡D = yes refl     -- doink
+  ... | no  A≢C | _       = no (A≢C ∘ proj₁ ∘ ⊗-injective) -- doink
+  ... | _       | no  B≢D = no (B≢D ∘ proj₂ ∘ ⊗-injective) -- doink
+  A ⊗ B ≟-Type C ⇐ D = no (λ ())
+  A ⊗ B ≟-Type C ⇒ D = no (λ ())
+  A ⇐ B ≟-Type C ⊗ D = no (λ ())
+  A ⇐ B ≟-Type C ⇐ D with (A ≟-Type C) | (B ≟-Type D)
+  ... | yes A≡C | yes B≡D rewrite A≡C | B≡D = yes refl
+  ... | no  A≢C | _       = no (A≢C ∘ proj₁ ∘ ⇐-injective)
+  ... | _       | no  B≢D = no (B≢D ∘ proj₂ ∘ ⇐-injective)
+  A ⇐ B ≟-Type C ⇒ D = no (λ ())
+  A ⇒ B ≟-Type C ⊗ D = no (λ ())
+  A ⇒ B ≟-Type C ⇐ D = no (λ ())
+  A ⇒ B ≟-Type C ⇒ D with (A ≟-Type C) | (B ≟-Type D)
+  ... | yes A≡C | yes B≡D rewrite A≡C | B≡D = yes refl
+  ... | no  A≢C | _       = no (A≢C ∘ proj₁ ∘ ⇒-injective)
+  ... | _       | no  B≢D = no (B≢D ∘ proj₂ ∘ ⇒-injective)
 
 
-is-valid?_ : (A : Type) → Dec (is-valid A)
-is-valid? (el A)  = yes (el A)
-is-valid? (A ⊗ B) with is-valid? A | is-valid? B
-is-valid? (_ ⊗ _) | yes A | yes B = yes (A ⊗ B)
-is-valid? (_ ⊗ _) | no ¬A | _     = no (λ {(A ⊗ B) → ¬A A})
-is-valid? (_ ⊗ _) | _     | no ¬B = no (λ {(A ⊗ B) → ¬B B})
-is-valid? (A ⇐ B) with is-valid? A | is-valid? B
-is-valid? (_ ⇐ _) | yes A | yes B = yes (A ⇐ B)
-is-valid? (_ ⇐ _) | no ¬A | _     = no (λ {(A ⇐ B) → ¬A A})
-is-valid? (_ ⇐ _) | _     | no ¬B = no (λ {(A ⇐ B) → ¬B B})
-is-valid? (A ⇒ B) with is-valid? A | is-valid? B
-is-valid? (_ ⇒ _) | yes A | yes B = yes (A ⇒ B)
-is-valid? (_ ⇒ _) | no ¬A | _     = no (λ {(A ⇒ B) → ¬A A})
-is-valid? (_ ⇒ _) | _     | no ¬B = no (λ {(A ⇒ B) → ¬B B})
-is-valid? (A ⊕ B) = no (λ ())
-is-valid? (A ⇚ B) = no (λ ())
-is-valid? (A ⇛ B) = no (λ ())
+  decSetoid : DecSetoid _ _
+  decSetoid = P.decSetoid _≟-Type_

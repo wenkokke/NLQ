@@ -4,7 +4,6 @@
 ------------------------------------------------------------------------
 
 
-open import Category
 open import Function using (flip; _∘_)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Unit using (⊤; tt)
@@ -80,9 +79,9 @@ module DecEq
   A ⇐ B ≟-Type el C  = no (λ ())
   A ⇒ B ≟-Type el C  = no (λ ())
   A ⊗ B ≟-Type C ⊗ D with (A ≟-Type C) | (B ≟-Type D)
-  ... | yes A≡C | yes B≡D rewrite A≡C | B≡D = yes refl
-  ... | no  A≢C | _       = no (A≢C ∘ proj₁ ∘ ⊗-injective)
-  ... | _       | no  B≢D = no (B≢D ∘ proj₂ ∘ ⊗-injective)
+  ... | yes A≡C | yes B≡D rewrite A≡C | B≡D = yes refl     -- doink
+  ... | no  A≢C | _       = no (A≢C ∘ proj₁ ∘ ⊗-injective) -- doink
+  ... | _       | no  B≢D = no (B≢D ∘ proj₂ ∘ ⊗-injective) -- doink
   A ⊗ B ≟-Type C ⇚ D = no (λ ())
   A ⊗ B ≟-Type C ⇛ D = no (λ ())
   A ⊗ B ≟-Type C ⊕ D = no (λ ())
