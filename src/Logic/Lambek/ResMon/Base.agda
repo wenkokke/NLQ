@@ -16,7 +16,7 @@ module Logic.Lambek.ResMon.Base {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Lambek.Type Univ
-open import Logic.Lambek.Judgement Univ
+open import Logic.Lambek.ResMon.Judgement Univ
 
 
 infix 3 NL_

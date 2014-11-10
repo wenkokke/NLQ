@@ -26,9 +26,9 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 module Logic.LambekGrishin.ResMon.Derivation {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.LambekGrishin.Type Univ
-open import Logic.LambekGrishin.ResMon.Base Univ
-open import Logic.LambekGrishin.Judgement Univ
+open import Logic.LambekGrishin.Type             Univ
+open import Logic.LambekGrishin.ResMon.Judgement Univ
+open import Logic.LambekGrishin.ResMon.Base      Univ
 
 
 infix 3 LG_⋯_

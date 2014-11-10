@@ -16,7 +16,7 @@ module Logic.LambekGrishin.ResMon.Base {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.LambekGrishin.Type Univ
-open import Logic.LambekGrishin.Judgement Univ
+open import Logic.LambekGrishin.ResMon.Judgement Univ
 
 
 infix 3 LG_

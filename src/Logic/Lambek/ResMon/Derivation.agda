@@ -1,6 +1,18 @@
 ------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
 --
+-- Implements derivations---also known as partial proofs or term
+-- contexts---which are generally written as:
+--
+--     A ⊢ B
+--     -----
+--       ⋮
+--     -----
+--     C ⊢ D
+--
+-- This definition guarantees that there is exactly *one* sub-proof
+-- missing. In addition, this module provides proofs that these
+-- contexts form a category, and thus behave function-like.
 ------------------------------------------------------------------------
 
 
@@ -14,9 +26,9 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 module Logic.Lambek.ResMon.Derivation {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Lambek.Type Univ
-open import Logic.Lambek.ResMon.Base Univ
-open import Logic.Lambek.Judgement Univ
+open import Logic.Lambek.Type             Univ
+open import Logic.Lambek.ResMon.Judgement Univ
+open import Logic.Lambek.ResMon.Base      Univ
 
 
 infix 3 NL_⋯_
