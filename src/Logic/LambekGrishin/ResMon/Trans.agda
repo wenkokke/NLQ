@@ -8,13 +8,13 @@ module Logic.LambekGrishin.ResMon.Trans {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.LambekGrishin.Type                        Univ as T
-open import Logic.LambekGrishin.Type.Context.Polarised      Univ as TCP using ([])
-open import Logic.LambekGrishin.Judgement                   Univ as J
-open import Logic.LambekGrishin.Judgement.Context.Polarised Univ as JCP
-open import Logic.LambekGrishin.ResMon.Base                 Univ as RMB
-open import Logic.LambekGrishin.ResMon.Derivation           Univ as RMD
-open import Logic.LambekGrishin.ResMon.Origin               Univ as RMO
+open import Logic.LambekGrishin.Type                               Univ as T
+open import Logic.LambekGrishin.Type.Context.Polarised             Univ as TCP using ([])
+open import Logic.LambekGrishin.ResMon.Judgement                   Univ as J
+open import Logic.LambekGrishin.ResMon.Judgement.Context.Polarised Univ as JCP
+open import Logic.LambekGrishin.ResMon.Base                        Univ as RMB
+open import Logic.LambekGrishin.ResMon.Derivation                  Univ as RMD
+open import Logic.LambekGrishin.ResMon.Origin                      Univ as RMO
 
 
 open RMD.Simple renaming (_[_] to _[_]ᴰ)

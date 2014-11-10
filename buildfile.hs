@@ -168,11 +168,12 @@ toLambekGrishin  = joinPath . map go . splitDirectories
 filesForLambek :: [FilePath]
 filesForLambek =
   ["src/Logic/Lambek/Type.agda"
+  ,"src/Logic/Lambek/Type/Complexity.agda"
   ,"src/Logic/Lambek/Type/Context.agda"
   ,"src/Logic/Lambek/Type/Context/Polarised.agda"
-  ,"src/Logic/Lambek/Judgement.agda"
-  ,"src/Logic/Lambek/Judgement/Context.agda"
-  ,"src/Logic/Lambek/Judgement/Context/Polarised.agda"
+  ,"src/Logic/Lambek/ResMon/Judgement.agda"
+  ,"src/Logic/Lambek/ResMon/Judgement/Context.agda"
+  ,"src/Logic/Lambek/ResMon/Judgement/Context/Polarised.agda"
   ,"src/Logic/Lambek/ResMon/Base.agda"
   ,"src/Logic/Lambek/ResMon/Derivation.agda"
   ,"src/Logic/Lambek/ResMon/Origin.agda"

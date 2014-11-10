@@ -14,3 +14,4 @@ cabal.config
 depr
 .shake.database
 TAGS
+src/Everything.agda
