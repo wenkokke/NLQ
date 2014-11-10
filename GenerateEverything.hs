@@ -53,16 +53,17 @@ usage = unlines
 
 -- | Reads a module and extracts the header.
 extractHeader :: FilePath -> IO [String]
-extractHeader mod = fmap (extract . lines) $ readFileUTF8 mod
+extractHeader file = fmap (extract . lines) $ readFileUTF8 file
   where
   delimiter = all (== '-')
 
   extract (d1 : "-- The Lambek Calculus in Agda" : "--" : ss)
     | delimiter d1
-    , (info, d2 : rest) <- span ("-- " `L.isPrefixOf`) ss
+    , (info, d2 : _) <- span (\ln -> "--" `L.isPrefixOf` ln
+                             && not ("---" `L.isPrefixOf` ln)) ss
     , delimiter d2
     = info
-  extract _ = error $ mod ++ " is malformed."
+  extract _ = error $ file ++ " is malformed."
 
 
 -- | Formats the extracted module information.
@@ -70,12 +71,12 @@ format :: [(FilePath, [String])]
           -- ^ Pairs of module names and headers. All lines in the
           -- headers are already prefixed with \"-- \".
        -> String
-format = unlines . concat . map fmt
+format = unlines . concatMap fmt
   where
-  fmt (mod, header) = sep : header ++ ["import " ++ fileToMod mod]
+  fmt (file, header) = sep : header ++ ["import " ++ fileToMod file]
     where
-      sep | L.elem '.' mod = ""
-          | otherwise      = "\n"
+      sep | '.' `elem` file = ""
+          | otherwise       = "\n"
 
 
 -- | Translates a file name to the corresponding module name. It is
