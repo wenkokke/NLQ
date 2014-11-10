@@ -10,7 +10,7 @@
 --
 ------------------------------------------------------------------------
 
-module Algebra.Residuation where
+module Algebra.ResiduatedAlgebra where
 
 
 
