@@ -39,7 +39,6 @@ data NL_⋯_ : (I J : Judgement) → Set ℓ where
 
   -- rules for co-residuation and co-monotonicity
   -- grishin distributives
-
 -- We can also define the property of being empty for a proof context;
 -- the reason we do this is because we cannot directly use decidable
 -- equality due to the fact that [] forces the types of A and C and B
@@ -62,7 +61,6 @@ is-[]? mon-⇒ᴸ _ _ = no (λ ())
 is-[]? mon-⇒ᴿ _ _ = no (λ ())
 is-[]? mon-⇐ᴸ _ _ = no (λ ())
 is-[]? mon-⇐ᴿ _ _ = no (λ ())
-
 module Simple where
 
 
@@ -80,8 +78,6 @@ module Simple where
   mon-⇒ᴿ f₁ f₂ [ g ] = mon-⇒   f₁        (f₂ [ g ])
   mon-⇐ᴸ f₁ f₂ [ g ] = mon-⇐  (f₁ [ g ])  f₂
   mon-⇐ᴿ f₁ f₂ [ g ] = mon-⇐   f₁        (f₂ [ g ])
-
-
   -- Proof contexts can also be composed, simply by plugging the one
   -- proof context into the hole in the other proof context.
   _<_> : ∀ {I J K} (f : NL J ⋯ K) (g : NL I ⋯ J) → NL I ⋯ K
@@ -96,7 +92,6 @@ module Simple where
   mon-⇒ᴿ f₁ f₂ < g > = mon-⇒ᴿ  f₁        (f₂ < g >)
   mon-⇐ᴸ f₁ f₂ < g > = mon-⇐ᴸ (f₁ < g >)  f₂
   mon-⇐ᴿ f₁ f₂ < g > = mon-⇐ᴿ  f₁        (f₂ < g >)
-
   -- We can also show that proof context composition distributes over
   -- proof context application.
   <>-def : ∀ {I J K} (f : NL J ⋯ K) (g : NL I ⋯ J) (h : NL I)

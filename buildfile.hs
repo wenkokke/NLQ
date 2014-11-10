@@ -65,13 +65,14 @@ handle input = let
   concatted    = L.intercalate [T.append (T.replicate 80 " ") "\n"] noIllegalTS
   markIllegal  = zip (map isLegal concatted) concatted
   markIllegal' :: [(Bool, Text)]
-  markIllegal' = snd (L.mapAccumL go (True , T.empty) markIllegal)
-    where go :: (Bool , Text) -> (Bool , Text) -> ((Bool , Text) , (Bool , Text))
-          go (_     , _) y@(False , _)   = (y , y)
-          go (True  , _) y@(True  , _)   = (y , y)
-          go (False , lnX) (True  , lnY) = let y = (notDeeper && notWithClause , lnY) in (y , y)
+  markIllegal' = snd (L.mapAccumL go (True , 0) markIllegal)
+    where go :: (Bool , Int) -> (Bool , Text) -> ((Bool , Int) , (Bool , Text))
+          go (_     , iX) (False , lnY) = ((False , min iX (indent lnY)) , (False , lnY))
+          go (True  , _ ) (True  , lnY) = ((True  ,         indent lnY ) , (True  , lnY))
+          go (False , iX) (True  , lnY) = ((legal , iX) , (legal , lnY))
             where
-              notDeeper     = indent lnX >= indent lnY
+              legal         = notDeeper && notWithClause
+              notDeeper     = iX >= indent lnY
               notWithClause = "..." /= T.take 3 (T.stripStart lnY)
   stripMarked  = map snd (filter fst markIllegal')
   stripEnd     = map T.stripEnd stripMarked

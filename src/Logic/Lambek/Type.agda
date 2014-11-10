@@ -15,7 +15,6 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 module Logic.Lambek.Type {ℓ} (Univ : Set ℓ) where
 
 
-
 data Type : Set ℓ where
   el   : Univ → Type
   _⊗_  : Type → Type → Type

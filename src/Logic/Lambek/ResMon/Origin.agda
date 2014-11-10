@@ -144,6 +144,9 @@ module ⊗ where
           pr′ rewrite <>ᴰ-def g f′ (mon-⊗ h₁ h₂) = cong (_[_]ᴰ g) pr
 
 
+
+
+
 module ⇐ where
 
   data Origin {J B C} (J⁺ : Polarised + J) (f : NL J [ B ⇐ C ]ᴶ) : Set ℓ where

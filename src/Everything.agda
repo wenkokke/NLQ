@@ -7,11 +7,11 @@ module Everything where
 -- Definitions categories and functors.
 import Categories
 
-import Logic.Judgement
+import Logic.Lambek.Judgement
 
-import Logic.Judgement.Context
+import Logic.Lambek.Judgement.Context
 
-import Logic.Judgement.Context.Polarised
+import Logic.Lambek.Judgement.Context.Polarised
 
 import Logic.Lambek.ResMon.Base
 
@@ -28,6 +28,12 @@ import Logic.Lambek.Type
 import Logic.Lambek.Type.Context
 
 import Logic.Lambek.Type.Context.Polarised
+
+import Logic.LambekGrishin.Judgement
+
+import Logic.LambekGrishin.Judgement.Context
+
+import Logic.LambekGrishin.Judgement.Context.Polarised
 
 import Logic.LambekGrishin.ResMon.Base
 
