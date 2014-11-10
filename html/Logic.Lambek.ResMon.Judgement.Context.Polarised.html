@@ -1,0 +1,1244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Logic.Lambek.ResMon.Judgement.Context.Polarised</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="73"
+      >
+</a
+      ><a name="74" class="Comment"
+      >-- The Lambek Calculus in Agda</a
+      ><a name="104"
+      >
+</a
+      ><a name="105" class="Comment"
+      >--</a
+      ><a name="107"
+      >
+</a
+      ><a name="108" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="180"
+      >
+
+
+</a
+      ><a name="183" class="Keyword"
+      >open</a
+      ><a name="187"
+      > </a
+      ><a name="188" class="Keyword"
+      >import</a
+      ><a name="194"
+      > </a
+      ><a name="195" href="Level.html#1" class="Module"
+      >Level</a
+      ><a name="200"
+      > </a
+      ><a name="201" class="Keyword"
+      >using</a
+      ><a name="206"
+      > </a
+      ><a name="207" class="Symbol"
+      >(</a
+      ><a name="208"
+      >zero</a
+      ><a name="212" class="Symbol"
+      >)</a
+      ><a name="213"
+      >
+</a
+      ><a name="214" class="Keyword"
+      >open</a
+      ><a name="218"
+      > </a
+      ><a name="219" class="Keyword"
+      >import</a
+      ><a name="225"
+      > </a
+      ><a name="226" href="Algebra.html#1" class="Module"
+      >Algebra</a
+      ><a name="233"
+      > </a
+      ><a name="234" class="Keyword"
+      >using</a
+      ><a name="239"
+      > </a
+      ><a name="240" class="Symbol"
+      >(</a
+      ><a name="241"
+      >Monoid</a
+      ><a name="247" class="Symbol"
+      >)</a
+      ><a name="248"
+      >
+</a
+      ><a name="249" class="Keyword"
+      >open</a
+      ><a name="253"
+      > </a
+      ><a name="254" class="Keyword"
+      >import</a
+      ><a name="260"
+      > </a
+      ><a name="261" href="Function.html#1" class="Module"
+      >Function</a
+      ><a name="269"
+      > </a
+      ><a name="270" class="Keyword"
+      >using</a
+      ><a name="275"
+      > </a
+      ><a name="276" class="Symbol"
+      >(</a
+      ><a name="277"
+      >id</a
+      ><a name="279" class="Symbol"
+      >;</a
+      ><a name="280"
+      > flip</a
+      ><a name="285" class="Symbol"
+      >;</a
+      ><a name="286"
+      > _&#8728;_</a
+      ><a name="290" class="Symbol"
+      >)</a
+      ><a name="291"
+      >
+</a
+      ><a name="292" class="Keyword"
+      >open</a
+      ><a name="296"
+      > </a
+      ><a name="297" class="Keyword"
+      >import</a
+      ><a name="303"
+      > </a
+      ><a name="304" href="Data.Product.html#1" class="Module"
+      >Data.Product</a
+      ><a name="316"
+      > </a
+      ><a name="317" class="Keyword"
+      >using</a
+      ><a name="322"
+      > </a
+      ><a name="323" class="Symbol"
+      >(</a
+      ><a name="324"
+      >&#8707;</a
+      ><a name="325" class="Symbol"
+      >;</a
+      ><a name="326"
+      > _&#215;_</a
+      ><a name="330" class="Symbol"
+      >;</a
+      ><a name="331"
+      > _,_</a
+      ><a name="335" class="Symbol"
+      >;</a
+      ><a name="336"
+      > proj&#8321;</a
+      ><a name="342" class="Symbol"
+      >;</a
+      ><a name="343"
+      > proj&#8322;</a
+      ><a name="349" class="Symbol"
+      >;</a
+      ><a name="350"
+      > uncurry</a
+      ><a name="358" class="Symbol"
+      >)</a
+      ><a name="359"
+      >
+</a
+      ><a name="360" class="Keyword"
+      >open</a
+      ><a name="364"
+      > </a
+      ><a name="365" class="Keyword"
+      >import</a
+      ><a name="371"
+      > </a
+      ><a name="372" href="Relation.Nullary.html#1" class="Module"
+      >Relation.Nullary</a
+      ><a name="388"
+      > </a
+      ><a name="389" class="Keyword"
+      >using</a
+      ><a name="394"
+      > </a
+      ><a name="395" class="Symbol"
+      >(</a
+      ><a name="396"
+      >Dec</a
+      ><a name="399" class="Symbol"
+      >;</a
+      ><a name="400"
+      > yes</a
+      ><a name="404" class="Symbol"
+      >;</a
+      ><a name="405"
+      > no</a
+      ><a name="408" class="Symbol"
+      >)</a
+      ><a name="409"
+      >
+</a
+      ><a name="410" class="Keyword"
+      >open</a
+      ><a name="414"
+      > </a
+      ><a name="415" class="Keyword"
+      >import</a
+      ><a name="421"
+      > </a
+      ><a name="422" href="Relation.Binary.PropositionalEquality.html#1" class="Module"
+      >Relation.Binary.PropositionalEquality</a
+      ><a name="459"
+      > </a
+      ><a name="460" class="Symbol"
+      >as</a
+      ><a name="462"
+      > </a
+      ><a name="463" class="Module"
+      >P</a
+      ><a name="464"
+      > </a
+      ><a name="465" class="Keyword"
+      >using</a
+      ><a name="470"
+      > </a
+      ><a name="471" class="Symbol"
+      >(</a
+      ><a name="472"
+      >_&#8801;_</a
+      ><a name="475" class="Symbol"
+      >;</a
+      ><a name="476"
+      > refl</a
+      ><a name="481" class="Symbol"
+      >)</a
+      ><a name="482"
+      >
+</a
+      ><a name="483" class="Keyword"
+      >open</a
+      ><a name="487"
+      > </a
+      ><a name="488" class="Keyword"
+      >import</a
+      ><a name="494"
+      > </a
+      ><a name="495" href="Data.Unit.html#1" class="Module"
+      >Data.Unit</a
+      ><a name="504"
+      > </a
+      ><a name="505" class="Keyword"
+      >using</a
+      ><a name="510"
+      > </a
+      ><a name="511" class="Symbol"
+      >(</a
+      ><a name="512"
+      >&#8868;</a
+      ><a name="513" class="Symbol"
+      >;</a
+      ><a name="514"
+      > tt</a
+      ><a name="517" class="Symbol"
+      >)</a
+      ><a name="518"
+      >
+
+
+</a
+      ><a name="521" class="Keyword"
+      >module</a
+      ><a name="527"
+      > </a
+      ><a name="528" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1" class="Module"
+      >Logic.Lambek.ResMon.Judgement.Context.Polarised</a
+      ><a name="575"
+      > </a
+      ><a name="576" class="Symbol"
+      >{</a
+      ><a name="577" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#577" class="Bound"
+      >&#8467;</a
+      ><a name="578" class="Symbol"
+      >}</a
+      ><a name="579"
+      > </a
+      ><a name="580" class="Symbol"
+      >(</a
+      ><a name="581" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#581" class="Bound"
+      >Univ</a
+      ><a name="585"
+      > </a
+      ><a name="586" class="Symbol"
+      >:</a
+      ><a name="587"
+      > </a
+      ><a name="588" class="PrimitiveType"
+      >Set</a
+      ><a name="591"
+      > </a
+      ><a name="592" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#577" class="Bound"
+      >&#8467;</a
+      ><a name="593" class="Symbol"
+      >)</a
+      ><a name="594"
+      > </a
+      ><a name="595" class="Keyword"
+      >where</a
+      ><a name="600"
+      >
+
+</a
+      ><a name="602" class="Keyword"
+      >open</a
+      ><a name="606"
+      > </a
+      ><a name="607" class="Keyword"
+      >import</a
+      ><a name="613"
+      > </a
+      ><a name="614" href="Logic.Polarity.html#1" class="Module"
+      >Logic.Polarity</a
+      ><a name="628"
+      >
+</a
+      ><a name="629" class="Keyword"
+      >open</a
+      ><a name="633"
+      > </a
+      ><a name="634" class="Keyword"
+      >import</a
+      ><a name="640"
+      > </a
+      ><a name="641" href="Logic.Lambek.Type.html#1" class="Module"
+      >Logic.Lambek.Type</a
+      ><a name="658"
+      >                     </a
+      ><a name="679" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#581" class="Bound"
+      >Univ</a
+      ><a name="683"
+      > </a
+      ><a name="684" class="Symbol"
+      >as</a
+      ><a name="686"
+      > </a
+      ><a name="687" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#687" class="Module"
+      >T</a
+      ><a name="688"
+      >
+</a
+      ><a name="689" class="Keyword"
+      >open</a
+      ><a name="693"
+      > </a
+      ><a name="694" class="Keyword"
+      >import</a
+      ><a name="700"
+      > </a
+      ><a name="701" href="Logic.Lambek.Type.Context.html#1" class="Module"
+      >Logic.Lambek.Type.Context</a
+      ><a name="726"
+      >             </a
+      ><a name="739" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#581" class="Bound"
+      >Univ</a
+      ><a name="743"
+      > </a
+      ><a name="744" class="Symbol"
+      >as</a
+      ><a name="746"
+      > </a
+      ><a name="747" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#747" class="Module"
+      >TC</a
+      ><a name="749"
+      >
+     </a
+      ><a name="755" class="Keyword"
+      >hiding</a
+      ><a name="761"
+      > </a
+      ><a name="762" class="Symbol"
+      >(</a
+      ><a name="763" class="Keyword"
+      >module</a
+      ><a name="769"
+      > Simple</a
+      ><a name="776" class="Symbol"
+      >)</a
+      ><a name="777"
+      >
+</a
+      ><a name="778" class="Keyword"
+      >open</a
+      ><a name="782"
+      > </a
+      ><a name="783" class="Keyword"
+      >import</a
+      ><a name="789"
+      > </a
+      ><a name="790" href="Logic.Lambek.Type.Context.Polarised.html#1" class="Module"
+      >Logic.Lambek.Type.Context.Polarised</a
+      ><a name="825"
+      >   </a
+      ><a name="828" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#581" class="Bound"
+      >Univ</a
+      ><a name="832"
+      > </a
+      ><a name="833" class="Symbol"
+      >as</a
+      ><a name="835"
+      > </a
+      ><a name="836" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#836" class="Module"
+      >TCP</a
+      ><a name="839"
+      >
+     </a
+      ><a name="845" class="Keyword"
+      >hiding</a
+      ><a name="851"
+      > </a
+      ><a name="852" class="Symbol"
+      >(</a
+      ><a name="853" class="Keyword"
+      >module</a
+      ><a name="859"
+      > Simple</a
+      ><a name="866" class="Symbol"
+      >;</a
+      ><a name="867"
+      > </a
+      ><a name="868" class="Keyword"
+      >module</a
+      ><a name="874"
+      > Polarised</a
+      ><a name="884" class="Symbol"
+      >)</a
+      ><a name="885"
+      > </a
+      ><a name="886" class="Keyword"
+      >renaming</a
+      ><a name="894"
+      > </a
+      ><a name="895" class="Symbol"
+      >(</a
+      ><a name="896"
+      >Polarised </a
+      ><a name="906" class="Symbol"
+      >to</a
+      ><a name="908"
+      > PolarisedContext</a
+      ><a name="925" class="Symbol"
+      >)</a
+      ><a name="926"
+      >
+</a
+      ><a name="927" class="Keyword"
+      >open</a
+      ><a name="931"
+      > </a
+      ><a name="932" class="Keyword"
+      >import</a
+      ><a name="938"
+      > </a
+      ><a name="939" href="Logic.Lambek.ResMon.Judgement.html#1" class="Module"
+      >Logic.Lambek.ResMon.Judgement</a
+      ><a name="968"
+      >         </a
+      ><a name="977" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#581" class="Bound"
+      >Univ</a
+      ><a name="981"
+      > </a
+      ><a name="982" class="Symbol"
+      >as</a
+      ><a name="984"
+      > </a
+      ><a name="985" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#985" class="Module"
+      >J</a
+      ><a name="986"
+      >
+</a
+      ><a name="987" class="Keyword"
+      >open</a
+      ><a name="991"
+      > </a
+      ><a name="992" class="Keyword"
+      >import</a
+      ><a name="998"
+      > </a
+      ><a name="999" href="Logic.Lambek.ResMon.Judgement.Context.html#1" class="Module"
+      >Logic.Lambek.ResMon.Judgement.Context</a
+      ><a name="1036"
+      > </a
+      ><a name="1037" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#581" class="Bound"
+      >Univ</a
+      ><a name="1041"
+      > </a
+      ><a name="1042" class="Symbol"
+      >as</a
+      ><a name="1044"
+      > </a
+      ><a name="1045" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1045" class="Module"
+      >JC</a
+      ><a name="1047"
+      >
+     </a
+      ><a name="1053" class="Keyword"
+      >hiding</a
+      ><a name="1059"
+      > </a
+      ><a name="1060" class="Symbol"
+      >(</a
+      ><a name="1061" class="Keyword"
+      >module</a
+      ><a name="1067"
+      > Simple</a
+      ><a name="1074" class="Symbol"
+      >)</a
+      ><a name="1075"
+      >
+
+
+</a
+      ><a name="1078" class="Keyword"
+      >data</a
+      ><a name="1082"
+      > </a
+      ><a name="1083" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1083" class="Datatype"
+      >Polarised</a
+      ><a name="1092"
+      > </a
+      ><a name="1093" class="Symbol"
+      >(</a
+      ><a name="1094" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1094" class="Bound"
+      >p</a
+      ><a name="1095"
+      > </a
+      ><a name="1096" class="Symbol"
+      >:</a
+      ><a name="1097"
+      > </a
+      ><a name="1098" href="Logic.Polarity.html#387" class="Datatype"
+      >Polarity</a
+      ><a name="1106" class="Symbol"
+      >)</a
+      ><a name="1107"
+      > </a
+      ><a name="1108" class="Symbol"
+      >:</a
+      ><a name="1109"
+      > </a
+      ><a name="1110" href="Logic.Lambek.ResMon.Judgement.Context.html#826" class="Datatype"
+      >JudgementContext</a
+      ><a name="1126"
+      > </a
+      ><a name="1127" class="Symbol"
+      >&#8594;</a
+      ><a name="1128"
+      > </a
+      ><a name="1129" class="PrimitiveType"
+      >Set</a
+      ><a name="1132"
+      > </a
+      ><a name="1133" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#577" class="Bound"
+      >&#8467;</a
+      ><a name="1134"
+      > </a
+      ><a name="1135" class="Keyword"
+      >where</a
+      ><a name="1140"
+      >
+  </a
+      ><a name="1143" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1143" class="InductiveConstructor Operator"
+      >_&lt;&#8866;_</a
+      ><a name="1147"
+      > </a
+      ><a name="1148" class="Symbol"
+      >:</a
+      ><a name="1149"
+      > </a
+      ><a name="1150" class="Symbol"
+      >&#8704;</a
+      ><a name="1151"
+      > </a
+      ><a name="1152" class="Symbol"
+      >{</a
+      ><a name="1153" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1153" class="Bound"
+      >A</a
+      ><a name="1154" class="Symbol"
+      >}</a
+      ><a name="1155"
+      > </a
+      ><a name="1156" class="Symbol"
+      >(</a
+      ><a name="1157" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1157" class="Bound"
+      >A&#8314;</a
+      ><a name="1159"
+      > </a
+      ><a name="1160" class="Symbol"
+      >:</a
+      ><a name="1161"
+      > </a
+      ><a name="1162" href="Logic.Lambek.Type.Context.Polarised.html#1024" class="Datatype"
+      >PolarisedContext</a
+      ><a name="1178"
+      > </a
+      ><a name="1179" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1094" class="Bound"
+      >p</a
+      ><a name="1180"
+      > </a
+      ><a name="1181" href="Logic.Polarity.html#410" class="InductiveConstructor"
+      >+</a
+      ><a name="1182"
+      > </a
+      ><a name="1183" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1153" class="Bound"
+      >A</a
+      ><a name="1184" class="Symbol"
+      >)</a
+      ><a name="1185"
+      > </a
+      ><a name="1186" class="Symbol"
+      >(</a
+      ><a name="1187" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1187" class="Bound"
+      >B</a
+      ><a name="1188"
+      > </a
+      ><a name="1189" class="Symbol"
+      >:</a
+      ><a name="1190"
+      > </a
+      ><a name="1191" href="Logic.Lambek.Type.html#586" class="Datatype"
+      >Type</a
+      ><a name="1195" class="Symbol"
+      >)</a
+      ><a name="1196"
+      > </a
+      ><a name="1197" class="Symbol"
+      >&#8594;</a
+      ><a name="1198"
+      > </a
+      ><a name="1199" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1083" class="Datatype"
+      >Polarised</a
+      ><a name="1208"
+      > </a
+      ><a name="1209" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1094" class="Bound"
+      >p</a
+      ><a name="1210"
+      > </a
+      ><a name="1211" class="Symbol"
+      >(</a
+      ><a name="1212" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1153" class="Bound"
+      >A</a
+      ><a name="1213"
+      > </a
+      ><a name="1214" href="Logic.Lambek.ResMon.Judgement.Context.html#859" class="InductiveConstructor Operator"
+      >&lt;&#8866;</a
+      ><a name="1216"
+      > </a
+      ><a name="1217" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1187" class="Bound"
+      >B</a
+      ><a name="1218" class="Symbol"
+      >)</a
+      ><a name="1219"
+      >
+  </a
+      ><a name="1222" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1222" class="InductiveConstructor Operator"
+      >_&#8866;&gt;_</a
+      ><a name="1226"
+      > </a
+      ><a name="1227" class="Symbol"
+      >:</a
+      ><a name="1228"
+      > </a
+      ><a name="1229" class="Symbol"
+      >&#8704;</a
+      ><a name="1230"
+      > </a
+      ><a name="1231" class="Symbol"
+      >(</a
+      ><a name="1232" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1232" class="Bound"
+      >A</a
+      ><a name="1233"
+      > </a
+      ><a name="1234" class="Symbol"
+      >:</a
+      ><a name="1235"
+      > </a
+      ><a name="1236" href="Logic.Lambek.Type.html#586" class="Datatype"
+      >Type</a
+      ><a name="1240" class="Symbol"
+      >)</a
+      ><a name="1241"
+      > </a
+      ><a name="1242" class="Symbol"
+      >{</a
+      ><a name="1243" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1243" class="Bound"
+      >B</a
+      ><a name="1244" class="Symbol"
+      >}</a
+      ><a name="1245"
+      > </a
+      ><a name="1246" class="Symbol"
+      >(</a
+      ><a name="1247" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1247" class="Bound"
+      >B&#8315;</a
+      ><a name="1249"
+      > </a
+      ><a name="1250" class="Symbol"
+      >:</a
+      ><a name="1251"
+      > </a
+      ><a name="1252" href="Logic.Lambek.Type.Context.Polarised.html#1024" class="Datatype"
+      >PolarisedContext</a
+      ><a name="1268"
+      > </a
+      ><a name="1269" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1094" class="Bound"
+      >p</a
+      ><a name="1270"
+      > </a
+      ><a name="1271" href="Logic.Polarity.html#425" class="InductiveConstructor"
+      >-</a
+      ><a name="1272"
+      > </a
+      ><a name="1273" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1243" class="Bound"
+      >B</a
+      ><a name="1274" class="Symbol"
+      >)</a
+      ><a name="1275"
+      > </a
+      ><a name="1276" class="Symbol"
+      >&#8594;</a
+      ><a name="1277"
+      > </a
+      ><a name="1278" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1083" class="Datatype"
+      >Polarised</a
+      ><a name="1287"
+      > </a
+      ><a name="1288" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1094" class="Bound"
+      >p</a
+      ><a name="1289"
+      > </a
+      ><a name="1290" class="Symbol"
+      >(</a
+      ><a name="1291" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1232" class="Bound"
+      >A</a
+      ><a name="1292"
+      > </a
+      ><a name="1293" href="Logic.Lambek.ResMon.Judgement.Context.html#902" class="InductiveConstructor Operator"
+      >&#8866;&gt;</a
+      ><a name="1295"
+      > </a
+      ><a name="1296" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1243" class="Bound"
+      >B</a
+      ><a name="1297" class="Symbol"
+      >)</a
+      ><a name="1298"
+      >
+
+
+</a
+      ><a name="1301" class="Keyword"
+      >module</a
+      ><a name="1307"
+      > </a
+      ><a name="1308" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1308" class="Module"
+      >Simple</a
+      ><a name="1314"
+      > </a
+      ><a name="1315" class="Keyword"
+      >where</a
+      ><a name="1320"
+      >
+
+  </a
+      ><a name="1324" class="Keyword"
+      >open</a
+      ><a name="1328"
+      > </a
+      ><a name="1329" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1045" class="Module"
+      >JC.</a
+      ><a name="1332" href="Logic.Lambek.ResMon.Judgement.Context.html#1256" class="Module"
+      >Simple</a
+      ><a name="1338"
+      > </a
+      ><a name="1339" class="Keyword"
+      >using</a
+      ><a name="1344"
+      > </a
+      ><a name="1345" class="Symbol"
+      >()</a
+      ><a name="1347"
+      > </a
+      ><a name="1348" class="Keyword"
+      >renaming</a
+      ><a name="1356"
+      > </a
+      ><a name="1357" class="Symbol"
+      >(</a
+      ><a name="1358"
+      >_&lt;_&gt; </a
+      ><a name="1363" class="Symbol"
+      >to</a
+      ><a name="1365"
+      > _&lt;_&gt;&#7478;</a
+      ><a name="1371" class="Symbol"
+      >)</a
+      ><a name="1372"
+      >
+  </a
+      ><a name="1375" class="Keyword"
+      >open</a
+      ><a name="1379"
+      > </a
+      ><a name="1380" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#836" class="Module"
+      >TCP.</a
+      ><a name="1384" href="Logic.Lambek.Type.Context.Polarised.html#1613" class="Module"
+      >Simple</a
+      ><a name="1390"
+      > </a
+      ><a name="1391" class="Keyword"
+      >using</a
+      ><a name="1396"
+      > </a
+      ><a name="1397" class="Symbol"
+      >()</a
+      ><a name="1399"
+      > </a
+      ><a name="1400" class="Keyword"
+      >renaming</a
+      ><a name="1408"
+      > </a
+      ><a name="1409" class="Symbol"
+      >(</a
+      ><a name="1410"
+      >_[_] </a
+      ><a name="1415" class="Symbol"
+      >to</a
+      ><a name="1417"
+      > _[_]&#7580;</a
+      ><a name="1423" class="Symbol"
+      >;</a
+      ><a name="1424"
+      > _&lt;_&gt; </a
+      ><a name="1430" class="Symbol"
+      >to</a
+      ><a name="1432"
+      > _&lt;_&gt;&#7580;</a
+      ><a name="1438" class="Symbol"
+      >)</a
+      ><a name="1439"
+      >
+
+  </a
+      ><a name="1443" class="Comment"
+      >-- Apply judgement contexts to types to get judgements</a
+      ><a name="1497"
+      >
+  </a
+      ><a name="1500" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1500" class="Function Operator"
+      >_[_]</a
+      ><a name="1504"
+      > </a
+      ><a name="1505" class="Symbol"
+      >:</a
+      ><a name="1506"
+      > </a
+      ><a name="1507" class="Symbol"
+      >&#8704;</a
+      ><a name="1508"
+      > </a
+      ><a name="1509" class="Symbol"
+      >{</a
+      ><a name="1510" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1510" class="Bound"
+      >p</a
+      ><a name="1511"
+      > </a
+      ><a name="1512" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1512" class="Bound"
+      >A</a
+      ><a name="1513" class="Symbol"
+      >}</a
+      ><a name="1514"
+      > </a
+      ><a name="1515" class="Symbol"
+      >&#8594;</a
+      ><a name="1516"
+      > </a
+      ><a name="1517" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1083" class="Datatype"
+      >Polarised</a
+      ><a name="1526"
+      > </a
+      ><a name="1527" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1510" class="Bound"
+      >p</a
+      ><a name="1528"
+      > </a
+      ><a name="1529" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1512" class="Bound"
+      >A</a
+      ><a name="1530"
+      > </a
+      ><a name="1531" class="Symbol"
+      >&#8594;</a
+      ><a name="1532"
+      > </a
+      ><a name="1533" href="Logic.Lambek.Type.html#586" class="Datatype"
+      >Type</a
+      ><a name="1537"
+      > </a
+      ><a name="1538" class="Symbol"
+      >&#8594;</a
+      ><a name="1539"
+      > </a
+      ><a name="1540" href="Logic.Lambek.ResMon.Judgement.html#621" class="Datatype"
+      >Judgement</a
+      ><a name="1549"
+      >
+  </a
+      ><a name="1552" class="Symbol"
+      >(</a
+      ><a name="1553" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1553" class="Bound"
+      >A</a
+      ><a name="1554"
+      > </a
+      ><a name="1555" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1143" class="InductiveConstructor Operator"
+      >&lt;&#8866;</a
+      ><a name="1557"
+      > </a
+      ><a name="1558" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1558" class="Bound"
+      >B</a
+      ><a name="1559" class="Symbol"
+      >)</a
+      ><a name="1560"
+      > </a
+      ><a name="1561" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1500" class="Function Operator"
+      >[</a
+      ><a name="1562"
+      > </a
+      ><a name="1563" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1563" class="Bound"
+      >C</a
+      ><a name="1564"
+      > </a
+      ><a name="1565" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1500" class="Function Operator"
+      >]</a
+      ><a name="1566"
+      > </a
+      ><a name="1567" class="Symbol"
+      >=</a
+      ><a name="1568"
+      > </a
+      ><a name="1569" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1553" class="Bound"
+      >A</a
+      ><a name="1570"
+      > </a
+      ><a name="1571" href="Logic.Lambek.Type.Context.Polarised.html#1757" class="Function Operator"
+      >[</a
+      ><a name="1572"
+      > </a
+      ><a name="1573" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1563" class="Bound"
+      >C</a
+      ><a name="1574"
+      > </a
+      ><a name="1575" href="Logic.Lambek.Type.Context.Polarised.html#1757" class="Function Operator"
+      >]&#7580;</a
+      ><a name="1577"
+      > </a
+      ><a name="1578" href="Logic.Lambek.ResMon.Judgement.html#647" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="1579"
+      > </a
+      ><a name="1580" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1558" class="Bound"
+      >B</a
+      ><a name="1581"
+      >
+  </a
+      ><a name="1584" class="Symbol"
+      >(</a
+      ><a name="1585" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1585" class="Bound"
+      >A</a
+      ><a name="1586"
+      > </a
+      ><a name="1587" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1222" class="InductiveConstructor Operator"
+      >&#8866;&gt;</a
+      ><a name="1589"
+      > </a
+      ><a name="1590" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1590" class="Bound"
+      >B</a
+      ><a name="1591" class="Symbol"
+      >)</a
+      ><a name="1592"
+      > </a
+      ><a name="1593" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1500" class="Function Operator"
+      >[</a
+      ><a name="1594"
+      > </a
+      ><a name="1595" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1595" class="Bound"
+      >C</a
+      ><a name="1596"
+      > </a
+      ><a name="1597" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1500" class="Function Operator"
+      >]</a
+      ><a name="1598"
+      > </a
+      ><a name="1599" class="Symbol"
+      >=</a
+      ><a name="1600"
+      > </a
+      ><a name="1601" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1585" class="Bound"
+      >A</a
+      ><a name="1602"
+      > </a
+      ><a name="1603" href="Logic.Lambek.ResMon.Judgement.html#647" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="1604"
+      > </a
+      ><a name="1605" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1590" class="Bound"
+      >B</a
+      ><a name="1606"
+      > </a
+      ><a name="1607" href="Logic.Lambek.Type.Context.Polarised.html#1757" class="Function Operator"
+      >[</a
+      ><a name="1608"
+      > </a
+      ><a name="1609" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1595" class="Bound"
+      >C</a
+      ><a name="1610"
+      > </a
+      ><a name="1611" href="Logic.Lambek.Type.Context.Polarised.html#1757" class="Function Operator"
+      >]&#7580;</a
+      ><a name="1613"
+      >
+
+  </a
+      ><a name="1617" class="Comment"
+      >-- Insert context into judgement contexts to get judgement contexts</a
+      ><a name="1684"
+      >
+  </a
+      ><a name="1687" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1687" class="Function Operator"
+      >_&lt;_&gt;</a
+      ><a name="1691"
+      > </a
+      ><a name="1692" class="Symbol"
+      >:</a
+      ><a name="1693"
+      > </a
+      ><a name="1694" class="Symbol"
+      >&#8704;</a
+      ><a name="1695"
+      > </a
+      ><a name="1696" class="Symbol"
+      >{</a
+      ><a name="1697" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1697" class="Bound"
+      >p&#8321;</a
+      ><a name="1699"
+      > </a
+      ><a name="1700" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1700" class="Bound"
+      >p&#8322;</a
+      ><a name="1702"
+      > </a
+      ><a name="1703" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1703" class="Bound"
+      >J</a
+      ><a name="1704"
+      > </a
+      ><a name="1705" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1705" class="Bound"
+      >A</a
+      ><a name="1706" class="Symbol"
+      >}</a
+      ><a name="1707"
+      > </a
+      ><a name="1708" class="Symbol"
+      >&#8594;</a
+      ><a name="1709"
+      > </a
+      ><a name="1710" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1083" class="Datatype"
+      >Polarised</a
+      ><a name="1719"
+      > </a
+      ><a name="1720" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1700" class="Bound"
+      >p&#8322;</a
+      ><a name="1722"
+      > </a
+      ><a name="1723" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1703" class="Bound"
+      >J</a
+      ><a name="1724"
+      > </a
+      ><a name="1725" class="Symbol"
+      >&#8594;</a
+      ><a name="1726"
+      > </a
+      ><a name="1727" href="Logic.Lambek.Type.Context.Polarised.html#1024" class="Datatype"
+      >PolarisedContext</a
+      ><a name="1743"
+      > </a
+      ><a name="1744" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1697" class="Bound"
+      >p&#8321;</a
+      ><a name="1746"
+      > </a
+      ><a name="1747" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1700" class="Bound"
+      >p&#8322;</a
+      ><a name="1749"
+      > </a
+      ><a name="1750" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1705" class="Bound"
+      >A</a
+      ><a name="1751"
+      > </a
+      ><a name="1752" class="Symbol"
+      >&#8594;</a
+      ><a name="1753"
+      > </a
+      ><a name="1754" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1083" class="Datatype"
+      >Polarised</a
+      ><a name="1763"
+      > </a
+      ><a name="1764" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1697" class="Bound"
+      >p&#8321;</a
+      ><a name="1766"
+      > </a
+      ><a name="1767" class="Symbol"
+      >(</a
+      ><a name="1768" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1703" class="Bound"
+      >J</a
+      ><a name="1769"
+      > </a
+      ><a name="1770" href="Logic.Lambek.ResMon.Judgement.Context.html#1557" class="Function Operator"
+      >&lt;</a
+      ><a name="1771"
+      > </a
+      ><a name="1772" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1705" class="Bound"
+      >A</a
+      ><a name="1773"
+      > </a
+      ><a name="1774" href="Logic.Lambek.ResMon.Judgement.Context.html#1557" class="Function Operator"
+      >&gt;&#7478;</a
+      ><a name="1776" class="Symbol"
+      >)</a
+      ><a name="1777"
+      >
+  </a
+      ><a name="1780" class="Symbol"
+      >(</a
+      ><a name="1781" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1781" class="Bound"
+      >A</a
+      ><a name="1782"
+      > </a
+      ><a name="1783" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1143" class="InductiveConstructor Operator"
+      >&lt;&#8866;</a
+      ><a name="1785"
+      > </a
+      ><a name="1786" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1786" class="Bound"
+      >B</a
+      ><a name="1787" class="Symbol"
+      >)</a
+      ><a name="1788"
+      > </a
+      ><a name="1789" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1687" class="Function Operator"
+      >&lt;</a
+      ><a name="1790"
+      > </a
+      ><a name="1791" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1791" class="Bound"
+      >C</a
+      ><a name="1792"
+      > </a
+      ><a name="1793" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1687" class="Function Operator"
+      >&gt;</a
+      ><a name="1794"
+      > </a
+      ><a name="1795" class="Symbol"
+      >=</a
+      ><a name="1796"
+      > </a
+      ><a name="1797" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1781" class="Bound"
+      >A</a
+      ><a name="1798"
+      > </a
+      ><a name="1799" href="Logic.Lambek.Type.Context.Polarised.html#2080" class="Function Operator"
+      >&lt;</a
+      ><a name="1800"
+      > </a
+      ><a name="1801" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1791" class="Bound"
+      >C</a
+      ><a name="1802"
+      > </a
+      ><a name="1803" href="Logic.Lambek.Type.Context.Polarised.html#2080" class="Function Operator"
+      >&gt;&#7580;</a
+      ><a name="1805"
+      > </a
+      ><a name="1806" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1143" class="InductiveConstructor Operator"
+      >&lt;&#8866;</a
+      ><a name="1808"
+      > </a
+      ><a name="1809" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1786" class="Bound"
+      >B</a
+      ><a name="1810"
+      >
+  </a
+      ><a name="1813" class="Symbol"
+      >(</a
+      ><a name="1814" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1814" class="Bound"
+      >A</a
+      ><a name="1815"
+      > </a
+      ><a name="1816" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1222" class="InductiveConstructor Operator"
+      >&#8866;&gt;</a
+      ><a name="1818"
+      > </a
+      ><a name="1819" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1819" class="Bound"
+      >B</a
+      ><a name="1820" class="Symbol"
+      >)</a
+      ><a name="1821"
+      > </a
+      ><a name="1822" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1687" class="Function Operator"
+      >&lt;</a
+      ><a name="1823"
+      > </a
+      ><a name="1824" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1824" class="Bound"
+      >C</a
+      ><a name="1825"
+      > </a
+      ><a name="1826" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1687" class="Function Operator"
+      >&gt;</a
+      ><a name="1827"
+      > </a
+      ><a name="1828" class="Symbol"
+      >=</a
+      ><a name="1829"
+      > </a
+      ><a name="1830" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1814" class="Bound"
+      >A</a
+      ><a name="1831"
+      > </a
+      ><a name="1832" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1222" class="InductiveConstructor Operator"
+      >&#8866;&gt;</a
+      ><a name="1834"
+      > </a
+      ><a name="1835" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1819" class="Bound"
+      >B</a
+      ><a name="1836"
+      > </a
+      ><a name="1837" href="Logic.Lambek.Type.Context.Polarised.html#2080" class="Function Operator"
+      >&lt;</a
+      ><a name="1838"
+      > </a
+      ><a name="1839" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1824" class="Bound"
+      >C</a
+      ><a name="1840"
+      > </a
+      ><a name="1841" href="Logic.Lambek.Type.Context.Polarised.html#2080" class="Function Operator"
+      >&gt;&#7580;</a
+      ><a name="1843"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>

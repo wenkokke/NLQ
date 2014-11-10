@@ -1,0 +1,1034 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Logic.Lambek.Type.Complexity</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="73"
+      >
+</a
+      ><a name="74" class="Comment"
+      >-- The Lambek Calculus in Agda</a
+      ><a name="104"
+      >
+</a
+      ><a name="105" class="Comment"
+      >--</a
+      ><a name="107"
+      >
+</a
+      ><a name="108" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="180"
+      >
+
+
+</a
+      ><a name="183" class="Keyword"
+      >open</a
+      ><a name="187"
+      > </a
+      ><a name="188" class="Keyword"
+      >import</a
+      ><a name="194"
+      > </a
+      ><a name="195" href="Data.Nat.html#1" class="Module"
+      >Data.Nat</a
+      ><a name="203"
+      > </a
+      ><a name="204" class="Symbol"
+      >as</a
+      ><a name="206"
+      > </a
+      ><a name="207" class="Module"
+      >Nat</a
+      ><a name="210"
+      > </a
+      ><a name="211" class="Keyword"
+      >using</a
+      ><a name="216"
+      > </a
+      ><a name="217" class="Symbol"
+      >(</a
+      ><a name="218"
+      >&#8469;</a
+      ><a name="219" class="Symbol"
+      >;</a
+      ><a name="220"
+      > suc</a
+      ><a name="224" class="Symbol"
+      >;</a
+      ><a name="225"
+      > zero</a
+      ><a name="230" class="Symbol"
+      >;</a
+      ><a name="231"
+      > _+_</a
+      ><a name="235" class="Symbol"
+      >;</a
+      ><a name="236"
+      > _&lt;_</a
+      ><a name="240" class="Symbol"
+      >;</a
+      ><a name="241"
+      > _&#8814;_</a
+      ><a name="245" class="Symbol"
+      >;</a
+      ><a name="246"
+      > _&#8805;_</a
+      ><a name="250" class="Symbol"
+      >;</a
+      ><a name="251"
+      > s&#8804;s</a
+      ><a name="255" class="Symbol"
+      >;</a
+      ><a name="256"
+      > z&#8804;n</a
+      ><a name="260" class="Symbol"
+      >)</a
+      ><a name="261"
+      >
+</a
+      ><a name="262" class="Keyword"
+      >open</a
+      ><a name="266"
+      > </a
+      ><a name="267" class="Keyword"
+      >import</a
+      ><a name="273"
+      > </a
+      ><a name="274" href="Data.Nat.Properties.html#1" class="Module"
+      >Data.Nat.Properties</a
+      ><a name="293"
+      > </a
+      ><a name="294" class="Symbol"
+      >as</a
+      ><a name="296"
+      > </a
+      ><a name="297" class="Module"
+      >NatProps</a
+      ><a name="305"
+      > </a
+      ><a name="306" class="Keyword"
+      >using</a
+      ><a name="311"
+      > </a
+      ><a name="312" class="Symbol"
+      >()</a
+      ><a name="314"
+      >
+</a
+      ><a name="315" class="Keyword"
+      >open</a
+      ><a name="319"
+      > </a
+      ><a name="320" class="Keyword"
+      >import</a
+      ><a name="326"
+      > </a
+      ><a name="327" href="Relation.Binary.html#1" class="Module"
+      >Relation.Binary</a
+      ><a name="342"
+      > </a
+      ><a name="343" class="Keyword"
+      >using</a
+      ><a name="348"
+      > </a
+      ><a name="349" class="Symbol"
+      >(</a
+      ><a name="350" class="Keyword"
+      >module</a
+      ><a name="356"
+      > StrictTotalOrder</a
+      ><a name="373" class="Symbol"
+      >)</a
+      ><a name="374"
+      >
+</a
+      ><a name="375" class="Keyword"
+      >open</a
+      ><a name="379"
+      > </a
+      ><a name="380" class="Keyword"
+      >import</a
+      ><a name="386"
+      > </a
+      ><a name="387" href="Relation.Binary.PropositionalEquality.html#1" class="Module"
+      >Relation.Binary.PropositionalEquality</a
+      ><a name="424"
+      > </a
+      ><a name="425" class="Keyword"
+      >using</a
+      ><a name="430"
+      > </a
+      ><a name="431" class="Symbol"
+      >(</a
+      ><a name="432"
+      >_&#8801;_</a
+      ><a name="435" class="Symbol"
+      >;</a
+      ><a name="436"
+      > _&#8802;_</a
+      ><a name="440" class="Symbol"
+      >;</a
+      ><a name="441"
+      > refl</a
+      ><a name="446" class="Symbol"
+      >;</a
+      ><a name="447"
+      > cong</a
+      ><a name="452" class="Symbol"
+      >)</a
+      ><a name="453"
+      >
+
+
+</a
+      ><a name="456" class="Keyword"
+      >module</a
+      ><a name="462"
+      > </a
+      ><a name="463" href="Logic.Lambek.Type.Complexity.html#1" class="Module"
+      >Logic.Lambek.Type.Complexity</a
+      ><a name="491"
+      > </a
+      ><a name="492" class="Symbol"
+      >{</a
+      ><a name="493" href="Logic.Lambek.Type.Complexity.html#493" class="Bound"
+      >&#8467;</a
+      ><a name="494" class="Symbol"
+      >}</a
+      ><a name="495"
+      > </a
+      ><a name="496" class="Symbol"
+      >(</a
+      ><a name="497" href="Logic.Lambek.Type.Complexity.html#497" class="Bound"
+      >Univ</a
+      ><a name="501"
+      > </a
+      ><a name="502" class="Symbol"
+      >:</a
+      ><a name="503"
+      > </a
+      ><a name="504" class="PrimitiveType"
+      >Set</a
+      ><a name="507"
+      > </a
+      ><a name="508" href="Logic.Lambek.Type.Complexity.html#493" class="Bound"
+      >&#8467;</a
+      ><a name="509" class="Symbol"
+      >)</a
+      ><a name="510"
+      > </a
+      ><a name="511" class="Keyword"
+      >where</a
+      ><a name="516"
+      >
+
+
+</a
+      ><a name="519" class="Keyword"
+      >open</a
+      ><a name="523"
+      > </a
+      ><a name="524" class="Keyword"
+      >import</a
+      ><a name="530"
+      > </a
+      ><a name="531" href="Logic.Lambek.Type.html#1" class="Module"
+      >Logic.Lambek.Type</a
+      ><a name="548"
+      > </a
+      ><a name="549" href="Logic.Lambek.Type.Complexity.html#497" class="Bound"
+      >Univ</a
+      ><a name="553"
+      >
+</a
+      ><a name="554" class="Keyword"
+      >open</a
+      ><a name="558"
+      > </a
+      ><a name="559" href="Relation.Binary.html#10903" class="Module"
+      >StrictTotalOrder</a
+      ><a name="575"
+      > </a
+      ><a name="576" href="Data.Nat.Properties.html#9525" class="Function"
+      >NatProps.strictTotalOrder</a
+      ><a name="601"
+      > </a
+      ><a name="602" class="Keyword"
+      >using</a
+      ><a name="607"
+      > </a
+      ><a name="608" class="Symbol"
+      >(</a
+      ><a name="609"
+      >irrefl</a
+      ><a name="615" class="Symbol"
+      >)</a
+      ><a name="616"
+      >
+
+
+</a
+      ><a name="619" class="Keyword"
+      >infix</a
+      ><a name="624"
+      > </a
+      ><a name="625" class="Number"
+      >10</a
+      ><a name="627"
+      > &#8739;_&#8739;
+
+</a
+      ><a name="633" class="Comment"
+      >-- Compute the complexity of a type, measured in the number of</a
+      ><a name="695"
+      >
+</a
+      ><a name="696" class="Comment"
+      >-- connectives and atomic formulas in the type.</a
+      ><a name="743"
+      >
+</a
+      ><a name="744" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;_&#8739;</a
+      ><a name="747"
+      > </a
+      ><a name="748" class="Symbol"
+      >:</a
+      ><a name="749"
+      > </a
+      ><a name="750" href="Logic.Lambek.Type.html#586" class="Datatype"
+      >Type</a
+      ><a name="754"
+      > </a
+      ><a name="755" class="Symbol"
+      >&#8594;</a
+      ><a name="756"
+      > </a
+      ><a name="757" href="Data.Nat.html#663" class="Datatype"
+      >&#8469;</a
+      ><a name="758"
+      >
+</a
+      ><a name="759" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="760"
+      > </a
+      ><a name="761" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="763"
+      > </a
+      ><a name="764" href="Logic.Lambek.Type.Complexity.html#764" class="Bound"
+      >A</a
+      ><a name="765"
+      > </a
+      ><a name="766" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="767"
+      >  </a
+      ><a name="769" class="Symbol"
+      >=</a
+      ><a name="770"
+      > </a
+      ><a name="771" href="Data.Nat.html#690" class="InductiveConstructor"
+      >suc</a
+      ><a name="774"
+      > </a
+      ><a name="775" href="Data.Nat.html#679" class="InductiveConstructor"
+      >zero</a
+      ><a name="779"
+      >
+</a
+      ><a name="780" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="781"
+      > </a
+      ><a name="782" href="Logic.Lambek.Type.Complexity.html#782" class="Bound"
+      >A</a
+      ><a name="783"
+      > </a
+      ><a name="784" href="Logic.Lambek.Type.html#628" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="785"
+      > </a
+      ><a name="786" href="Logic.Lambek.Type.Complexity.html#786" class="Bound"
+      >B</a
+      ><a name="787"
+      > </a
+      ><a name="788" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="789"
+      > </a
+      ><a name="790" class="Symbol"
+      >=</a
+      ><a name="791"
+      > </a
+      ><a name="792" href="Data.Nat.html#690" class="InductiveConstructor"
+      >suc</a
+      ><a name="795"
+      > </a
+      ><a name="796" class="Symbol"
+      >(</a
+      ><a name="797" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="798"
+      > </a
+      ><a name="799" href="Logic.Lambek.Type.Complexity.html#782" class="Bound"
+      >A</a
+      ><a name="800"
+      > </a
+      ><a name="801" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="802"
+      > </a
+      ><a name="803" href="Data.Nat.html#2168" class="Primitive Operator"
+      >+</a
+      ><a name="804"
+      > </a
+      ><a name="805" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="806"
+      > </a
+      ><a name="807" href="Logic.Lambek.Type.Complexity.html#786" class="Bound"
+      >B</a
+      ><a name="808"
+      > </a
+      ><a name="809" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="810" class="Symbol"
+      >)</a
+      ><a name="811"
+      >
+</a
+      ><a name="812" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="813"
+      > </a
+      ><a name="814" href="Logic.Lambek.Type.Complexity.html#814" class="Bound"
+      >A</a
+      ><a name="815"
+      > </a
+      ><a name="816" href="Logic.Lambek.Type.html#656" class="InductiveConstructor Operator"
+      >&#8656;</a
+      ><a name="817"
+      > </a
+      ><a name="818" href="Logic.Lambek.Type.Complexity.html#818" class="Bound"
+      >B</a
+      ><a name="819"
+      > </a
+      ><a name="820" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="821"
+      > </a
+      ><a name="822" class="Symbol"
+      >=</a
+      ><a name="823"
+      > </a
+      ><a name="824" href="Data.Nat.html#690" class="InductiveConstructor"
+      >suc</a
+      ><a name="827"
+      > </a
+      ><a name="828" class="Symbol"
+      >(</a
+      ><a name="829" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="830"
+      > </a
+      ><a name="831" href="Logic.Lambek.Type.Complexity.html#814" class="Bound"
+      >A</a
+      ><a name="832"
+      > </a
+      ><a name="833" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="834"
+      > </a
+      ><a name="835" href="Data.Nat.html#2168" class="Primitive Operator"
+      >+</a
+      ><a name="836"
+      > </a
+      ><a name="837" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="838"
+      > </a
+      ><a name="839" href="Logic.Lambek.Type.Complexity.html#818" class="Bound"
+      >B</a
+      ><a name="840"
+      > </a
+      ><a name="841" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="842" class="Symbol"
+      >)</a
+      ><a name="843"
+      >
+</a
+      ><a name="844" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="845"
+      > </a
+      ><a name="846" href="Logic.Lambek.Type.Complexity.html#846" class="Bound"
+      >A</a
+      ><a name="847"
+      > </a
+      ><a name="848" href="Logic.Lambek.Type.html#684" class="InductiveConstructor Operator"
+      >&#8658;</a
+      ><a name="849"
+      > </a
+      ><a name="850" href="Logic.Lambek.Type.Complexity.html#850" class="Bound"
+      >B</a
+      ><a name="851"
+      > </a
+      ><a name="852" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="853"
+      > </a
+      ><a name="854" class="Symbol"
+      >=</a
+      ><a name="855"
+      > </a
+      ><a name="856" href="Data.Nat.html#690" class="InductiveConstructor"
+      >suc</a
+      ><a name="859"
+      > </a
+      ><a name="860" class="Symbol"
+      >(</a
+      ><a name="861" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="862"
+      > </a
+      ><a name="863" href="Logic.Lambek.Type.Complexity.html#846" class="Bound"
+      >A</a
+      ><a name="864"
+      > </a
+      ><a name="865" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="866"
+      > </a
+      ><a name="867" href="Data.Nat.html#2168" class="Primitive Operator"
+      >+</a
+      ><a name="868"
+      > </a
+      ><a name="869" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="870"
+      > </a
+      ><a name="871" href="Logic.Lambek.Type.Complexity.html#850" class="Bound"
+      >B</a
+      ><a name="872"
+      > </a
+      ><a name="873" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="874" class="Symbol"
+      >)</a
+      ><a name="875"
+      >
+
+
+</a
+      ><a name="878" class="Comment"
+      >-- Lemma which shows that any type has a complexity of at least one.</a
+      ><a name="946"
+      >
+</a
+      ><a name="947" href="Logic.Lambek.Type.Complexity.html#947" class="Function"
+      >&#8739;A&#8739;&#8805;1</a
+      ><a name="952"
+      > </a
+      ><a name="953" class="Symbol"
+      >:</a
+      ><a name="954"
+      > </a
+      ><a name="955" class="Symbol"
+      >&#8704;</a
+      ><a name="956"
+      > </a
+      ><a name="957" href="Logic.Lambek.Type.Complexity.html#957" class="Bound"
+      >A</a
+      ><a name="958"
+      > </a
+      ><a name="959" class="Symbol"
+      >&#8594;</a
+      ><a name="960"
+      > </a
+      ><a name="961" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="962"
+      > </a
+      ><a name="963" href="Logic.Lambek.Type.Complexity.html#957" class="Bound"
+      >A</a
+      ><a name="964"
+      > </a
+      ><a name="965" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="966"
+      > </a
+      ><a name="967" href="Data.Nat.html#943" class="Function Operator"
+      >&#8805;</a
+      ><a name="968"
+      > </a
+      ><a name="969" class="Number"
+      >1</a
+      ><a name="970"
+      >
+</a
+      ><a name="971" href="Logic.Lambek.Type.Complexity.html#947" class="Function"
+      >&#8739;A&#8739;&#8805;1</a
+      ><a name="976"
+      > </a
+      ><a name="977" class="Symbol"
+      >(</a
+      ><a name="978" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="980"
+      > </a
+      ><a name="981" class="Symbol"
+      >_)</a
+      ><a name="983"
+      >  </a
+      ><a name="985" class="Symbol"
+      >=</a
+      ><a name="986"
+      > </a
+      ><a name="987" href="Data.Nat.html#856" class="InductiveConstructor"
+      >s&#8804;s</a
+      ><a name="990"
+      > </a
+      ><a name="991" href="Data.Nat.html#814" class="InductiveConstructor"
+      >z&#8804;n</a
+      ><a name="994"
+      >
+</a
+      ><a name="995" href="Logic.Lambek.Type.Complexity.html#947" class="Function"
+      >&#8739;A&#8739;&#8805;1</a
+      ><a name="1000"
+      > </a
+      ><a name="1001" class="Symbol"
+      >(_</a
+      ><a name="1003"
+      > </a
+      ><a name="1004" href="Logic.Lambek.Type.html#628" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="1005"
+      > </a
+      ><a name="1006" class="Symbol"
+      >_)</a
+      ><a name="1008"
+      > </a
+      ><a name="1009" class="Symbol"
+      >=</a
+      ><a name="1010"
+      > </a
+      ><a name="1011" href="Data.Nat.html#856" class="InductiveConstructor"
+      >s&#8804;s</a
+      ><a name="1014"
+      > </a
+      ><a name="1015" href="Data.Nat.html#814" class="InductiveConstructor"
+      >z&#8804;n</a
+      ><a name="1018"
+      >
+</a
+      ><a name="1019" href="Logic.Lambek.Type.Complexity.html#947" class="Function"
+      >&#8739;A&#8739;&#8805;1</a
+      ><a name="1024"
+      > </a
+      ><a name="1025" class="Symbol"
+      >(_</a
+      ><a name="1027"
+      > </a
+      ><a name="1028" href="Logic.Lambek.Type.html#656" class="InductiveConstructor Operator"
+      >&#8656;</a
+      ><a name="1029"
+      > </a
+      ><a name="1030" class="Symbol"
+      >_)</a
+      ><a name="1032"
+      > </a
+      ><a name="1033" class="Symbol"
+      >=</a
+      ><a name="1034"
+      > </a
+      ><a name="1035" href="Data.Nat.html#856" class="InductiveConstructor"
+      >s&#8804;s</a
+      ><a name="1038"
+      > </a
+      ><a name="1039" href="Data.Nat.html#814" class="InductiveConstructor"
+      >z&#8804;n</a
+      ><a name="1042"
+      >
+</a
+      ><a name="1043" href="Logic.Lambek.Type.Complexity.html#947" class="Function"
+      >&#8739;A&#8739;&#8805;1</a
+      ><a name="1048"
+      > </a
+      ><a name="1049" class="Symbol"
+      >(_</a
+      ><a name="1051"
+      > </a
+      ><a name="1052" href="Logic.Lambek.Type.html#684" class="InductiveConstructor Operator"
+      >&#8658;</a
+      ><a name="1053"
+      > </a
+      ><a name="1054" class="Symbol"
+      >_)</a
+      ><a name="1056"
+      > </a
+      ><a name="1057" class="Symbol"
+      >=</a
+      ><a name="1058"
+      > </a
+      ><a name="1059" href="Data.Nat.html#856" class="InductiveConstructor"
+      >s&#8804;s</a
+      ><a name="1062"
+      > </a
+      ><a name="1063" href="Data.Nat.html#814" class="InductiveConstructor"
+      >z&#8804;n</a
+      ><a name="1066"
+      >
+
+
+</a
+      ><a name="1069" class="Comment"
+      >-- Lemma which shows that no type has strictly lower complexity than</a
+      ><a name="1137"
+      >
+</a
+      ><a name="1138" class="Comment"
+      >-- elementary types.</a
+      ><a name="1158"
+      >
+</a
+      ><a name="1159" href="Logic.Lambek.Type.Complexity.html#1159" class="Function"
+      >&#8739;A&#8739;&#8814;&#8739;elB&#8739;</a
+      ><a name="1168"
+      > </a
+      ><a name="1169" class="Symbol"
+      >:</a
+      ><a name="1170"
+      > </a
+      ><a name="1171" class="Symbol"
+      >&#8704;</a
+      ><a name="1172"
+      > </a
+      ><a name="1173" href="Logic.Lambek.Type.Complexity.html#1173" class="Bound"
+      >A</a
+      ><a name="1174"
+      > </a
+      ><a name="1175" href="Logic.Lambek.Type.Complexity.html#1175" class="Bound"
+      >B</a
+      ><a name="1176"
+      > </a
+      ><a name="1177" class="Symbol"
+      >&#8594;</a
+      ><a name="1178"
+      > </a
+      ><a name="1179" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="1180"
+      > </a
+      ><a name="1181" href="Logic.Lambek.Type.Complexity.html#1173" class="Bound"
+      >A</a
+      ><a name="1182"
+      > </a
+      ><a name="1183" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="1184"
+      > </a
+      ><a name="1185" href="Data.Nat.html#1059" class="Function Operator"
+      >&#8814;</a
+      ><a name="1186"
+      > </a
+      ><a name="1187" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="1188"
+      > </a
+      ><a name="1189" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="1191"
+      > </a
+      ><a name="1192" href="Logic.Lambek.Type.Complexity.html#1175" class="Bound"
+      >B</a
+      ><a name="1193"
+      > </a
+      ><a name="1194" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="1195"
+      >
+</a
+      ><a name="1196" href="Logic.Lambek.Type.Complexity.html#1159" class="Function"
+      >&#8739;A&#8739;&#8814;&#8739;elB&#8739;</a
+      ><a name="1205"
+      > </a
+      ><a name="1206" class="Symbol"
+      >(</a
+      ><a name="1207" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="1209"
+      > </a
+      ><a name="1210" href="Logic.Lambek.Type.Complexity.html#1210" class="Bound"
+      >A</a
+      ><a name="1211" class="Symbol"
+      >)</a
+      ><a name="1212"
+      >    </a
+      ><a name="1216" href="Logic.Lambek.Type.Complexity.html#1216" class="Bound"
+      >B</a
+      ><a name="1217"
+      > </a
+      ><a name="1218" class="Symbol"
+      >(</a
+      ><a name="1219" href="Data.Nat.html#856" class="InductiveConstructor"
+      >s&#8804;s</a
+      ><a name="1222"
+      > </a
+      ><a name="1223" class="Symbol"
+      >())</a
+      ><a name="1226"
+      >
+</a
+      ><a name="1227" href="Logic.Lambek.Type.Complexity.html#1159" class="Function"
+      >&#8739;A&#8739;&#8814;&#8739;elB&#8739;</a
+      ><a name="1236"
+      > </a
+      ><a name="1237" class="Symbol"
+      >(</a
+      ><a name="1238" href="Logic.Lambek.Type.Complexity.html#1238" class="Bound"
+      >A&#8321;</a
+      ><a name="1240"
+      > </a
+      ><a name="1241" href="Logic.Lambek.Type.html#628" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="1242"
+      > </a
+      ><a name="1243" href="Logic.Lambek.Type.Complexity.html#1243" class="Bound"
+      >A&#8322;</a
+      ><a name="1245" class="Symbol"
+      >)</a
+      ><a name="1246"
+      > </a
+      ><a name="1247" href="Logic.Lambek.Type.Complexity.html#1247" class="Bound"
+      >B</a
+      ><a name="1248"
+      > </a
+      ><a name="1249" class="Symbol"
+      >(</a
+      ><a name="1250" href="Data.Nat.html#856" class="InductiveConstructor"
+      >s&#8804;s</a
+      ><a name="1253"
+      > </a
+      ><a name="1254" class="Symbol"
+      >())</a
+      ><a name="1257"
+      >
+</a
+      ><a name="1258" href="Logic.Lambek.Type.Complexity.html#1159" class="Function"
+      >&#8739;A&#8739;&#8814;&#8739;elB&#8739;</a
+      ><a name="1267"
+      > </a
+      ><a name="1268" class="Symbol"
+      >(</a
+      ><a name="1269" href="Logic.Lambek.Type.Complexity.html#1269" class="Bound"
+      >A&#8321;</a
+      ><a name="1271"
+      > </a
+      ><a name="1272" href="Logic.Lambek.Type.html#684" class="InductiveConstructor Operator"
+      >&#8658;</a
+      ><a name="1273"
+      > </a
+      ><a name="1274" href="Logic.Lambek.Type.Complexity.html#1274" class="Bound"
+      >A&#8322;</a
+      ><a name="1276" class="Symbol"
+      >)</a
+      ><a name="1277"
+      > </a
+      ><a name="1278" href="Logic.Lambek.Type.Complexity.html#1278" class="Bound"
+      >B</a
+      ><a name="1279"
+      > </a
+      ><a name="1280" class="Symbol"
+      >(</a
+      ><a name="1281" href="Data.Nat.html#856" class="InductiveConstructor"
+      >s&#8804;s</a
+      ><a name="1284"
+      > </a
+      ><a name="1285" class="Symbol"
+      >())</a
+      ><a name="1288"
+      >
+</a
+      ><a name="1289" href="Logic.Lambek.Type.Complexity.html#1159" class="Function"
+      >&#8739;A&#8739;&#8814;&#8739;elB&#8739;</a
+      ><a name="1298"
+      > </a
+      ><a name="1299" class="Symbol"
+      >(</a
+      ><a name="1300" href="Logic.Lambek.Type.Complexity.html#1300" class="Bound"
+      >A&#8321;</a
+      ><a name="1302"
+      > </a
+      ><a name="1303" href="Logic.Lambek.Type.html#656" class="InductiveConstructor Operator"
+      >&#8656;</a
+      ><a name="1304"
+      > </a
+      ><a name="1305" href="Logic.Lambek.Type.Complexity.html#1305" class="Bound"
+      >A&#8322;</a
+      ><a name="1307" class="Symbol"
+      >)</a
+      ><a name="1308"
+      > </a
+      ><a name="1309" href="Logic.Lambek.Type.Complexity.html#1309" class="Bound"
+      >B</a
+      ><a name="1310"
+      > </a
+      ><a name="1311" class="Symbol"
+      >(</a
+      ><a name="1312" href="Data.Nat.html#856" class="InductiveConstructor"
+      >s&#8804;s</a
+      ><a name="1315"
+      > </a
+      ><a name="1316" class="Symbol"
+      >())</a
+      ><a name="1319"
+      >
+
+
+</a
+      ><a name="1322" class="Comment"
+      >-- Lemma which shows that if types are not of the same complexity,</a
+      ><a name="1388"
+      >
+</a
+      ><a name="1389" class="Comment"
+      >-- then they cannot be equal.</a
+      ><a name="1418"
+      >
+</a
+      ><a name="1419" href="Logic.Lambek.Type.Complexity.html#1419" class="Function"
+      >&#8739;A&#8739;&lt;&#8739;B&#8739;&#8594;A&#8800;B</a
+      ><a name="1430"
+      > </a
+      ><a name="1431" class="Symbol"
+      >:</a
+      ><a name="1432"
+      > </a
+      ><a name="1433" class="Symbol"
+      >&#8704;</a
+      ><a name="1434"
+      > </a
+      ><a name="1435" href="Logic.Lambek.Type.Complexity.html#1435" class="Bound"
+      >A</a
+      ><a name="1436"
+      > </a
+      ><a name="1437" href="Logic.Lambek.Type.Complexity.html#1437" class="Bound"
+      >B</a
+      ><a name="1438"
+      > </a
+      ><a name="1439" class="Symbol"
+      >&#8594;</a
+      ><a name="1440"
+      > </a
+      ><a name="1441" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="1442"
+      > </a
+      ><a name="1443" href="Logic.Lambek.Type.Complexity.html#1435" class="Bound"
+      >A</a
+      ><a name="1444"
+      > </a
+      ><a name="1445" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="1446"
+      > </a
+      ><a name="1447" href="Data.Nat.html#901" class="Function Operator"
+      >&lt;</a
+      ><a name="1448"
+      > </a
+      ><a name="1449" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="1450"
+      > </a
+      ><a name="1451" href="Logic.Lambek.Type.Complexity.html#1437" class="Bound"
+      >B</a
+      ><a name="1452"
+      > </a
+      ><a name="1453" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;</a
+      ><a name="1454"
+      > </a
+      ><a name="1455" class="Symbol"
+      >&#8594;</a
+      ><a name="1456"
+      > </a
+      ><a name="1457" href="Logic.Lambek.Type.Complexity.html#1435" class="Bound"
+      >A</a
+      ><a name="1458"
+      > </a
+      ><a name="1459" href="Relation.Binary.Core.html#4748" class="Function Operator"
+      >&#8802;</a
+      ><a name="1460"
+      > </a
+      ><a name="1461" href="Logic.Lambek.Type.Complexity.html#1437" class="Bound"
+      >B</a
+      ><a name="1462"
+      >
+</a
+      ><a name="1463" href="Logic.Lambek.Type.Complexity.html#1419" class="Function"
+      >&#8739;A&#8739;&lt;&#8739;B&#8739;&#8594;A&#8800;B</a
+      ><a name="1474"
+      > </a
+      ><a name="1475" href="Logic.Lambek.Type.Complexity.html#1475" class="Bound"
+      >A</a
+      ><a name="1476"
+      > </a
+      ><a name="1477" href="Logic.Lambek.Type.Complexity.html#1477" class="Bound"
+      >B</a
+      ><a name="1478"
+      > </a
+      ><a name="1479" href="Logic.Lambek.Type.Complexity.html#1479" class="Bound"
+      >&#8739;A&#8739;&lt;&#8739;B&#8739;</a
+      ><a name="1486"
+      > </a
+      ><a name="1487" href="Logic.Lambek.Type.Complexity.html#1487" class="Bound"
+      >A=B</a
+      ><a name="1490"
+      > </a
+      ><a name="1491" class="Symbol"
+      >=</a
+      ><a name="1492"
+      > </a
+      ><a name="1493" href="Relation.Binary.html#5666" class="Function"
+      >irrefl</a
+      ><a name="1499"
+      > </a
+      ><a name="1500" class="Symbol"
+      >(</a
+      ><a name="1501" href="Relation.Binary.PropositionalEquality.html#1034" class="Function"
+      >cong</a
+      ><a name="1505"
+      > </a
+      ><a name="1506" href="Logic.Lambek.Type.Complexity.html#744" class="Function Operator"
+      >&#8739;_&#8739;</a
+      ><a name="1509"
+      > </a
+      ><a name="1510" href="Logic.Lambek.Type.Complexity.html#1487" class="Bound"
+      >A=B</a
+      ><a name="1513" class="Symbol"
+      >)</a
+      ><a name="1514"
+      > </a
+      ><a name="1515" href="Logic.Lambek.Type.Complexity.html#1479" class="Bound"
+      >&#8739;A&#8739;&lt;&#8739;B&#8739;</a
+      ><a name="1522"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>

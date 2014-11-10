@@ -1,0 +1,2631 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Logic.Lambek.SC.EquivalentToResMon</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="73"
+      >
+</a
+      ><a name="74" class="Comment"
+      >-- The Lambek Calculus in Agda</a
+      ><a name="104"
+      >
+</a
+      ><a name="105" class="Comment"
+      >--</a
+      ><a name="107"
+      >
+</a
+      ><a name="108" class="Comment"
+      >-- Implements a proof of equivalence with the residuation-monotonicity</a
+      ><a name="178"
+      >
+</a
+      ><a name="179" class="Comment"
+      >-- calculus as `ResMon&#8660;SC`.</a
+      ><a name="206"
+      >
+</a
+      ><a name="207" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="279"
+      >
+
+</a
+      ><a name="281" class="Keyword"
+      >open</a
+      ><a name="285"
+      > </a
+      ><a name="286" class="Keyword"
+      >import</a
+      ><a name="292"
+      > </a
+      ><a name="293" href="Function.Equivalence.html#1" class="Module"
+      >Function.Equivalence</a
+      ><a name="313"
+      > </a
+      ><a name="314" class="Keyword"
+      >using</a
+      ><a name="319"
+      > </a
+      ><a name="320" class="Symbol"
+      >(</a
+      ><a name="321"
+      >_&#8660;_</a
+      ><a name="324" class="Symbol"
+      >;</a
+      ><a name="325"
+      > equivalence</a
+      ><a name="337" class="Symbol"
+      >)</a
+      ><a name="338"
+      >
+</a
+      ><a name="339" class="Keyword"
+      >open</a
+      ><a name="343"
+      > </a
+      ><a name="344" class="Keyword"
+      >import</a
+      ><a name="350"
+      > </a
+      ><a name="351" href="Relation.Nullary.html#1" class="Module"
+      >Relation.Nullary</a
+      ><a name="367"
+      > </a
+      ><a name="368" class="Keyword"
+      >using</a
+      ><a name="373"
+      > </a
+      ><a name="374" class="Symbol"
+      >(</a
+      ><a name="375"
+      >Dec</a
+      ><a name="378" class="Symbol"
+      >;</a
+      ><a name="379"
+      > yes</a
+      ><a name="383" class="Symbol"
+      >;</a
+      ><a name="384"
+      > no</a
+      ><a name="387" class="Symbol"
+      >;</a
+      ><a name="388"
+      > &#172;_</a
+      ><a name="391" class="Symbol"
+      >)</a
+      ><a name="392"
+      >
+</a
+      ><a name="393" class="Keyword"
+      >open</a
+      ><a name="397"
+      > </a
+      ><a name="398" class="Keyword"
+      >import</a
+      ><a name="404"
+      > </a
+      ><a name="405" href="Relation.Binary.PropositionalEquality.html#1" class="Module"
+      >Relation.Binary.PropositionalEquality</a
+      ><a name="442"
+      > </a
+      ><a name="443" class="Symbol"
+      >as</a
+      ><a name="445"
+      > </a
+      ><a name="446" class="Module"
+      >P</a
+      ><a name="447"
+      > </a
+      ><a name="448" class="Keyword"
+      >using</a
+      ><a name="453"
+      > </a
+      ><a name="454" class="Symbol"
+      >(</a
+      ><a name="455"
+      >_&#8801;_</a
+      ><a name="458" class="Symbol"
+      >)</a
+      ><a name="459"
+      >
+
+</a
+      ><a name="461" class="Keyword"
+      >module</a
+      ><a name="467"
+      > </a
+      ><a name="468" href="Logic.Lambek.SC.EquivalentToResMon.html#1" class="Module"
+      >Logic.Lambek.SC.EquivalentToResMon</a
+      ><a name="502"
+      > </a
+      ><a name="503" class="Symbol"
+      >{</a
+      ><a name="504" href="Logic.Lambek.SC.EquivalentToResMon.html#504" class="Bound"
+      >&#8467;</a
+      ><a name="505" class="Symbol"
+      >}</a
+      ><a name="506"
+      > </a
+      ><a name="507" class="Symbol"
+      >(</a
+      ><a name="508" href="Logic.Lambek.SC.EquivalentToResMon.html#508" class="Bound"
+      >Univ</a
+      ><a name="512"
+      > </a
+      ><a name="513" class="Symbol"
+      >:</a
+      ><a name="514"
+      > </a
+      ><a name="515" class="PrimitiveType"
+      >Set</a
+      ><a name="518"
+      > </a
+      ><a name="519" href="Logic.Lambek.SC.EquivalentToResMon.html#504" class="Bound"
+      >&#8467;</a
+      ><a name="520" class="Symbol"
+      >)</a
+      ><a name="521"
+      > </a
+      ><a name="522" class="Keyword"
+      >where</a
+      ><a name="527"
+      >
+
+</a
+      ><a name="529" class="Keyword"
+      >open</a
+      ><a name="533"
+      > </a
+      ><a name="534" class="Keyword"
+      >import</a
+      ><a name="540"
+      > </a
+      ><a name="541" href="Logic.Lambek.Type.html#1" class="Module"
+      >Logic.Lambek.Type</a
+      ><a name="558"
+      >             </a
+      ><a name="571" href="Logic.Lambek.SC.EquivalentToResMon.html#508" class="Bound"
+      >Univ</a
+      ><a name="575"
+      > </a
+      ><a name="576" class="Symbol"
+      >as</a
+      ><a name="578"
+      > </a
+      ><a name="579" href="Logic.Lambek.SC.EquivalentToResMon.html#579" class="Module"
+      >T</a
+      ><a name="580"
+      >
+</a
+      ><a name="581" class="Keyword"
+      >open</a
+      ><a name="585"
+      > </a
+      ><a name="586" class="Keyword"
+      >import</a
+      ><a name="592"
+      > </a
+      ><a name="593" href="Logic.Lambek.Type.Context.html#1" class="Module"
+      >Logic.Lambek.Type.Context</a
+      ><a name="618"
+      >     </a
+      ><a name="623" href="Logic.Lambek.SC.EquivalentToResMon.html#508" class="Bound"
+      >Univ</a
+      ><a name="627"
+      > </a
+      ><a name="628" class="Symbol"
+      >as</a
+      ><a name="630"
+      > </a
+      ><a name="631" href="Logic.Lambek.SC.EquivalentToResMon.html#631" class="Module"
+      >TC</a
+      ><a name="633"
+      > </a
+      ><a name="634" class="Keyword"
+      >hiding</a
+      ><a name="640"
+      > </a
+      ><a name="641" class="Symbol"
+      >(</a
+      ><a name="642" class="Keyword"
+      >module</a
+      ><a name="648"
+      > Simple</a
+      ><a name="655" class="Symbol"
+      >)</a
+      ><a name="656"
+      >
+</a
+      ><a name="657" class="Keyword"
+      >open</a
+      ><a name="661"
+      > </a
+      ><a name="662" class="Keyword"
+      >import</a
+      ><a name="668"
+      > </a
+      ><a name="669" href="Logic.Lambek.ResMon.Judgement.html#1" class="Module"
+      >Logic.Lambek.ResMon.Judgement</a
+      ><a name="698"
+      > </a
+      ><a name="699" href="Logic.Lambek.SC.EquivalentToResMon.html#508" class="Bound"
+      >Univ</a
+      ><a name="703"
+      > </a
+      ><a name="704" class="Symbol"
+      >as</a
+      ><a name="706"
+      > </a
+      ><a name="707" href="Logic.Lambek.SC.EquivalentToResMon.html#707" class="Module"
+      >RMJ</a
+      ><a name="710"
+      >
+</a
+      ><a name="711" class="Keyword"
+      >open</a
+      ><a name="715"
+      > </a
+      ><a name="716" class="Keyword"
+      >import</a
+      ><a name="722"
+      > </a
+      ><a name="723" href="Logic.Lambek.ResMon.Base.html#1" class="Module"
+      >Logic.Lambek.ResMon.Base</a
+      ><a name="747"
+      >      </a
+      ><a name="753" href="Logic.Lambek.SC.EquivalentToResMon.html#508" class="Bound"
+      >Univ</a
+      ><a name="757"
+      > </a
+      ><a name="758" class="Symbol"
+      >as</a
+      ><a name="760"
+      > </a
+      ><a name="761" href="Logic.Lambek.SC.EquivalentToResMon.html#761" class="Module"
+      >RMB</a
+      ><a name="764"
+      > </a
+      ><a name="765" class="Keyword"
+      >renaming</a
+      ><a name="773"
+      > </a
+      ><a name="774" class="Symbol"
+      >(</a
+      ><a name="775"
+      >NL_ </a
+      ><a name="779" class="Symbol"
+      >to</a
+      ><a name="781"
+      > RM_</a
+      ><a name="785" class="Symbol"
+      >)</a
+      ><a name="786"
+      >
+</a
+      ><a name="787" class="Keyword"
+      >open</a
+      ><a name="791"
+      > </a
+      ><a name="792" class="Keyword"
+      >import</a
+      ><a name="798"
+      > </a
+      ><a name="799" href="Logic.Lambek.SC.Judgement.html#1" class="Module"
+      >Logic.Lambek.SC.Judgement</a
+      ><a name="824"
+      >     </a
+      ><a name="829" href="Logic.Lambek.SC.EquivalentToResMon.html#508" class="Bound"
+      >Univ</a
+      ><a name="833"
+      > </a
+      ><a name="834" class="Symbol"
+      >as</a
+      ><a name="836"
+      > </a
+      ><a name="837" href="Logic.Lambek.SC.EquivalentToResMon.html#837" class="Module"
+      >SCJ</a
+      ><a name="840"
+      >
+</a
+      ><a name="841" class="Keyword"
+      >open</a
+      ><a name="845"
+      > </a
+      ><a name="846" class="Keyword"
+      >import</a
+      ><a name="852"
+      > </a
+      ><a name="853" href="Logic.Lambek.SC.Base.html#1" class="Module"
+      >Logic.Lambek.SC.Base</a
+      ><a name="873"
+      >          </a
+      ><a name="883" href="Logic.Lambek.SC.EquivalentToResMon.html#508" class="Bound"
+      >Univ</a
+      ><a name="887"
+      > </a
+      ><a name="888" class="Symbol"
+      >as</a
+      ><a name="890"
+      > </a
+      ><a name="891" href="Logic.Lambek.SC.EquivalentToResMon.html#891" class="Module"
+      >SCB</a
+      ><a name="894"
+      > </a
+      ><a name="895" class="Keyword"
+      >hiding</a
+      ><a name="901"
+      > </a
+      ><a name="902" class="Symbol"
+      >(</a
+      ><a name="903"
+      >cont&#7482;&#8242;</a
+      ><a name="909" class="Symbol"
+      >;</a
+      ><a name="910"
+      > cont&#7486;&#8242;</a
+      ><a name="917" class="Symbol"
+      >)</a
+      ><a name="918"
+      > </a
+      ><a name="919" class="Keyword"
+      >renaming</a
+      ><a name="927"
+      > </a
+      ><a name="928" class="Symbol"
+      >(</a
+      ><a name="929"
+      >NL_ </a
+      ><a name="933" class="Symbol"
+      >to</a
+      ><a name="935"
+      > SC_</a
+      ><a name="939" class="Symbol"
+      >)</a
+      ><a name="940"
+      >
+
+
+</a
+      ><a name="943" class="Keyword"
+      >module</a
+      ><a name="949"
+      > </a
+      ><a name="950" href="Logic.Lambek.SC.EquivalentToResMon.html#950" class="Module"
+      >Simple</a
+      ><a name="956"
+      > </a
+      ><a name="957" class="Keyword"
+      >where</a
+      ><a name="962"
+      >
+
+  </a
+      ><a name="966" class="Keyword"
+      >open</a
+      ><a name="970"
+      > </a
+      ><a name="971" href="Logic.Lambek.SC.EquivalentToResMon.html#631" class="Module"
+      >TC.</a
+      ><a name="974" href="Logic.Lambek.Type.Context.html#1994" class="Module"
+      >Simple</a
+      ><a name="980"
+      > </a
+      ><a name="981" class="Keyword"
+      >using</a
+      ><a name="986"
+      > </a
+      ><a name="987" class="Symbol"
+      >(</a
+      ><a name="988"
+      >_[_]</a
+      ><a name="992" class="Symbol"
+      >;</a
+      ><a name="993"
+      > _&lt;_&gt;</a
+      ><a name="998" class="Symbol"
+      >;</a
+      ><a name="999"
+      > &lt;&gt;-def</a
+      ><a name="1006" class="Symbol"
+      >)</a
+      ><a name="1007"
+      >
+
+  </a
+      ><a name="1011" class="Keyword"
+      >mutual</a
+      ><a name="1017"
+      >
+    </a
+      ><a name="1022" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1026"
+      > </a
+      ><a name="1027" class="Symbol"
+      >:</a
+      ><a name="1028"
+      > </a
+      ><a name="1029" class="Symbol"
+      >&#8704;</a
+      ><a name="1030"
+      > </a
+      ><a name="1031" class="Symbol"
+      >{</a
+      ><a name="1032" href="Logic.Lambek.SC.EquivalentToResMon.html#1032" class="Bound"
+      >A</a
+      ><a name="1033"
+      > </a
+      ><a name="1034" href="Logic.Lambek.SC.EquivalentToResMon.html#1034" class="Bound"
+      >B</a
+      ><a name="1035" class="Symbol"
+      >}</a
+      ><a name="1036"
+      > </a
+      ><a name="1037" class="Symbol"
+      >&#8594;</a
+      ><a name="1038"
+      > </a
+      ><a name="1039" href="Logic.Lambek.SC.Base.html#886" class="Datatype Operator"
+      >SC</a
+      ><a name="1041"
+      > </a
+      ><a name="1042" href="Logic.Lambek.SC.EquivalentToResMon.html#1032" class="Bound"
+      >A</a
+      ><a name="1043"
+      > </a
+      ><a name="1044" href="Logic.Lambek.SC.Judgement.html#505" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="1045"
+      > </a
+      ><a name="1046" href="Logic.Lambek.SC.EquivalentToResMon.html#1034" class="Bound"
+      >B</a
+      ><a name="1047"
+      > </a
+      ><a name="1048" class="Symbol"
+      >&#8594;</a
+      ><a name="1049"
+      > </a
+      ><a name="1050" href="Logic.Lambek.ResMon.Base.html#690" class="Datatype Operator"
+      >RM</a
+      ><a name="1052"
+      > </a
+      ><a name="1053" href="Logic.Lambek.SC.EquivalentToResMon.html#1032" class="Bound"
+      >A</a
+      ><a name="1054"
+      > </a
+      ><a name="1055" href="Logic.Lambek.ResMon.Judgement.html#647" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="1056"
+      > </a
+      ><a name="1057" href="Logic.Lambek.SC.EquivalentToResMon.html#1034" class="Bound"
+      >B</a
+      ><a name="1058"
+      >
+    </a
+      ><a name="1063" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1067"
+      > </a
+      ><a name="1068" href="Logic.Lambek.SC.Base.html#921" class="InductiveConstructor"
+      >id</a
+      ><a name="1070"
+      > </a
+      ><a name="1071" class="Symbol"
+      >=</a
+      ><a name="1072"
+      > </a
+      ><a name="1073" href="Logic.Lambek.ResMon.Base.html#723" class="InductiveConstructor"
+      >id</a
+      ><a name="1075"
+      >
+    </a
+      ><a name="1080" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1084"
+      > </a
+      ><a name="1085" class="Symbol"
+      >(</a
+      ><a name="1086" href="Logic.Lambek.SC.Base.html#963" class="InductiveConstructor"
+      >mon-&#8855;</a
+      ><a name="1091"
+      > </a
+      ><a name="1092" href="Logic.Lambek.SC.EquivalentToResMon.html#1092" class="Bound"
+      >f</a
+      ><a name="1093"
+      > </a
+      ><a name="1094" href="Logic.Lambek.SC.EquivalentToResMon.html#1094" class="Bound"
+      >g</a
+      ><a name="1095" class="Symbol"
+      >)</a
+      ><a name="1096"
+      > </a
+      ><a name="1097" class="Symbol"
+      >=</a
+      ><a name="1098"
+      > </a
+      ><a name="1099" href="Logic.Lambek.ResMon.Base.html#808" class="InductiveConstructor"
+      >mon-&#8855;</a
+      ><a name="1104"
+      > </a
+      ><a name="1105" class="Symbol"
+      >(</a
+      ><a name="1106" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1110"
+      > </a
+      ><a name="1111" href="Logic.Lambek.SC.EquivalentToResMon.html#1092" class="Bound"
+      >f</a
+      ><a name="1112" class="Symbol"
+      >)</a
+      ><a name="1113"
+      > </a
+      ><a name="1114" class="Symbol"
+      >(</a
+      ><a name="1115" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1119"
+      > </a
+      ><a name="1120" href="Logic.Lambek.SC.EquivalentToResMon.html#1094" class="Bound"
+      >g</a
+      ><a name="1121" class="Symbol"
+      >)</a
+      ><a name="1122"
+      >
+    </a
+      ><a name="1127" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1131"
+      > </a
+      ><a name="1132" class="Symbol"
+      >(</a
+      ><a name="1133" href="Logic.Lambek.SC.Base.html#1029" class="InductiveConstructor"
+      >mon-&#8658;</a
+      ><a name="1138"
+      > </a
+      ><a name="1139" href="Logic.Lambek.SC.EquivalentToResMon.html#1139" class="Bound"
+      >f</a
+      ><a name="1140"
+      > </a
+      ><a name="1141" href="Logic.Lambek.SC.EquivalentToResMon.html#1141" class="Bound"
+      >g</a
+      ><a name="1142" class="Symbol"
+      >)</a
+      ><a name="1143"
+      > </a
+      ><a name="1144" class="Symbol"
+      >=</a
+      ><a name="1145"
+      > </a
+      ><a name="1146" href="Logic.Lambek.ResMon.Base.html#872" class="InductiveConstructor"
+      >mon-&#8658;</a
+      ><a name="1151"
+      > </a
+      ><a name="1152" class="Symbol"
+      >(</a
+      ><a name="1153" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1157"
+      > </a
+      ><a name="1158" href="Logic.Lambek.SC.EquivalentToResMon.html#1139" class="Bound"
+      >f</a
+      ><a name="1159" class="Symbol"
+      >)</a
+      ><a name="1160"
+      > </a
+      ><a name="1161" class="Symbol"
+      >(</a
+      ><a name="1162" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1166"
+      > </a
+      ><a name="1167" href="Logic.Lambek.SC.EquivalentToResMon.html#1141" class="Bound"
+      >g</a
+      ><a name="1168" class="Symbol"
+      >)</a
+      ><a name="1169"
+      >
+    </a
+      ><a name="1174" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1178"
+      > </a
+      ><a name="1179" class="Symbol"
+      >(</a
+      ><a name="1180" href="Logic.Lambek.SC.Base.html#1095" class="InductiveConstructor"
+      >mon-&#8656;</a
+      ><a name="1185"
+      > </a
+      ><a name="1186" href="Logic.Lambek.SC.EquivalentToResMon.html#1186" class="Bound"
+      >f</a
+      ><a name="1187"
+      > </a
+      ><a name="1188" href="Logic.Lambek.SC.EquivalentToResMon.html#1188" class="Bound"
+      >g</a
+      ><a name="1189" class="Symbol"
+      >)</a
+      ><a name="1190"
+      > </a
+      ><a name="1191" class="Symbol"
+      >=</a
+      ><a name="1192"
+      > </a
+      ><a name="1193" href="Logic.Lambek.ResMon.Base.html#936" class="InductiveConstructor"
+      >mon-&#8656;</a
+      ><a name="1198"
+      > </a
+      ><a name="1199" class="Symbol"
+      >(</a
+      ><a name="1200" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1204"
+      > </a
+      ><a name="1205" href="Logic.Lambek.SC.EquivalentToResMon.html#1186" class="Bound"
+      >f</a
+      ><a name="1206" class="Symbol"
+      >)</a
+      ><a name="1207"
+      > </a
+      ><a name="1208" class="Symbol"
+      >(</a
+      ><a name="1209" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1213"
+      > </a
+      ><a name="1214" href="Logic.Lambek.SC.EquivalentToResMon.html#1188" class="Bound"
+      >g</a
+      ><a name="1215" class="Symbol"
+      >)</a
+      ><a name="1216"
+      >
+    </a
+      ><a name="1221" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1225"
+      > </a
+      ><a name="1226" class="Symbol"
+      >(</a
+      ><a name="1227" href="Logic.Lambek.SC.Base.html#1161" class="InductiveConstructor"
+      >cont&#7482;</a
+      ><a name="1232"
+      > </a
+      ><a name="1233" href="Logic.Lambek.SC.EquivalentToResMon.html#1233" class="Bound"
+      >f</a
+      ><a name="1234"
+      > </a
+      ><a name="1235" href="Logic.Lambek.SC.EquivalentToResMon.html#1235" class="Bound"
+      >x</a
+      ><a name="1236"
+      > </a
+      ><a name="1237" href="Logic.Lambek.SC.EquivalentToResMon.html#1237" class="Bound"
+      >p</a
+      ><a name="1238"
+      > </a
+      ><a name="1239" class="Symbol"
+      >_</a
+      ><a name="1240"
+      > </a
+      ><a name="1241" class="Symbol"
+      >_)</a
+      ><a name="1243"
+      > </a
+      ><a name="1244" class="Keyword"
+      >rewrite</a
+      ><a name="1251"
+      > </a
+      ><a name="1252" href="Logic.Lambek.SC.EquivalentToResMon.html#1237" class="Bound"
+      >p</a
+      ><a name="1253"
+      > </a
+      ><a name="1254" class="Symbol"
+      >=</a
+      ><a name="1255"
+      > </a
+      ><a name="1256" href="Logic.Lambek.SC.EquivalentToResMon.html#1510" class="Function"
+      >cont&#7482;&#8242;</a
+      ><a name="1262"
+      > </a
+      ><a name="1263" class="Symbol"
+      >(</a
+      ><a name="1264" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1268"
+      > </a
+      ><a name="1269" href="Logic.Lambek.SC.EquivalentToResMon.html#1233" class="Bound"
+      >f</a
+      ><a name="1270" class="Symbol"
+      >)</a
+      ><a name="1271"
+      > </a
+      ><a name="1272" href="Logic.Lambek.SC.EquivalentToResMon.html#1235" class="Bound"
+      >x</a
+      ><a name="1273"
+      >
+    </a
+      ><a name="1278" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1282"
+      > </a
+      ><a name="1283" class="Symbol"
+      >(</a
+      ><a name="1284" href="Logic.Lambek.SC.Base.html#1323" class="InductiveConstructor"
+      >cont&#7486;</a
+      ><a name="1289"
+      > </a
+      ><a name="1290" href="Logic.Lambek.SC.EquivalentToResMon.html#1290" class="Bound"
+      >f</a
+      ><a name="1291"
+      > </a
+      ><a name="1292" href="Logic.Lambek.SC.EquivalentToResMon.html#1292" class="Bound"
+      >x</a
+      ><a name="1293"
+      > </a
+      ><a name="1294" href="Logic.Lambek.SC.EquivalentToResMon.html#1294" class="Bound"
+      >p</a
+      ><a name="1295"
+      > </a
+      ><a name="1296" class="Symbol"
+      >_</a
+      ><a name="1297"
+      > </a
+      ><a name="1298" class="Symbol"
+      >_)</a
+      ><a name="1300"
+      > </a
+      ><a name="1301" class="Keyword"
+      >rewrite</a
+      ><a name="1308"
+      > </a
+      ><a name="1309" href="Logic.Lambek.SC.EquivalentToResMon.html#1294" class="Bound"
+      >p</a
+      ><a name="1310"
+      > </a
+      ><a name="1311" class="Symbol"
+      >=</a
+      ><a name="1312"
+      > </a
+      ><a name="1313" href="Logic.Lambek.SC.EquivalentToResMon.html#2080" class="Function"
+      >cont&#7486;&#8242;</a
+      ><a name="1319"
+      > </a
+      ><a name="1320" class="Symbol"
+      >(</a
+      ><a name="1321" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1325"
+      > </a
+      ><a name="1326" href="Logic.Lambek.SC.EquivalentToResMon.html#1290" class="Bound"
+      >f</a
+      ><a name="1327" class="Symbol"
+      >)</a
+      ><a name="1328"
+      > </a
+      ><a name="1329" href="Logic.Lambek.SC.EquivalentToResMon.html#1292" class="Bound"
+      >x</a
+      ><a name="1330"
+      >
+
+    </a
+      ><a name="1336" class="Comment"
+      >-- Derived version of negative context application for the</a
+      ><a name="1394"
+      >
+    </a
+      ><a name="1399" class="Comment"
+      >-- residuation-monotonicity calculus (which uses the context</a
+      ><a name="1459"
+      >
+    </a
+      ><a name="1464" class="Comment"
+      >-- inference rules from the SC calculus).</a
+      ><a name="1505"
+      >
+    </a
+      ><a name="1510" href="Logic.Lambek.SC.EquivalentToResMon.html#1510" class="Function"
+      >cont&#7482;&#8242;</a
+      ><a name="1516"
+      > </a
+      ><a name="1517" class="Symbol"
+      >:</a
+      ><a name="1518"
+      > </a
+      ><a name="1519" class="Symbol"
+      >&#8704;</a
+      ><a name="1520"
+      > </a
+      ><a name="1521" class="Symbol"
+      >{</a
+      ><a name="1522" href="Logic.Lambek.SC.EquivalentToResMon.html#1522" class="Bound"
+      >&#915;</a
+      ><a name="1523"
+      > </a
+      ><a name="1524" href="Logic.Lambek.SC.EquivalentToResMon.html#1524" class="Bound"
+      >A</a
+      ><a name="1525"
+      > </a
+      ><a name="1526" href="Logic.Lambek.SC.EquivalentToResMon.html#1526" class="Bound"
+      >B</a
+      ><a name="1527" class="Symbol"
+      >}</a
+      ><a name="1528"
+      > </a
+      ><a name="1529" class="Symbol"
+      >&#8594;</a
+      ><a name="1530"
+      > </a
+      ><a name="1531" href="Logic.Lambek.ResMon.Base.html#690" class="Datatype Operator"
+      >RM</a
+      ><a name="1533"
+      > </a
+      ><a name="1534" href="Logic.Lambek.SC.EquivalentToResMon.html#1524" class="Bound"
+      >A</a
+      ><a name="1535"
+      > </a
+      ><a name="1536" href="Logic.Lambek.ResMon.Judgement.html#647" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="1537"
+      > </a
+      ><a name="1538" href="Logic.Lambek.SC.EquivalentToResMon.html#1526" class="Bound"
+      >B</a
+      ><a name="1539"
+      > </a
+      ><a name="1540" class="Symbol"
+      >&#8594;</a
+      ><a name="1541"
+      > </a
+      ><a name="1542" href="Logic.Lambek.SC.Base.html#886" class="Datatype Operator"
+      >SC</a
+      ><a name="1544"
+      > </a
+      ><a name="1545" href="Logic.Lambek.SC.Judgement.html#537" class="InductiveConstructor Operator"
+      >&#8866;&#7482;</a
+      ><a name="1547"
+      > </a
+      ><a name="1548" href="Logic.Lambek.SC.EquivalentToResMon.html#1522" class="Bound"
+      >&#915;</a
+      ><a name="1549"
+      > </a
+      ><a name="1550" class="Symbol"
+      >&#8594;</a
+      ><a name="1551"
+      > </a
+      ><a name="1552" href="Logic.Lambek.ResMon.Base.html#690" class="Datatype Operator"
+      >RM</a
+      ><a name="1554"
+      > </a
+      ><a name="1555" href="Logic.Lambek.SC.EquivalentToResMon.html#1522" class="Bound"
+      >&#915;</a
+      ><a name="1556"
+      > </a
+      ><a name="1557" href="Logic.Lambek.Type.Context.html#2102" class="Function Operator"
+      >[</a
+      ><a name="1558"
+      > </a
+      ><a name="1559" href="Logic.Lambek.SC.EquivalentToResMon.html#1524" class="Bound"
+      >A</a
+      ><a name="1560"
+      > </a
+      ><a name="1561" href="Logic.Lambek.Type.Context.html#2102" class="Function Operator"
+      >]</a
+      ><a name="1562"
+      > </a
+      ><a name="1563" href="Logic.Lambek.ResMon.Judgement.html#647" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="1564"
+      > </a
+      ><a name="1565" href="Logic.Lambek.SC.EquivalentToResMon.html#1526" class="Bound"
+      >B</a
+      ><a name="1566"
+      >
+    </a
+      ><a name="1571" href="Logic.Lambek.SC.EquivalentToResMon.html#1510" class="Function"
+      >cont&#7482;&#8242;</a
+      ><a name="1577"
+      > </a
+      ><a name="1578" href="Logic.Lambek.SC.EquivalentToResMon.html#1578" class="Bound"
+      >f</a
+      ><a name="1579"
+      > </a
+      ><a name="1580" href="Logic.Lambek.SC.Base.html#1486" class="InductiveConstructor"
+      >neg-[]</a
+      ><a name="1586"
+      > </a
+      ><a name="1587" class="Symbol"
+      >=</a
+      ><a name="1588"
+      > </a
+      ><a name="1589" href="Logic.Lambek.SC.EquivalentToResMon.html#1578" class="Bound"
+      >f</a
+      ><a name="1590"
+      >
+    </a
+      ><a name="1595" href="Logic.Lambek.SC.EquivalentToResMon.html#1510" class="Function"
+      >cont&#7482;&#8242;</a
+      ><a name="1601"
+      > </a
+      ><a name="1602" class="Symbol"
+      >{</a
+      ><a name="1603" class="DottedPattern Symbol"
+      >._</a
+      ><a name="1605" class="Symbol"
+      >}</a
+      ><a name="1606"
+      > </a
+      ><a name="1607" class="Symbol"
+      >{</a
+      ><a name="1608" href="Logic.Lambek.SC.EquivalentToResMon.html#1608" class="Bound"
+      >C</a
+      ><a name="1609" class="Symbol"
+      >}</a
+      ><a name="1610"
+      > </a
+      ><a name="1611" class="Symbol"
+      >{</a
+      ><a name="1612" href="Logic.Lambek.SC.EquivalentToResMon.html#1612" class="Bound"
+      >D</a
+      ><a name="1613" class="Symbol"
+      >}</a
+      ><a name="1614"
+      > </a
+      ><a name="1615" href="Logic.Lambek.SC.EquivalentToResMon.html#1615" class="Bound"
+      >f</a
+      ><a name="1616"
+      > </a
+      ><a name="1617" class="Symbol"
+      >(</a
+      ><a name="1618" href="Logic.Lambek.SC.Base.html#1508" class="InductiveConstructor"
+      >neg-&#8855;&#8658;</a
+      ><a name="1624"
+      > </a
+      ><a name="1625" class="Symbol"
+      >{</a
+      ><a name="1626" href="Logic.Lambek.SC.EquivalentToResMon.html#1626" class="Bound"
+      >&#915;</a
+      ><a name="1627" class="Symbol"
+      >}</a
+      ><a name="1628"
+      > </a
+      ><a name="1629" class="Symbol"
+      >{</a
+      ><a name="1630" href="Logic.Lambek.SC.EquivalentToResMon.html#1630" class="Bound"
+      >&#916;</a
+      ><a name="1631" class="Symbol"
+      >}</a
+      ><a name="1632"
+      > </a
+      ><a name="1633" class="Symbol"
+      >{</a
+      ><a name="1634" href="Logic.Lambek.SC.EquivalentToResMon.html#1634" class="Bound"
+      >A</a
+      ><a name="1635" class="Symbol"
+      >}</a
+      ><a name="1636"
+      > </a
+      ><a name="1637" class="Symbol"
+      >{</a
+      ><a name="1638" href="Logic.Lambek.SC.EquivalentToResMon.html#1638" class="Bound"
+      >B</a
+      ><a name="1639" class="Symbol"
+      >}</a
+      ><a name="1640"
+      > </a
+      ><a name="1641" href="Logic.Lambek.SC.EquivalentToResMon.html#1641" class="Bound"
+      >g</a
+      ><a name="1642"
+      > </a
+      ><a name="1643" href="Logic.Lambek.SC.EquivalentToResMon.html#1643" class="Bound"
+      >x</a
+      ><a name="1644"
+      > </a
+      ><a name="1645" href="Logic.Lambek.SC.EquivalentToResMon.html#1645" class="Bound"
+      >y</a
+      ><a name="1646" class="Symbol"
+      >)</a
+      ><a name="1647"
+      >
+      </a
+      ><a name="1654" class="Keyword"
+      >rewrite</a
+      ><a name="1661"
+      > </a
+      ><a name="1662" href="Logic.Lambek.Type.Context.html#2763" class="Function"
+      >&lt;&gt;-def</a
+      ><a name="1668"
+      > </a
+      ><a name="1669" href="Logic.Lambek.SC.EquivalentToResMon.html#1626" class="Bound"
+      >&#915;</a
+      ><a name="1670"
+      > </a
+      ><a name="1671" class="Symbol"
+      >(</a
+      ><a name="1672" href="Logic.Lambek.SC.EquivalentToResMon.html#1638" class="Bound"
+      >B</a
+      ><a name="1673"
+      > </a
+      ><a name="1674" href="Logic.Lambek.Type.Context.html#1146" class="InductiveConstructor Operator"
+      >&#8658;&gt;</a
+      ><a name="1676"
+      > </a
+      ><a name="1677" href="Logic.Lambek.SC.EquivalentToResMon.html#1630" class="Bound"
+      >&#916;</a
+      ><a name="1678" class="Symbol"
+      >)</a
+      ><a name="1679"
+      > </a
+      ><a name="1680" href="Logic.Lambek.SC.EquivalentToResMon.html#1608" class="Bound"
+      >C</a
+      ><a name="1681"
+      >
+              </a
+      ><a name="1696" class="Symbol"
+      >=</a
+      ><a name="1697"
+      > </a
+      ><a name="1698" href="Logic.Lambek.ResMon.Base.html#1000" class="InductiveConstructor"
+      >res-&#8658;&#8855;</a
+      ><a name="1704"
+      > </a
+      ><a name="1705" class="Symbol"
+      >(</a
+      ><a name="1706" href="Logic.Lambek.SC.EquivalentToResMon.html#1510" class="Function"
+      >cont&#7482;&#8242;</a
+      ><a name="1712"
+      > </a
+      ><a name="1713" class="Symbol"
+      >(</a
+      ><a name="1714" href="Logic.Lambek.ResMon.Base.html#872" class="InductiveConstructor"
+      >mon-&#8658;</a
+      ><a name="1719"
+      > </a
+      ><a name="1720" class="Symbol"
+      >(</a
+      ><a name="1721" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1725"
+      > </a
+      ><a name="1726" href="Logic.Lambek.SC.EquivalentToResMon.html#1641" class="Bound"
+      >g</a
+      ><a name="1727" class="Symbol"
+      >)</a
+      ><a name="1728"
+      > </a
+      ><a name="1729" class="Symbol"
+      >(</a
+      ><a name="1730" href="Logic.Lambek.SC.EquivalentToResMon.html#1510" class="Function"
+      >cont&#7482;&#8242;</a
+      ><a name="1736"
+      > </a
+      ><a name="1737" href="Logic.Lambek.SC.EquivalentToResMon.html#1615" class="Bound"
+      >f</a
+      ><a name="1738"
+      > </a
+      ><a name="1739" href="Logic.Lambek.SC.EquivalentToResMon.html#1645" class="Bound"
+      >y</a
+      ><a name="1740" class="Symbol"
+      >))</a
+      ><a name="1742"
+      > </a
+      ><a name="1743" href="Logic.Lambek.SC.EquivalentToResMon.html#1643" class="Bound"
+      >x</a
+      ><a name="1744" class="Symbol"
+      >)</a
+      ><a name="1745"
+      >
+    </a
+      ><a name="1750" href="Logic.Lambek.SC.EquivalentToResMon.html#1510" class="Function"
+      >cont&#7482;&#8242;</a
+      ><a name="1756"
+      > </a
+      ><a name="1757" class="Symbol"
+      >{</a
+      ><a name="1758" class="DottedPattern Symbol"
+      >._</a
+      ><a name="1760" class="Symbol"
+      >}</a
+      ><a name="1761"
+      > </a
+      ><a name="1762" class="Symbol"
+      >{</a
+      ><a name="1763" href="Logic.Lambek.SC.EquivalentToResMon.html#1763" class="Bound"
+      >C</a
+      ><a name="1764" class="Symbol"
+      >}</a
+      ><a name="1765"
+      > </a
+      ><a name="1766" class="Symbol"
+      >{</a
+      ><a name="1767" href="Logic.Lambek.SC.EquivalentToResMon.html#1767" class="Bound"
+      >D</a
+      ><a name="1768" class="Symbol"
+      >}</a
+      ><a name="1769"
+      > </a
+      ><a name="1770" href="Logic.Lambek.SC.EquivalentToResMon.html#1770" class="Bound"
+      >f</a
+      ><a name="1771"
+      > </a
+      ><a name="1772" class="Symbol"
+      >(</a
+      ><a name="1773" href="Logic.Lambek.SC.Base.html#1590" class="InductiveConstructor"
+      >neg-&#8855;&#8656;</a
+      ><a name="1779"
+      > </a
+      ><a name="1780" class="Symbol"
+      >{</a
+      ><a name="1781" href="Logic.Lambek.SC.EquivalentToResMon.html#1781" class="Bound"
+      >&#915;</a
+      ><a name="1782" class="Symbol"
+      >}</a
+      ><a name="1783"
+      > </a
+      ><a name="1784" class="Symbol"
+      >{</a
+      ><a name="1785" href="Logic.Lambek.SC.EquivalentToResMon.html#1785" class="Bound"
+      >&#916;</a
+      ><a name="1786" class="Symbol"
+      >}</a
+      ><a name="1787"
+      > </a
+      ><a name="1788" class="Symbol"
+      >{</a
+      ><a name="1789" href="Logic.Lambek.SC.EquivalentToResMon.html#1789" class="Bound"
+      >A</a
+      ><a name="1790" class="Symbol"
+      >}</a
+      ><a name="1791"
+      > </a
+      ><a name="1792" class="Symbol"
+      >{</a
+      ><a name="1793" href="Logic.Lambek.SC.EquivalentToResMon.html#1793" class="Bound"
+      >B</a
+      ><a name="1794" class="Symbol"
+      >}</a
+      ><a name="1795"
+      > </a
+      ><a name="1796" href="Logic.Lambek.SC.EquivalentToResMon.html#1796" class="Bound"
+      >g</a
+      ><a name="1797"
+      > </a
+      ><a name="1798" href="Logic.Lambek.SC.EquivalentToResMon.html#1798" class="Bound"
+      >x</a
+      ><a name="1799"
+      > </a
+      ><a name="1800" href="Logic.Lambek.SC.EquivalentToResMon.html#1800" class="Bound"
+      >y</a
+      ><a name="1801" class="Symbol"
+      >)</a
+      ><a name="1802"
+      >
+      </a
+      ><a name="1809" class="Keyword"
+      >rewrite</a
+      ><a name="1816"
+      > </a
+      ><a name="1817" href="Logic.Lambek.Type.Context.html#2763" class="Function"
+      >&lt;&gt;-def</a
+      ><a name="1823"
+      > </a
+      ><a name="1824" href="Logic.Lambek.SC.EquivalentToResMon.html#1781" class="Bound"
+      >&#915;</a
+      ><a name="1825"
+      > </a
+      ><a name="1826" class="Symbol"
+      >(</a
+      ><a name="1827" href="Logic.Lambek.SC.EquivalentToResMon.html#1785" class="Bound"
+      >&#916;</a
+      ><a name="1828"
+      > </a
+      ><a name="1829" href="Logic.Lambek.Type.Context.html#1283" class="InductiveConstructor Operator"
+      >&lt;&#8656;</a
+      ><a name="1831"
+      > </a
+      ><a name="1832" href="Logic.Lambek.SC.EquivalentToResMon.html#1793" class="Bound"
+      >B</a
+      ><a name="1833" class="Symbol"
+      >)</a
+      ><a name="1834"
+      > </a
+      ><a name="1835" href="Logic.Lambek.SC.EquivalentToResMon.html#1763" class="Bound"
+      >C</a
+      ><a name="1836"
+      >
+              </a
+      ><a name="1851" class="Symbol"
+      >=</a
+      ><a name="1852"
+      > </a
+      ><a name="1853" href="Logic.Lambek.ResMon.Base.html#1106" class="InductiveConstructor"
+      >res-&#8656;&#8855;</a
+      ><a name="1859"
+      > </a
+      ><a name="1860" class="Symbol"
+      >(</a
+      ><a name="1861" href="Logic.Lambek.SC.EquivalentToResMon.html#1510" class="Function"
+      >cont&#7482;&#8242;</a
+      ><a name="1867"
+      > </a
+      ><a name="1868" class="Symbol"
+      >(</a
+      ><a name="1869" href="Logic.Lambek.ResMon.Base.html#936" class="InductiveConstructor"
+      >mon-&#8656;</a
+      ><a name="1874"
+      > </a
+      ><a name="1875" class="Symbol"
+      >(</a
+      ><a name="1876" href="Logic.Lambek.SC.EquivalentToResMon.html#1510" class="Function"
+      >cont&#7482;&#8242;</a
+      ><a name="1882"
+      > </a
+      ><a name="1883" href="Logic.Lambek.SC.EquivalentToResMon.html#1770" class="Bound"
+      >f</a
+      ><a name="1884"
+      > </a
+      ><a name="1885" href="Logic.Lambek.SC.EquivalentToResMon.html#1800" class="Bound"
+      >y</a
+      ><a name="1886" class="Symbol"
+      >)</a
+      ><a name="1887"
+      > </a
+      ><a name="1888" class="Symbol"
+      >(</a
+      ><a name="1889" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="1893"
+      > </a
+      ><a name="1894" href="Logic.Lambek.SC.EquivalentToResMon.html#1796" class="Bound"
+      >g</a
+      ><a name="1895" class="Symbol"
+      >))</a
+      ><a name="1897"
+      > </a
+      ><a name="1898" href="Logic.Lambek.SC.EquivalentToResMon.html#1798" class="Bound"
+      >x</a
+      ><a name="1899" class="Symbol"
+      >)</a
+      ><a name="1900"
+      >
+
+    </a
+      ><a name="1906" class="Comment"
+      >-- Derived version of positive context application for the</a
+      ><a name="1964"
+      >
+    </a
+      ><a name="1969" class="Comment"
+      >-- residuation-monotonicity calculus (which uses the context</a
+      ><a name="2029"
+      >
+    </a
+      ><a name="2034" class="Comment"
+      >-- inference rules from the SC calculus).</a
+      ><a name="2075"
+      >
+    </a
+      ><a name="2080" href="Logic.Lambek.SC.EquivalentToResMon.html#2080" class="Function"
+      >cont&#7486;&#8242;</a
+      ><a name="2086"
+      > </a
+      ><a name="2087" class="Symbol"
+      >:</a
+      ><a name="2088"
+      > </a
+      ><a name="2089" class="Symbol"
+      >&#8704;</a
+      ><a name="2090"
+      > </a
+      ><a name="2091" class="Symbol"
+      >{</a
+      ><a name="2092" href="Logic.Lambek.SC.EquivalentToResMon.html#2092" class="Bound"
+      >&#916;</a
+      ><a name="2093"
+      > </a
+      ><a name="2094" href="Logic.Lambek.SC.EquivalentToResMon.html#2094" class="Bound"
+      >A</a
+      ><a name="2095"
+      > </a
+      ><a name="2096" href="Logic.Lambek.SC.EquivalentToResMon.html#2096" class="Bound"
+      >B</a
+      ><a name="2097" class="Symbol"
+      >}</a
+      ><a name="2098"
+      > </a
+      ><a name="2099" class="Symbol"
+      >&#8594;</a
+      ><a name="2100"
+      > </a
+      ><a name="2101" href="Logic.Lambek.ResMon.Base.html#690" class="Datatype Operator"
+      >RM</a
+      ><a name="2103"
+      > </a
+      ><a name="2104" href="Logic.Lambek.SC.EquivalentToResMon.html#2094" class="Bound"
+      >A</a
+      ><a name="2105"
+      > </a
+      ><a name="2106" href="Logic.Lambek.ResMon.Judgement.html#647" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="2107"
+      > </a
+      ><a name="2108" href="Logic.Lambek.SC.EquivalentToResMon.html#2096" class="Bound"
+      >B</a
+      ><a name="2109"
+      > </a
+      ><a name="2110" class="Symbol"
+      >&#8594;</a
+      ><a name="2111"
+      > </a
+      ><a name="2112" href="Logic.Lambek.SC.Base.html#886" class="Datatype Operator"
+      >SC</a
+      ><a name="2114"
+      > </a
+      ><a name="2115" href="Logic.Lambek.SC.Judgement.html#565" class="InductiveConstructor Operator"
+      >&#8866;&#7486;</a
+      ><a name="2117"
+      > </a
+      ><a name="2118" href="Logic.Lambek.SC.EquivalentToResMon.html#2092" class="Bound"
+      >&#916;</a
+      ><a name="2119"
+      > </a
+      ><a name="2120" class="Symbol"
+      >&#8594;</a
+      ><a name="2121"
+      > </a
+      ><a name="2122" href="Logic.Lambek.ResMon.Base.html#690" class="Datatype Operator"
+      >RM</a
+      ><a name="2124"
+      > </a
+      ><a name="2125" href="Logic.Lambek.SC.EquivalentToResMon.html#2094" class="Bound"
+      >A</a
+      ><a name="2126"
+      > </a
+      ><a name="2127" href="Logic.Lambek.ResMon.Judgement.html#647" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="2128"
+      > </a
+      ><a name="2129" href="Logic.Lambek.SC.EquivalentToResMon.html#2092" class="Bound"
+      >&#916;</a
+      ><a name="2130"
+      > </a
+      ><a name="2131" href="Logic.Lambek.Type.Context.html#2102" class="Function Operator"
+      >[</a
+      ><a name="2132"
+      > </a
+      ><a name="2133" href="Logic.Lambek.SC.EquivalentToResMon.html#2096" class="Bound"
+      >B</a
+      ><a name="2134"
+      > </a
+      ><a name="2135" href="Logic.Lambek.Type.Context.html#2102" class="Function Operator"
+      >]</a
+      ><a name="2136"
+      >
+    </a
+      ><a name="2141" href="Logic.Lambek.SC.EquivalentToResMon.html#2080" class="Function"
+      >cont&#7486;&#8242;</a
+      ><a name="2147"
+      > </a
+      ><a name="2148" href="Logic.Lambek.SC.EquivalentToResMon.html#2148" class="Bound"
+      >f</a
+      ><a name="2149"
+      > </a
+      ><a name="2150" href="Logic.Lambek.SC.Base.html#1673" class="InductiveConstructor"
+      >pos-[]</a
+      ><a name="2156"
+      > </a
+      ><a name="2157" class="Symbol"
+      >=</a
+      ><a name="2158"
+      > </a
+      ><a name="2159" href="Logic.Lambek.SC.EquivalentToResMon.html#2148" class="Bound"
+      >f</a
+      ><a name="2160"
+      >
+    </a
+      ><a name="2165" href="Logic.Lambek.SC.EquivalentToResMon.html#2080" class="Function"
+      >cont&#7486;&#8242;</a
+      ><a name="2171"
+      > </a
+      ><a name="2172" class="Symbol"
+      >{</a
+      ><a name="2173" class="DottedPattern Symbol"
+      >._</a
+      ><a name="2175" class="Symbol"
+      >}</a
+      ><a name="2176"
+      > </a
+      ><a name="2177" class="Symbol"
+      >{</a
+      ><a name="2178" href="Logic.Lambek.SC.EquivalentToResMon.html#2178" class="Bound"
+      >C</a
+      ><a name="2179" class="Symbol"
+      >}</a
+      ><a name="2180"
+      > </a
+      ><a name="2181" class="Symbol"
+      >{</a
+      ><a name="2182" href="Logic.Lambek.SC.EquivalentToResMon.html#2182" class="Bound"
+      >D</a
+      ><a name="2183" class="Symbol"
+      >}</a
+      ><a name="2184"
+      > </a
+      ><a name="2185" href="Logic.Lambek.SC.EquivalentToResMon.html#2185" class="Bound"
+      >f</a
+      ><a name="2186"
+      > </a
+      ><a name="2187" class="Symbol"
+      >(</a
+      ><a name="2188" href="Logic.Lambek.SC.Base.html#1695" class="InductiveConstructor"
+      >pos-&#8658;&#8855;</a
+      ><a name="2194"
+      > </a
+      ><a name="2195" class="Symbol"
+      >{</a
+      ><a name="2196" href="Logic.Lambek.SC.EquivalentToResMon.html#2196" class="Bound"
+      >&#915;</a
+      ><a name="2197" class="Symbol"
+      >}</a
+      ><a name="2198"
+      > </a
+      ><a name="2199" class="Symbol"
+      >{</a
+      ><a name="2200" href="Logic.Lambek.SC.EquivalentToResMon.html#2200" class="Bound"
+      >&#916;</a
+      ><a name="2201" class="Symbol"
+      >}</a
+      ><a name="2202"
+      > </a
+      ><a name="2203" class="Symbol"
+      >{</a
+      ><a name="2204" href="Logic.Lambek.SC.EquivalentToResMon.html#2204" class="Bound"
+      >A</a
+      ><a name="2205" class="Symbol"
+      >}</a
+      ><a name="2206"
+      > </a
+      ><a name="2207" class="Symbol"
+      >{</a
+      ><a name="2208" href="Logic.Lambek.SC.EquivalentToResMon.html#2208" class="Bound"
+      >B</a
+      ><a name="2209" class="Symbol"
+      >}</a
+      ><a name="2210"
+      > </a
+      ><a name="2211" href="Logic.Lambek.SC.EquivalentToResMon.html#2211" class="Bound"
+      >g</a
+      ><a name="2212"
+      > </a
+      ><a name="2213" href="Logic.Lambek.SC.EquivalentToResMon.html#2213" class="Bound"
+      >x</a
+      ><a name="2214"
+      > </a
+      ><a name="2215" href="Logic.Lambek.SC.EquivalentToResMon.html#2215" class="Bound"
+      >y</a
+      ><a name="2216" class="Symbol"
+      >)</a
+      ><a name="2217"
+      >
+      </a
+      ><a name="2224" class="Keyword"
+      >rewrite</a
+      ><a name="2231"
+      > </a
+      ><a name="2232" href="Logic.Lambek.Type.Context.html#2763" class="Function"
+      >&lt;&gt;-def</a
+      ><a name="2238"
+      > </a
+      ><a name="2239" href="Logic.Lambek.SC.EquivalentToResMon.html#2196" class="Bound"
+      >&#915;</a
+      ><a name="2240"
+      > </a
+      ><a name="2241" class="Symbol"
+      >(</a
+      ><a name="2242" href="Logic.Lambek.SC.EquivalentToResMon.html#2208" class="Bound"
+      >B</a
+      ><a name="2243"
+      > </a
+      ><a name="2244" href="Logic.Lambek.Type.Context.html#1112" class="InductiveConstructor Operator"
+      >&#8855;&gt;</a
+      ><a name="2246"
+      > </a
+      ><a name="2247" href="Logic.Lambek.SC.EquivalentToResMon.html#2200" class="Bound"
+      >&#916;</a
+      ><a name="2248" class="Symbol"
+      >)</a
+      ><a name="2249"
+      > </a
+      ><a name="2250" href="Logic.Lambek.SC.EquivalentToResMon.html#2182" class="Bound"
+      >D</a
+      ><a name="2251"
+      >
+              </a
+      ><a name="2266" class="Symbol"
+      >=</a
+      ><a name="2267"
+      > </a
+      ><a name="2268" href="Logic.Lambek.ResMon.Base.html#1053" class="InductiveConstructor"
+      >res-&#8855;&#8658;</a
+      ><a name="2274"
+      > </a
+      ><a name="2275" class="Symbol"
+      >(</a
+      ><a name="2276" href="Logic.Lambek.SC.EquivalentToResMon.html#2080" class="Function"
+      >cont&#7486;&#8242;</a
+      ><a name="2282"
+      > </a
+      ><a name="2283" class="Symbol"
+      >(</a
+      ><a name="2284" href="Logic.Lambek.ResMon.Base.html#808" class="InductiveConstructor"
+      >mon-&#8855;</a
+      ><a name="2289"
+      > </a
+      ><a name="2290" class="Symbol"
+      >(</a
+      ><a name="2291" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="2295"
+      > </a
+      ><a name="2296" href="Logic.Lambek.SC.EquivalentToResMon.html#2211" class="Bound"
+      >g</a
+      ><a name="2297" class="Symbol"
+      >)</a
+      ><a name="2298"
+      > </a
+      ><a name="2299" class="Symbol"
+      >(</a
+      ><a name="2300" href="Logic.Lambek.SC.EquivalentToResMon.html#2080" class="Function"
+      >cont&#7486;&#8242;</a
+      ><a name="2306"
+      > </a
+      ><a name="2307" href="Logic.Lambek.SC.EquivalentToResMon.html#2185" class="Bound"
+      >f</a
+      ><a name="2308"
+      > </a
+      ><a name="2309" href="Logic.Lambek.SC.EquivalentToResMon.html#2215" class="Bound"
+      >y</a
+      ><a name="2310" class="Symbol"
+      >))</a
+      ><a name="2312"
+      > </a
+      ><a name="2313" href="Logic.Lambek.SC.EquivalentToResMon.html#2213" class="Bound"
+      >x</a
+      ><a name="2314" class="Symbol"
+      >)</a
+      ><a name="2315"
+      >
+    </a
+      ><a name="2320" href="Logic.Lambek.SC.EquivalentToResMon.html#2080" class="Function"
+      >cont&#7486;&#8242;</a
+      ><a name="2326"
+      > </a
+      ><a name="2327" class="Symbol"
+      >{</a
+      ><a name="2328" class="DottedPattern Symbol"
+      >._</a
+      ><a name="2330" class="Symbol"
+      >}</a
+      ><a name="2331"
+      > </a
+      ><a name="2332" class="Symbol"
+      >{</a
+      ><a name="2333" href="Logic.Lambek.SC.EquivalentToResMon.html#2333" class="Bound"
+      >C</a
+      ><a name="2334" class="Symbol"
+      >}</a
+      ><a name="2335"
+      > </a
+      ><a name="2336" class="Symbol"
+      >{</a
+      ><a name="2337" href="Logic.Lambek.SC.EquivalentToResMon.html#2337" class="Bound"
+      >D</a
+      ><a name="2338" class="Symbol"
+      >}</a
+      ><a name="2339"
+      > </a
+      ><a name="2340" href="Logic.Lambek.SC.EquivalentToResMon.html#2340" class="Bound"
+      >f</a
+      ><a name="2341"
+      > </a
+      ><a name="2342" class="Symbol"
+      >(</a
+      ><a name="2343" href="Logic.Lambek.SC.Base.html#1777" class="InductiveConstructor"
+      >pos-&#8656;&#8855;</a
+      ><a name="2349"
+      > </a
+      ><a name="2350" class="Symbol"
+      >{</a
+      ><a name="2351" href="Logic.Lambek.SC.EquivalentToResMon.html#2351" class="Bound"
+      >&#915;</a
+      ><a name="2352" class="Symbol"
+      >}</a
+      ><a name="2353"
+      > </a
+      ><a name="2354" class="Symbol"
+      >{</a
+      ><a name="2355" href="Logic.Lambek.SC.EquivalentToResMon.html#2355" class="Bound"
+      >&#916;</a
+      ><a name="2356" class="Symbol"
+      >}</a
+      ><a name="2357"
+      > </a
+      ><a name="2358" class="Symbol"
+      >{</a
+      ><a name="2359" href="Logic.Lambek.SC.EquivalentToResMon.html#2359" class="Bound"
+      >A</a
+      ><a name="2360" class="Symbol"
+      >}</a
+      ><a name="2361"
+      > </a
+      ><a name="2362" class="Symbol"
+      >{</a
+      ><a name="2363" href="Logic.Lambek.SC.EquivalentToResMon.html#2363" class="Bound"
+      >B</a
+      ><a name="2364" class="Symbol"
+      >}</a
+      ><a name="2365"
+      > </a
+      ><a name="2366" href="Logic.Lambek.SC.EquivalentToResMon.html#2366" class="Bound"
+      >g</a
+      ><a name="2367"
+      > </a
+      ><a name="2368" href="Logic.Lambek.SC.EquivalentToResMon.html#2368" class="Bound"
+      >x</a
+      ><a name="2369"
+      > </a
+      ><a name="2370" href="Logic.Lambek.SC.EquivalentToResMon.html#2370" class="Bound"
+      >y</a
+      ><a name="2371" class="Symbol"
+      >)</a
+      ><a name="2372"
+      >
+      </a
+      ><a name="2379" class="Keyword"
+      >rewrite</a
+      ><a name="2386"
+      > </a
+      ><a name="2387" href="Logic.Lambek.Type.Context.html#2763" class="Function"
+      >&lt;&gt;-def</a
+      ><a name="2393"
+      > </a
+      ><a name="2394" href="Logic.Lambek.SC.EquivalentToResMon.html#2351" class="Bound"
+      >&#915;</a
+      ><a name="2395"
+      > </a
+      ><a name="2396" class="Symbol"
+      >(</a
+      ><a name="2397" href="Logic.Lambek.SC.EquivalentToResMon.html#2355" class="Bound"
+      >&#916;</a
+      ><a name="2398"
+      > </a
+      ><a name="2399" href="Logic.Lambek.Type.Context.html#1215" class="InductiveConstructor Operator"
+      >&lt;&#8855;</a
+      ><a name="2401"
+      > </a
+      ><a name="2402" href="Logic.Lambek.SC.EquivalentToResMon.html#2363" class="Bound"
+      >B</a
+      ><a name="2403" class="Symbol"
+      >)</a
+      ><a name="2404"
+      > </a
+      ><a name="2405" href="Logic.Lambek.SC.EquivalentToResMon.html#2337" class="Bound"
+      >D</a
+      ><a name="2406"
+      >
+              </a
+      ><a name="2421" class="Symbol"
+      >=</a
+      ><a name="2422"
+      > </a
+      ><a name="2423" href="Logic.Lambek.ResMon.Base.html#1159" class="InductiveConstructor"
+      >res-&#8855;&#8656;</a
+      ><a name="2429"
+      > </a
+      ><a name="2430" class="Symbol"
+      >(</a
+      ><a name="2431" href="Logic.Lambek.SC.EquivalentToResMon.html#2080" class="Function"
+      >cont&#7486;&#8242;</a
+      ><a name="2437"
+      > </a
+      ><a name="2438" class="Symbol"
+      >(</a
+      ><a name="2439" href="Logic.Lambek.ResMon.Base.html#808" class="InductiveConstructor"
+      >mon-&#8855;</a
+      ><a name="2444"
+      > </a
+      ><a name="2445" class="Symbol"
+      >(</a
+      ><a name="2446" href="Logic.Lambek.SC.EquivalentToResMon.html#2080" class="Function"
+      >cont&#7486;&#8242;</a
+      ><a name="2452"
+      > </a
+      ><a name="2453" href="Logic.Lambek.SC.EquivalentToResMon.html#2340" class="Bound"
+      >f</a
+      ><a name="2454"
+      > </a
+      ><a name="2455" href="Logic.Lambek.SC.EquivalentToResMon.html#2370" class="Bound"
+      >y</a
+      ><a name="2456" class="Symbol"
+      >)</a
+      ><a name="2457"
+      > </a
+      ><a name="2458" class="Symbol"
+      >(</a
+      ><a name="2459" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="2463"
+      > </a
+      ><a name="2464" href="Logic.Lambek.SC.EquivalentToResMon.html#2366" class="Bound"
+      >g</a
+      ><a name="2465" class="Symbol"
+      >))</a
+      ><a name="2467"
+      > </a
+      ><a name="2468" href="Logic.Lambek.SC.EquivalentToResMon.html#2368" class="Bound"
+      >x</a
+      ><a name="2469" class="Symbol"
+      >)</a
+      ><a name="2470"
+      >
+    </a
+      ><a name="2475" href="Logic.Lambek.SC.EquivalentToResMon.html#2080" class="Function"
+      >cont&#7486;&#8242;</a
+      ><a name="2481"
+      > </a
+      ><a name="2482" class="Symbol"
+      >{</a
+      ><a name="2483" class="DottedPattern Symbol"
+      >._</a
+      ><a name="2485" class="Symbol"
+      >}</a
+      ><a name="2486"
+      > </a
+      ><a name="2487" class="Symbol"
+      >{</a
+      ><a name="2488" href="Logic.Lambek.SC.EquivalentToResMon.html#2488" class="Bound"
+      >C</a
+      ><a name="2489" class="Symbol"
+      >}</a
+      ><a name="2490"
+      > </a
+      ><a name="2491" class="Symbol"
+      >{</a
+      ><a name="2492" href="Logic.Lambek.SC.EquivalentToResMon.html#2492" class="Bound"
+      >D</a
+      ><a name="2493" class="Symbol"
+      >}</a
+      ><a name="2494"
+      > </a
+      ><a name="2495" href="Logic.Lambek.SC.EquivalentToResMon.html#2495" class="Bound"
+      >f</a
+      ><a name="2496"
+      > </a
+      ><a name="2497" class="Symbol"
+      >(</a
+      ><a name="2498" href="Logic.Lambek.SC.Base.html#1859" class="InductiveConstructor"
+      >pos-&#8656;&#8658;</a
+      ><a name="2504"
+      > </a
+      ><a name="2505" class="Symbol"
+      >{</a
+      ><a name="2506" href="Logic.Lambek.SC.EquivalentToResMon.html#2506" class="Bound"
+      >&#915;</a
+      ><a name="2507" class="Symbol"
+      >}</a
+      ><a name="2508"
+      > </a
+      ><a name="2509" class="Symbol"
+      >{</a
+      ><a name="2510" href="Logic.Lambek.SC.EquivalentToResMon.html#2510" class="Bound"
+      >&#916;</a
+      ><a name="2511" class="Symbol"
+      >}</a
+      ><a name="2512"
+      > </a
+      ><a name="2513" class="Symbol"
+      >{</a
+      ><a name="2514" href="Logic.Lambek.SC.EquivalentToResMon.html#2514" class="Bound"
+      >B</a
+      ><a name="2515" class="Symbol"
+      >}</a
+      ><a name="2516"
+      > </a
+      ><a name="2517" class="Symbol"
+      >{</a
+      ><a name="2518" href="Logic.Lambek.SC.EquivalentToResMon.html#2518" class="Bound"
+      >A</a
+      ><a name="2519" class="Symbol"
+      >}</a
+      ><a name="2520"
+      > </a
+      ><a name="2521" href="Logic.Lambek.SC.EquivalentToResMon.html#2521" class="Bound"
+      >g</a
+      ><a name="2522"
+      > </a
+      ><a name="2523" href="Logic.Lambek.SC.EquivalentToResMon.html#2523" class="Bound"
+      >x</a
+      ><a name="2524"
+      > </a
+      ><a name="2525" href="Logic.Lambek.SC.EquivalentToResMon.html#2525" class="Bound"
+      >y</a
+      ><a name="2526" class="Symbol"
+      >)</a
+      ><a name="2527"
+      >
+      </a
+      ><a name="2534" class="Keyword"
+      >rewrite</a
+      ><a name="2541"
+      > </a
+      ><a name="2542" href="Logic.Lambek.Type.Context.html#2763" class="Function"
+      >&lt;&gt;-def</a
+      ><a name="2548"
+      > </a
+      ><a name="2549" href="Logic.Lambek.SC.EquivalentToResMon.html#2506" class="Bound"
+      >&#915;</a
+      ><a name="2550"
+      > </a
+      ><a name="2551" class="Symbol"
+      >(</a
+      ><a name="2552" href="Logic.Lambek.SC.EquivalentToResMon.html#2510" class="Bound"
+      >&#916;</a
+      ><a name="2553"
+      > </a
+      ><a name="2554" href="Logic.Lambek.Type.Context.html#1249" class="InductiveConstructor Operator"
+      >&lt;&#8658;</a
+      ><a name="2556"
+      > </a
+      ><a name="2557" href="Logic.Lambek.SC.EquivalentToResMon.html#2514" class="Bound"
+      >B</a
+      ><a name="2558" class="Symbol"
+      >)</a
+      ><a name="2559"
+      > </a
+      ><a name="2560" href="Logic.Lambek.SC.EquivalentToResMon.html#2492" class="Bound"
+      >D</a
+      ><a name="2561"
+      >
+              </a
+      ><a name="2576" class="Symbol"
+      >=</a
+      ><a name="2577"
+      > </a
+      ><a name="2578" href="Logic.Lambek.ResMon.Base.html#1159" class="InductiveConstructor"
+      >res-&#8855;&#8656;</a
+      ><a name="2584"
+      > </a
+      ><a name="2585" class="Symbol"
+      >(</a
+      ><a name="2586" href="Logic.Lambek.ResMon.Base.html#1000" class="InductiveConstructor"
+      >res-&#8658;&#8855;</a
+      ><a name="2592"
+      > </a
+      ><a name="2593" class="Symbol"
+      >(</a
+      ><a name="2594" href="Logic.Lambek.SC.EquivalentToResMon.html#1510" class="Function"
+      >cont&#7482;&#8242;</a
+      ><a name="2600"
+      > </a
+      ><a name="2601" class="Symbol"
+      >(</a
+      ><a name="2602" href="Logic.Lambek.ResMon.Base.html#872" class="InductiveConstructor"
+      >mon-&#8658;</a
+      ><a name="2607"
+      > </a
+      ><a name="2608" class="Symbol"
+      >(</a
+      ><a name="2609" href="Logic.Lambek.SC.EquivalentToResMon.html#2080" class="Function"
+      >cont&#7486;&#8242;</a
+      ><a name="2615"
+      > </a
+      ><a name="2616" href="Logic.Lambek.SC.EquivalentToResMon.html#2495" class="Bound"
+      >f</a
+      ><a name="2617"
+      > </a
+      ><a name="2618" href="Logic.Lambek.SC.EquivalentToResMon.html#2525" class="Bound"
+      >y</a
+      ><a name="2619" class="Symbol"
+      >)</a
+      ><a name="2620"
+      > </a
+      ><a name="2621" class="Symbol"
+      >(</a
+      ><a name="2622" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="2626"
+      > </a
+      ><a name="2627" href="Logic.Lambek.SC.EquivalentToResMon.html#2521" class="Bound"
+      >g</a
+      ><a name="2628" class="Symbol"
+      >))</a
+      ><a name="2630"
+      > </a
+      ><a name="2631" href="Logic.Lambek.SC.EquivalentToResMon.html#2523" class="Bound"
+      >x</a
+      ><a name="2632" class="Symbol"
+      >))</a
+      ><a name="2634"
+      >
+    </a
+      ><a name="2639" href="Logic.Lambek.SC.EquivalentToResMon.html#2080" class="Function"
+      >cont&#7486;&#8242;</a
+      ><a name="2645"
+      > </a
+      ><a name="2646" class="Symbol"
+      >{</a
+      ><a name="2647" class="DottedPattern Symbol"
+      >._</a
+      ><a name="2649" class="Symbol"
+      >}</a
+      ><a name="2650"
+      > </a
+      ><a name="2651" class="Symbol"
+      >{</a
+      ><a name="2652" href="Logic.Lambek.SC.EquivalentToResMon.html#2652" class="Bound"
+      >C</a
+      ><a name="2653" class="Symbol"
+      >}</a
+      ><a name="2654"
+      > </a
+      ><a name="2655" class="Symbol"
+      >{</a
+      ><a name="2656" href="Logic.Lambek.SC.EquivalentToResMon.html#2656" class="Bound"
+      >D</a
+      ><a name="2657" class="Symbol"
+      >}</a
+      ><a name="2658"
+      > </a
+      ><a name="2659" href="Logic.Lambek.SC.EquivalentToResMon.html#2659" class="Bound"
+      >f</a
+      ><a name="2660"
+      > </a
+      ><a name="2661" class="Symbol"
+      >(</a
+      ><a name="2662" href="Logic.Lambek.SC.Base.html#1941" class="InductiveConstructor"
+      >pos-&#8658;&#8656;</a
+      ><a name="2668"
+      > </a
+      ><a name="2669" class="Symbol"
+      >{</a
+      ><a name="2670" href="Logic.Lambek.SC.EquivalentToResMon.html#2670" class="Bound"
+      >&#915;</a
+      ><a name="2671" class="Symbol"
+      >}</a
+      ><a name="2672"
+      > </a
+      ><a name="2673" class="Symbol"
+      >{</a
+      ><a name="2674" href="Logic.Lambek.SC.EquivalentToResMon.html#2674" class="Bound"
+      >&#916;</a
+      ><a name="2675" class="Symbol"
+      >}</a
+      ><a name="2676"
+      > </a
+      ><a name="2677" class="Symbol"
+      >{</a
+      ><a name="2678" href="Logic.Lambek.SC.EquivalentToResMon.html#2678" class="Bound"
+      >B</a
+      ><a name="2679" class="Symbol"
+      >}</a
+      ><a name="2680"
+      > </a
+      ><a name="2681" class="Symbol"
+      >{</a
+      ><a name="2682" href="Logic.Lambek.SC.EquivalentToResMon.html#2682" class="Bound"
+      >A</a
+      ><a name="2683" class="Symbol"
+      >}</a
+      ><a name="2684"
+      > </a
+      ><a name="2685" href="Logic.Lambek.SC.EquivalentToResMon.html#2685" class="Bound"
+      >g</a
+      ><a name="2686"
+      > </a
+      ><a name="2687" href="Logic.Lambek.SC.EquivalentToResMon.html#2687" class="Bound"
+      >x</a
+      ><a name="2688"
+      > </a
+      ><a name="2689" href="Logic.Lambek.SC.EquivalentToResMon.html#2689" class="Bound"
+      >y</a
+      ><a name="2690" class="Symbol"
+      >)</a
+      ><a name="2691"
+      >
+      </a
+      ><a name="2698" class="Keyword"
+      >rewrite</a
+      ><a name="2705"
+      > </a
+      ><a name="2706" href="Logic.Lambek.Type.Context.html#2763" class="Function"
+      >&lt;&gt;-def</a
+      ><a name="2712"
+      > </a
+      ><a name="2713" href="Logic.Lambek.SC.EquivalentToResMon.html#2670" class="Bound"
+      >&#915;</a
+      ><a name="2714"
+      > </a
+      ><a name="2715" class="Symbol"
+      >(</a
+      ><a name="2716" href="Logic.Lambek.SC.EquivalentToResMon.html#2678" class="Bound"
+      >B</a
+      ><a name="2717"
+      > </a
+      ><a name="2718" href="Logic.Lambek.Type.Context.html#1180" class="InductiveConstructor Operator"
+      >&#8656;&gt;</a
+      ><a name="2720"
+      > </a
+      ><a name="2721" href="Logic.Lambek.SC.EquivalentToResMon.html#2674" class="Bound"
+      >&#916;</a
+      ><a name="2722" class="Symbol"
+      >)</a
+      ><a name="2723"
+      > </a
+      ><a name="2724" href="Logic.Lambek.SC.EquivalentToResMon.html#2656" class="Bound"
+      >D</a
+      ><a name="2725"
+      >
+              </a
+      ><a name="2740" class="Symbol"
+      >=</a
+      ><a name="2741"
+      > </a
+      ><a name="2742" href="Logic.Lambek.ResMon.Base.html#1053" class="InductiveConstructor"
+      >res-&#8855;&#8658;</a
+      ><a name="2748"
+      > </a
+      ><a name="2749" class="Symbol"
+      >(</a
+      ><a name="2750" href="Logic.Lambek.ResMon.Base.html#1106" class="InductiveConstructor"
+      >res-&#8656;&#8855;</a
+      ><a name="2756"
+      > </a
+      ><a name="2757" class="Symbol"
+      >(</a
+      ><a name="2758" href="Logic.Lambek.SC.EquivalentToResMon.html#1510" class="Function"
+      >cont&#7482;&#8242;</a
+      ><a name="2764"
+      > </a
+      ><a name="2765" class="Symbol"
+      >(</a
+      ><a name="2766" href="Logic.Lambek.ResMon.Base.html#936" class="InductiveConstructor"
+      >mon-&#8656;</a
+      ><a name="2771"
+      > </a
+      ><a name="2772" class="Symbol"
+      >(</a
+      ><a name="2773" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="2777"
+      > </a
+      ><a name="2778" href="Logic.Lambek.SC.EquivalentToResMon.html#2685" class="Bound"
+      >g</a
+      ><a name="2779" class="Symbol"
+      >)</a
+      ><a name="2780"
+      > </a
+      ><a name="2781" class="Symbol"
+      >(</a
+      ><a name="2782" href="Logic.Lambek.SC.EquivalentToResMon.html#2080" class="Function"
+      >cont&#7486;&#8242;</a
+      ><a name="2788"
+      > </a
+      ><a name="2789" href="Logic.Lambek.SC.EquivalentToResMon.html#2659" class="Bound"
+      >f</a
+      ><a name="2790"
+      > </a
+      ><a name="2791" href="Logic.Lambek.SC.EquivalentToResMon.html#2689" class="Bound"
+      >y</a
+      ><a name="2792" class="Symbol"
+      >))</a
+      ><a name="2794"
+      > </a
+      ><a name="2795" href="Logic.Lambek.SC.EquivalentToResMon.html#2687" class="Bound"
+      >x</a
+      ><a name="2796" class="Symbol"
+      >))</a
+      ><a name="2798"
+      >
+
+
+  </a
+      ><a name="2803" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="2805"
+      > </a
+      ><a name="2806" class="Symbol"
+      >:</a
+      ><a name="2807"
+      > </a
+      ><a name="2808" class="Symbol"
+      >&#8704;</a
+      ><a name="2809"
+      > </a
+      ><a name="2810" class="Symbol"
+      >{</a
+      ><a name="2811" href="Logic.Lambek.SC.EquivalentToResMon.html#2811" class="Bound"
+      >A</a
+      ><a name="2812"
+      > </a
+      ><a name="2813" href="Logic.Lambek.SC.EquivalentToResMon.html#2813" class="Bound"
+      >B</a
+      ><a name="2814" class="Symbol"
+      >}</a
+      ><a name="2815"
+      > </a
+      ><a name="2816" class="Symbol"
+      >&#8594;</a
+      ><a name="2817"
+      > </a
+      ><a name="2818" href="Logic.Lambek.ResMon.Base.html#690" class="Datatype Operator"
+      >RM</a
+      ><a name="2820"
+      > </a
+      ><a name="2821" href="Logic.Lambek.SC.EquivalentToResMon.html#2811" class="Bound"
+      >A</a
+      ><a name="2822"
+      > </a
+      ><a name="2823" href="Logic.Lambek.ResMon.Judgement.html#647" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="2824"
+      > </a
+      ><a name="2825" href="Logic.Lambek.SC.EquivalentToResMon.html#2813" class="Bound"
+      >B</a
+      ><a name="2826"
+      > </a
+      ><a name="2827" class="Symbol"
+      >&#8594;</a
+      ><a name="2828"
+      > </a
+      ><a name="2829" href="Logic.Lambek.SC.Base.html#886" class="Datatype Operator"
+      >SC</a
+      ><a name="2831"
+      > </a
+      ><a name="2832" href="Logic.Lambek.SC.EquivalentToResMon.html#2811" class="Bound"
+      >A</a
+      ><a name="2833"
+      > </a
+      ><a name="2834" href="Logic.Lambek.SC.Judgement.html#505" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="2835"
+      > </a
+      ><a name="2836" href="Logic.Lambek.SC.EquivalentToResMon.html#2813" class="Bound"
+      >B</a
+      ><a name="2837"
+      >
+  </a
+      ><a name="2840" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="2842"
+      > </a
+      ><a name="2843" href="Logic.Lambek.ResMon.Base.html#723" class="InductiveConstructor"
+      >id</a
+      ><a name="2845"
+      > </a
+      ><a name="2846" class="Symbol"
+      >=</a
+      ><a name="2847"
+      > </a
+      ><a name="2848" href="Logic.Lambek.SC.Base.html#921" class="InductiveConstructor"
+      >id</a
+      ><a name="2850"
+      >
+  </a
+      ><a name="2853" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="2855"
+      > </a
+      ><a name="2856" class="Symbol"
+      >(</a
+      ><a name="2857" href="Logic.Lambek.ResMon.Base.html#808" class="InductiveConstructor"
+      >mon-&#8855;</a
+      ><a name="2862"
+      > </a
+      ><a name="2863" href="Logic.Lambek.SC.EquivalentToResMon.html#2863" class="Bound"
+      >f</a
+      ><a name="2864"
+      > </a
+      ><a name="2865" href="Logic.Lambek.SC.EquivalentToResMon.html#2865" class="Bound"
+      >g</a
+      ><a name="2866" class="Symbol"
+      >)</a
+      ><a name="2867"
+      > </a
+      ><a name="2868" class="Symbol"
+      >=</a
+      ><a name="2869"
+      > </a
+      ><a name="2870" href="Logic.Lambek.SC.Base.html#963" class="InductiveConstructor"
+      >mon-&#8855;</a
+      ><a name="2875"
+      > </a
+      ><a name="2876" class="Symbol"
+      >(</a
+      ><a name="2877" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="2879"
+      > </a
+      ><a name="2880" href="Logic.Lambek.SC.EquivalentToResMon.html#2863" class="Bound"
+      >f</a
+      ><a name="2881" class="Symbol"
+      >)</a
+      ><a name="2882"
+      > </a
+      ><a name="2883" class="Symbol"
+      >(</a
+      ><a name="2884" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="2886"
+      > </a
+      ><a name="2887" href="Logic.Lambek.SC.EquivalentToResMon.html#2865" class="Bound"
+      >g</a
+      ><a name="2888" class="Symbol"
+      >)</a
+      ><a name="2889"
+      >
+  </a
+      ><a name="2892" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="2894"
+      > </a
+      ><a name="2895" class="Symbol"
+      >(</a
+      ><a name="2896" href="Logic.Lambek.ResMon.Base.html#872" class="InductiveConstructor"
+      >mon-&#8658;</a
+      ><a name="2901"
+      > </a
+      ><a name="2902" href="Logic.Lambek.SC.EquivalentToResMon.html#2902" class="Bound"
+      >f</a
+      ><a name="2903"
+      > </a
+      ><a name="2904" href="Logic.Lambek.SC.EquivalentToResMon.html#2904" class="Bound"
+      >g</a
+      ><a name="2905" class="Symbol"
+      >)</a
+      ><a name="2906"
+      > </a
+      ><a name="2907" class="Symbol"
+      >=</a
+      ><a name="2908"
+      > </a
+      ><a name="2909" href="Logic.Lambek.SC.Base.html#1029" class="InductiveConstructor"
+      >mon-&#8658;</a
+      ><a name="2914"
+      > </a
+      ><a name="2915" class="Symbol"
+      >(</a
+      ><a name="2916" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="2918"
+      > </a
+      ><a name="2919" href="Logic.Lambek.SC.EquivalentToResMon.html#2902" class="Bound"
+      >f</a
+      ><a name="2920" class="Symbol"
+      >)</a
+      ><a name="2921"
+      > </a
+      ><a name="2922" class="Symbol"
+      >(</a
+      ><a name="2923" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="2925"
+      > </a
+      ><a name="2926" href="Logic.Lambek.SC.EquivalentToResMon.html#2904" class="Bound"
+      >g</a
+      ><a name="2927" class="Symbol"
+      >)</a
+      ><a name="2928"
+      >
+  </a
+      ><a name="2931" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="2933"
+      > </a
+      ><a name="2934" class="Symbol"
+      >(</a
+      ><a name="2935" href="Logic.Lambek.ResMon.Base.html#936" class="InductiveConstructor"
+      >mon-&#8656;</a
+      ><a name="2940"
+      > </a
+      ><a name="2941" href="Logic.Lambek.SC.EquivalentToResMon.html#2941" class="Bound"
+      >f</a
+      ><a name="2942"
+      > </a
+      ><a name="2943" href="Logic.Lambek.SC.EquivalentToResMon.html#2943" class="Bound"
+      >g</a
+      ><a name="2944" class="Symbol"
+      >)</a
+      ><a name="2945"
+      > </a
+      ><a name="2946" class="Symbol"
+      >=</a
+      ><a name="2947"
+      > </a
+      ><a name="2948" href="Logic.Lambek.SC.Base.html#1095" class="InductiveConstructor"
+      >mon-&#8656;</a
+      ><a name="2953"
+      > </a
+      ><a name="2954" class="Symbol"
+      >(</a
+      ><a name="2955" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="2957"
+      > </a
+      ><a name="2958" href="Logic.Lambek.SC.EquivalentToResMon.html#2941" class="Bound"
+      >f</a
+      ><a name="2959" class="Symbol"
+      >)</a
+      ><a name="2960"
+      > </a
+      ><a name="2961" class="Symbol"
+      >(</a
+      ><a name="2962" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="2964"
+      > </a
+      ><a name="2965" href="Logic.Lambek.SC.EquivalentToResMon.html#2943" class="Bound"
+      >g</a
+      ><a name="2966" class="Symbol"
+      >)</a
+      ><a name="2967"
+      >
+  </a
+      ><a name="2970" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="2972"
+      > </a
+      ><a name="2973" class="Symbol"
+      >(</a
+      ><a name="2974" href="Logic.Lambek.ResMon.Base.html#1000" class="InductiveConstructor"
+      >res-&#8658;&#8855;</a
+      ><a name="2980"
+      > </a
+      ><a name="2981" href="Logic.Lambek.SC.EquivalentToResMon.html#2981" class="Bound"
+      >f</a
+      ><a name="2982" class="Symbol"
+      >)</a
+      ><a name="2983"
+      > </a
+      ><a name="2984" class="Symbol"
+      >=</a
+      ><a name="2985"
+      > </a
+      ><a name="2986" href="Logic.Lambek.SC.Base.html#5614" class="Function"
+      >res-&#8658;&#8855;&#8242;</a
+      ><a name="2993"
+      > </a
+      ><a name="2994" class="Symbol"
+      >(</a
+      ><a name="2995" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="2997"
+      > </a
+      ><a name="2998" href="Logic.Lambek.SC.EquivalentToResMon.html#2981" class="Bound"
+      >f</a
+      ><a name="2999" class="Symbol"
+      >)</a
+      ><a name="3000"
+      >
+  </a
+      ><a name="3003" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="3005"
+      > </a
+      ><a name="3006" class="Symbol"
+      >(</a
+      ><a name="3007" href="Logic.Lambek.ResMon.Base.html#1053" class="InductiveConstructor"
+      >res-&#8855;&#8658;</a
+      ><a name="3013"
+      > </a
+      ><a name="3014" href="Logic.Lambek.SC.EquivalentToResMon.html#3014" class="Bound"
+      >f</a
+      ><a name="3015" class="Symbol"
+      >)</a
+      ><a name="3016"
+      > </a
+      ><a name="3017" class="Symbol"
+      >=</a
+      ><a name="3018"
+      > </a
+      ><a name="3019" href="Logic.Lambek.SC.Base.html#8984" class="Function"
+      >res-&#8855;&#8658;&#8242;</a
+      ><a name="3026"
+      > </a
+      ><a name="3027" class="Symbol"
+      >(</a
+      ><a name="3028" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="3030"
+      > </a
+      ><a name="3031" href="Logic.Lambek.SC.EquivalentToResMon.html#3014" class="Bound"
+      >f</a
+      ><a name="3032" class="Symbol"
+      >)</a
+      ><a name="3033"
+      >
+  </a
+      ><a name="3036" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="3038"
+      > </a
+      ><a name="3039" class="Symbol"
+      >(</a
+      ><a name="3040" href="Logic.Lambek.ResMon.Base.html#1106" class="InductiveConstructor"
+      >res-&#8656;&#8855;</a
+      ><a name="3046"
+      > </a
+      ><a name="3047" href="Logic.Lambek.SC.EquivalentToResMon.html#3047" class="Bound"
+      >f</a
+      ><a name="3048" class="Symbol"
+      >)</a
+      ><a name="3049"
+      > </a
+      ><a name="3050" class="Symbol"
+      >=</a
+      ><a name="3051"
+      > </a
+      ><a name="3052" href="Logic.Lambek.SC.Base.html#7276" class="Function"
+      >res-&#8656;&#8855;&#8242;</a
+      ><a name="3059"
+      > </a
+      ><a name="3060" class="Symbol"
+      >(</a
+      ><a name="3061" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="3063"
+      > </a
+      ><a name="3064" href="Logic.Lambek.SC.EquivalentToResMon.html#3047" class="Bound"
+      >f</a
+      ><a name="3065" class="Symbol"
+      >)</a
+      ><a name="3066"
+      >
+  </a
+      ><a name="3069" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="3071"
+      > </a
+      ><a name="3072" class="Symbol"
+      >(</a
+      ><a name="3073" href="Logic.Lambek.ResMon.Base.html#1159" class="InductiveConstructor"
+      >res-&#8855;&#8656;</a
+      ><a name="3079"
+      > </a
+      ><a name="3080" href="Logic.Lambek.SC.EquivalentToResMon.html#3080" class="Bound"
+      >f</a
+      ><a name="3081" class="Symbol"
+      >)</a
+      ><a name="3082"
+      > </a
+      ><a name="3083" class="Symbol"
+      >=</a
+      ><a name="3084"
+      > </a
+      ><a name="3085" href="Logic.Lambek.SC.Base.html#10481" class="Function"
+      >res-&#8855;&#8656;&#8242;</a
+      ><a name="3092"
+      > </a
+      ><a name="3093" class="Symbol"
+      >(</a
+      ><a name="3094" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="3096"
+      > </a
+      ><a name="3097" href="Logic.Lambek.SC.EquivalentToResMon.html#3080" class="Bound"
+      >f</a
+      ><a name="3098" class="Symbol"
+      >)</a
+      ><a name="3099"
+      >
+
+
+</a
+      ><a name="3102" href="Logic.Lambek.SC.EquivalentToResMon.html#3102" class="Function"
+      >ResMon&#8660;SC</a
+      ><a name="3111"
+      > </a
+      ><a name="3112" class="Symbol"
+      >:</a
+      ><a name="3113"
+      > </a
+      ><a name="3114" class="Symbol"
+      >&#8704;</a
+      ><a name="3115"
+      > </a
+      ><a name="3116" class="Symbol"
+      >{</a
+      ><a name="3117" href="Logic.Lambek.SC.EquivalentToResMon.html#3117" class="Bound"
+      >A</a
+      ><a name="3118"
+      > </a
+      ><a name="3119" href="Logic.Lambek.SC.EquivalentToResMon.html#3119" class="Bound"
+      >B</a
+      ><a name="3120" class="Symbol"
+      >}</a
+      ><a name="3121"
+      > </a
+      ><a name="3122" class="Symbol"
+      >&#8594;</a
+      ><a name="3123"
+      > </a
+      ><a name="3124" href="Logic.Lambek.ResMon.Base.html#690" class="Datatype Operator"
+      >RM</a
+      ><a name="3126"
+      > </a
+      ><a name="3127" href="Logic.Lambek.SC.EquivalentToResMon.html#3117" class="Bound"
+      >A</a
+      ><a name="3128"
+      > </a
+      ><a name="3129" href="Logic.Lambek.ResMon.Judgement.html#647" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="3130"
+      > </a
+      ><a name="3131" href="Logic.Lambek.SC.EquivalentToResMon.html#3119" class="Bound"
+      >B</a
+      ><a name="3132"
+      > </a
+      ><a name="3133" href="Function.Equivalence.html#711" class="Function Operator"
+      >&#8660;</a
+      ><a name="3134"
+      > </a
+      ><a name="3135" href="Logic.Lambek.SC.Base.html#886" class="Datatype Operator"
+      >SC</a
+      ><a name="3137"
+      > </a
+      ><a name="3138" href="Logic.Lambek.SC.EquivalentToResMon.html#3117" class="Bound"
+      >A</a
+      ><a name="3139"
+      > </a
+      ><a name="3140" href="Logic.Lambek.SC.Judgement.html#505" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="3141"
+      > </a
+      ><a name="3142" href="Logic.Lambek.SC.EquivalentToResMon.html#3119" class="Bound"
+      >B</a
+      ><a name="3143"
+      >
+</a
+      ><a name="3144" href="Logic.Lambek.SC.EquivalentToResMon.html#3102" class="Function"
+      >ResMon&#8660;SC</a
+      ><a name="3153"
+      > </a
+      ><a name="3154" class="Symbol"
+      >=</a
+      ><a name="3155"
+      > </a
+      ><a name="3156" href="Function.Equivalence.html#804" class="Function"
+      >equivalence</a
+      ><a name="3167"
+      > </a
+      ><a name="3168" href="Logic.Lambek.SC.EquivalentToResMon.html#2803" class="Function"
+      >to</a
+      ><a name="3170"
+      > </a
+      ><a name="3171" href="Logic.Lambek.SC.EquivalentToResMon.html#1022" class="Function"
+      >from</a
+      ><a name="3175"
+      >
+  </a
+      ><a name="3178" class="Keyword"
+      >where</a
+      ><a name="3183"
+      >
+    </a
+      ><a name="3188" class="Keyword"
+      >open</a
+      ><a name="3192"
+      > </a
+      ><a name="3193" href="Logic.Lambek.SC.EquivalentToResMon.html#950" class="Module"
+      >Simple</a
+      ><a name="3199"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>

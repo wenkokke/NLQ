@@ -40,457 +40,717 @@
 
 </a
       ><a name="204" class="Comment"
-      >-- Definitions categories and functors.</a
-      ><a name="243"
+      >-- Defines a residuated algebra, which I've taken to be:</a
+      ><a name="260"
       >
 </a
-      ><a name="244" class="Keyword"
-      >import</a
-      ><a name="250"
-      > </a
-      ><a name="251" href="Categories.html#1" class="Module"
-      >Categories</a
-      ><a name="261"
-      >
-
-</a
-      ><a name="263" class="Keyword"
-      >import</a
-      ><a name="269"
-      > </a
-      ><a name="270" href="Logic.Lambek.Judgement.html#1" class="Module"
-      >Logic.Lambek.Judgement</a
-      ><a name="292"
-      >
-
-</a
-      ><a name="294" class="Keyword"
-      >import</a
-      ><a name="300"
-      > </a
-      ><a name="301" href="Logic.Lambek.Judgement.Context.html#1" class="Module"
-      >Logic.Lambek.Judgement.Context</a
-      ><a name="331"
-      >
-
-</a
-      ><a name="333" class="Keyword"
-      >import</a
-      ><a name="339"
-      > </a
-      ><a name="340" href="Logic.Lambek.Judgement.Context.Polarised.html#1" class="Module"
-      >Logic.Lambek.Judgement.Context.Polarised</a
-      ><a name="380"
-      >
-
-</a
-      ><a name="382" class="Keyword"
-      >import</a
-      ><a name="388"
-      > </a
-      ><a name="389" href="Logic.Lambek.ResMon.Base.html#1" class="Module"
-      >Logic.Lambek.ResMon.Base</a
-      ><a name="413"
-      >
-
-</a
-      ><a name="415" class="Keyword"
-      >import</a
-      ><a name="421"
-      > </a
-      ><a name="422" href="Logic.Lambek.ResMon.Derivation.html#1" class="Module"
-      >Logic.Lambek.ResMon.Derivation</a
-      ><a name="452"
-      >
-
-</a
-      ><a name="454" class="Comment"
-      >-- Implements several views on proofs in the system ResMon which are</a
-      ><a name="522"
-      >
-</a
-      ><a name="523" class="Comment"
-      >-- heavily used in the proof of admissibility of the transitivity rule.</a
-      ><a name="594"
-      >
-</a
-      ><a name="595" class="Comment"
+      ><a name="261" class="Comment"
       >--</a
+      ><a name="263"
+      >
+</a
+      ><a name="264" class="Comment"
+      >-- (1) a residuated ordered monoid without associativity, or</a
+      ><a name="324"
+      >
+</a
+      ><a name="325" class="Comment"
+      >-- (2) an algebra which adds a partial order and a left and right</a
+      ><a name="390"
+      >
+</a
+      ><a name="391" class="Comment"
+      >--     residuation operation. Congruence of the binary operator &#8729;</a
+      ><a name="456"
+      >
+</a
+      ><a name="457" class="Comment"
+      >--     results from its compatibility with the partial order &#8804;.</a
+      ><a name="520"
+      >
+</a
+      ><a name="521" class="Comment"
+      >--</a
+      ><a name="523"
+      >
+</a
+      ><a name="524" class="Keyword"
+      >import</a
+      ><a name="530"
+      > </a
+      ><a name="531" href="Algebra.ResiduatedAlgebra.html#1" class="Module"
+      >Algebra.ResiduatedAlgebra</a
+      ><a name="556"
+      >
+
+</a
+      ><a name="558" class="Comment"
+      >-- Definitions categories and functors.</a
       ><a name="597"
       >
 </a
-      ><a name="598" class="Comment"
-      >-- One advantage of the residuation-monotonicity calculus is that</a
-      ><a name="663"
-      >
-</a
-      ><a name="664" class="Comment"
-      >-- every connective *must* be introduced by an application of the</a
-      ><a name="729"
-      >
-</a
-      ><a name="730" class="Comment"
-      >-- corresponding monotonicity-rule. The proofs in the `Origin` module</a
-      ><a name="799"
-      >
-</a
-      ><a name="800" class="Comment"
-      >-- can be used to construct a view on a proof that makes this</a
-      ><a name="861"
-      >
-</a
-      ><a name="862" class="Comment"
-      >-- introducing application of a monotonicity-rule explicit.</a
-      ><a name="921"
-      >
-</a
-      ><a name="922" class="Comment"
-      >--</a
-      ><a name="924"
-      >
-</a
-      ><a name="925" class="Comment"
-      >-- The proofs in this module are highly repetitive, and the decision</a
-      ><a name="993"
-      >
-</a
-      ><a name="994" class="Comment"
-      >-- procedures and data structures could be abstracted over by</a
-      ><a name="1055"
-      >
-</a
-      ><a name="1056" class="Comment"
-      >-- generalising over the connectives (cutting the file length by &#177;750</a
-      ><a name="1125"
-      >
-</a
-      ><a name="1126" class="Comment"
-      >-- lines). However, I feel that abstracting over connectives would</a
-      ><a name="1192"
-      >
-</a
-      ><a name="1193" class="Comment"
-      >-- make the logic a lot harder to read. I may do it in the future</a
-      ><a name="1258"
-      >
-</a
-      ><a name="1259" class="Comment"
-      >-- anyway.</a
-      ><a name="1269"
-      >
-</a
-      ><a name="1270" class="Keyword"
+      ><a name="598" class="Keyword"
       >import</a
-      ><a name="1276"
+      ><a name="604"
       > </a
-      ><a name="1277" href="Logic.Lambek.ResMon.Origin.html#1" class="Module"
-      >Logic.Lambek.ResMon.Origin</a
-      ><a name="1303"
+      ><a name="605" href="Categories.html#1" class="Module"
+      >Categories</a
+      ><a name="615"
       >
 
 </a
-      ><a name="1305" class="Keyword"
+      ><a name="617" class="Keyword"
       >import</a
-      ><a name="1311"
+      ><a name="623"
       > </a
-      ><a name="1312" href="Logic.Lambek.ResMon.Trans.html#1" class="Module"
-      >Logic.Lambek.ResMon.Trans</a
-      ><a name="1337"
+      ><a name="624" href="Logic.Lambek.ResMon.Base.html#1" class="Module"
+      >Logic.Lambek.ResMon.Base</a
+      ><a name="648"
       >
 
 </a
-      ><a name="1339" class="Keyword"
+      ><a name="650" class="Keyword"
       >import</a
-      ><a name="1345"
+      ><a name="656"
       > </a
-      ><a name="1346" href="Logic.Lambek.Type.html#1" class="Module"
-      >Logic.Lambek.Type</a
-      ><a name="1363"
+      ><a name="657" href="Logic.Lambek.ResMon.Complete.html#1" class="Module"
+      >Logic.Lambek.ResMon.Complete</a
+      ><a name="685"
       >
 
 </a
-      ><a name="1365" class="Keyword"
-      >import</a
-      ><a name="1371"
-      > </a
-      ><a name="1372" href="Logic.Lambek.Type.Context.html#1" class="Module"
-      >Logic.Lambek.Type.Context</a
-      ><a name="1397"
-      >
-
-</a
-      ><a name="1399" class="Keyword"
-      >import</a
-      ><a name="1405"
-      > </a
-      ><a name="1406" href="Logic.Lambek.Type.Context.Polarised.html#1" class="Module"
-      >Logic.Lambek.Type.Context.Polarised</a
-      ><a name="1441"
-      >
-
-</a
-      ><a name="1443" class="Keyword"
-      >import</a
-      ><a name="1449"
-      > </a
-      ><a name="1450" href="Logic.LambekGrishin.Judgement.html#1" class="Module"
-      >Logic.LambekGrishin.Judgement</a
-      ><a name="1479"
-      >
-
-</a
-      ><a name="1481" class="Keyword"
-      >import</a
-      ><a name="1487"
-      > </a
-      ><a name="1488" href="Logic.LambekGrishin.Judgement.Context.html#1" class="Module"
-      >Logic.LambekGrishin.Judgement.Context</a
-      ><a name="1525"
-      >
-
-</a
-      ><a name="1527" class="Keyword"
-      >import</a
-      ><a name="1533"
-      > </a
-      ><a name="1534" href="Logic.LambekGrishin.Judgement.Context.Polarised.html#1" class="Module"
-      >Logic.LambekGrishin.Judgement.Context.Polarised</a
-      ><a name="1581"
-      >
-
-</a
-      ><a name="1583" class="Keyword"
-      >import</a
-      ><a name="1589"
-      > </a
-      ><a name="1590" href="Logic.LambekGrishin.ResMon.Base.html#1" class="Module"
-      >Logic.LambekGrishin.ResMon.Base</a
-      ><a name="1621"
-      >
-
-</a
-      ><a name="1623" class="Comment"
+      ><a name="687" class="Comment"
       >-- Implements derivations---also known as partial proofs or term</a
-      ><a name="1687"
+      ><a name="751"
       >
 </a
-      ><a name="1688" class="Comment"
+      ><a name="752" class="Comment"
       >-- contexts---which are generally written as:</a
-      ><a name="1733"
+      ><a name="797"
       >
 </a
-      ><a name="1734" class="Comment"
+      ><a name="798" class="Comment"
       >--</a
-      ><a name="1736"
+      ><a name="800"
       >
 </a
-      ><a name="1737" class="Comment"
+      ><a name="801" class="Comment"
       >--     A &#8866; B</a
-      ><a name="1749"
+      ><a name="813"
       >
 </a
-      ><a name="1750" class="Comment"
+      ><a name="814" class="Comment"
       >--     -----</a
-      ><a name="1762"
+      ><a name="826"
       >
 </a
-      ><a name="1763" class="Comment"
+      ><a name="827" class="Comment"
       >--       &#8942;</a
-      ><a name="1773"
+      ><a name="837"
       >
 </a
-      ><a name="1774" class="Comment"
+      ><a name="838" class="Comment"
       >--     -----</a
-      ><a name="1786"
+      ><a name="850"
       >
 </a
-      ><a name="1787" class="Comment"
+      ><a name="851" class="Comment"
       >--     C &#8866; D</a
-      ><a name="1799"
+      ><a name="863"
       >
 </a
-      ><a name="1800" class="Comment"
+      ><a name="864" class="Comment"
       >--</a
-      ><a name="1802"
+      ><a name="866"
       >
 </a
-      ><a name="1803" class="Comment"
+      ><a name="867" class="Comment"
       >-- This definition guarantees that there is exactly *one* sub-proof</a
-      ><a name="1870"
+      ><a name="934"
       >
 </a
-      ><a name="1871" class="Comment"
+      ><a name="935" class="Comment"
       >-- missing. In addition, this module provides proofs that these</a
-      ><a name="1934"
+      ><a name="998"
       >
 </a
-      ><a name="1935" class="Comment"
+      ><a name="999" class="Comment"
       >-- contexts form a category, and thus behave function-like.</a
-      ><a name="1994"
+      ><a name="1058"
       >
 </a
-      ><a name="1995" class="Keyword"
+      ><a name="1059" class="Keyword"
       >import</a
-      ><a name="2001"
+      ><a name="1065"
       > </a
-      ><a name="2002" href="Logic.LambekGrishin.ResMon.Derivation.html#1" class="Module"
-      >Logic.LambekGrishin.ResMon.Derivation</a
-      ><a name="2039"
+      ><a name="1066" href="Logic.Lambek.ResMon.Derivation.html#1" class="Module"
+      >Logic.Lambek.ResMon.Derivation</a
+      ><a name="1096"
       >
 
 </a
-      ><a name="2041" class="Comment"
+      ><a name="1098" class="Keyword"
+      >import</a
+      ><a name="1104"
+      > </a
+      ><a name="1105" href="Logic.Lambek.ResMon.Judgement.html#1" class="Module"
+      >Logic.Lambek.ResMon.Judgement</a
+      ><a name="1134"
+      >
+
+</a
+      ><a name="1136" class="Keyword"
+      >import</a
+      ><a name="1142"
+      > </a
+      ><a name="1143" href="Logic.Lambek.ResMon.Judgement.Context.html#1" class="Module"
+      >Logic.Lambek.ResMon.Judgement.Context</a
+      ><a name="1180"
+      >
+
+</a
+      ><a name="1182" class="Keyword"
+      >import</a
+      ><a name="1188"
+      > </a
+      ><a name="1189" href="Logic.Lambek.ResMon.Judgement.Context.Polarised.html#1" class="Module"
+      >Logic.Lambek.ResMon.Judgement.Context.Polarised</a
+      ><a name="1236"
+      >
+
+</a
+      ><a name="1238" class="Comment"
       >-- Implements several views on proofs in the system ResMon which are</a
-      ><a name="2109"
+      ><a name="1306"
       >
 </a
-      ><a name="2110" class="Comment"
+      ><a name="1307" class="Comment"
       >-- heavily used in the proof of admissibility of the transitivity rule.</a
+      ><a name="1378"
+      >
+</a
+      ><a name="1379" class="Comment"
+      >--</a
+      ><a name="1381"
+      >
+</a
+      ><a name="1382" class="Comment"
+      >-- One advantage of the residuation-monotonicity calculus is that</a
+      ><a name="1447"
+      >
+</a
+      ><a name="1448" class="Comment"
+      >-- every connective *must* be introduced by an application of the</a
+      ><a name="1513"
+      >
+</a
+      ><a name="1514" class="Comment"
+      >-- corresponding monotonicity-rule. The proofs in the `Origin` module</a
+      ><a name="1583"
+      >
+</a
+      ><a name="1584" class="Comment"
+      >-- can be used to construct a view on a proof that makes this</a
+      ><a name="1645"
+      >
+</a
+      ><a name="1646" class="Comment"
+      >-- introducing application of a monotonicity-rule explicit.</a
+      ><a name="1705"
+      >
+</a
+      ><a name="1706" class="Comment"
+      >--</a
+      ><a name="1708"
+      >
+</a
+      ><a name="1709" class="Comment"
+      >-- The proofs in this module are highly repetitive, and the decision</a
+      ><a name="1777"
+      >
+</a
+      ><a name="1778" class="Comment"
+      >-- procedures and data structures could be abstracted over by</a
+      ><a name="1839"
+      >
+</a
+      ><a name="1840" class="Comment"
+      >-- generalising over the connectives (cutting the file length by &#177;750</a
+      ><a name="1909"
+      >
+</a
+      ><a name="1910" class="Comment"
+      >-- lines). However, I feel that abstracting over connectives would</a
+      ><a name="1976"
+      >
+</a
+      ><a name="1977" class="Comment"
+      >-- make the logic a lot harder to read. I may do it in the future</a
+      ><a name="2042"
+      >
+</a
+      ><a name="2043" class="Comment"
+      >-- anyway.</a
+      ><a name="2053"
+      >
+</a
+      ><a name="2054" class="Keyword"
+      >import</a
+      ><a name="2060"
+      > </a
+      ><a name="2061" href="Logic.Lambek.ResMon.Origin.html#1" class="Module"
+      >Logic.Lambek.ResMon.Origin</a
+      ><a name="2087"
+      >
+
+</a
+      ><a name="2089" class="Keyword"
+      >import</a
+      ><a name="2095"
+      > </a
+      ><a name="2096" href="Logic.Lambek.ResMon.Trans.html#1" class="Module"
+      >Logic.Lambek.ResMon.Trans</a
+      ><a name="2121"
+      >
+
+</a
+      ><a name="2123" class="Comment"
+      >-- Implements the axioms and some derived inference rules.</a
       ><a name="2181"
       >
 </a
-      ><a name="2182" class="Comment"
-      >--</a
-      ><a name="2184"
+      ><a name="2182" class="Keyword"
+      >import</a
+      ><a name="2188"
+      > </a
+      ><a name="2189" href="Logic.Lambek.SC.Base.html#1" class="Module"
+      >Logic.Lambek.SC.Base</a
+      ><a name="2209"
+      >
+
+</a
+      ><a name="2211" class="Keyword"
+      >import</a
+      ><a name="2217"
+      > </a
+      ><a name="2218" href="Logic.Lambek.SC.Complete.html#1" class="Module"
+      >Logic.Lambek.SC.Complete</a
+      ><a name="2242"
+      >
+
+</a
+      ><a name="2244" class="Comment"
+      >-- Implements a proof of equivalence with the residuation-monotonicity</a
+      ><a name="2314"
       >
 </a
-      ><a name="2185" class="Comment"
+      ><a name="2315" class="Comment"
+      >-- calculus as `ResMon&#8660;SC`.</a
+      ><a name="2342"
+      >
+</a
+      ><a name="2343" class="Keyword"
+      >import</a
+      ><a name="2349"
+      > </a
+      ><a name="2350" href="Logic.Lambek.SC.EquivalentToResMon.html#1" class="Module"
+      >Logic.Lambek.SC.EquivalentToResMon</a
+      ><a name="2384"
+      >
+
+</a
+      ><a name="2386" class="Comment"
+      >-- Implements the axioms and some derived inference rules.</a
+      ><a name="2444"
+      >
+</a
+      ><a name="2445" class="Keyword"
+      >import</a
+      ><a name="2451"
+      > </a
+      ><a name="2452" href="Logic.Lambek.SC.Judgement.html#1" class="Module"
+      >Logic.Lambek.SC.Judgement</a
+      ><a name="2477"
+      >
+
+</a
+      ><a name="2479" class="Comment"
+      >-- Uses the equivalence relation between SC and the</a
+      ><a name="2530"
+      >
+</a
+      ><a name="2531" class="Comment"
+      >-- residuation-monotonicity axiomatisations to import the proof of</a
+      ><a name="2597"
+      >
+</a
+      ><a name="2598" class="Comment"
+      >-- transitivity into SC.</a
+      ><a name="2622"
+      >
+</a
+      ><a name="2623" class="Keyword"
+      >import</a
+      ><a name="2629"
+      > </a
+      ><a name="2630" href="Logic.Lambek.SC.Trans.html#1" class="Module"
+      >Logic.Lambek.SC.Trans</a
+      ><a name="2651"
+      >
+
+</a
+      ><a name="2653" class="Keyword"
+      >import</a
+      ><a name="2659"
+      > </a
+      ><a name="2660" href="Logic.Lambek.Type.html#1" class="Module"
+      >Logic.Lambek.Type</a
+      ><a name="2677"
+      >
+
+</a
+      ><a name="2679" class="Keyword"
+      >import</a
+      ><a name="2685"
+      > </a
+      ><a name="2686" href="Logic.Lambek.Type.Complexity.html#1" class="Module"
+      >Logic.Lambek.Type.Complexity</a
+      ><a name="2714"
+      >
+
+</a
+      ><a name="2716" class="Keyword"
+      >import</a
+      ><a name="2722"
+      > </a
+      ><a name="2723" href="Logic.Lambek.Type.Context.html#1" class="Module"
+      >Logic.Lambek.Type.Context</a
+      ><a name="2748"
+      >
+
+</a
+      ><a name="2750" class="Keyword"
+      >import</a
+      ><a name="2756"
+      > </a
+      ><a name="2757" href="Logic.Lambek.Type.Context.Polarised.html#1" class="Module"
+      >Logic.Lambek.Type.Context.Polarised</a
+      ><a name="2792"
+      >
+
+</a
+      ><a name="2794" class="Keyword"
+      >import</a
+      ><a name="2800"
+      > </a
+      ><a name="2801" href="Logic.LambekGrishin.ResMon.Base.html#1" class="Module"
+      >Logic.LambekGrishin.ResMon.Base</a
+      ><a name="2832"
+      >
+
+</a
+      ><a name="2834" class="Comment"
+      >-- Implements derivations---also known as partial proofs or term</a
+      ><a name="2898"
+      >
+</a
+      ><a name="2899" class="Comment"
+      >-- contexts---which are generally written as:</a
+      ><a name="2944"
+      >
+</a
+      ><a name="2945" class="Comment"
+      >--</a
+      ><a name="2947"
+      >
+</a
+      ><a name="2948" class="Comment"
+      >--     A &#8866; B</a
+      ><a name="2960"
+      >
+</a
+      ><a name="2961" class="Comment"
+      >--     -----</a
+      ><a name="2973"
+      >
+</a
+      ><a name="2974" class="Comment"
+      >--       &#8942;</a
+      ><a name="2984"
+      >
+</a
+      ><a name="2985" class="Comment"
+      >--     -----</a
+      ><a name="2997"
+      >
+</a
+      ><a name="2998" class="Comment"
+      >--     C &#8866; D</a
+      ><a name="3010"
+      >
+</a
+      ><a name="3011" class="Comment"
+      >--</a
+      ><a name="3013"
+      >
+</a
+      ><a name="3014" class="Comment"
+      >-- This definition guarantees that there is exactly *one* sub-proof</a
+      ><a name="3081"
+      >
+</a
+      ><a name="3082" class="Comment"
+      >-- missing. In addition, this module provides proofs that these</a
+      ><a name="3145"
+      >
+</a
+      ><a name="3146" class="Comment"
+      >-- contexts form a category, and thus behave function-like.</a
+      ><a name="3205"
+      >
+</a
+      ><a name="3206" class="Keyword"
+      >import</a
+      ><a name="3212"
+      > </a
+      ><a name="3213" href="Logic.LambekGrishin.ResMon.Derivation.html#1" class="Module"
+      >Logic.LambekGrishin.ResMon.Derivation</a
+      ><a name="3250"
+      >
+
+</a
+      ><a name="3252" class="Keyword"
+      >import</a
+      ><a name="3258"
+      > </a
+      ><a name="3259" href="Logic.LambekGrishin.ResMon.Judgement.html#1" class="Module"
+      >Logic.LambekGrishin.ResMon.Judgement</a
+      ><a name="3295"
+      >
+
+</a
+      ><a name="3297" class="Keyword"
+      >import</a
+      ><a name="3303"
+      > </a
+      ><a name="3304" href="Logic.LambekGrishin.ResMon.Judgement.Context.html#1" class="Module"
+      >Logic.LambekGrishin.ResMon.Judgement.Context</a
+      ><a name="3348"
+      >
+
+</a
+      ><a name="3350" class="Keyword"
+      >import</a
+      ><a name="3356"
+      > </a
+      ><a name="3357" href="Logic.LambekGrishin.ResMon.Judgement.Context.Polarised.html#1" class="Module"
+      >Logic.LambekGrishin.ResMon.Judgement.Context.Polarised</a
+      ><a name="3411"
+      >
+
+</a
+      ><a name="3413" class="Comment"
+      >-- Implements several views on proofs in the system ResMon which are</a
+      ><a name="3481"
+      >
+</a
+      ><a name="3482" class="Comment"
+      >-- heavily used in the proof of admissibility of the transitivity rule.</a
+      ><a name="3553"
+      >
+</a
+      ><a name="3554" class="Comment"
+      >--</a
+      ><a name="3556"
+      >
+</a
+      ><a name="3557" class="Comment"
       >-- One advantage of the residuation-monotonicity calculus is that</a
-      ><a name="2250"
+      ><a name="3622"
       >
 </a
-      ><a name="2251" class="Comment"
+      ><a name="3623" class="Comment"
       >-- every connective *must* be introduced by an application of the</a
-      ><a name="2316"
+      ><a name="3688"
       >
 </a
-      ><a name="2317" class="Comment"
+      ><a name="3689" class="Comment"
       >-- corresponding monotonicity-rule. The proofs in the `Origin` module</a
-      ><a name="2386"
+      ><a name="3758"
       >
 </a
-      ><a name="2387" class="Comment"
+      ><a name="3759" class="Comment"
       >-- can be used to construct a view on a proof that makes this</a
-      ><a name="2448"
+      ><a name="3820"
       >
 </a
-      ><a name="2449" class="Comment"
+      ><a name="3821" class="Comment"
       >-- introducing application of a monotonicity-rule explicit.</a
-      ><a name="2508"
+      ><a name="3880"
       >
 </a
-      ><a name="2509" class="Comment"
+      ><a name="3881" class="Comment"
       >--</a
-      ><a name="2511"
+      ><a name="3883"
       >
 </a
-      ><a name="2512" class="Comment"
+      ><a name="3884" class="Comment"
       >-- The proofs in this module are highly repetitive, and the decision</a
-      ><a name="2580"
+      ><a name="3952"
       >
 </a
-      ><a name="2581" class="Comment"
+      ><a name="3953" class="Comment"
       >-- procedures and data structures could be abstracted over by</a
-      ><a name="2642"
+      ><a name="4014"
       >
 </a
-      ><a name="2643" class="Comment"
+      ><a name="4015" class="Comment"
       >-- generalising over the connectives (cutting the file length by &#177;750</a
-      ><a name="2712"
+      ><a name="4084"
       >
 </a
-      ><a name="2713" class="Comment"
+      ><a name="4085" class="Comment"
       >-- lines). However, I feel that abstracting over connectives would</a
-      ><a name="2779"
+      ><a name="4151"
       >
 </a
-      ><a name="2780" class="Comment"
+      ><a name="4152" class="Comment"
       >-- make the logic a lot harder to read. I may do it in the future</a
-      ><a name="2845"
+      ><a name="4217"
       >
 </a
-      ><a name="2846" class="Comment"
+      ><a name="4218" class="Comment"
       >-- anyway.</a
-      ><a name="2856"
+      ><a name="4228"
       >
 </a
-      ><a name="2857" class="Keyword"
+      ><a name="4229" class="Keyword"
       >import</a
-      ><a name="2863"
+      ><a name="4235"
       > </a
-      ><a name="2864" href="Logic.LambekGrishin.ResMon.Origin.html#1" class="Module"
+      ><a name="4236" href="Logic.LambekGrishin.ResMon.Origin.html#1" class="Module"
       >Logic.LambekGrishin.ResMon.Origin</a
-      ><a name="2897"
+      ><a name="4269"
       >
 
 </a
-      ><a name="2899" class="Keyword"
+      ><a name="4271" class="Keyword"
       >import</a
-      ><a name="2905"
+      ><a name="4277"
       > </a
-      ><a name="2906" href="Logic.LambekGrishin.ResMon.Trans.html#1" class="Module"
+      ><a name="4278" href="Logic.LambekGrishin.ResMon.Trans.html#1" class="Module"
       >Logic.LambekGrishin.ResMon.Trans</a
-      ><a name="2938"
+      ><a name="4310"
       >
 
 </a
-      ><a name="2940" class="Keyword"
+      ><a name="4312" class="Keyword"
       >import</a
-      ><a name="2946"
+      ><a name="4318"
       > </a
-      ><a name="2947" href="Logic.LambekGrishin.Type.html#1" class="Module"
+      ><a name="4319" href="Logic.LambekGrishin.Type.html#1" class="Module"
       >Logic.LambekGrishin.Type</a
-      ><a name="2971"
+      ><a name="4343"
       >
 
 </a
-      ><a name="2973" class="Keyword"
+      ><a name="4345" class="Keyword"
       >import</a
-      ><a name="2979"
+      ><a name="4351"
       > </a
-      ><a name="2980" href="Logic.LambekGrishin.Type.Context.html#1" class="Module"
+      ><a name="4352" href="Logic.LambekGrishin.Type.Complexity.html#1" class="Module"
+      >Logic.LambekGrishin.Type.Complexity</a
+      ><a name="4387"
+      >
+
+</a
+      ><a name="4389" class="Keyword"
+      >import</a
+      ><a name="4395"
+      > </a
+      ><a name="4396" href="Logic.LambekGrishin.Type.Context.html#1" class="Module"
       >Logic.LambekGrishin.Type.Context</a
-      ><a name="3012"
+      ><a name="4428"
       >
 
 </a
-      ><a name="3014" class="Keyword"
+      ><a name="4430" class="Keyword"
       >import</a
-      ><a name="3020"
+      ><a name="4436"
       > </a
-      ><a name="3021" href="Logic.LambekGrishin.Type.Context.Polarised.html#1" class="Module"
+      ><a name="4437" href="Logic.LambekGrishin.Type.Context.Polarised.html#1" class="Module"
       >Logic.LambekGrishin.Type.Context.Polarised</a
-      ><a name="3063"
+      ><a name="4479"
       >
 
 </a
-      ><a name="3065" class="Keyword"
+      ><a name="4481" class="Keyword"
       >import</a
-      ><a name="3071"
+      ><a name="4487"
       > </a
-      ><a name="3072" href="Logic.LambekGrishin.Type.Polarised.html#1" class="Module"
+      ><a name="4488" href="Logic.LambekGrishin.Type.Polarised.html#1" class="Module"
       >Logic.LambekGrishin.Type.Polarised</a
-      ><a name="3106"
+      ><a name="4522"
       >
 
 </a
-      ><a name="3108" class="Keyword"
+      ><a name="4524" class="Keyword"
       >import</a
-      ><a name="3114"
+      ><a name="4530"
       > </a
-      ><a name="3115" href="Logic.Polarity.html#1" class="Module"
+      ><a name="4531" href="Logic.Polarity.html#1" class="Module"
       >Logic.Polarity</a
-      ><a name="3129"
+      ><a name="4545"
       >
 
 </a
-      ><a name="3131" class="Keyword"
+      ><a name="4547" class="Keyword"
       >import</a
-      ><a name="3137"
+      ><a name="4553"
       > </a
-      ><a name="3138" href="Logic.Reification.html#1" class="Module"
+      ><a name="4554" href="Logic.Reification.html#1" class="Module"
       >Logic.Reification</a
-      ><a name="3155"
+      ><a name="4571"
+      >
+
+</a
+      ><a name="4573" class="Comment"
+      >-- A utility module which constructs an equivalence relation from a</a
+      ><a name="4640"
+      >
+</a
+      ><a name="4641" class="Comment"
+      >-- partial order. This requires some tricks, as the Agda standard</a
+      ><a name="4706"
+      >
+</a
+      ><a name="4707" class="Comment"
+      >-- library defines orders based on equivalences. Therefore, instead of</a
+      ><a name="4777"
+      >
+</a
+      ><a name="4778" class="Comment"
+      >-- requiring an instance of the poset class, this module requires an</a
+      ><a name="4846"
+      >
+</a
+      ><a name="4847" class="Comment"
+      >-- order together with proof of identity and transitivity, and defines</a
+      ><a name="4917"
+      >
+</a
+      ><a name="4918" class="Comment"
+      >-- an equivalence relation, and a complete instance of the poset class.</a
+      ><a name="4989"
+      >
+</a
+      ><a name="4990" class="Keyword"
+      >import</a
+      ><a name="4996"
+      > </a
+      ><a name="4997" href="Relation.Binary.PartialOrderToEquivalence.html#1" class="Module"
+      >Relation.Binary.PartialOrderToEquivalence</a
+      ><a name="5038"
       >
 </a
       ></pre

@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Logic.Lambek.SC.Judgement</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="73"
+      >
+</a
+      ><a name="74" class="Comment"
+      >-- The Lambek Calculus in Agda</a
+      ><a name="104"
+      >
+</a
+      ><a name="105" class="Comment"
+      >--</a
+      ><a name="107"
+      >
+</a
+      ><a name="108" class="Comment"
+      >-- Implements the axioms and some derived inference rules.</a
+      ><a name="166"
+      >
+</a
+      ><a name="167" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="239"
+      >
+
+
+</a
+      ><a name="242" class="Keyword"
+      >module</a
+      ><a name="248"
+      > </a
+      ><a name="249" href="Logic.Lambek.SC.Judgement.html#1" class="Module"
+      >Logic.Lambek.SC.Judgement</a
+      ><a name="274"
+      > </a
+      ><a name="275" class="Symbol"
+      >{</a
+      ><a name="276" href="Logic.Lambek.SC.Judgement.html#276" class="Bound"
+      >&#8467;</a
+      ><a name="277" class="Symbol"
+      >}</a
+      ><a name="278"
+      > </a
+      ><a name="279" class="Symbol"
+      >(</a
+      ><a name="280" href="Logic.Lambek.SC.Judgement.html#280" class="Bound"
+      >Univ</a
+      ><a name="284"
+      > </a
+      ><a name="285" class="Symbol"
+      >:</a
+      ><a name="286"
+      > </a
+      ><a name="287" class="PrimitiveType"
+      >Set</a
+      ><a name="290"
+      > </a
+      ><a name="291" href="Logic.Lambek.SC.Judgement.html#276" class="Bound"
+      >&#8467;</a
+      ><a name="292" class="Symbol"
+      >)</a
+      ><a name="293"
+      > </a
+      ><a name="294" class="Keyword"
+      >where</a
+      ><a name="299"
+      >
+
+
+</a
+      ><a name="302" class="Keyword"
+      >open</a
+      ><a name="306"
+      > </a
+      ><a name="307" class="Keyword"
+      >import</a
+      ><a name="313"
+      > </a
+      ><a name="314" href="Logic.Lambek.Type.html#1" class="Module"
+      >Logic.Lambek.Type</a
+      ><a name="331"
+      >         </a
+      ><a name="340" href="Logic.Lambek.SC.Judgement.html#280" class="Bound"
+      >Univ</a
+      ><a name="344"
+      > </a
+      ><a name="345" class="Symbol"
+      >as</a
+      ><a name="347"
+      > </a
+      ><a name="348" href="Logic.Lambek.SC.Judgement.html#348" class="Module"
+      >T</a
+      ><a name="349"
+      >
+</a
+      ><a name="350" class="Keyword"
+      >open</a
+      ><a name="354"
+      > </a
+      ><a name="355" class="Keyword"
+      >import</a
+      ><a name="361"
+      > </a
+      ><a name="362" href="Logic.Lambek.Type.Context.html#1" class="Module"
+      >Logic.Lambek.Type.Context</a
+      ><a name="387"
+      > </a
+      ><a name="388" href="Logic.Lambek.SC.Judgement.html#280" class="Bound"
+      >Univ</a
+      ><a name="392"
+      > </a
+      ><a name="393" class="Symbol"
+      >as</a
+      ><a name="395"
+      > </a
+      ><a name="396" href="Logic.Lambek.SC.Judgement.html#396" class="Module"
+      >TC</a
+      ><a name="398"
+      >
+</a
+      ><a name="399" class="Keyword"
+      >open</a
+      ><a name="403"
+      > </a
+      ><a name="404" href="Logic.Lambek.SC.Judgement.html#396" class="Module"
+      >TC.</a
+      ><a name="407" href="Logic.Lambek.Type.Context.html#1994" class="Module"
+      >Simple</a
+      ><a name="413"
+      > </a
+      ><a name="414" class="Keyword"
+      >using</a
+      ><a name="419"
+      > </a
+      ><a name="420" class="Symbol"
+      >(</a
+      ><a name="421"
+      >_[_]</a
+      ><a name="425" class="Symbol"
+      >;</a
+      ><a name="426"
+      > _&lt;_&gt;</a
+      ><a name="431" class="Symbol"
+      >;</a
+      ><a name="432"
+      > &lt;&gt;-assoc</a
+      ><a name="441" class="Symbol"
+      >;</a
+      ><a name="442"
+      > &lt;&gt;-def</a
+      ><a name="449" class="Symbol"
+      >)</a
+      ><a name="450"
+      >
+
+
+</a
+      ><a name="453" class="Keyword"
+      >infix</a
+      ><a name="458"
+      > </a
+      ><a name="459" class="Number"
+      >5</a
+      ><a name="460"
+      > _&#8866;_ &#8866;&#7482;_ &#8866;&#7486;_
+
+</a
+      ><a name="474" class="Keyword"
+      >data</a
+      ><a name="478"
+      > </a
+      ><a name="479" href="Logic.Lambek.SC.Judgement.html#479" class="Datatype"
+      >Judgement</a
+      ><a name="488"
+      > </a
+      ><a name="489" class="Symbol"
+      >:</a
+      ><a name="490"
+      > </a
+      ><a name="491" class="PrimitiveType"
+      >Set</a
+      ><a name="494"
+      > </a
+      ><a name="495" href="Logic.Lambek.SC.Judgement.html#276" class="Bound"
+      >&#8467;</a
+      ><a name="496"
+      > </a
+      ><a name="497" class="Keyword"
+      >where</a
+      ><a name="502"
+      >
+  </a
+      ><a name="505" href="Logic.Lambek.SC.Judgement.html#505" class="InductiveConstructor Operator"
+      >_&#8866;_</a
+      ><a name="508"
+      > </a
+      ><a name="509" class="Symbol"
+      >:</a
+      ><a name="510"
+      > </a
+      ><a name="511" href="Logic.Lambek.Type.html#586" class="Datatype"
+      >Type</a
+      ><a name="515"
+      > </a
+      ><a name="516" class="Symbol"
+      >&#8594;</a
+      ><a name="517"
+      > </a
+      ><a name="518" href="Logic.Lambek.Type.html#586" class="Datatype"
+      >Type</a
+      ><a name="522"
+      > </a
+      ><a name="523" class="Symbol"
+      >&#8594;</a
+      ><a name="524"
+      > </a
+      ><a name="525" href="Logic.Lambek.SC.Judgement.html#479" class="Datatype"
+      >Judgement</a
+      ><a name="534"
+      >
+  </a
+      ><a name="537" href="Logic.Lambek.SC.Judgement.html#537" class="InductiveConstructor Operator"
+      >&#8866;&#7482;_</a
+      ><a name="540"
+      > </a
+      ><a name="541" class="Symbol"
+      >:</a
+      ><a name="542"
+      > </a
+      ><a name="543" href="Logic.Lambek.Type.Context.html#1069" class="Datatype"
+      >Context</a
+      ><a name="550"
+      > </a
+      ><a name="551" class="Symbol"
+      >&#8594;</a
+      ><a name="552"
+      > </a
+      ><a name="553" href="Logic.Lambek.SC.Judgement.html#479" class="Datatype"
+      >Judgement</a
+      ><a name="562"
+      >
+  </a
+      ><a name="565" href="Logic.Lambek.SC.Judgement.html#565" class="InductiveConstructor Operator"
+      >&#8866;&#7486;_</a
+      ><a name="568"
+      > </a
+      ><a name="569" class="Symbol"
+      >:</a
+      ><a name="570"
+      > </a
+      ><a name="571" href="Logic.Lambek.Type.Context.html#1069" class="Datatype"
+      >Context</a
+      ><a name="578"
+      > </a
+      ><a name="579" class="Symbol"
+      >&#8594;</a
+      ><a name="580"
+      > </a
+      ><a name="581" href="Logic.Lambek.SC.Judgement.html#479" class="Datatype"
+      >Judgement</a
+      ><a name="590"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>

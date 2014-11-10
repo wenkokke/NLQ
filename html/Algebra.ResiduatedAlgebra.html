@@ -1,0 +1,1721 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Algebra.ResiduatedAlgebra</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="73"
+      >
+</a
+      ><a name="74" class="Comment"
+      >-- The Lambek Calculus in Agda</a
+      ><a name="104"
+      >
+</a
+      ><a name="105" class="Comment"
+      >--</a
+      ><a name="107"
+      >
+</a
+      ><a name="108" class="Comment"
+      >-- Defines a residuated algebra, which I've taken to be:</a
+      ><a name="164"
+      >
+</a
+      ><a name="165" class="Comment"
+      >--</a
+      ><a name="167"
+      >
+</a
+      ><a name="168" class="Comment"
+      >-- (1) a residuated ordered monoid without associativity, or</a
+      ><a name="228"
+      >
+</a
+      ><a name="229" class="Comment"
+      >-- (2) an algebra which adds a partial order and a left and right</a
+      ><a name="294"
+      >
+</a
+      ><a name="295" class="Comment"
+      >--     residuation operation. Congruence of the binary operator &#8729;</a
+      ><a name="360"
+      >
+</a
+      ><a name="361" class="Comment"
+      >--     results from its compatibility with the partial order &#8804;.</a
+      ><a name="424"
+      >
+</a
+      ><a name="425" class="Comment"
+      >--</a
+      ><a name="427"
+      >
+</a
+      ><a name="428" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="500"
+      >
+
+</a
+      ><a name="502" class="Keyword"
+      >module</a
+      ><a name="508"
+      > </a
+      ><a name="509" href="Algebra.ResiduatedAlgebra.html#1" class="Module"
+      >Algebra.ResiduatedAlgebra</a
+      ><a name="534"
+      > </a
+      ><a name="535" class="Keyword"
+      >where</a
+      ><a name="540"
+      >
+
+
+
+</a
+      ><a name="544" class="Keyword"
+      >open</a
+      ><a name="548"
+      > </a
+      ><a name="549" class="Keyword"
+      >import</a
+      ><a name="555"
+      > </a
+      ><a name="556" href="Level.html#1" class="Module"
+      >Level</a
+      ><a name="561"
+      > </a
+      ><a name="562" class="Keyword"
+      >using</a
+      ><a name="567"
+      > </a
+      ><a name="568" class="Symbol"
+      >(</a
+      ><a name="569"
+      >Level</a
+      ><a name="574" class="Symbol"
+      >;</a
+      ><a name="575"
+      > suc</a
+      ><a name="579" class="Symbol"
+      >;</a
+      ><a name="580"
+      > _&#8852;_</a
+      ><a name="584" class="Symbol"
+      >)</a
+      ><a name="585"
+      >
+</a
+      ><a name="586" class="Keyword"
+      >open</a
+      ><a name="590"
+      > </a
+      ><a name="591" class="Keyword"
+      >import</a
+      ><a name="597"
+      > </a
+      ><a name="598" href="Algebra.FunctionProperties.html#1" class="Module"
+      >Algebra.FunctionProperties</a
+      ><a name="624"
+      > </a
+      ><a name="625" class="Symbol"
+      >as</a
+      ><a name="627"
+      > </a
+      ><a name="628" class="Module"
+      >FunctionProperties</a
+      ><a name="646"
+      > </a
+      ><a name="647" class="Keyword"
+      >using</a
+      ><a name="652"
+      > </a
+      ><a name="653" class="Symbol"
+      >(</a
+      ><a name="654"
+      >Op&#8322;</a
+      ><a name="657" class="Symbol"
+      >)</a
+      ><a name="658"
+      >
+</a
+      ><a name="659" class="Keyword"
+      >open</a
+      ><a name="663"
+      > </a
+      ><a name="664" class="Keyword"
+      >import</a
+      ><a name="670"
+      > </a
+      ><a name="671" href="Function.Equivalence.html#1" class="Module"
+      >Function.Equivalence</a
+      ><a name="691"
+      > </a
+      ><a name="692" class="Keyword"
+      >using</a
+      ><a name="697"
+      > </a
+      ><a name="698" class="Symbol"
+      >(</a
+      ><a name="699"
+      >_&#8660;_</a
+      ><a name="702" class="Symbol"
+      >)</a
+      ><a name="703"
+      >
+</a
+      ><a name="704" class="Keyword"
+      >open</a
+      ><a name="708"
+      > </a
+      ><a name="709" class="Keyword"
+      >import</a
+      ><a name="715"
+      > </a
+      ><a name="716" href="Relation.Binary.html#1" class="Module"
+      >Relation.Binary</a
+      ><a name="731"
+      > </a
+      ><a name="732" class="Symbol"
+      >as</a
+      ><a name="734"
+      > </a
+      ><a name="735" class="Module"
+      >Rel</a
+      ><a name="738"
+      > </a
+      ><a name="739" class="Keyword"
+      >using</a
+      ><a name="744"
+      > </a
+      ><a name="745" class="Symbol"
+      >(</a
+      ><a name="746"
+      >Rel</a
+      ><a name="749" class="Symbol"
+      >;</a
+      ><a name="750"
+      > _Preserves&#8322;_&#10230;_&#10230;_</a
+      ><a name="767" class="Symbol"
+      >;</a
+      ><a name="768"
+      > IsPartialOrder</a
+      ><a name="783" class="Symbol"
+      >;</a
+      ><a name="784"
+      > Poset</a
+      ><a name="790" class="Symbol"
+      >)</a
+      ><a name="791"
+      >
+</a
+      ><a name="792" class="Keyword"
+      >open</a
+      ><a name="796"
+      > </a
+      ><a name="797" class="Keyword"
+      >import</a
+      ><a name="803"
+      > </a
+      ><a name="804" href="Relation.Binary.PartialOrderReasoning.html#1" class="Module"
+      >Relation.Binary.PartialOrderReasoning</a
+      ><a name="841"
+      > </a
+      ><a name="842" class="Symbol"
+      >as</a
+      ><a name="844"
+      > </a
+      ><a name="845" class="Module"
+      >&#8804;-Reasoning</a
+      ><a name="856"
+      > </a
+      ><a name="857" class="Keyword"
+      >using</a
+      ><a name="862"
+      > </a
+      ><a name="863" class="Symbol"
+      >()</a
+      ><a name="865"
+      >
+
+
+
+</a
+      ><a name="869" class="Keyword"
+      >module</a
+      ><a name="875"
+      > </a
+      ><a name="876" href="Algebra.ResiduatedAlgebra.html#876" class="Module"
+      >ResiduationProperties</a
+      ><a name="897"
+      > </a
+      ><a name="898" class="Symbol"
+      >{</a
+      ><a name="899" href="Algebra.ResiduatedAlgebra.html#899" class="Bound"
+      >a</a
+      ><a name="900"
+      > </a
+      ><a name="901" href="Algebra.ResiduatedAlgebra.html#901" class="Bound"
+      >&#8467;</a
+      ><a name="902" class="Symbol"
+      >}</a
+      ><a name="903"
+      > </a
+      ><a name="904" class="Symbol"
+      >{</a
+      ><a name="905" href="Algebra.ResiduatedAlgebra.html#905" class="Bound"
+      >A</a
+      ><a name="906"
+      > </a
+      ><a name="907" class="Symbol"
+      >:</a
+      ><a name="908"
+      > </a
+      ><a name="909" class="PrimitiveType"
+      >Set</a
+      ><a name="912"
+      > </a
+      ><a name="913" href="Algebra.ResiduatedAlgebra.html#899" class="Bound"
+      >a</a
+      ><a name="914" class="Symbol"
+      >}</a
+      ><a name="915"
+      > </a
+      ><a name="916" class="Symbol"
+      >(</a
+      ><a name="917" href="Algebra.ResiduatedAlgebra.html#917" class="Bound Operator"
+      >_&#8804;_</a
+      ><a name="920"
+      > </a
+      ><a name="921" class="Symbol"
+      >:</a
+      ><a name="922"
+      > </a
+      ><a name="923" href="Relation.Binary.Core.html#761" class="Function"
+      >Rel</a
+      ><a name="926"
+      > </a
+      ><a name="927" href="Algebra.ResiduatedAlgebra.html#905" class="Bound"
+      >A</a
+      ><a name="928"
+      > </a
+      ><a name="929" href="Algebra.ResiduatedAlgebra.html#901" class="Bound"
+      >&#8467;</a
+      ><a name="930" class="Symbol"
+      >)</a
+      ><a name="931"
+      > </a
+      ><a name="932" class="Keyword"
+      >where</a
+      ><a name="937"
+      >
+
+  </a
+      ><a name="941" href="Algebra.ResiduatedAlgebra.html#941" class="Function Operator"
+      >_LeftResidualOf_</a
+      ><a name="957"
+      > </a
+      ><a name="958" class="Symbol"
+      >:</a
+      ><a name="959"
+      > </a
+      ><a name="960" class="Symbol"
+      >(</a
+      ><a name="961" href="Algebra.ResiduatedAlgebra.html#961" class="Bound"
+      >&#8656;</a
+      ><a name="962"
+      > </a
+      ><a name="963" href="Algebra.ResiduatedAlgebra.html#963" class="Bound"
+      >&#8729;</a
+      ><a name="964"
+      > </a
+      ><a name="965" class="Symbol"
+      >:</a
+      ><a name="966"
+      > </a
+      ><a name="967" href="Algebra.FunctionProperties.Core.html#715" class="Function"
+      >Op&#8322;</a
+      ><a name="970"
+      > </a
+      ><a name="971" href="Algebra.ResiduatedAlgebra.html#905" class="Bound"
+      >A</a
+      ><a name="972" class="Symbol"
+      >)</a
+      ><a name="973"
+      > </a
+      ><a name="974" class="Symbol"
+      >&#8594;</a
+      ><a name="975"
+      > </a
+      ><a name="976" class="PrimitiveType"
+      >Set</a
+      ><a name="979"
+      > </a
+      ><a name="980" class="Symbol"
+      >(</a
+      ><a name="981" href="Algebra.ResiduatedAlgebra.html#899" class="Bound"
+      >a</a
+      ><a name="982"
+      > </a
+      ><a name="983" href="Agda.Primitive.html#626" class="Primitive Operator"
+      >&#8852;</a
+      ><a name="984"
+      > </a
+      ><a name="985" href="Algebra.ResiduatedAlgebra.html#901" class="Bound"
+      >&#8467;</a
+      ><a name="986" class="Symbol"
+      >)</a
+      ><a name="987"
+      >
+  </a
+      ><a name="990" href="Algebra.ResiduatedAlgebra.html#941" class="Function Operator"
+      >_LeftResidualOf_</a
+      ><a name="1006"
+      > </a
+      ><a name="1007" href="Algebra.ResiduatedAlgebra.html#1007" class="Bound Operator"
+      >_&#8656;_</a
+      ><a name="1010"
+      > </a
+      ><a name="1011" href="Algebra.ResiduatedAlgebra.html#1011" class="Bound Operator"
+      >_&#8729;_</a
+      ><a name="1014"
+      > </a
+      ><a name="1015" class="Symbol"
+      >=</a
+      ><a name="1016"
+      > </a
+      ><a name="1017" class="Symbol"
+      >&#8704;</a
+      ><a name="1018"
+      > </a
+      ><a name="1019" class="Symbol"
+      >{</a
+      ><a name="1020" href="Algebra.ResiduatedAlgebra.html#1020" class="Bound"
+      >x</a
+      ><a name="1021"
+      > </a
+      ><a name="1022" href="Algebra.ResiduatedAlgebra.html#1022" class="Bound"
+      >y</a
+      ><a name="1023"
+      > </a
+      ><a name="1024" href="Algebra.ResiduatedAlgebra.html#1024" class="Bound"
+      >z</a
+      ><a name="1025" class="Symbol"
+      >}</a
+      ><a name="1026"
+      > </a
+      ><a name="1027" class="Symbol"
+      >&#8594;</a
+      ><a name="1028"
+      > </a
+      ><a name="1029" class="Symbol"
+      >(</a
+      ><a name="1030" href="Algebra.ResiduatedAlgebra.html#1020" class="Bound"
+      >x</a
+      ><a name="1031"
+      > </a
+      ><a name="1032" href="Algebra.ResiduatedAlgebra.html#1011" class="Bound Operator"
+      >&#8729;</a
+      ><a name="1033"
+      > </a
+      ><a name="1034" href="Algebra.ResiduatedAlgebra.html#1022" class="Bound"
+      >y</a
+      ><a name="1035" class="Symbol"
+      >)</a
+      ><a name="1036"
+      > </a
+      ><a name="1037" href="Algebra.ResiduatedAlgebra.html#917" class="Bound Operator"
+      >&#8804;</a
+      ><a name="1038"
+      > </a
+      ><a name="1039" href="Algebra.ResiduatedAlgebra.html#1024" class="Bound"
+      >z</a
+      ><a name="1040"
+      > </a
+      ><a name="1041" href="Function.Equivalence.html#711" class="Function Operator"
+      >&#8660;</a
+      ><a name="1042"
+      > </a
+      ><a name="1043" href="Algebra.ResiduatedAlgebra.html#1020" class="Bound"
+      >x</a
+      ><a name="1044"
+      > </a
+      ><a name="1045" href="Algebra.ResiduatedAlgebra.html#917" class="Bound Operator"
+      >&#8804;</a
+      ><a name="1046"
+      > </a
+      ><a name="1047" class="Symbol"
+      >(</a
+      ><a name="1048" href="Algebra.ResiduatedAlgebra.html#1024" class="Bound"
+      >z</a
+      ><a name="1049"
+      > </a
+      ><a name="1050" href="Algebra.ResiduatedAlgebra.html#1007" class="Bound Operator"
+      >&#8656;</a
+      ><a name="1051"
+      > </a
+      ><a name="1052" href="Algebra.ResiduatedAlgebra.html#1022" class="Bound"
+      >y</a
+      ><a name="1053" class="Symbol"
+      >)</a
+      ><a name="1054"
+      >
+
+  </a
+      ><a name="1058" href="Algebra.ResiduatedAlgebra.html#1058" class="Function Operator"
+      >_RightResidualOf_</a
+      ><a name="1075"
+      > </a
+      ><a name="1076" class="Symbol"
+      >:</a
+      ><a name="1077"
+      > </a
+      ><a name="1078" class="Symbol"
+      >(</a
+      ><a name="1079" href="Algebra.ResiduatedAlgebra.html#1079" class="Bound"
+      >&#8658;</a
+      ><a name="1080"
+      > </a
+      ><a name="1081" href="Algebra.ResiduatedAlgebra.html#1081" class="Bound"
+      >&#8729;</a
+      ><a name="1082"
+      > </a
+      ><a name="1083" class="Symbol"
+      >:</a
+      ><a name="1084"
+      > </a
+      ><a name="1085" href="Algebra.FunctionProperties.Core.html#715" class="Function"
+      >Op&#8322;</a
+      ><a name="1088"
+      > </a
+      ><a name="1089" href="Algebra.ResiduatedAlgebra.html#905" class="Bound"
+      >A</a
+      ><a name="1090" class="Symbol"
+      >)</a
+      ><a name="1091"
+      > </a
+      ><a name="1092" class="Symbol"
+      >&#8594;</a
+      ><a name="1093"
+      > </a
+      ><a name="1094" class="PrimitiveType"
+      >Set</a
+      ><a name="1097"
+      > </a
+      ><a name="1098" class="Symbol"
+      >(</a
+      ><a name="1099" href="Algebra.ResiduatedAlgebra.html#899" class="Bound"
+      >a</a
+      ><a name="1100"
+      > </a
+      ><a name="1101" href="Agda.Primitive.html#626" class="Primitive Operator"
+      >&#8852;</a
+      ><a name="1102"
+      > </a
+      ><a name="1103" href="Algebra.ResiduatedAlgebra.html#901" class="Bound"
+      >&#8467;</a
+      ><a name="1104" class="Symbol"
+      >)</a
+      ><a name="1105"
+      >
+  </a
+      ><a name="1108" href="Algebra.ResiduatedAlgebra.html#1058" class="Function Operator"
+      >_RightResidualOf_</a
+      ><a name="1125"
+      > </a
+      ><a name="1126" href="Algebra.ResiduatedAlgebra.html#1126" class="Bound Operator"
+      >_&#8658;_</a
+      ><a name="1129"
+      > </a
+      ><a name="1130" href="Algebra.ResiduatedAlgebra.html#1130" class="Bound Operator"
+      >_&#8729;_</a
+      ><a name="1133"
+      > </a
+      ><a name="1134" class="Symbol"
+      >=</a
+      ><a name="1135"
+      > </a
+      ><a name="1136" class="Symbol"
+      >&#8704;</a
+      ><a name="1137"
+      > </a
+      ><a name="1138" class="Symbol"
+      >{</a
+      ><a name="1139" href="Algebra.ResiduatedAlgebra.html#1139" class="Bound"
+      >x</a
+      ><a name="1140"
+      > </a
+      ><a name="1141" href="Algebra.ResiduatedAlgebra.html#1141" class="Bound"
+      >y</a
+      ><a name="1142"
+      > </a
+      ><a name="1143" href="Algebra.ResiduatedAlgebra.html#1143" class="Bound"
+      >z</a
+      ><a name="1144" class="Symbol"
+      >}</a
+      ><a name="1145"
+      > </a
+      ><a name="1146" class="Symbol"
+      >&#8594;</a
+      ><a name="1147"
+      > </a
+      ><a name="1148" href="Algebra.ResiduatedAlgebra.html#1141" class="Bound"
+      >y</a
+      ><a name="1149"
+      > </a
+      ><a name="1150" href="Algebra.ResiduatedAlgebra.html#917" class="Bound Operator"
+      >&#8804;</a
+      ><a name="1151"
+      > </a
+      ><a name="1152" class="Symbol"
+      >(</a
+      ><a name="1153" href="Algebra.ResiduatedAlgebra.html#1139" class="Bound"
+      >x</a
+      ><a name="1154"
+      > </a
+      ><a name="1155" href="Algebra.ResiduatedAlgebra.html#1126" class="Bound Operator"
+      >&#8658;</a
+      ><a name="1156"
+      > </a
+      ><a name="1157" href="Algebra.ResiduatedAlgebra.html#1143" class="Bound"
+      >z</a
+      ><a name="1158" class="Symbol"
+      >)</a
+      ><a name="1159"
+      > </a
+      ><a name="1160" href="Function.Equivalence.html#711" class="Function Operator"
+      >&#8660;</a
+      ><a name="1161"
+      > </a
+      ><a name="1162" class="Symbol"
+      >(</a
+      ><a name="1163" href="Algebra.ResiduatedAlgebra.html#1139" class="Bound"
+      >x</a
+      ><a name="1164"
+      > </a
+      ><a name="1165" href="Algebra.ResiduatedAlgebra.html#1130" class="Bound Operator"
+      >&#8729;</a
+      ><a name="1166"
+      > </a
+      ><a name="1167" href="Algebra.ResiduatedAlgebra.html#1141" class="Bound"
+      >y</a
+      ><a name="1168" class="Symbol"
+      >)</a
+      ><a name="1169"
+      > </a
+      ><a name="1170" href="Algebra.ResiduatedAlgebra.html#917" class="Bound Operator"
+      >&#8804;</a
+      ><a name="1171"
+      > </a
+      ><a name="1172" href="Algebra.ResiduatedAlgebra.html#1143" class="Bound"
+      >z</a
+      ><a name="1173"
+      >
+
+
+
+</a
+      ><a name="1177" class="Keyword"
+      >record</a
+      ><a name="1183"
+      > </a
+      ><a name="1184" href="Algebra.ResiduatedAlgebra.html#1184" class="Record"
+      >IsResiduatedAlgebra</a
+      ><a name="1203"
+      >
+       </a
+      ><a name="1211" class="Symbol"
+      >{</a
+      ><a name="1212" href="Algebra.ResiduatedAlgebra.html#1212" class="Bound"
+      >a</a
+      ><a name="1213"
+      > </a
+      ><a name="1214" href="Algebra.ResiduatedAlgebra.html#1214" class="Bound"
+      >&#8467;&#8321;</a
+      ><a name="1216"
+      > </a
+      ><a name="1217" href="Algebra.ResiduatedAlgebra.html#1217" class="Bound"
+      >&#8467;&#8322;</a
+      ><a name="1219" class="Symbol"
+      >}</a
+      ><a name="1220"
+      > </a
+      ><a name="1221" class="Symbol"
+      >{</a
+      ><a name="1222" href="Algebra.ResiduatedAlgebra.html#1222" class="Bound"
+      >A</a
+      ><a name="1223"
+      > </a
+      ><a name="1224" class="Symbol"
+      >:</a
+      ><a name="1225"
+      > </a
+      ><a name="1226" class="PrimitiveType"
+      >Set</a
+      ><a name="1229"
+      > </a
+      ><a name="1230" href="Algebra.ResiduatedAlgebra.html#1212" class="Bound"
+      >a</a
+      ><a name="1231" class="Symbol"
+      >}</a
+      ><a name="1232"
+      >
+       </a
+      ><a name="1240" class="Symbol"
+      >(</a
+      ><a name="1241" href="Algebra.ResiduatedAlgebra.html#1241" class="Bound"
+      >&#8776;</a
+      ><a name="1242"
+      > </a
+      ><a name="1243" class="Symbol"
+      >:</a
+      ><a name="1244"
+      > </a
+      ><a name="1245" href="Relation.Binary.Core.html#761" class="Function"
+      >Rel</a
+      ><a name="1248"
+      > </a
+      ><a name="1249" href="Algebra.ResiduatedAlgebra.html#1222" class="Bound"
+      >A</a
+      ><a name="1250"
+      > </a
+      ><a name="1251" href="Algebra.ResiduatedAlgebra.html#1214" class="Bound"
+      >&#8467;&#8321;</a
+      ><a name="1253" class="Symbol"
+      >)</a
+      ><a name="1254"
+      > </a
+      ><a name="1255" class="Symbol"
+      >(</a
+      ><a name="1256" href="Algebra.ResiduatedAlgebra.html#1256" class="Bound"
+      >&#8804;</a
+      ><a name="1257"
+      > </a
+      ><a name="1258" class="Symbol"
+      >:</a
+      ><a name="1259"
+      > </a
+      ><a name="1260" href="Relation.Binary.Core.html#761" class="Function"
+      >Rel</a
+      ><a name="1263"
+      > </a
+      ><a name="1264" href="Algebra.ResiduatedAlgebra.html#1222" class="Bound"
+      >A</a
+      ><a name="1265"
+      > </a
+      ><a name="1266" href="Algebra.ResiduatedAlgebra.html#1217" class="Bound"
+      >&#8467;&#8322;</a
+      ><a name="1268" class="Symbol"
+      >)</a
+      ><a name="1269"
+      >
+       </a
+      ><a name="1277" class="Symbol"
+      >(</a
+      ><a name="1278" href="Algebra.ResiduatedAlgebra.html#1278" class="Bound"
+      >&#8729;</a
+      ><a name="1279"
+      > </a
+      ><a name="1280" class="Symbol"
+      >:</a
+      ><a name="1281"
+      > </a
+      ><a name="1282" href="Algebra.FunctionProperties.Core.html#715" class="Function"
+      >Op&#8322;</a
+      ><a name="1285"
+      > </a
+      ><a name="1286" href="Algebra.ResiduatedAlgebra.html#1222" class="Bound"
+      >A</a
+      ><a name="1287" class="Symbol"
+      >)</a
+      ><a name="1288"
+      > </a
+      ><a name="1289" class="Symbol"
+      >(</a
+      ><a name="1290" href="Algebra.ResiduatedAlgebra.html#1290" class="Bound"
+      >&#8658;</a
+      ><a name="1291"
+      > </a
+      ><a name="1292" class="Symbol"
+      >:</a
+      ><a name="1293"
+      > </a
+      ><a name="1294" href="Algebra.FunctionProperties.Core.html#715" class="Function"
+      >Op&#8322;</a
+      ><a name="1297"
+      > </a
+      ><a name="1298" href="Algebra.ResiduatedAlgebra.html#1222" class="Bound"
+      >A</a
+      ><a name="1299" class="Symbol"
+      >)</a
+      ><a name="1300"
+      > </a
+      ><a name="1301" class="Symbol"
+      >(</a
+      ><a name="1302" href="Algebra.ResiduatedAlgebra.html#1302" class="Bound"
+      >&#8656;</a
+      ><a name="1303"
+      > </a
+      ><a name="1304" class="Symbol"
+      >:</a
+      ><a name="1305"
+      > </a
+      ><a name="1306" href="Algebra.FunctionProperties.Core.html#715" class="Function"
+      >Op&#8322;</a
+      ><a name="1309"
+      > </a
+      ><a name="1310" href="Algebra.ResiduatedAlgebra.html#1222" class="Bound"
+      >A</a
+      ><a name="1311" class="Symbol"
+      >)</a
+      ><a name="1312"
+      > </a
+      ><a name="1313" class="Symbol"
+      >:</a
+      ><a name="1314"
+      > </a
+      ><a name="1315" class="PrimitiveType"
+      >Set</a
+      ><a name="1318"
+      > </a
+      ><a name="1319" class="Symbol"
+      >(</a
+      ><a name="1320" href="Algebra.ResiduatedAlgebra.html#1212" class="Bound"
+      >a</a
+      ><a name="1321"
+      > </a
+      ><a name="1322" href="Agda.Primitive.html#626" class="Primitive Operator"
+      >&#8852;</a
+      ><a name="1323"
+      > </a
+      ><a name="1324" href="Algebra.ResiduatedAlgebra.html#1214" class="Bound"
+      >&#8467;&#8321;</a
+      ><a name="1326"
+      > </a
+      ><a name="1327" href="Agda.Primitive.html#626" class="Primitive Operator"
+      >&#8852;</a
+      ><a name="1328"
+      > </a
+      ><a name="1329" href="Algebra.ResiduatedAlgebra.html#1217" class="Bound"
+      >&#8467;&#8322;</a
+      ><a name="1331" class="Symbol"
+      >)</a
+      ><a name="1332"
+      > </a
+      ><a name="1333" class="Keyword"
+      >where</a
+      ><a name="1338"
+      >
+
+  </a
+      ><a name="1342" class="Keyword"
+      >open</a
+      ><a name="1346"
+      > </a
+      ><a name="1347" href="Algebra.FunctionProperties.html#1" class="Module"
+      >FunctionProperties</a
+      ><a name="1365"
+      > </a
+      ><a name="1366" href="Algebra.ResiduatedAlgebra.html#1241" class="Bound"
+      >&#8776;</a
+      ><a name="1367"
+      >
+  </a
+      ><a name="1370" class="Keyword"
+      >open</a
+      ><a name="1374"
+      > </a
+      ><a name="1375" href="Algebra.ResiduatedAlgebra.html#876" class="Module"
+      >ResiduationProperties</a
+      ><a name="1396"
+      > </a
+      ><a name="1397" href="Algebra.ResiduatedAlgebra.html#1256" class="Bound"
+      >&#8804;</a
+      ><a name="1398"
+      >
+
+  </a
+      ><a name="1402" class="Keyword"
+      >field</a
+      ><a name="1407"
+      >
+    </a
+      ><a name="1412" href="Algebra.ResiduatedAlgebra.html#1412" class="Field"
+      >isPartialOrder</a
+      ><a name="1426"
+      > </a
+      ><a name="1427" class="Symbol"
+      >:</a
+      ><a name="1428"
+      > </a
+      ><a name="1429" href="Relation.Binary.html#3363" class="Record"
+      >IsPartialOrder</a
+      ><a name="1443"
+      > </a
+      ><a name="1444" href="Algebra.ResiduatedAlgebra.html#1241" class="Bound"
+      >&#8776;</a
+      ><a name="1445"
+      > </a
+      ><a name="1446" href="Algebra.ResiduatedAlgebra.html#1256" class="Bound"
+      >&#8804;</a
+      ><a name="1447"
+      >
+    </a
+      ><a name="1452" href="Algebra.ResiduatedAlgebra.html#1452" class="Field"
+      >residual-&#8658;</a
+      ><a name="1462"
+      >     </a
+      ><a name="1467" class="Symbol"
+      >:</a
+      ><a name="1468"
+      > </a
+      ><a name="1469" href="Algebra.ResiduatedAlgebra.html#1290" class="Bound"
+      >&#8658;</a
+      ><a name="1470"
+      > </a
+      ><a name="1471" href="Algebra.ResiduatedAlgebra.html#1058" class="Function Operator"
+      >RightResidualOf</a
+      ><a name="1486"
+      > </a
+      ><a name="1487" href="Algebra.ResiduatedAlgebra.html#1278" class="Bound"
+      >&#8729;</a
+      ><a name="1488"
+      >
+    </a
+      ><a name="1493" href="Algebra.ResiduatedAlgebra.html#1493" class="Field"
+      >residual-&#8656;</a
+      ><a name="1503"
+      >     </a
+      ><a name="1508" class="Symbol"
+      >:</a
+      ><a name="1509"
+      > </a
+      ><a name="1510" href="Algebra.ResiduatedAlgebra.html#1302" class="Bound"
+      >&#8656;</a
+      ><a name="1511"
+      > </a
+      ><a name="1512" href="Algebra.ResiduatedAlgebra.html#941" class="Function Operator"
+      >LeftResidualOf</a
+      ><a name="1526"
+      > </a
+      ><a name="1527" href="Algebra.ResiduatedAlgebra.html#1278" class="Bound"
+      >&#8729;</a
+      ><a name="1528"
+      >
+    </a
+      ><a name="1533" href="Algebra.ResiduatedAlgebra.html#1533" class="Field"
+      >&#8729;-resp-&#8804;</a
+      ><a name="1541"
+      >       </a
+      ><a name="1548" class="Symbol"
+      >:</a
+      ><a name="1549"
+      > </a
+      ><a name="1550" href="Algebra.ResiduatedAlgebra.html#1278" class="Bound"
+      >&#8729;</a
+      ><a name="1551"
+      > </a
+      ><a name="1552" href="Relation.Binary.Core.html#1531" class="Function Operator"
+      >Preserves&#8322;</a
+      ><a name="1562"
+      > </a
+      ><a name="1563" href="Algebra.ResiduatedAlgebra.html#1256" class="Bound"
+      >&#8804;</a
+      ><a name="1564"
+      > </a
+      ><a name="1565" href="Relation.Binary.Core.html#1531" class="Function Operator"
+      >&#10230;</a
+      ><a name="1566"
+      > </a
+      ><a name="1567" href="Algebra.ResiduatedAlgebra.html#1256" class="Bound"
+      >&#8804;</a
+      ><a name="1568"
+      > </a
+      ><a name="1569" href="Relation.Binary.Core.html#1531" class="Function Operator"
+      >&#10230;</a
+      ><a name="1570"
+      > </a
+      ><a name="1571" href="Algebra.ResiduatedAlgebra.html#1256" class="Bound"
+      >&#8804;</a
+      ><a name="1572"
+      >
+
+  </a
+      ><a name="1576" class="Keyword"
+      >open</a
+      ><a name="1580"
+      > </a
+      ><a name="1581" href="Relation.Binary.html#242" class="Module"
+      >Rel.</a
+      ><a name="1585" href="Relation.Binary.html#3363" class="Module"
+      >IsPartialOrder</a
+      ><a name="1599"
+      > </a
+      ><a name="1600" href="Algebra.ResiduatedAlgebra.html#1412" class="Field"
+      >isPartialOrder</a
+      ><a name="1614"
+      > </a
+      ><a name="1615" class="Keyword"
+      >public</a
+      ><a name="1621"
+      >
+       </a
+      ><a name="1629" class="Keyword"
+      >renaming</a
+      ><a name="1637"
+      > </a
+      ><a name="1638" class="Symbol"
+      >(</a
+      ><a name="1639"
+      >refl </a
+      ><a name="1644" class="Symbol"
+      >to</a
+      ><a name="1646"
+      > &#8804;-refl</a
+      ><a name="1653" class="Symbol"
+      >;</a
+      ><a name="1654"
+      > reflexive </a
+      ><a name="1665" class="Symbol"
+      >to</a
+      ><a name="1667"
+      > &#8804;-reflexive</a
+      ><a name="1679" class="Symbol"
+      >;</a
+      ><a name="1680"
+      > trans </a
+      ><a name="1687" class="Symbol"
+      >to</a
+      ><a name="1689"
+      > &#8804;-trans</a
+      ><a name="1697" class="Symbol"
+      >)</a
+      ><a name="1698"
+      >
+  </a
+      ><a name="1701" class="Keyword"
+      >open</a
+      ><a name="1705"
+      > </a
+      ><a name="1706" href="Relation.Binary.Core.html#379" class="Module"
+      >Rel.</a
+      ><a name="1710" href="Relation.Binary.Core.html#5084" class="Module"
+      >IsEquivalence</a
+      ><a name="1723"
+      > </a
+      ><a name="1724" href="Relation.Binary.html#998" class="Function"
+      >isEquivalence</a
+      ><a name="1737"
+      > </a
+      ><a name="1738" class="Keyword"
+      >public</a
+      ><a name="1744"
+      >
+
+
+
+</a
+      ><a name="1748" class="Keyword"
+      >record</a
+      ><a name="1754"
+      > </a
+      ><a name="1755" href="Algebra.ResiduatedAlgebra.html#1755" class="Record"
+      >ResiduatedAlgebra</a
+      ><a name="1772"
+      > </a
+      ><a name="1773" href="Algebra.ResiduatedAlgebra.html#1773" class="Bound"
+      >c</a
+      ><a name="1774"
+      > </a
+      ><a name="1775" href="Algebra.ResiduatedAlgebra.html#1775" class="Bound"
+      >&#8467;&#8321;</a
+      ><a name="1777"
+      > </a
+      ><a name="1778" href="Algebra.ResiduatedAlgebra.html#1778" class="Bound"
+      >&#8467;&#8322;</a
+      ><a name="1780"
+      > </a
+      ><a name="1781" class="Symbol"
+      >:</a
+      ><a name="1782"
+      > </a
+      ><a name="1783" class="PrimitiveType"
+      >Set</a
+      ><a name="1786"
+      > </a
+      ><a name="1787" class="Symbol"
+      >(</a
+      ><a name="1788" href="Agda.Primitive.html#596" class="Primitive"
+      >suc</a
+      ><a name="1791"
+      > </a
+      ><a name="1792" class="Symbol"
+      >(</a
+      ><a name="1793" href="Algebra.ResiduatedAlgebra.html#1773" class="Bound"
+      >c</a
+      ><a name="1794"
+      > </a
+      ><a name="1795" href="Agda.Primitive.html#626" class="Primitive Operator"
+      >&#8852;</a
+      ><a name="1796"
+      > </a
+      ><a name="1797" href="Algebra.ResiduatedAlgebra.html#1775" class="Bound"
+      >&#8467;&#8321;</a
+      ><a name="1799"
+      > </a
+      ><a name="1800" href="Agda.Primitive.html#626" class="Primitive Operator"
+      >&#8852;</a
+      ><a name="1801"
+      > </a
+      ><a name="1802" href="Algebra.ResiduatedAlgebra.html#1778" class="Bound"
+      >&#8467;&#8322;</a
+      ><a name="1804" class="Symbol"
+      >))</a
+      ><a name="1806"
+      > </a
+      ><a name="1807" class="Keyword"
+      >where</a
+      ><a name="1812"
+      >
+
+  </a
+      ><a name="1816" class="Keyword"
+      >infix</a
+      ><a name="1821"
+      >  </a
+      ><a name="1823" class="Number"
+      >7</a
+      ><a name="1824"
+      > _&#8729;_
+  </a
+      ><a name="1831" class="Keyword"
+      >infixl</a
+      ><a name="1837"
+      > </a
+      ><a name="1838" class="Number"
+      >7</a
+      ><a name="1839"
+      > _&#8656;_
+  </a
+      ><a name="1846" class="Keyword"
+      >infixr</a
+      ><a name="1852"
+      > </a
+      ><a name="1853" class="Number"
+      >7</a
+      ><a name="1854"
+      > _&#8658;_
+  </a
+      ><a name="1861" class="Keyword"
+      >infix</a
+      ><a name="1866"
+      >  </a
+      ><a name="1868" class="Number"
+      >4</a
+      ><a name="1869"
+      > _&#8776;_ _&#8804;_
+
+  </a
+      ><a name="1881" class="Keyword"
+      >field</a
+      ><a name="1886"
+      >
+    </a
+      ><a name="1891" href="Algebra.ResiduatedAlgebra.html#1891" class="Field"
+      >Carrier</a
+      ><a name="1898"
+      >             </a
+      ><a name="1911" class="Symbol"
+      >:</a
+      ><a name="1912"
+      > </a
+      ><a name="1913" class="PrimitiveType"
+      >Set</a
+      ><a name="1916"
+      > </a
+      ><a name="1917" href="Algebra.ResiduatedAlgebra.html#1773" class="Bound"
+      >c</a
+      ><a name="1918"
+      >
+    </a
+      ><a name="1923" href="Algebra.ResiduatedAlgebra.html#1923" class="Field Operator"
+      >_&#8776;_</a
+      ><a name="1926"
+      >                 </a
+      ><a name="1943" class="Symbol"
+      >:</a
+      ><a name="1944"
+      > </a
+      ><a name="1945" href="Relation.Binary.Core.html#761" class="Function"
+      >Rel</a
+      ><a name="1948"
+      > </a
+      ><a name="1949" href="Algebra.ResiduatedAlgebra.html#1891" class="Bound"
+      >Carrier</a
+      ><a name="1956"
+      > </a
+      ><a name="1957" href="Algebra.ResiduatedAlgebra.html#1775" class="Bound"
+      >&#8467;&#8321;</a
+      ><a name="1959"
+      >
+    </a
+      ><a name="1964" href="Algebra.ResiduatedAlgebra.html#1964" class="Field Operator"
+      >_&#8804;_</a
+      ><a name="1967"
+      >                 </a
+      ><a name="1984" class="Symbol"
+      >:</a
+      ><a name="1985"
+      > </a
+      ><a name="1986" href="Relation.Binary.Core.html#761" class="Function"
+      >Rel</a
+      ><a name="1989"
+      > </a
+      ><a name="1990" href="Algebra.ResiduatedAlgebra.html#1891" class="Bound"
+      >Carrier</a
+      ><a name="1997"
+      > </a
+      ><a name="1998" href="Algebra.ResiduatedAlgebra.html#1778" class="Bound"
+      >&#8467;&#8322;</a
+      ><a name="2000"
+      >
+    </a
+      ><a name="2005" href="Algebra.ResiduatedAlgebra.html#2005" class="Field Operator"
+      >_&#8729;_</a
+      ><a name="2008"
+      >                 </a
+      ><a name="2025" class="Symbol"
+      >:</a
+      ><a name="2026"
+      > </a
+      ><a name="2027" href="Algebra.FunctionProperties.Core.html#715" class="Function"
+      >Op&#8322;</a
+      ><a name="2030"
+      > </a
+      ><a name="2031" href="Algebra.ResiduatedAlgebra.html#1891" class="Bound"
+      >Carrier</a
+      ><a name="2038"
+      >
+    </a
+      ><a name="2043" href="Algebra.ResiduatedAlgebra.html#2043" class="Field Operator"
+      >_&#8658;_</a
+      ><a name="2046"
+      >                 </a
+      ><a name="2063" class="Symbol"
+      >:</a
+      ><a name="2064"
+      > </a
+      ><a name="2065" href="Algebra.FunctionProperties.Core.html#715" class="Function"
+      >Op&#8322;</a
+      ><a name="2068"
+      > </a
+      ><a name="2069" href="Algebra.ResiduatedAlgebra.html#1891" class="Bound"
+      >Carrier</a
+      ><a name="2076"
+      >
+    </a
+      ><a name="2081" href="Algebra.ResiduatedAlgebra.html#2081" class="Field Operator"
+      >_&#8656;_</a
+      ><a name="2084"
+      >                 </a
+      ><a name="2101" class="Symbol"
+      >:</a
+      ><a name="2102"
+      > </a
+      ><a name="2103" href="Algebra.FunctionProperties.Core.html#715" class="Function"
+      >Op&#8322;</a
+      ><a name="2106"
+      > </a
+      ><a name="2107" href="Algebra.ResiduatedAlgebra.html#1891" class="Bound"
+      >Carrier</a
+      ><a name="2114"
+      >
+    </a
+      ><a name="2119" href="Algebra.ResiduatedAlgebra.html#2119" class="Field"
+      >isResiduatedAlgebra</a
+      ><a name="2138"
+      > </a
+      ><a name="2139" class="Symbol"
+      >:</a
+      ><a name="2140"
+      > </a
+      ><a name="2141" href="Algebra.ResiduatedAlgebra.html#1184" class="Record"
+      >IsResiduatedAlgebra</a
+      ><a name="2160"
+      > </a
+      ><a name="2161" href="Algebra.ResiduatedAlgebra.html#1923" class="Bound Operator"
+      >_&#8776;_</a
+      ><a name="2164"
+      > </a
+      ><a name="2165" href="Algebra.ResiduatedAlgebra.html#1964" class="Bound Operator"
+      >_&#8804;_</a
+      ><a name="2168"
+      > </a
+      ><a name="2169" href="Algebra.ResiduatedAlgebra.html#2005" class="Bound Operator"
+      >_&#8729;_</a
+      ><a name="2172"
+      > </a
+      ><a name="2173" href="Algebra.ResiduatedAlgebra.html#2043" class="Bound Operator"
+      >_&#8658;_</a
+      ><a name="2176"
+      > </a
+      ><a name="2177" href="Algebra.ResiduatedAlgebra.html#2081" class="Bound Operator"
+      >_&#8656;_</a
+      ><a name="2180"
+      >
+
+
+  </a
+      ><a name="2185" class="Keyword"
+      >open</a
+      ><a name="2189"
+      > </a
+      ><a name="2190" href="Algebra.ResiduatedAlgebra.html#1184" class="Module"
+      >IsResiduatedAlgebra</a
+      ><a name="2209"
+      > </a
+      ><a name="2210" href="Algebra.ResiduatedAlgebra.html#2119" class="Field"
+      >isResiduatedAlgebra</a
+      ><a name="2229"
+      > </a
+      ><a name="2230" class="Keyword"
+      >public</a
+      ><a name="2236"
+      >
+  </a
+      ><a name="2239" href="Algebra.ResiduatedAlgebra.html#2239" class="Function"
+      >poset</a
+      ><a name="2244"
+      > </a
+      ><a name="2245" class="Symbol"
+      >:</a
+      ><a name="2246"
+      > </a
+      ><a name="2247" href="Relation.Binary.html#3673" class="Record"
+      >Poset</a
+      ><a name="2252"
+      > </a
+      ><a name="2253" class="Symbol"
+      >_</a
+      ><a name="2254"
+      > </a
+      ><a name="2255" class="Symbol"
+      >_</a
+      ><a name="2256"
+      > </a
+      ><a name="2257" class="Symbol"
+      >_</a
+      ><a name="2258"
+      >
+  </a
+      ><a name="2261" href="Algebra.ResiduatedAlgebra.html#2239" class="Function"
+      >poset</a
+      ><a name="2266"
+      > </a
+      ><a name="2267" class="Symbol"
+      >=</a
+      ><a name="2268"
+      > </a
+      ><a name="2269" class="Keyword"
+      >record</a
+      ><a name="2275"
+      > </a
+      ><a name="2276" class="Symbol"
+      >{</a
+      ><a name="2277"
+      > </a
+      ><a name="2278" class="Field"
+      >isPartialOrder</a
+      ><a name="2292"
+      > </a
+      ><a name="2293" class="Symbol"
+      >=</a
+      ><a name="2294"
+      > </a
+      ><a name="2295" href="Algebra.ResiduatedAlgebra.html#1412" class="Function"
+      >isPartialOrder</a
+      ><a name="2309"
+      > </a
+      ><a name="2310" class="Symbol"
+      >}</a
+      ><a name="2311"
+      >
+  </a
+      ><a name="2314" class="Keyword"
+      >open</a
+      ><a name="2318"
+      > </a
+      ><a name="2319" href="Relation.Binary.PartialOrderReasoning.html#1" class="Module"
+      >&#8804;-Reasoning</a
+      ><a name="2330"
+      > </a
+      ><a name="2331" href="Algebra.ResiduatedAlgebra.html#2239" class="Function"
+      >poset</a
+      ><a name="2336"
+      >
+
+
+  </a
+      ><a name="2341" href="Algebra.ResiduatedAlgebra.html#2341" class="Function"
+      >&#8729;-resp-&#8776;</a
+      ><a name="2349"
+      > </a
+      ><a name="2350" class="Symbol"
+      >:</a
+      ><a name="2351"
+      > </a
+      ><a name="2352" href="Algebra.ResiduatedAlgebra.html#2005" class="Field Operator"
+      >_&#8729;_</a
+      ><a name="2355"
+      > </a
+      ><a name="2356" href="Relation.Binary.Core.html#1531" class="Function Operator"
+      >Preserves&#8322;</a
+      ><a name="2366"
+      > </a
+      ><a name="2367" href="Algebra.ResiduatedAlgebra.html#1923" class="Field Operator"
+      >_&#8776;_</a
+      ><a name="2370"
+      > </a
+      ><a name="2371" href="Relation.Binary.Core.html#1531" class="Function Operator"
+      >&#10230;</a
+      ><a name="2372"
+      > </a
+      ><a name="2373" href="Algebra.ResiduatedAlgebra.html#1923" class="Field Operator"
+      >_&#8776;_</a
+      ><a name="2376"
+      > </a
+      ><a name="2377" href="Relation.Binary.Core.html#1531" class="Function Operator"
+      >&#10230;</a
+      ><a name="2378"
+      > </a
+      ><a name="2379" href="Algebra.ResiduatedAlgebra.html#1923" class="Field Operator"
+      >_&#8776;_</a
+      ><a name="2382"
+      >
+  </a
+      ><a name="2385" href="Algebra.ResiduatedAlgebra.html#2341" class="Function"
+      >&#8729;-resp-&#8776;</a
+      ><a name="2393"
+      > </a
+      ><a name="2394" class="Symbol"
+      >{</a
+      ><a name="2395" href="Algebra.ResiduatedAlgebra.html#2395" class="Bound"
+      >x</a
+      ><a name="2396" class="Symbol"
+      >}</a
+      ><a name="2397"
+      > </a
+      ><a name="2398" class="Symbol"
+      >{</a
+      ><a name="2399" href="Algebra.ResiduatedAlgebra.html#2399" class="Bound"
+      >y</a
+      ><a name="2400" class="Symbol"
+      >}</a
+      ><a name="2401"
+      > </a
+      ><a name="2402" class="Symbol"
+      >{</a
+      ><a name="2403" href="Algebra.ResiduatedAlgebra.html#2403" class="Bound"
+      >u</a
+      ><a name="2404" class="Symbol"
+      >}</a
+      ><a name="2405"
+      > </a
+      ><a name="2406" class="Symbol"
+      >{</a
+      ><a name="2407" href="Algebra.ResiduatedAlgebra.html#2407" class="Bound"
+      >v</a
+      ><a name="2408" class="Symbol"
+      >}</a
+      ><a name="2409"
+      > </a
+      ><a name="2410" href="Algebra.ResiduatedAlgebra.html#2410" class="Bound"
+      >x&#8776;y</a
+      ><a name="2413"
+      > </a
+      ><a name="2414" href="Algebra.ResiduatedAlgebra.html#2414" class="Bound"
+      >u&#8776;v</a
+      ><a name="2417"
+      > </a
+      ><a name="2418" class="Symbol"
+      >=</a
+      ><a name="2419"
+      > </a
+      ><a name="2420" href="Relation.Binary.html#3552" class="Function"
+      >antisym</a
+      ><a name="2427"
+      > </a
+      ><a name="2428" href="Algebra.ResiduatedAlgebra.html#2456" class="Function"
+      >xu&#8804;yv</a
+      ><a name="2433"
+      > </a
+      ><a name="2434" href="Algebra.ResiduatedAlgebra.html#2604" class="Function"
+      >yv&#8804;xu</a
+      ><a name="2439"
+      >
+    </a
+      ><a name="2444" class="Keyword"
+      >where</a
+      ><a name="2449"
+      >
+      </a
+      ><a name="2456" href="Algebra.ResiduatedAlgebra.html#2456" class="Function"
+      >xu&#8804;yv</a
+      ><a name="2461"
+      > </a
+      ><a name="2462" class="Symbol"
+      >:</a
+      ><a name="2463"
+      > </a
+      ><a name="2464" href="Algebra.ResiduatedAlgebra.html#2395" class="Bound"
+      >x</a
+      ><a name="2465"
+      > </a
+      ><a name="2466" href="Algebra.ResiduatedAlgebra.html#2005" class="Field Operator"
+      >&#8729;</a
+      ><a name="2467"
+      > </a
+      ><a name="2468" href="Algebra.ResiduatedAlgebra.html#2403" class="Bound"
+      >u</a
+      ><a name="2469"
+      > </a
+      ><a name="2470" href="Algebra.ResiduatedAlgebra.html#1964" class="Field Operator"
+      >&#8804;</a
+      ><a name="2471"
+      > </a
+      ><a name="2472" href="Algebra.ResiduatedAlgebra.html#2399" class="Bound"
+      >y</a
+      ><a name="2473"
+      > </a
+      ><a name="2474" href="Algebra.ResiduatedAlgebra.html#2005" class="Field Operator"
+      >&#8729;</a
+      ><a name="2475"
+      > </a
+      ><a name="2476" href="Algebra.ResiduatedAlgebra.html#2407" class="Bound"
+      >v</a
+      ><a name="2477"
+      >
+      </a
+      ><a name="2484" href="Algebra.ResiduatedAlgebra.html#2456" class="Function"
+      >xu&#8804;yv</a
+      ><a name="2489"
+      > </a
+      ><a name="2490" class="Symbol"
+      >=</a
+      ><a name="2491"
+      >
+        </a
+      ><a name="2500" href="Relation.Binary.PreorderReasoning.html#1154" class="Function Operator"
+      >begin</a
+      ><a name="2505"
+      >
+          </a
+      ><a name="2516" href="Algebra.ResiduatedAlgebra.html#2395" class="Bound"
+      >x</a
+      ><a name="2517"
+      > </a
+      ><a name="2518" href="Algebra.ResiduatedAlgebra.html#2005" class="Field Operator"
+      >&#8729;</a
+      ><a name="2519"
+      > </a
+      ><a name="2520" href="Algebra.ResiduatedAlgebra.html#2403" class="Bound"
+      >u</a
+      ><a name="2521"
+      > </a
+      ><a name="2522" href="Relation.Binary.PreorderReasoning.html#1220" class="Function Operator"
+      >&#8804;&#10216;</a
+      ><a name="2524"
+      > </a
+      ><a name="2525" href="Algebra.ResiduatedAlgebra.html#1533" class="Function"
+      >&#8729;-resp-&#8804;</a
+      ><a name="2533"
+      > </a
+      ><a name="2534" class="Symbol"
+      >(</a
+      ><a name="2535" href="Relation.Binary.html#1104" class="Function"
+      >&#8804;-reflexive</a
+      ><a name="2546"
+      > </a
+      ><a name="2547" href="Algebra.ResiduatedAlgebra.html#2410" class="Bound"
+      >x&#8776;y</a
+      ><a name="2550" class="Symbol"
+      >)</a
+      ><a name="2551"
+      > </a
+      ><a name="2552" class="Symbol"
+      >(</a
+      ><a name="2553" href="Relation.Binary.html#1104" class="Function"
+      >&#8804;-reflexive</a
+      ><a name="2564"
+      > </a
+      ><a name="2565" href="Algebra.ResiduatedAlgebra.html#2414" class="Bound"
+      >u&#8776;v</a
+      ><a name="2568" class="Symbol"
+      >)</a
+      ><a name="2569"
+      > </a
+      ><a name="2570" href="Relation.Binary.PreorderReasoning.html#1220" class="Function Operator"
+      >&#10217;</a
+      ><a name="2571"
+      >
+          </a
+      ><a name="2582" href="Algebra.ResiduatedAlgebra.html#2399" class="Bound"
+      >y</a
+      ><a name="2583"
+      > </a
+      ><a name="2584" href="Algebra.ResiduatedAlgebra.html#2005" class="Field Operator"
+      >&#8729;</a
+      ><a name="2585"
+      > </a
+      ><a name="2586" href="Algebra.ResiduatedAlgebra.html#2407" class="Bound"
+      >v</a
+      ><a name="2587"
+      >
+        </a
+      ><a name="2596" href="Relation.Binary.PreorderReasoning.html#1519" class="Function Operator"
+      >&#8718;</a
+      ><a name="2597"
+      >
+      </a
+      ><a name="2604" href="Algebra.ResiduatedAlgebra.html#2604" class="Function"
+      >yv&#8804;xu</a
+      ><a name="2609"
+      > </a
+      ><a name="2610" class="Symbol"
+      >:</a
+      ><a name="2611"
+      > </a
+      ><a name="2612" href="Algebra.ResiduatedAlgebra.html#2399" class="Bound"
+      >y</a
+      ><a name="2613"
+      > </a
+      ><a name="2614" href="Algebra.ResiduatedAlgebra.html#2005" class="Field Operator"
+      >&#8729;</a
+      ><a name="2615"
+      > </a
+      ><a name="2616" href="Algebra.ResiduatedAlgebra.html#2407" class="Bound"
+      >v</a
+      ><a name="2617"
+      > </a
+      ><a name="2618" href="Algebra.ResiduatedAlgebra.html#1964" class="Field Operator"
+      >&#8804;</a
+      ><a name="2619"
+      > </a
+      ><a name="2620" href="Algebra.ResiduatedAlgebra.html#2395" class="Bound"
+      >x</a
+      ><a name="2621"
+      > </a
+      ><a name="2622" href="Algebra.ResiduatedAlgebra.html#2005" class="Field Operator"
+      >&#8729;</a
+      ><a name="2623"
+      > </a
+      ><a name="2624" href="Algebra.ResiduatedAlgebra.html#2403" class="Bound"
+      >u</a
+      ><a name="2625"
+      >
+      </a
+      ><a name="2632" href="Algebra.ResiduatedAlgebra.html#2604" class="Function"
+      >yv&#8804;xu</a
+      ><a name="2637"
+      > </a
+      ><a name="2638" class="Symbol"
+      >=</a
+      ><a name="2639"
+      >
+        </a
+      ><a name="2648" href="Relation.Binary.PreorderReasoning.html#1154" class="Function Operator"
+      >begin</a
+      ><a name="2653"
+      >
+          </a
+      ><a name="2664" href="Algebra.ResiduatedAlgebra.html#2399" class="Bound"
+      >y</a
+      ><a name="2665"
+      > </a
+      ><a name="2666" href="Algebra.ResiduatedAlgebra.html#2005" class="Field Operator"
+      >&#8729;</a
+      ><a name="2667"
+      > </a
+      ><a name="2668" href="Algebra.ResiduatedAlgebra.html#2407" class="Bound"
+      >v</a
+      ><a name="2669"
+      > </a
+      ><a name="2670" href="Relation.Binary.PreorderReasoning.html#1220" class="Function Operator"
+      >&#8804;&#10216;</a
+      ><a name="2672"
+      > </a
+      ><a name="2673" href="Algebra.ResiduatedAlgebra.html#1533" class="Function"
+      >&#8729;-resp-&#8804;</a
+      ><a name="2681"
+      > </a
+      ><a name="2682" class="Symbol"
+      >(</a
+      ><a name="2683" href="Relation.Binary.html#1104" class="Function"
+      >&#8804;-reflexive</a
+      ><a name="2694"
+      > </a
+      ><a name="2695" class="Symbol"
+      >(</a
+      ><a name="2696" href="Relation.Binary.Core.html#5211" class="Function"
+      >sym</a
+      ><a name="2699"
+      > </a
+      ><a name="2700" href="Algebra.ResiduatedAlgebra.html#2410" class="Bound"
+      >x&#8776;y</a
+      ><a name="2703" class="Symbol"
+      >))</a
+      ><a name="2705"
+      > </a
+      ><a name="2706" class="Symbol"
+      >(</a
+      ><a name="2707" href="Relation.Binary.html#1104" class="Function"
+      >&#8804;-reflexive</a
+      ><a name="2718"
+      > </a
+      ><a name="2719" class="Symbol"
+      >(</a
+      ><a name="2720" href="Relation.Binary.Core.html#5211" class="Function"
+      >sym</a
+      ><a name="2723"
+      > </a
+      ><a name="2724" href="Algebra.ResiduatedAlgebra.html#2414" class="Bound"
+      >u&#8776;v</a
+      ><a name="2727" class="Symbol"
+      >))</a
+      ><a name="2729"
+      > </a
+      ><a name="2730" href="Relation.Binary.PreorderReasoning.html#1220" class="Function Operator"
+      >&#10217;</a
+      ><a name="2731"
+      >
+          </a
+      ><a name="2742" href="Algebra.ResiduatedAlgebra.html#2395" class="Bound"
+      >x</a
+      ><a name="2743"
+      > </a
+      ><a name="2744" href="Algebra.ResiduatedAlgebra.html#2005" class="Field Operator"
+      >&#8729;</a
+      ><a name="2745"
+      > </a
+      ><a name="2746" href="Algebra.ResiduatedAlgebra.html#2403" class="Bound"
+      >u</a
+      ><a name="2747"
+      >
+        </a
+      ><a name="2756" href="Relation.Binary.PreorderReasoning.html#1519" class="Function Operator"
+      >&#8718;</a
+      ><a name="2757"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>

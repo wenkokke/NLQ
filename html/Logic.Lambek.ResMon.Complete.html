@@ -1,0 +1,705 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Logic.Lambek.ResMon.Complete</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="73"
+      >
+</a
+      ><a name="74" class="Comment"
+      >-- The Lambek Calculus in Agda</a
+      ><a name="104"
+      >
+</a
+      ><a name="105" class="Comment"
+      >--</a
+      ><a name="107"
+      >
+</a
+      ><a name="108" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="180"
+      >
+
+
+</a
+      ><a name="183" class="Keyword"
+      >open</a
+      ><a name="187"
+      > </a
+      ><a name="188" class="Keyword"
+      >import</a
+      ><a name="194"
+      > </a
+      ><a name="195" href="Categories.html#1" class="Module"
+      >Categories</a
+      ><a name="205"
+      >
+</a
+      ><a name="206" class="Keyword"
+      >open</a
+      ><a name="210"
+      > </a
+      ><a name="211" class="Keyword"
+      >import</a
+      ><a name="217"
+      > </a
+      ><a name="218" href="Function.html#1" class="Module"
+      >Function</a
+      ><a name="226"
+      > </a
+      ><a name="227" class="Keyword"
+      >using</a
+      ><a name="232"
+      > </a
+      ><a name="233" class="Symbol"
+      >(</a
+      ><a name="234"
+      >flip</a
+      ><a name="238" class="Symbol"
+      >)</a
+      ><a name="239"
+      >
+</a
+      ><a name="240" class="Keyword"
+      >open</a
+      ><a name="244"
+      > </a
+      ><a name="245" class="Keyword"
+      >import</a
+      ><a name="251"
+      > </a
+      ><a name="252" href="Function.Equivalence.html#1" class="Module"
+      >Function.Equivalence</a
+      ><a name="272"
+      > </a
+      ><a name="273" class="Keyword"
+      >using</a
+      ><a name="278"
+      > </a
+      ><a name="279" class="Symbol"
+      >(</a
+      ><a name="280"
+      >equivalence</a
+      ><a name="291" class="Symbol"
+      >)</a
+      ><a name="292"
+      >
+</a
+      ><a name="293" class="Keyword"
+      >open</a
+      ><a name="297"
+      > </a
+      ><a name="298" class="Keyword"
+      >import</a
+      ><a name="304"
+      > </a
+      ><a name="305" href="Algebra.ResiduatedAlgebra.html#1" class="Module"
+      >Algebra.ResiduatedAlgebra</a
+      ><a name="330"
+      >
+</a
+      ><a name="331" class="Keyword"
+      >open</a
+      ><a name="335"
+      > </a
+      ><a name="336" class="Keyword"
+      >import</a
+      ><a name="342"
+      > </a
+      ><a name="343" href="Relation.Binary.html#1" class="Module"
+      >Relation.Binary</a
+      ><a name="358"
+      > </a
+      ><a name="359" class="Keyword"
+      >using</a
+      ><a name="364"
+      > </a
+      ><a name="365" class="Symbol"
+      >(</a
+      ><a name="366"
+      >Rel</a
+      ><a name="369" class="Symbol"
+      >)</a
+      ><a name="370"
+      >
+</a
+      ><a name="371" class="Keyword"
+      >open</a
+      ><a name="375"
+      > </a
+      ><a name="376" class="Keyword"
+      >import</a
+      ><a name="382"
+      > </a
+      ><a name="383" href="Relation.Binary.PropositionalEquality.html#1" class="Module"
+      >Relation.Binary.PropositionalEquality</a
+      ><a name="420"
+      > </a
+      ><a name="421" class="Symbol"
+      >as</a
+      ><a name="423"
+      > </a
+      ><a name="424" class="Module"
+      >P</a
+      ><a name="425"
+      > </a
+      ><a name="426" class="Keyword"
+      >using</a
+      ><a name="431"
+      > </a
+      ><a name="432" class="Symbol"
+      >(</a
+      ><a name="433"
+      >_&#8801;_</a
+      ><a name="436" class="Symbol"
+      >)</a
+      ><a name="437"
+      >
+
+
+</a
+      ><a name="440" class="Keyword"
+      >module</a
+      ><a name="446"
+      > </a
+      ><a name="447" href="Logic.Lambek.ResMon.Complete.html#1" class="Module"
+      >Logic.Lambek.ResMon.Complete</a
+      ><a name="475"
+      > </a
+      ><a name="476" class="Symbol"
+      >{</a
+      ><a name="477" href="Logic.Lambek.ResMon.Complete.html#477" class="Bound"
+      >&#8467;</a
+      ><a name="478" class="Symbol"
+      >}</a
+      ><a name="479"
+      > </a
+      ><a name="480" class="Symbol"
+      >(</a
+      ><a name="481" href="Logic.Lambek.ResMon.Complete.html#481" class="Bound"
+      >Univ</a
+      ><a name="485"
+      > </a
+      ><a name="486" class="Symbol"
+      >:</a
+      ><a name="487"
+      > </a
+      ><a name="488" class="PrimitiveType"
+      >Set</a
+      ><a name="491"
+      > </a
+      ><a name="492" href="Logic.Lambek.ResMon.Complete.html#477" class="Bound"
+      >&#8467;</a
+      ><a name="493" class="Symbol"
+      >)</a
+      ><a name="494"
+      > </a
+      ><a name="495" class="Keyword"
+      >where</a
+      ><a name="500"
+      >
+
+
+</a
+      ><a name="503" class="Keyword"
+      >open</a
+      ><a name="507"
+      > </a
+      ><a name="508" class="Keyword"
+      >import</a
+      ><a name="514"
+      > </a
+      ><a name="515" href="Logic.Lambek.Type.html#1" class="Module"
+      >Logic.Lambek.Type</a
+      ><a name="532"
+      >             </a
+      ><a name="545" href="Logic.Lambek.ResMon.Complete.html#481" class="Bound"
+      >Univ</a
+      ><a name="549"
+      > </a
+      ><a name="550" class="Symbol"
+      >as</a
+      ><a name="552"
+      > </a
+      ><a name="553" href="Logic.Lambek.ResMon.Complete.html#553" class="Module"
+      >T</a
+      ><a name="554"
+      >
+</a
+      ><a name="555" class="Keyword"
+      >open</a
+      ><a name="559"
+      > </a
+      ><a name="560" class="Keyword"
+      >import</a
+      ><a name="566"
+      > </a
+      ><a name="567" href="Logic.Lambek.ResMon.Judgement.html#1" class="Module"
+      >Logic.Lambek.ResMon.Judgement</a
+      ><a name="596"
+      > </a
+      ><a name="597" href="Logic.Lambek.ResMon.Complete.html#481" class="Bound"
+      >Univ</a
+      ><a name="601"
+      > </a
+      ><a name="602" class="Symbol"
+      >as</a
+      ><a name="604"
+      > </a
+      ><a name="605" href="Logic.Lambek.ResMon.Complete.html#605" class="Module"
+      >RMJ</a
+      ><a name="608"
+      >
+</a
+      ><a name="609" class="Keyword"
+      >open</a
+      ><a name="613"
+      > </a
+      ><a name="614" class="Keyword"
+      >import</a
+      ><a name="620"
+      > </a
+      ><a name="621" href="Logic.Lambek.ResMon.Base.html#1" class="Module"
+      >Logic.Lambek.ResMon.Base</a
+      ><a name="645"
+      >      </a
+      ><a name="651" href="Logic.Lambek.ResMon.Complete.html#481" class="Bound"
+      >Univ</a
+      ><a name="655"
+      > </a
+      ><a name="656" class="Symbol"
+      >as</a
+      ><a name="658"
+      > </a
+      ><a name="659" href="Logic.Lambek.ResMon.Complete.html#659" class="Module"
+      >RMB</a
+      ><a name="662"
+      >
+</a
+      ><a name="663" class="Keyword"
+      >open</a
+      ><a name="667"
+      > </a
+      ><a name="668" class="Keyword"
+      >import</a
+      ><a name="674"
+      > </a
+      ><a name="675" href="Logic.Lambek.ResMon.Trans.html#1" class="Module"
+      >Logic.Lambek.ResMon.Trans</a
+      ><a name="700"
+      >     </a
+      ><a name="705" href="Logic.Lambek.ResMon.Complete.html#481" class="Bound"
+      >Univ</a
+      ><a name="709"
+      > </a
+      ><a name="710" class="Symbol"
+      >as</a
+      ><a name="712"
+      > </a
+      ><a name="713" href="Logic.Lambek.ResMon.Complete.html#713" class="Module"
+      >RMT</a
+      ><a name="716"
+      >
+
+
+</a
+      ><a name="719" class="Keyword"
+      >private</a
+      ><a name="726"
+      >
+  </a
+      ><a name="729" href="Logic.Lambek.ResMon.Complete.html#729" class="Function Operator"
+      >_&#8804;_</a
+      ><a name="732"
+      > </a
+      ><a name="733" class="Symbol"
+      >:</a
+      ><a name="734"
+      > </a
+      ><a name="735" href="Relation.Binary.Core.html#761" class="Function"
+      >Rel</a
+      ><a name="738"
+      > </a
+      ><a name="739" href="Logic.Lambek.Type.html#586" class="Datatype"
+      >Type</a
+      ><a name="743"
+      > </a
+      ><a name="744" href="Logic.Lambek.ResMon.Complete.html#477" class="Bound"
+      >&#8467;</a
+      ><a name="745"
+      >
+  </a
+      ><a name="748" href="Logic.Lambek.ResMon.Complete.html#748" class="Bound"
+      >A</a
+      ><a name="749"
+      > </a
+      ><a name="750" href="Logic.Lambek.ResMon.Complete.html#729" class="Function Operator"
+      >&#8804;</a
+      ><a name="751"
+      > </a
+      ><a name="752" href="Logic.Lambek.ResMon.Complete.html#752" class="Bound"
+      >B</a
+      ><a name="753"
+      > </a
+      ><a name="754" class="Symbol"
+      >=</a
+      ><a name="755"
+      > </a
+      ><a name="756" href="Logic.Lambek.ResMon.Base.html#690" class="Datatype Operator"
+      >NL</a
+      ><a name="758"
+      > </a
+      ><a name="759" href="Logic.Lambek.ResMon.Complete.html#748" class="Bound"
+      >A</a
+      ><a name="760"
+      > </a
+      ><a name="761" href="Logic.Lambek.ResMon.Judgement.html#647" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="762"
+      > </a
+      ><a name="763" href="Logic.Lambek.ResMon.Complete.html#752" class="Bound"
+      >B</a
+      ><a name="764"
+      >
+
+
+</a
+      ><a name="767" class="Keyword"
+      >open</a
+      ><a name="771"
+      > </a
+      ><a name="772" class="Keyword"
+      >import</a
+      ><a name="778"
+      > </a
+      ><a name="779" href="Relation.Binary.PartialOrderToEquivalence.html#1" class="Module"
+      >Relation.Binary.PartialOrderToEquivalence</a
+      ><a name="820"
+      > </a
+      ><a name="821" href="Logic.Lambek.ResMon.Complete.html#729" class="Function Operator"
+      >_&#8804;_</a
+      ><a name="824"
+      > </a
+      ><a name="825" href="Logic.Lambek.ResMon.Base.html#2363" class="Function"
+      >id&#8242;</a
+      ><a name="828"
+      > </a
+      ><a name="829" href="Logic.Lambek.ResMon.Trans.html#826" class="Function"
+      >trans&#8242;</a
+      ><a name="835"
+      >
+
+
+</a
+      ><a name="838" href="Logic.Lambek.ResMon.Complete.html#838" class="Function"
+      >isResiduatedAlgebra</a
+      ><a name="857"
+      > </a
+      ><a name="858" class="Symbol"
+      >:</a
+      ><a name="859"
+      > </a
+      ><a name="860" href="Algebra.ResiduatedAlgebra.html#1184" class="Record"
+      >IsResiduatedAlgebra</a
+      ><a name="879"
+      > </a
+      ><a name="880" href="Relation.Binary.PartialOrderToEquivalence.html#1259" class="Function Operator"
+      >_&#8776;_</a
+      ><a name="883"
+      > </a
+      ><a name="884" href="Logic.Lambek.ResMon.Complete.html#729" class="Function Operator"
+      >_&#8804;_</a
+      ><a name="887"
+      > </a
+      ><a name="888" href="Logic.Lambek.Type.html#628" class="InductiveConstructor Operator"
+      >_&#8855;_</a
+      ><a name="891"
+      > </a
+      ><a name="892" href="Logic.Lambek.Type.html#684" class="InductiveConstructor Operator"
+      >_&#8658;_</a
+      ><a name="895"
+      > </a
+      ><a name="896" href="Logic.Lambek.Type.html#656" class="InductiveConstructor Operator"
+      >_&#8656;_</a
+      ><a name="899"
+      >
+</a
+      ><a name="900" href="Logic.Lambek.ResMon.Complete.html#838" class="Function"
+      >isResiduatedAlgebra</a
+      ><a name="919"
+      > </a
+      ><a name="920" class="Symbol"
+      >=</a
+      ><a name="921"
+      > </a
+      ><a name="922" class="Keyword"
+      >record</a
+      ><a name="928"
+      >
+  </a
+      ><a name="931" class="Symbol"
+      >{</a
+      ><a name="932"
+      > </a
+      ><a name="933" class="Field"
+      >isPartialOrder</a
+      ><a name="947"
+      > </a
+      ><a name="948" class="Symbol"
+      >=</a
+      ><a name="949"
+      > </a
+      ><a name="950" href="Relation.Binary.PartialOrderToEquivalence.html#1972" class="Function"
+      >isPartialOrder</a
+      ><a name="964"
+      >
+  </a
+      ><a name="967" class="Symbol"
+      >;</a
+      ><a name="968"
+      > </a
+      ><a name="969" class="Field"
+      >residual-&#8658;</a
+      ><a name="979"
+      >     </a
+      ><a name="984" class="Symbol"
+      >=</a
+      ><a name="985"
+      > </a
+      ><a name="986" href="Function.Equivalence.html#804" class="Function"
+      >equivalence</a
+      ><a name="997"
+      > </a
+      ><a name="998" href="Logic.Lambek.ResMon.Base.html#1000" class="InductiveConstructor"
+      >res-&#8658;&#8855;</a
+      ><a name="1004"
+      > </a
+      ><a name="1005" href="Logic.Lambek.ResMon.Base.html#1053" class="InductiveConstructor"
+      >res-&#8855;&#8658;</a
+      ><a name="1011"
+      >
+  </a
+      ><a name="1014" class="Symbol"
+      >;</a
+      ><a name="1015"
+      > </a
+      ><a name="1016" class="Field"
+      >residual-&#8656;</a
+      ><a name="1026"
+      >     </a
+      ><a name="1031" class="Symbol"
+      >=</a
+      ><a name="1032"
+      > </a
+      ><a name="1033" href="Function.Equivalence.html#804" class="Function"
+      >equivalence</a
+      ><a name="1044"
+      > </a
+      ><a name="1045" href="Logic.Lambek.ResMon.Base.html#1159" class="InductiveConstructor"
+      >res-&#8855;&#8656;</a
+      ><a name="1051"
+      > </a
+      ><a name="1052" href="Logic.Lambek.ResMon.Base.html#1106" class="InductiveConstructor"
+      >res-&#8656;&#8855;</a
+      ><a name="1058"
+      >
+  </a
+      ><a name="1061" class="Symbol"
+      >;</a
+      ><a name="1062"
+      > </a
+      ><a name="1063" class="Field"
+      >&#8729;-resp-&#8804;</a
+      ><a name="1071"
+      >       </a
+      ><a name="1078" class="Symbol"
+      >=</a
+      ><a name="1079"
+      > </a
+      ><a name="1080" href="Logic.Lambek.ResMon.Base.html#808" class="InductiveConstructor"
+      >mon-&#8855;</a
+      ><a name="1085"
+      >
+  </a
+      ><a name="1088" class="Symbol"
+      >}</a
+      ><a name="1089"
+      >
+
+
+</a
+      ><a name="1092" href="Logic.Lambek.ResMon.Complete.html#1092" class="Function"
+      >resiuatedAlgebra</a
+      ><a name="1108"
+      > </a
+      ><a name="1109" class="Symbol"
+      >:</a
+      ><a name="1110"
+      > </a
+      ><a name="1111" href="Algebra.ResiduatedAlgebra.html#1755" class="Record"
+      >ResiduatedAlgebra</a
+      ><a name="1128"
+      > </a
+      ><a name="1129" class="Symbol"
+      >_</a
+      ><a name="1130"
+      > </a
+      ><a name="1131" class="Symbol"
+      >_</a
+      ><a name="1132"
+      > </a
+      ><a name="1133" class="Symbol"
+      >_</a
+      ><a name="1134"
+      >
+</a
+      ><a name="1135" href="Logic.Lambek.ResMon.Complete.html#1092" class="Function"
+      >resiuatedAlgebra</a
+      ><a name="1151"
+      > </a
+      ><a name="1152" class="Symbol"
+      >=</a
+      ><a name="1153"
+      > </a
+      ><a name="1154" class="Keyword"
+      >record</a
+      ><a name="1160"
+      >
+  </a
+      ><a name="1163" class="Symbol"
+      >{</a
+      ><a name="1164"
+      > </a
+      ><a name="1165" class="Field"
+      >Carrier</a
+      ><a name="1172"
+      >             </a
+      ><a name="1185" class="Symbol"
+      >=</a
+      ><a name="1186"
+      > </a
+      ><a name="1187" href="Logic.Lambek.Type.html#586" class="Datatype"
+      >Type</a
+      ><a name="1191"
+      >
+  </a
+      ><a name="1194" class="Symbol"
+      >;</a
+      ><a name="1195"
+      > </a
+      ><a name="1196" class="Field Operator"
+      >_&#8776;_</a
+      ><a name="1199"
+      >                 </a
+      ><a name="1216" class="Symbol"
+      >=</a
+      ><a name="1217"
+      > </a
+      ><a name="1218" href="Relation.Binary.PartialOrderToEquivalence.html#1259" class="Function Operator"
+      >_&#8776;_</a
+      ><a name="1221"
+      >
+  </a
+      ><a name="1224" class="Symbol"
+      >;</a
+      ><a name="1225"
+      > </a
+      ><a name="1226" class="Field Operator"
+      >_&#8804;_</a
+      ><a name="1229"
+      >                 </a
+      ><a name="1246" class="Symbol"
+      >=</a
+      ><a name="1247"
+      > </a
+      ><a name="1248" href="Logic.Lambek.ResMon.Complete.html#729" class="Function Operator"
+      >_&#8804;_</a
+      ><a name="1251"
+      >
+  </a
+      ><a name="1254" class="Symbol"
+      >;</a
+      ><a name="1255"
+      > </a
+      ><a name="1256" class="Field Operator"
+      >_&#8729;_</a
+      ><a name="1259"
+      >                 </a
+      ><a name="1276" class="Symbol"
+      >=</a
+      ><a name="1277"
+      > </a
+      ><a name="1278" href="Logic.Lambek.Type.html#628" class="InductiveConstructor Operator"
+      >_&#8855;_</a
+      ><a name="1281"
+      >
+  </a
+      ><a name="1284" class="Symbol"
+      >;</a
+      ><a name="1285"
+      > </a
+      ><a name="1286" class="Field Operator"
+      >_&#8658;_</a
+      ><a name="1289"
+      >                 </a
+      ><a name="1306" class="Symbol"
+      >=</a
+      ><a name="1307"
+      > </a
+      ><a name="1308" href="Logic.Lambek.Type.html#684" class="InductiveConstructor Operator"
+      >_&#8658;_</a
+      ><a name="1311"
+      >
+  </a
+      ><a name="1314" class="Symbol"
+      >;</a
+      ><a name="1315"
+      > </a
+      ><a name="1316" class="Field Operator"
+      >_&#8656;_</a
+      ><a name="1319"
+      >                 </a
+      ><a name="1336" class="Symbol"
+      >=</a
+      ><a name="1337"
+      > </a
+      ><a name="1338" href="Logic.Lambek.Type.html#656" class="InductiveConstructor Operator"
+      >_&#8656;_</a
+      ><a name="1341"
+      >
+  </a
+      ><a name="1344" class="Symbol"
+      >;</a
+      ><a name="1345"
+      > </a
+      ><a name="1346" class="Field"
+      >isResiduatedAlgebra</a
+      ><a name="1365"
+      > </a
+      ><a name="1366" class="Symbol"
+      >=</a
+      ><a name="1367"
+      > </a
+      ><a name="1368" href="Logic.Lambek.ResMon.Complete.html#838" class="Function"
+      >isResiduatedAlgebra</a
+      ><a name="1387"
+      >
+  </a
+      ><a name="1390" class="Symbol"
+      >}</a
+      ><a name="1391"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>
