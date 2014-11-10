@@ -7,17 +7,20 @@
 open import Categories
 open import Algebra using (Monoid)
 open import Function using (_∘_)
-open import Data.Unit using (⊤; tt)
+open import Data.Nat as Nat using (ℕ; suc; zero; _+_; _<_; _≤_; z≤n; s≤s)
+open import Data.Nat.Properties as NatProps using (≤-step; n≤m+n; m≤m+n; _+-mono_)
+open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; uncurry)
 open import Relation.Nullary using (Dec; yes; no)
-open import Relation.Binary using (DecSetoid)
-open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
+open import Relation.Binary using (DecSetoid; module DecTotalOrder; module StrictTotalOrder)
+open import Relation.Binary.PropositionalEquality as P using (_≡_; _≢_; refl; cong)
 
 
 module Logic.LambekGrishin.Type.Context {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.LambekGrishin.Type Univ renaming (module DecEq to DecEqType)
+open import Logic.LambekGrishin.Type.Complexity Univ
 
 
 infixr 30 _⊗>_ _<⊗_
@@ -86,26 +89,6 @@ data Context : Set ℓ where
 
 <⇚-injective : ∀ {A B C D} → A <⇚ B ≡ C <⇚ D → A ≡ C × B ≡ D
 <⇚-injective refl = refl , refl
-
-
--- Simple decision procedure which checks if a context is the empty
--- context (superseded by the full decidable equality below, but
--- doesn't require a decidable equality on universes).
-
-is-[]? : (A : Context) → Dec (A ≡ [])
-is-[]? []       = yes refl
-is-[]? (_ ⊗> _) = no (λ ())
-is-[]? (_ ⇛> _) = no (λ ())
-is-[]? (_ ⇚> _) = no (λ ())
-is-[]? (_ ⊕> _) = no (λ ())
-is-[]? (_ ⇒> _) = no (λ ())
-is-[]? (_ ⇐> _) = no (λ ())
-is-[]? (_ <⊗ _) = no (λ ())
-is-[]? (_ <⇛ _) = no (λ ())
-is-[]? (_ <⇚ _) = no (λ ())
-is-[]? (_ <⊕ _) = no (λ ())
-is-[]? (_ <⇒ _) = no (λ ())
-is-[]? (_ <⇐ _) = no (λ ())
 
 
 module Simple where
@@ -206,6 +189,125 @@ module Simple where
   <>-identityʳ (Γ <⊕ A) rewrite <>-identityʳ Γ = refl
   <>-identityʳ (Γ <⇛ A) rewrite <>-identityʳ Γ = refl
   <>-identityʳ (Γ <⇚ A) rewrite <>-identityʳ Γ = refl
+
+
+
+-- Collection of proofs regarding emptiness
+module Empty where
+
+  open Simple
+  open DecTotalOrder Nat.decTotalOrder using () renaming (refl to ≤-refl; trans to ≤-trans)
+  open StrictTotalOrder NatProps.strictTotalOrder using () renaming (irrefl to <-irrefl; trans to <-trans)
+
+
+  -- Simple decision procedure which checks if a context is the empty
+  -- context (superseded by the full decidable equality below, but
+  -- doesn't require a decidable equality on universes).
+  is-[]? : (A : Context) → Dec (A ≡ [])
+  is-[]? []       = yes refl
+  is-[]? (_ ⊗> _) = no (λ ())
+  is-[]? (_ ⇛> _) = no (λ ())
+  is-[]? (_ ⇚> _) = no (λ ())
+  is-[]? (_ ⊕> _) = no (λ ())
+  is-[]? (_ ⇒> _) = no (λ ())
+  is-[]? (_ ⇐> _) = no (λ ())
+  is-[]? (_ <⊗ _) = no (λ ())
+  is-[]? (_ <⇛ _) = no (λ ())
+  is-[]? (_ <⇚ _) = no (λ ())
+  is-[]? (_ <⊕ _) = no (λ ())
+  is-[]? (_ <⇒ _) = no (λ ())
+  is-[]? (_ <⇐ _) = no (λ ())
+
+
+  -- Lemma which shows that if a context is not empty, then applying it
+  -- to a type may never result in an elementary type.
+  Γ≠[]→elB≠Γ[A] : ∀ {A B} Γ → Γ ≢ [] → el B ≢ Γ [ A ]
+  Γ≠[]→elB≠Γ[A] [] Γ≠[] p = Γ≠[] refl
+  Γ≠[]→elB≠Γ[A] (_ ⊗> Γ) Γ≠[] ()
+  Γ≠[]→elB≠Γ[A] (_ ⇛> Γ) Γ≠[] ()
+  Γ≠[]→elB≠Γ[A] (_ ⇚> Γ) Γ≠[] ()
+  Γ≠[]→elB≠Γ[A] (Γ <⊗ _) Γ≠[] ()
+  Γ≠[]→elB≠Γ[A] (Γ <⇛ _) Γ≠[] ()
+  Γ≠[]→elB≠Γ[A] (Γ <⇚ _) Γ≠[] ()
+  Γ≠[]→elB≠Γ[A] (_ ⊕> Γ) Γ≠[] ()
+  Γ≠[]→elB≠Γ[A] (_ ⇒> Γ) Γ≠[] ()
+  Γ≠[]→elB≠Γ[A] (_ ⇐> Γ) Γ≠[] ()
+  Γ≠[]→elB≠Γ[A] (Γ <⊕ _) Γ≠[] ()
+  Γ≠[]→elB≠Γ[A] (Γ <⇒ _) Γ≠[] ()
+  Γ≠[]→elB≠Γ[A] (Γ <⇐ _) Γ≠[] ()
+
+
+  -- Lemma which shows that if a context is not empty, then wrapping it
+  -- around another context will always result in a non-empty context.
+  Δ≠[]→Δ<Γ>≠[] : ∀ Γ Δ → Δ ≢ [] → Δ < Γ > ≢ []
+  Δ≠[]→Δ<Γ>≠[] Γ [] Δ≠[] _ = Δ≠[] refl
+  Δ≠[]→Δ<Γ>≠[] Γ (_ ⊗> Δ) Δ≠[] ()
+  Δ≠[]→Δ<Γ>≠[] Γ (_ ⇛> Δ) Δ≠[] ()
+  Δ≠[]→Δ<Γ>≠[] Γ (_ ⇚> Δ) Δ≠[] ()
+  Δ≠[]→Δ<Γ>≠[] Γ (Δ <⊗ _) Δ≠[] ()
+  Δ≠[]→Δ<Γ>≠[] Γ (Δ <⇛ _) Δ≠[] ()
+  Δ≠[]→Δ<Γ>≠[] Γ (Δ <⇚ _) Δ≠[] ()
+  Δ≠[]→Δ<Γ>≠[] Γ (_ ⊕> Δ) Δ≠[] ()
+  Δ≠[]→Δ<Γ>≠[] Γ (_ ⇒> Δ) Δ≠[] ()
+  Δ≠[]→Δ<Γ>≠[] Γ (_ ⇐> Δ) Δ≠[] ()
+  Δ≠[]→Δ<Γ>≠[] Γ (Δ <⊕ _) Δ≠[] ()
+  Δ≠[]→Δ<Γ>≠[] Γ (Δ <⇒ _) Δ≠[] ()
+  Δ≠[]→Δ<Γ>≠[] Γ (Δ <⇐ _) Δ≠[] ()
+
+
+  -- Lemma which shows that the complexity of a type embedded in a
+  -- context must always be greater or equal to the complexity of that
+  -- type itself.
+  A≤Γ[A] : ∀ A Γ → ∣ A ∣ ≤ ∣ Γ [ A ] ∣
+  A≤Γ[A] A [] = ≤-refl
+  A≤Γ[A] A (B ⊗> Γ) = ≤-step (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  A≤Γ[A] A (B ⇛> Γ) = ≤-step (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  A≤Γ[A] A (B ⇚> Γ) = ≤-step (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  A≤Γ[A] A (Γ <⊗ B) = ≤-step (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+  A≤Γ[A] A (Γ <⇛ B) = ≤-step (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+  A≤Γ[A] A (Γ <⇚ B) = ≤-step (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+  A≤Γ[A] A (B ⊕> Γ) = ≤-step (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  A≤Γ[A] A (B ⇒> Γ) = ≤-step (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  A≤Γ[A] A (B ⇐> Γ) = ≤-step (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  A≤Γ[A] A (Γ <⊕ B) = ≤-step (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+  A≤Γ[A] A (Γ <⇒ B) = ≤-step (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+  A≤Γ[A] A (Γ <⇐ B) = ≤-step (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+
+
+  -- Lemma which shows that if a context is not empty, then the
+  -- complexity of a type embedded in it must always be greater than the
+  -- complexity of that type itself.
+  Γ≠[]→A<Γ[A] : ∀ A Γ → Γ ≢ [] → ∣ A ∣ < ∣ Γ [ A ] ∣
+  Γ≠[]→A<Γ[A] A [] Γ≠[] = ⊥-elim (Γ≠[] refl)
+  Γ≠[]→A<Γ[A] A (B ⊗> Γ) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  Γ≠[]→A<Γ[A] A (B ⇛> Γ) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  Γ≠[]→A<Γ[A] A (B ⇚> Γ) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  Γ≠[]→A<Γ[A] A (Γ <⊗ B) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+  Γ≠[]→A<Γ[A] A (Γ <⇛ B) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+  Γ≠[]→A<Γ[A] A (Γ <⇚ B) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+  Γ≠[]→A<Γ[A] A (B ⊕> Γ) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  Γ≠[]→A<Γ[A] A (B ⇒> Γ) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  Γ≠[]→A<Γ[A] A (B ⇐> Γ) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  Γ≠[]→A<Γ[A] A (Γ <⊕ B) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+  Γ≠[]→A<Γ[A] A (Γ <⇒ B) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+  Γ≠[]→A<Γ[A] A (Γ <⇐ B) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+
+
+  -- Lemma which shows that if a context is not empty, the embedding of
+  -- a type in it cannot be equal to the type itself.
+  Γ≠[]→A≠Γ[A] : ∀ A Γ → Γ ≢ [] → A ≢ Γ [ A ]
+  Γ≠[]→A≠Γ[A] A Γ Γ≠[] p = <-irrefl A=Γ[A] A<Γ[A]
+    where
+      A=Γ[A] = cong ∣_∣ p
+      A<Γ[A] = Γ≠[]→A<Γ[A] A Γ Γ≠[]
+
+
+  -- Lemma which shows that if the embedding of a type in a context is
+  -- equal to that type itself, then the context must be empty.
+  A=Γ[A]→Γ=[] : ∀ A Γ → A ≡ Γ [ A ] → Γ ≡ []
+  A=Γ[A]→Γ=[] A Γ A=Γ[A] with is-[]? Γ
+  ... | yes Γ=[] = Γ=[]
+  ... | no  Γ≠[] = ⊥-elim (Γ≠[]→A≠Γ[A] A Γ Γ≠[] A=Γ[A])
 
 
 -- Proof that `_<_>` and `[]` form a monoid over contexts.

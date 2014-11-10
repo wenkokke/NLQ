@@ -19,6 +19,7 @@ open import Logic.Lambek.Type         Univ as T
 open import Logic.Lambek.Type.Context Univ as TC
 open import Logic.Lambek.SC.Judgement Univ as SCJ
 open TC.Simple using (_[_]; _<_>; <>-assoc; <>-def)
+open TC.Empty using (is-[]?)
 
 
 infix 3 NL_
@@ -32,10 +33,10 @@ mutual
     mon-⇐  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL A ⇐ D ⊢ B ⇐ C
     contᴺ  : ∀ {Γ A B A′} (f : NL A ⊢ B) (x : NL ⊢ᴺ Γ)
              (p₁  : A′ ≡ Γ [ A ]) (p₂ : False (Contᴺ? f)) (p₃ : False (is-[]? Γ))
-           → NL A′ ⊢ B
+             → NL A′ ⊢ B
     contᴾ  : ∀ {Δ A B B′} (f : NL A ⊢ B) (x : NL ⊢ᴾ Δ)
              (p₁  : B′ ≡ Δ [ B ]) (p₂ : False (Contᴾ? f)) (p₃ : False (is-[]? Δ))
-           → NL A ⊢ B′
+             → NL A ⊢ B′
 
     neg-[] : NL ⊢ᴺ []
     neg-⊗⇒ : ∀ {Γ Δ A B} → NL A ⊢ B → NL ⊢ᴺ Γ → NL ⊢ᴺ Δ → NL ⊢ᴺ A ⊗> Γ < B ⇒> Δ >
