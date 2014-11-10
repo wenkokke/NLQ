@@ -36,7 +36,6 @@ data NL_ : Judgement → Set ℓ where
 
   -- rules for co-residuation and co-monotonicity
   -- grishin distributives
-
 -- Proofs which show that constructors of terms (as all Agda
 -- data-constructors) respect equality.
 
@@ -97,6 +96,5 @@ is-id? res-⇒⊗ _   = no (λ {(_ , ())})
 is-id? res-⊗⇒ _   = no (λ {(_ , ())})
 is-id? res-⇐⊗ _   = no (λ {(_ , ())})
 is-id? res-⊗⇐ _   = no (λ {(_ , ())})
-
 f:elA⊢elA→f≡id : ∀ {A} (f : NL el A ⊢ el A) → f ≡ id
 f:elA⊢elA→f≡id id = refl

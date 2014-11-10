@@ -60,7 +60,6 @@ module Simple where
   (C <⊗ B) < A > = (C < A >) <⊗ B
   (C <⇒ B) < A > = (C < A >) <⇒ B
   (C <⇐ B) < A > = (C < A >) <⇐ B
-
 private
   -- We can attempt to prove correctness in the following manner:
   --

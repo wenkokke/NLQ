@@ -19,7 +19,6 @@ module Logic.Lambek.Type.Context {ℓ} (Univ : Set ℓ) where
 open import Logic.Lambek.Type Univ renaming (module DecEq to DecEqType)
 
 
-
 -- Contexts encode incomplete types with a single hole.
 data Context : Set ℓ where
 
@@ -76,7 +75,6 @@ module Simple where
   (C <⊗ B) < A > = (C < A >) <⊗ B
   (C <⇒ B) < A > = (C < A >) <⇒ B
   (C <⇐ B) < A > = (C < A >) <⇐ B
-
   -- Lemma which shows how context composition `_<_>` and context
   -- application `_[_]` interact.
   <>-def : ∀ A B C → A < B > [ C ] ≡ A [ B [ C ] ]
@@ -87,7 +85,6 @@ module Simple where
   <>-def (A <⊗ _) B C rewrite <>-def A B C = refl
   <>-def (A <⇒ _) B C rewrite <>-def A B C = refl
   <>-def (A <⇐ _) B C rewrite <>-def A B C = refl
-
   -- Lemma which shows that context composition respects propositional
   -- equality.
   <>-cong : ∀ {Γ Δ Π Σ} → Γ ≡ Δ → Π ≡ Σ → Γ < Π > ≡ Δ < Σ >
@@ -104,7 +101,6 @@ module Simple where
   <>-assoc (A <⊗ _) B C rewrite <>-assoc A B C = refl
   <>-assoc (A <⇒ _) B C rewrite <>-assoc A B C = refl
   <>-assoc (A <⇐ _) B C rewrite <>-assoc A B C = refl
-
   -- Lemma which shows that `[]` is the identity element for the context
   -- composition function `_<_>`.
   <>-identityˡ : ∀ Γ → [] < Γ > ≡ Γ
@@ -118,7 +114,6 @@ module Simple where
   <>-identityʳ (Γ <⊗ A) rewrite <>-identityʳ Γ = refl
   <>-identityʳ (Γ <⇒ A) rewrite <>-identityʳ Γ = refl
   <>-identityʳ (Γ <⇐ A) rewrite <>-identityʳ Γ = refl
-
 -- Proof that `_<_>` and `[]` form a monoid over contexts.
 instance
   monoid : Monoid _ _
