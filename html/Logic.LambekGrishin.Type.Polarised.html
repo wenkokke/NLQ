@@ -1,0 +1,1769 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Logic.LambekGrishin.Type.Polarised</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="73"
+      >
+</a
+      ><a name="74" class="Comment"
+      >-- The Lambek Calculus in Agda</a
+      ><a name="104"
+      >
+</a
+      ><a name="105" class="Comment"
+      >--</a
+      ><a name="107"
+      >
+</a
+      ><a name="108" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="180"
+      >
+
+
+</a
+      ><a name="183" class="Keyword"
+      >open</a
+      ><a name="187"
+      > </a
+      ><a name="188" class="Keyword"
+      >import</a
+      ><a name="194"
+      > </a
+      ><a name="195" href="Data.Product.html#1" class="Module"
+      >Data.Product</a
+      ><a name="207"
+      > </a
+      ><a name="208" class="Keyword"
+      >using</a
+      ><a name="213"
+      > </a
+      ><a name="214" class="Symbol"
+      >(</a
+      ><a name="215"
+      >&#931;</a
+      ><a name="216" class="Symbol"
+      >;</a
+      ><a name="217"
+      > _,_</a
+      ><a name="221" class="Symbol"
+      >)</a
+      ><a name="222"
+      >
+</a
+      ><a name="223" class="Keyword"
+      >open</a
+      ><a name="227"
+      > </a
+      ><a name="228" class="Keyword"
+      >import</a
+      ><a name="234"
+      > </a
+      ><a name="235" href="Relation.Binary.PropositionalEquality.html#1" class="Module"
+      >Relation.Binary.PropositionalEquality</a
+      ><a name="272"
+      > </a
+      ><a name="273" class="Symbol"
+      >as</a
+      ><a name="275"
+      > </a
+      ><a name="276" class="Module"
+      >P</a
+      ><a name="277"
+      > </a
+      ><a name="278" class="Keyword"
+      >using</a
+      ><a name="283"
+      > </a
+      ><a name="284" class="Symbol"
+      >(</a
+      ><a name="285"
+      >_&#8801;_</a
+      ><a name="288" class="Symbol"
+      >;</a
+      ><a name="289"
+      > refl</a
+      ><a name="294" class="Symbol"
+      >)</a
+      ><a name="295"
+      >
+</a
+      ><a name="296" class="Keyword"
+      >open</a
+      ><a name="300"
+      > </a
+      ><a name="301" class="Keyword"
+      >import</a
+      ><a name="307"
+      > </a
+      ><a name="308" href="Logic.Polarity.html#1" class="Module"
+      >Logic.Polarity</a
+      ><a name="322"
+      >
+
+
+</a
+      ><a name="325" class="Keyword"
+      >module</a
+      ><a name="331"
+      > </a
+      ><a name="332" href="Logic.LambekGrishin.Type.Polarised.html#1" class="Module"
+      >Logic.LambekGrishin.Type.Polarised</a
+      ><a name="366"
+      > </a
+      ><a name="367" class="Symbol"
+      >{</a
+      ><a name="368" href="Logic.LambekGrishin.Type.Polarised.html#368" class="Bound"
+      >&#8467;</a
+      ><a name="369" class="Symbol"
+      >}</a
+      ><a name="370"
+      > </a
+      ><a name="371" class="Symbol"
+      >(</a
+      ><a name="372" href="Logic.LambekGrishin.Type.Polarised.html#372" class="Bound"
+      >Univ</a
+      ><a name="376"
+      > </a
+      ><a name="377" class="Symbol"
+      >:</a
+      ><a name="378"
+      > </a
+      ><a name="379" href="Logic.Polarity.html#387" class="Datatype"
+      >Polarity</a
+      ><a name="387"
+      > </a
+      ><a name="388" class="Symbol"
+      >&#8594;</a
+      ><a name="389"
+      > </a
+      ><a name="390" class="PrimitiveType"
+      >Set</a
+      ><a name="393"
+      > </a
+      ><a name="394" href="Logic.LambekGrishin.Type.Polarised.html#368" class="Bound"
+      >&#8467;</a
+      ><a name="395" class="Symbol"
+      >)</a
+      ><a name="396"
+      > </a
+      ><a name="397" class="Keyword"
+      >where</a
+      ><a name="402"
+      >
+
+
+</a
+      ><a name="405" class="Keyword"
+      >open</a
+      ><a name="409"
+      > </a
+      ><a name="410" class="Keyword"
+      >import</a
+      ><a name="416"
+      > </a
+      ><a name="417" href="Logic.LambekGrishin.Type.html#1" class="Module"
+      >Logic.LambekGrishin.Type</a
+      ><a name="441"
+      > </a
+      ><a name="442" class="Symbol"
+      >(</a
+      ><a name="443" href="Data.Product.html#439" class="Record"
+      >&#931;</a
+      ><a name="444"
+      > </a
+      ><a name="445" href="Logic.Polarity.html#387" class="Datatype"
+      >Polarity</a
+      ><a name="453"
+      > </a
+      ><a name="454" href="Logic.LambekGrishin.Type.Polarised.html#372" class="Bound"
+      >Univ</a
+      ><a name="458" class="Symbol"
+      >)</a
+      ><a name="459"
+      >
+
+
+</a
+      ><a name="462" class="Keyword"
+      >data</a
+      ><a name="466"
+      > </a
+      ><a name="467" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="476"
+      > </a
+      ><a name="477" class="Symbol"
+      >:</a
+      ><a name="478"
+      > </a
+      ><a name="479" href="Logic.Polarity.html#387" class="Datatype"
+      >Polarity</a
+      ><a name="487"
+      > </a
+      ><a name="488" class="Symbol"
+      >&#8594;</a
+      ><a name="489"
+      > </a
+      ><a name="490" href="Logic.LambekGrishin.Type.html#605" class="Datatype"
+      >Type</a
+      ><a name="494"
+      > </a
+      ><a name="495" class="Symbol"
+      >&#8594;</a
+      ><a name="496"
+      > </a
+      ><a name="497" class="PrimitiveType"
+      >Set</a
+      ><a name="500"
+      > </a
+      ><a name="501" href="Logic.LambekGrishin.Type.Polarised.html#368" class="Bound"
+      >&#8467;</a
+      ><a name="502"
+      > </a
+      ><a name="503" class="Keyword"
+      >where</a
+      ><a name="508"
+      >
+  </a
+      ><a name="511" href="Logic.LambekGrishin.Type.Polarised.html#511" class="InductiveConstructor"
+      >el</a
+      ><a name="513"
+      >   </a
+      ><a name="516" class="Symbol"
+      >:</a
+      ><a name="517"
+      > </a
+      ><a name="518" class="Symbol"
+      >&#8704;</a
+      ><a name="519"
+      > </a
+      ><a name="520" class="Symbol"
+      >{</a
+      ><a name="521" href="Logic.LambekGrishin.Type.Polarised.html#521" class="Bound"
+      >p</a
+      ><a name="522" class="Symbol"
+      >}</a
+      ><a name="523"
+      > </a
+      ><a name="524" class="Symbol"
+      >(</a
+      ><a name="525" href="Logic.LambekGrishin.Type.Polarised.html#525" class="Bound"
+      >A</a
+      ><a name="526"
+      > </a
+      ><a name="527" class="Symbol"
+      >:</a
+      ><a name="528"
+      > </a
+      ><a name="529" href="Logic.LambekGrishin.Type.Polarised.html#372" class="Bound"
+      >Univ</a
+      ><a name="533"
+      > </a
+      ><a name="534" href="Logic.LambekGrishin.Type.Polarised.html#521" class="Bound"
+      >p</a
+      ><a name="535" class="Symbol"
+      >)</a
+      ><a name="536"
+      > </a
+      ><a name="537" class="Symbol"
+      >&#8594;</a
+      ><a name="538"
+      > </a
+      ><a name="539" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="548"
+      > </a
+      ><a name="549" href="Logic.LambekGrishin.Type.Polarised.html#521" class="Bound"
+      >p</a
+      ><a name="550"
+      > </a
+      ><a name="551" class="Symbol"
+      >(</a
+      ><a name="552" href="Logic.LambekGrishin.Type.html#626" class="InductiveConstructor"
+      >el</a
+      ><a name="554"
+      > </a
+      ><a name="555" class="Symbol"
+      >(</a
+      ><a name="556" href="Logic.LambekGrishin.Type.Polarised.html#521" class="Bound"
+      >p</a
+      ><a name="557"
+      > </a
+      ><a name="558" href="Data.Product.html#509" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="559"
+      > </a
+      ><a name="560" href="Logic.LambekGrishin.Type.Polarised.html#525" class="Bound"
+      >A</a
+      ><a name="561" class="Symbol"
+      >))</a
+      ><a name="563"
+      >
+  </a
+      ><a name="566" href="Logic.LambekGrishin.Type.Polarised.html#566" class="InductiveConstructor Operator"
+      >_&#8855;_</a
+      ><a name="569"
+      >  </a
+      ><a name="571" class="Symbol"
+      >:</a
+      ><a name="572"
+      > </a
+      ><a name="573" class="Symbol"
+      >&#8704;</a
+      ><a name="574"
+      > </a
+      ><a name="575" class="Symbol"
+      >{</a
+      ><a name="576" href="Logic.LambekGrishin.Type.Polarised.html#576" class="Bound"
+      >A</a
+      ><a name="577"
+      > </a
+      ><a name="578" href="Logic.LambekGrishin.Type.Polarised.html#578" class="Bound"
+      >B</a
+      ><a name="579" class="Symbol"
+      >}</a
+      ><a name="580"
+      > </a
+      ><a name="581" class="Symbol"
+      >(</a
+      ><a name="582" href="Logic.LambekGrishin.Type.Polarised.html#582" class="Bound"
+      >A&#8314;</a
+      ><a name="584"
+      > </a
+      ><a name="585" class="Symbol"
+      >:</a
+      ><a name="586"
+      > </a
+      ><a name="587" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="596"
+      > </a
+      ><a name="597" href="Logic.Polarity.html#410" class="InductiveConstructor"
+      >+</a
+      ><a name="598"
+      > </a
+      ><a name="599" href="Logic.LambekGrishin.Type.Polarised.html#576" class="Bound"
+      >A</a
+      ><a name="600" class="Symbol"
+      >)</a
+      ><a name="601"
+      > </a
+      ><a name="602" class="Symbol"
+      >(</a
+      ><a name="603" href="Logic.LambekGrishin.Type.Polarised.html#603" class="Bound"
+      >B&#8314;</a
+      ><a name="605"
+      > </a
+      ><a name="606" class="Symbol"
+      >:</a
+      ><a name="607"
+      > </a
+      ><a name="608" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="617"
+      > </a
+      ><a name="618" href="Logic.Polarity.html#410" class="InductiveConstructor"
+      >+</a
+      ><a name="619"
+      > </a
+      ><a name="620" href="Logic.LambekGrishin.Type.Polarised.html#578" class="Bound"
+      >B</a
+      ><a name="621" class="Symbol"
+      >)</a
+      ><a name="622"
+      > </a
+      ><a name="623" class="Symbol"
+      >&#8594;</a
+      ><a name="624"
+      > </a
+      ><a name="625" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="634"
+      > </a
+      ><a name="635" href="Logic.Polarity.html#410" class="InductiveConstructor"
+      >+</a
+      ><a name="636"
+      > </a
+      ><a name="637" class="Symbol"
+      >(</a
+      ><a name="638" href="Logic.LambekGrishin.Type.Polarised.html#576" class="Bound"
+      >A</a
+      ><a name="639"
+      > </a
+      ><a name="640" href="Logic.LambekGrishin.Type.html#647" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="641"
+      > </a
+      ><a name="642" href="Logic.LambekGrishin.Type.Polarised.html#578" class="Bound"
+      >B</a
+      ><a name="643" class="Symbol"
+      >)</a
+      ><a name="644"
+      >
+  </a
+      ><a name="647" href="Logic.LambekGrishin.Type.Polarised.html#647" class="InductiveConstructor Operator"
+      >_&#8666;_</a
+      ><a name="650"
+      >  </a
+      ><a name="652" class="Symbol"
+      >:</a
+      ><a name="653"
+      > </a
+      ><a name="654" class="Symbol"
+      >&#8704;</a
+      ><a name="655"
+      > </a
+      ><a name="656" class="Symbol"
+      >{</a
+      ><a name="657" href="Logic.LambekGrishin.Type.Polarised.html#657" class="Bound"
+      >A</a
+      ><a name="658"
+      > </a
+      ><a name="659" href="Logic.LambekGrishin.Type.Polarised.html#659" class="Bound"
+      >B</a
+      ><a name="660" class="Symbol"
+      >}</a
+      ><a name="661"
+      > </a
+      ><a name="662" class="Symbol"
+      >(</a
+      ><a name="663" href="Logic.LambekGrishin.Type.Polarised.html#663" class="Bound"
+      >A&#8314;</a
+      ><a name="665"
+      > </a
+      ><a name="666" class="Symbol"
+      >:</a
+      ><a name="667"
+      > </a
+      ><a name="668" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="677"
+      > </a
+      ><a name="678" href="Logic.Polarity.html#410" class="InductiveConstructor"
+      >+</a
+      ><a name="679"
+      > </a
+      ><a name="680" href="Logic.LambekGrishin.Type.Polarised.html#657" class="Bound"
+      >A</a
+      ><a name="681" class="Symbol"
+      >)</a
+      ><a name="682"
+      > </a
+      ><a name="683" class="Symbol"
+      >(</a
+      ><a name="684" href="Logic.LambekGrishin.Type.Polarised.html#684" class="Bound"
+      >B&#8315;</a
+      ><a name="686"
+      > </a
+      ><a name="687" class="Symbol"
+      >:</a
+      ><a name="688"
+      > </a
+      ><a name="689" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="698"
+      > </a
+      ><a name="699" href="Logic.Polarity.html#425" class="InductiveConstructor"
+      >-</a
+      ><a name="700"
+      > </a
+      ><a name="701" href="Logic.LambekGrishin.Type.Polarised.html#659" class="Bound"
+      >B</a
+      ><a name="702" class="Symbol"
+      >)</a
+      ><a name="703"
+      > </a
+      ><a name="704" class="Symbol"
+      >&#8594;</a
+      ><a name="705"
+      > </a
+      ><a name="706" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="715"
+      > </a
+      ><a name="716" href="Logic.Polarity.html#410" class="InductiveConstructor"
+      >+</a
+      ><a name="717"
+      > </a
+      ><a name="718" class="Symbol"
+      >(</a
+      ><a name="719" href="Logic.LambekGrishin.Type.Polarised.html#657" class="Bound"
+      >A</a
+      ><a name="720"
+      > </a
+      ><a name="721" href="Logic.LambekGrishin.Type.html#675" class="InductiveConstructor Operator"
+      >&#8666;</a
+      ><a name="722"
+      > </a
+      ><a name="723" href="Logic.LambekGrishin.Type.Polarised.html#659" class="Bound"
+      >B</a
+      ><a name="724" class="Symbol"
+      >)</a
+      ><a name="725"
+      >
+  </a
+      ><a name="728" href="Logic.LambekGrishin.Type.Polarised.html#728" class="InductiveConstructor Operator"
+      >_&#8667;_</a
+      ><a name="731"
+      >  </a
+      ><a name="733" class="Symbol"
+      >:</a
+      ><a name="734"
+      > </a
+      ><a name="735" class="Symbol"
+      >&#8704;</a
+      ><a name="736"
+      > </a
+      ><a name="737" class="Symbol"
+      >{</a
+      ><a name="738" href="Logic.LambekGrishin.Type.Polarised.html#738" class="Bound"
+      >A</a
+      ><a name="739"
+      > </a
+      ><a name="740" href="Logic.LambekGrishin.Type.Polarised.html#740" class="Bound"
+      >B</a
+      ><a name="741" class="Symbol"
+      >}</a
+      ><a name="742"
+      > </a
+      ><a name="743" class="Symbol"
+      >(</a
+      ><a name="744" href="Logic.LambekGrishin.Type.Polarised.html#744" class="Bound"
+      >A&#8315;</a
+      ><a name="746"
+      > </a
+      ><a name="747" class="Symbol"
+      >:</a
+      ><a name="748"
+      > </a
+      ><a name="749" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="758"
+      > </a
+      ><a name="759" href="Logic.Polarity.html#425" class="InductiveConstructor"
+      >-</a
+      ><a name="760"
+      > </a
+      ><a name="761" href="Logic.LambekGrishin.Type.Polarised.html#738" class="Bound"
+      >A</a
+      ><a name="762" class="Symbol"
+      >)</a
+      ><a name="763"
+      > </a
+      ><a name="764" class="Symbol"
+      >(</a
+      ><a name="765" href="Logic.LambekGrishin.Type.Polarised.html#765" class="Bound"
+      >B&#8314;</a
+      ><a name="767"
+      > </a
+      ><a name="768" class="Symbol"
+      >:</a
+      ><a name="769"
+      > </a
+      ><a name="770" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="779"
+      > </a
+      ><a name="780" href="Logic.Polarity.html#410" class="InductiveConstructor"
+      >+</a
+      ><a name="781"
+      > </a
+      ><a name="782" href="Logic.LambekGrishin.Type.Polarised.html#740" class="Bound"
+      >B</a
+      ><a name="783" class="Symbol"
+      >)</a
+      ><a name="784"
+      > </a
+      ><a name="785" class="Symbol"
+      >&#8594;</a
+      ><a name="786"
+      > </a
+      ><a name="787" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="796"
+      > </a
+      ><a name="797" href="Logic.Polarity.html#410" class="InductiveConstructor"
+      >+</a
+      ><a name="798"
+      > </a
+      ><a name="799" class="Symbol"
+      >(</a
+      ><a name="800" href="Logic.LambekGrishin.Type.Polarised.html#738" class="Bound"
+      >A</a
+      ><a name="801"
+      > </a
+      ><a name="802" href="Logic.LambekGrishin.Type.html#703" class="InductiveConstructor Operator"
+      >&#8667;</a
+      ><a name="803"
+      > </a
+      ><a name="804" href="Logic.LambekGrishin.Type.Polarised.html#740" class="Bound"
+      >B</a
+      ><a name="805" class="Symbol"
+      >)</a
+      ><a name="806"
+      >
+  </a
+      ><a name="809" href="Logic.LambekGrishin.Type.Polarised.html#809" class="InductiveConstructor Operator"
+      >_&#8853;_</a
+      ><a name="812"
+      >  </a
+      ><a name="814" class="Symbol"
+      >:</a
+      ><a name="815"
+      > </a
+      ><a name="816" class="Symbol"
+      >&#8704;</a
+      ><a name="817"
+      > </a
+      ><a name="818" class="Symbol"
+      >{</a
+      ><a name="819" href="Logic.LambekGrishin.Type.Polarised.html#819" class="Bound"
+      >A</a
+      ><a name="820"
+      > </a
+      ><a name="821" href="Logic.LambekGrishin.Type.Polarised.html#821" class="Bound"
+      >B</a
+      ><a name="822" class="Symbol"
+      >}</a
+      ><a name="823"
+      > </a
+      ><a name="824" class="Symbol"
+      >(</a
+      ><a name="825" href="Logic.LambekGrishin.Type.Polarised.html#825" class="Bound"
+      >A&#8315;</a
+      ><a name="827"
+      > </a
+      ><a name="828" class="Symbol"
+      >:</a
+      ><a name="829"
+      > </a
+      ><a name="830" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="839"
+      > </a
+      ><a name="840" href="Logic.Polarity.html#425" class="InductiveConstructor"
+      >-</a
+      ><a name="841"
+      > </a
+      ><a name="842" href="Logic.LambekGrishin.Type.Polarised.html#819" class="Bound"
+      >A</a
+      ><a name="843" class="Symbol"
+      >)</a
+      ><a name="844"
+      > </a
+      ><a name="845" class="Symbol"
+      >(</a
+      ><a name="846" href="Logic.LambekGrishin.Type.Polarised.html#846" class="Bound"
+      >B&#8315;</a
+      ><a name="848"
+      > </a
+      ><a name="849" class="Symbol"
+      >:</a
+      ><a name="850"
+      > </a
+      ><a name="851" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="860"
+      > </a
+      ><a name="861" href="Logic.Polarity.html#425" class="InductiveConstructor"
+      >-</a
+      ><a name="862"
+      > </a
+      ><a name="863" href="Logic.LambekGrishin.Type.Polarised.html#821" class="Bound"
+      >B</a
+      ><a name="864" class="Symbol"
+      >)</a
+      ><a name="865"
+      > </a
+      ><a name="866" class="Symbol"
+      >&#8594;</a
+      ><a name="867"
+      > </a
+      ><a name="868" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="877"
+      > </a
+      ><a name="878" href="Logic.Polarity.html#425" class="InductiveConstructor"
+      >-</a
+      ><a name="879"
+      > </a
+      ><a name="880" class="Symbol"
+      >(</a
+      ><a name="881" href="Logic.LambekGrishin.Type.Polarised.html#819" class="Bound"
+      >A</a
+      ><a name="882"
+      > </a
+      ><a name="883" href="Logic.LambekGrishin.Type.html#731" class="InductiveConstructor Operator"
+      >&#8853;</a
+      ><a name="884"
+      > </a
+      ><a name="885" href="Logic.LambekGrishin.Type.Polarised.html#821" class="Bound"
+      >B</a
+      ><a name="886" class="Symbol"
+      >)</a
+      ><a name="887"
+      >
+  </a
+      ><a name="890" href="Logic.LambekGrishin.Type.Polarised.html#890" class="InductiveConstructor Operator"
+      >_&#8656;_</a
+      ><a name="893"
+      >  </a
+      ><a name="895" class="Symbol"
+      >:</a
+      ><a name="896"
+      > </a
+      ><a name="897" class="Symbol"
+      >&#8704;</a
+      ><a name="898"
+      > </a
+      ><a name="899" class="Symbol"
+      >{</a
+      ><a name="900" href="Logic.LambekGrishin.Type.Polarised.html#900" class="Bound"
+      >A</a
+      ><a name="901"
+      > </a
+      ><a name="902" href="Logic.LambekGrishin.Type.Polarised.html#902" class="Bound"
+      >B</a
+      ><a name="903" class="Symbol"
+      >}</a
+      ><a name="904"
+      > </a
+      ><a name="905" class="Symbol"
+      >(</a
+      ><a name="906" href="Logic.LambekGrishin.Type.Polarised.html#906" class="Bound"
+      >A&#8315;</a
+      ><a name="908"
+      > </a
+      ><a name="909" class="Symbol"
+      >:</a
+      ><a name="910"
+      > </a
+      ><a name="911" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="920"
+      > </a
+      ><a name="921" href="Logic.Polarity.html#425" class="InductiveConstructor"
+      >-</a
+      ><a name="922"
+      > </a
+      ><a name="923" href="Logic.LambekGrishin.Type.Polarised.html#900" class="Bound"
+      >A</a
+      ><a name="924" class="Symbol"
+      >)</a
+      ><a name="925"
+      > </a
+      ><a name="926" class="Symbol"
+      >(</a
+      ><a name="927" href="Logic.LambekGrishin.Type.Polarised.html#927" class="Bound"
+      >B&#8314;</a
+      ><a name="929"
+      > </a
+      ><a name="930" class="Symbol"
+      >:</a
+      ><a name="931"
+      > </a
+      ><a name="932" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="941"
+      > </a
+      ><a name="942" href="Logic.Polarity.html#410" class="InductiveConstructor"
+      >+</a
+      ><a name="943"
+      > </a
+      ><a name="944" href="Logic.LambekGrishin.Type.Polarised.html#902" class="Bound"
+      >B</a
+      ><a name="945" class="Symbol"
+      >)</a
+      ><a name="946"
+      > </a
+      ><a name="947" class="Symbol"
+      >&#8594;</a
+      ><a name="948"
+      > </a
+      ><a name="949" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="958"
+      > </a
+      ><a name="959" href="Logic.Polarity.html#425" class="InductiveConstructor"
+      >-</a
+      ><a name="960"
+      > </a
+      ><a name="961" class="Symbol"
+      >(</a
+      ><a name="962" href="Logic.LambekGrishin.Type.Polarised.html#900" class="Bound"
+      >A</a
+      ><a name="963"
+      > </a
+      ><a name="964" href="Logic.LambekGrishin.Type.html#759" class="InductiveConstructor Operator"
+      >&#8656;</a
+      ><a name="965"
+      > </a
+      ><a name="966" href="Logic.LambekGrishin.Type.Polarised.html#902" class="Bound"
+      >B</a
+      ><a name="967" class="Symbol"
+      >)</a
+      ><a name="968"
+      >
+  </a
+      ><a name="971" href="Logic.LambekGrishin.Type.Polarised.html#971" class="InductiveConstructor Operator"
+      >_&#8658;_</a
+      ><a name="974"
+      >  </a
+      ><a name="976" class="Symbol"
+      >:</a
+      ><a name="977"
+      > </a
+      ><a name="978" class="Symbol"
+      >&#8704;</a
+      ><a name="979"
+      > </a
+      ><a name="980" class="Symbol"
+      >{</a
+      ><a name="981" href="Logic.LambekGrishin.Type.Polarised.html#981" class="Bound"
+      >A</a
+      ><a name="982"
+      > </a
+      ><a name="983" href="Logic.LambekGrishin.Type.Polarised.html#983" class="Bound"
+      >B</a
+      ><a name="984" class="Symbol"
+      >}</a
+      ><a name="985"
+      > </a
+      ><a name="986" class="Symbol"
+      >(</a
+      ><a name="987" href="Logic.LambekGrishin.Type.Polarised.html#987" class="Bound"
+      >A&#8314;</a
+      ><a name="989"
+      > </a
+      ><a name="990" class="Symbol"
+      >:</a
+      ><a name="991"
+      > </a
+      ><a name="992" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="1001"
+      > </a
+      ><a name="1002" href="Logic.Polarity.html#410" class="InductiveConstructor"
+      >+</a
+      ><a name="1003"
+      > </a
+      ><a name="1004" href="Logic.LambekGrishin.Type.Polarised.html#981" class="Bound"
+      >A</a
+      ><a name="1005" class="Symbol"
+      >)</a
+      ><a name="1006"
+      > </a
+      ><a name="1007" class="Symbol"
+      >(</a
+      ><a name="1008" href="Logic.LambekGrishin.Type.Polarised.html#1008" class="Bound"
+      >B&#8315;</a
+      ><a name="1010"
+      > </a
+      ><a name="1011" class="Symbol"
+      >:</a
+      ><a name="1012"
+      > </a
+      ><a name="1013" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="1022"
+      > </a
+      ><a name="1023" href="Logic.Polarity.html#425" class="InductiveConstructor"
+      >-</a
+      ><a name="1024"
+      > </a
+      ><a name="1025" href="Logic.LambekGrishin.Type.Polarised.html#983" class="Bound"
+      >B</a
+      ><a name="1026" class="Symbol"
+      >)</a
+      ><a name="1027"
+      > </a
+      ><a name="1028" class="Symbol"
+      >&#8594;</a
+      ><a name="1029"
+      > </a
+      ><a name="1030" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="1039"
+      > </a
+      ><a name="1040" href="Logic.Polarity.html#425" class="InductiveConstructor"
+      >-</a
+      ><a name="1041"
+      > </a
+      ><a name="1042" class="Symbol"
+      >(</a
+      ><a name="1043" href="Logic.LambekGrishin.Type.Polarised.html#981" class="Bound"
+      >A</a
+      ><a name="1044"
+      > </a
+      ><a name="1045" href="Logic.LambekGrishin.Type.html#787" class="InductiveConstructor Operator"
+      >&#8658;</a
+      ><a name="1046"
+      > </a
+      ><a name="1047" href="Logic.LambekGrishin.Type.Polarised.html#983" class="Bound"
+      >B</a
+      ><a name="1048" class="Symbol"
+      >)</a
+      ><a name="1049"
+      >
+
+
+</a
+      ><a name="1052" class="Keyword"
+      >private</a
+      ><a name="1059"
+      >
+  </a
+      ><a name="1062" class="Comment"
+      >-- We can attempt to prove correctness in the following manner:</a
+      ><a name="1125"
+      >
+  </a
+      ><a name="1128" class="Comment"
+      >--</a
+      ><a name="1130"
+      >
+  </a
+      ><a name="1133" class="Comment"
+      >--  1. define a function `forget` which syntactically transforms a</a
+      ><a name="1199"
+      >
+  </a
+      ><a name="1202" class="Comment"
+      >--     polarised context to a context (done with a macro to ensure</a
+      ><a name="1268"
+      >
+  </a
+      ><a name="1271" class="Comment"
+      >--     that there are no typos.</a
+      ><a name="1302"
+      >
+  </a
+      ><a name="1305" class="Comment"
+      >--</a
+      ><a name="1307"
+      >
+  </a
+      ><a name="1310" class="Comment"
+      >--  2. proved a proof that `forget` returns the correct context, i.e.</a
+      ><a name="1379"
+      >
+  </a
+      ><a name="1382" class="Comment"
+      >--     the context for which we've given a polarity proof.</a
+      ><a name="1440"
+      >
+  </a
+      ><a name="1443" class="Comment"
+      >--</a
+      ><a name="1445"
+      >
+  </a
+      ><a name="1448" class="Comment"
+      >-- What this gives us is the certainty that we didn't make any typos</a
+      ><a name="1516"
+      >
+  </a
+      ><a name="1519" class="Comment"
+      >-- in the definition of `Polarised`, esp. in the matching of `Polarised`</a
+      ><a name="1591"
+      >
+  </a
+      ><a name="1594" class="Comment"
+      >-- constructors to `Context` constructors... *snore*</a
+      ><a name="1646"
+      >
+
+  </a
+      ><a name="1650" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1656"
+      > </a
+      ><a name="1657" class="Symbol"
+      >:</a
+      ><a name="1658"
+      > </a
+      ><a name="1659" class="Symbol"
+      >&#8704;</a
+      ><a name="1660"
+      > </a
+      ><a name="1661" class="Symbol"
+      >{</a
+      ><a name="1662" href="Logic.LambekGrishin.Type.Polarised.html#1662" class="Bound"
+      >p</a
+      ><a name="1663"
+      > </a
+      ><a name="1664" href="Logic.LambekGrishin.Type.Polarised.html#1664" class="Bound"
+      >A</a
+      ><a name="1665" class="Symbol"
+      >}</a
+      ><a name="1666"
+      > </a
+      ><a name="1667" class="Symbol"
+      >(</a
+      ><a name="1668" href="Logic.LambekGrishin.Type.Polarised.html#1668" class="Bound"
+      >A&#7486;</a
+      ><a name="1670"
+      > </a
+      ><a name="1671" class="Symbol"
+      >:</a
+      ><a name="1672"
+      > </a
+      ><a name="1673" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="1682"
+      > </a
+      ><a name="1683" href="Logic.LambekGrishin.Type.Polarised.html#1662" class="Bound"
+      >p</a
+      ><a name="1684"
+      > </a
+      ><a name="1685" href="Logic.LambekGrishin.Type.Polarised.html#1664" class="Bound"
+      >A</a
+      ><a name="1686" class="Symbol"
+      >)</a
+      ><a name="1687"
+      > </a
+      ><a name="1688" class="Symbol"
+      >&#8594;</a
+      ><a name="1689"
+      > </a
+      ><a name="1690" href="Logic.LambekGrishin.Type.html#605" class="Datatype"
+      >Type</a
+      ><a name="1694"
+      >
+  </a
+      ><a name="1697" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1703"
+      > </a
+      ><a name="1704" class="Symbol"
+      >(</a
+      ><a name="1705" href="Logic.LambekGrishin.Type.Polarised.html#511" class="InductiveConstructor"
+      >el</a
+      ><a name="1707"
+      > </a
+      ><a name="1708" href="Logic.LambekGrishin.Type.Polarised.html#1708" class="Bound"
+      >A</a
+      ><a name="1709" class="Symbol"
+      >)</a
+      ><a name="1710"
+      >  </a
+      ><a name="1712" class="Symbol"
+      >=</a
+      ><a name="1713"
+      > </a
+      ><a name="1714" href="Logic.LambekGrishin.Type.html#626" class="InductiveConstructor"
+      >el</a
+      ><a name="1716"
+      > </a
+      ><a name="1717" class="Symbol"
+      >(_</a
+      ><a name="1719"
+      > </a
+      ><a name="1720" href="Data.Product.html#509" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="1721"
+      > </a
+      ><a name="1722" href="Logic.LambekGrishin.Type.Polarised.html#1708" class="Bound"
+      >A</a
+      ><a name="1723" class="Symbol"
+      >)</a
+      ><a name="1724"
+      >
+  </a
+      ><a name="1727" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1733"
+      > </a
+      ><a name="1734" class="Symbol"
+      >(</a
+      ><a name="1735" href="Logic.LambekGrishin.Type.Polarised.html#1735" class="Bound"
+      >A</a
+      ><a name="1736"
+      > </a
+      ><a name="1737" href="Logic.LambekGrishin.Type.Polarised.html#566" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="1738"
+      > </a
+      ><a name="1739" href="Logic.LambekGrishin.Type.Polarised.html#1739" class="Bound"
+      >B</a
+      ><a name="1740" class="Symbol"
+      >)</a
+      ><a name="1741"
+      > </a
+      ><a name="1742" class="Symbol"
+      >=</a
+      ><a name="1743"
+      > </a
+      ><a name="1744" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1750"
+      > </a
+      ><a name="1751" href="Logic.LambekGrishin.Type.Polarised.html#1735" class="Bound"
+      >A</a
+      ><a name="1752"
+      > </a
+      ><a name="1753" href="Logic.LambekGrishin.Type.html#647" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="1754"
+      > </a
+      ><a name="1755" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1761"
+      > </a
+      ><a name="1762" href="Logic.LambekGrishin.Type.Polarised.html#1739" class="Bound"
+      >B</a
+      ><a name="1763"
+      >
+  </a
+      ><a name="1766" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1772"
+      > </a
+      ><a name="1773" class="Symbol"
+      >(</a
+      ><a name="1774" href="Logic.LambekGrishin.Type.Polarised.html#1774" class="Bound"
+      >A</a
+      ><a name="1775"
+      > </a
+      ><a name="1776" href="Logic.LambekGrishin.Type.Polarised.html#647" class="InductiveConstructor Operator"
+      >&#8666;</a
+      ><a name="1777"
+      > </a
+      ><a name="1778" href="Logic.LambekGrishin.Type.Polarised.html#1778" class="Bound"
+      >B</a
+      ><a name="1779" class="Symbol"
+      >)</a
+      ><a name="1780"
+      > </a
+      ><a name="1781" class="Symbol"
+      >=</a
+      ><a name="1782"
+      > </a
+      ><a name="1783" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1789"
+      > </a
+      ><a name="1790" href="Logic.LambekGrishin.Type.Polarised.html#1774" class="Bound"
+      >A</a
+      ><a name="1791"
+      > </a
+      ><a name="1792" href="Logic.LambekGrishin.Type.html#675" class="InductiveConstructor Operator"
+      >&#8666;</a
+      ><a name="1793"
+      > </a
+      ><a name="1794" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1800"
+      > </a
+      ><a name="1801" href="Logic.LambekGrishin.Type.Polarised.html#1778" class="Bound"
+      >B</a
+      ><a name="1802"
+      >
+  </a
+      ><a name="1805" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1811"
+      > </a
+      ><a name="1812" class="Symbol"
+      >(</a
+      ><a name="1813" href="Logic.LambekGrishin.Type.Polarised.html#1813" class="Bound"
+      >A</a
+      ><a name="1814"
+      > </a
+      ><a name="1815" href="Logic.LambekGrishin.Type.Polarised.html#728" class="InductiveConstructor Operator"
+      >&#8667;</a
+      ><a name="1816"
+      > </a
+      ><a name="1817" href="Logic.LambekGrishin.Type.Polarised.html#1817" class="Bound"
+      >B</a
+      ><a name="1818" class="Symbol"
+      >)</a
+      ><a name="1819"
+      > </a
+      ><a name="1820" class="Symbol"
+      >=</a
+      ><a name="1821"
+      > </a
+      ><a name="1822" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1828"
+      > </a
+      ><a name="1829" href="Logic.LambekGrishin.Type.Polarised.html#1813" class="Bound"
+      >A</a
+      ><a name="1830"
+      > </a
+      ><a name="1831" href="Logic.LambekGrishin.Type.html#703" class="InductiveConstructor Operator"
+      >&#8667;</a
+      ><a name="1832"
+      > </a
+      ><a name="1833" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1839"
+      > </a
+      ><a name="1840" href="Logic.LambekGrishin.Type.Polarised.html#1817" class="Bound"
+      >B</a
+      ><a name="1841"
+      >
+  </a
+      ><a name="1844" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1850"
+      > </a
+      ><a name="1851" class="Symbol"
+      >(</a
+      ><a name="1852" href="Logic.LambekGrishin.Type.Polarised.html#1852" class="Bound"
+      >A</a
+      ><a name="1853"
+      > </a
+      ><a name="1854" href="Logic.LambekGrishin.Type.Polarised.html#809" class="InductiveConstructor Operator"
+      >&#8853;</a
+      ><a name="1855"
+      > </a
+      ><a name="1856" href="Logic.LambekGrishin.Type.Polarised.html#1856" class="Bound"
+      >B</a
+      ><a name="1857" class="Symbol"
+      >)</a
+      ><a name="1858"
+      > </a
+      ><a name="1859" class="Symbol"
+      >=</a
+      ><a name="1860"
+      > </a
+      ><a name="1861" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1867"
+      > </a
+      ><a name="1868" href="Logic.LambekGrishin.Type.Polarised.html#1852" class="Bound"
+      >A</a
+      ><a name="1869"
+      > </a
+      ><a name="1870" href="Logic.LambekGrishin.Type.html#731" class="InductiveConstructor Operator"
+      >&#8853;</a
+      ><a name="1871"
+      > </a
+      ><a name="1872" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1878"
+      > </a
+      ><a name="1879" href="Logic.LambekGrishin.Type.Polarised.html#1856" class="Bound"
+      >B</a
+      ><a name="1880"
+      >
+  </a
+      ><a name="1883" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1889"
+      > </a
+      ><a name="1890" class="Symbol"
+      >(</a
+      ><a name="1891" href="Logic.LambekGrishin.Type.Polarised.html#1891" class="Bound"
+      >A</a
+      ><a name="1892"
+      > </a
+      ><a name="1893" href="Logic.LambekGrishin.Type.Polarised.html#890" class="InductiveConstructor Operator"
+      >&#8656;</a
+      ><a name="1894"
+      > </a
+      ><a name="1895" href="Logic.LambekGrishin.Type.Polarised.html#1895" class="Bound"
+      >B</a
+      ><a name="1896" class="Symbol"
+      >)</a
+      ><a name="1897"
+      > </a
+      ><a name="1898" class="Symbol"
+      >=</a
+      ><a name="1899"
+      > </a
+      ><a name="1900" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1906"
+      > </a
+      ><a name="1907" href="Logic.LambekGrishin.Type.Polarised.html#1891" class="Bound"
+      >A</a
+      ><a name="1908"
+      > </a
+      ><a name="1909" href="Logic.LambekGrishin.Type.html#759" class="InductiveConstructor Operator"
+      >&#8656;</a
+      ><a name="1910"
+      > </a
+      ><a name="1911" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1917"
+      > </a
+      ><a name="1918" href="Logic.LambekGrishin.Type.Polarised.html#1895" class="Bound"
+      >B</a
+      ><a name="1919"
+      >
+  </a
+      ><a name="1922" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1928"
+      > </a
+      ><a name="1929" class="Symbol"
+      >(</a
+      ><a name="1930" href="Logic.LambekGrishin.Type.Polarised.html#1930" class="Bound"
+      >A</a
+      ><a name="1931"
+      > </a
+      ><a name="1932" href="Logic.LambekGrishin.Type.Polarised.html#971" class="InductiveConstructor Operator"
+      >&#8658;</a
+      ><a name="1933"
+      > </a
+      ><a name="1934" href="Logic.LambekGrishin.Type.Polarised.html#1934" class="Bound"
+      >B</a
+      ><a name="1935" class="Symbol"
+      >)</a
+      ><a name="1936"
+      > </a
+      ><a name="1937" class="Symbol"
+      >=</a
+      ><a name="1938"
+      > </a
+      ><a name="1939" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1945"
+      > </a
+      ><a name="1946" href="Logic.LambekGrishin.Type.Polarised.html#1930" class="Bound"
+      >A</a
+      ><a name="1947"
+      > </a
+      ><a name="1948" href="Logic.LambekGrishin.Type.html#787" class="InductiveConstructor Operator"
+      >&#8658;</a
+      ><a name="1949"
+      > </a
+      ><a name="1950" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="1956"
+      > </a
+      ><a name="1957" href="Logic.LambekGrishin.Type.Polarised.html#1934" class="Bound"
+      >B</a
+      ><a name="1958"
+      >
+
+  </a
+      ><a name="1962" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="1976"
+      > </a
+      ><a name="1977" class="Symbol"
+      >:</a
+      ><a name="1978"
+      > </a
+      ><a name="1979" class="Symbol"
+      >&#8704;</a
+      ><a name="1980"
+      > </a
+      ><a name="1981" class="Symbol"
+      >{</a
+      ><a name="1982" href="Logic.LambekGrishin.Type.Polarised.html#1982" class="Bound"
+      >p</a
+      ><a name="1983"
+      > </a
+      ><a name="1984" href="Logic.LambekGrishin.Type.Polarised.html#1984" class="Bound"
+      >A</a
+      ><a name="1985" class="Symbol"
+      >}</a
+      ><a name="1986"
+      > </a
+      ><a name="1987" class="Symbol"
+      >(</a
+      ><a name="1988" href="Logic.LambekGrishin.Type.Polarised.html#1988" class="Bound"
+      >A&#7486;</a
+      ><a name="1990"
+      > </a
+      ><a name="1991" class="Symbol"
+      >:</a
+      ><a name="1992"
+      > </a
+      ><a name="1993" href="Logic.LambekGrishin.Type.Polarised.html#467" class="Datatype"
+      >Polarised</a
+      ><a name="2002"
+      > </a
+      ><a name="2003" href="Logic.LambekGrishin.Type.Polarised.html#1982" class="Bound"
+      >p</a
+      ><a name="2004"
+      > </a
+      ><a name="2005" href="Logic.LambekGrishin.Type.Polarised.html#1984" class="Bound"
+      >A</a
+      ><a name="2006" class="Symbol"
+      >)</a
+      ><a name="2007"
+      > </a
+      ><a name="2008" class="Symbol"
+      >&#8594;</a
+      ><a name="2009"
+      > </a
+      ><a name="2010" href="Logic.LambekGrishin.Type.Polarised.html#1650" class="Function"
+      >forget</a
+      ><a name="2016"
+      > </a
+      ><a name="2017" href="Logic.LambekGrishin.Type.Polarised.html#1988" class="Bound"
+      >A&#7486;</a
+      ><a name="2019"
+      > </a
+      ><a name="2020" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="2021"
+      > </a
+      ><a name="2022" href="Logic.LambekGrishin.Type.Polarised.html#1984" class="Bound"
+      >A</a
+      ><a name="2023"
+      >
+  </a
+      ><a name="2026" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2040"
+      > </a
+      ><a name="2041" class="Symbol"
+      >(</a
+      ><a name="2042" href="Logic.LambekGrishin.Type.Polarised.html#511" class="InductiveConstructor"
+      >el</a
+      ><a name="2044"
+      > </a
+      ><a name="2045" href="Logic.LambekGrishin.Type.Polarised.html#2045" class="Bound"
+      >A</a
+      ><a name="2046" class="Symbol"
+      >)</a
+      ><a name="2047"
+      >  </a
+      ><a name="2049" class="Symbol"
+      >=</a
+      ><a name="2050"
+      > </a
+      ><a name="2051" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="2055"
+      >
+  </a
+      ><a name="2058" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2072"
+      > </a
+      ><a name="2073" class="Symbol"
+      >(</a
+      ><a name="2074" href="Logic.LambekGrishin.Type.Polarised.html#2074" class="Bound"
+      >A</a
+      ><a name="2075"
+      > </a
+      ><a name="2076" href="Logic.LambekGrishin.Type.Polarised.html#566" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="2077"
+      > </a
+      ><a name="2078" href="Logic.LambekGrishin.Type.Polarised.html#2078" class="Bound"
+      >B</a
+      ><a name="2079" class="Symbol"
+      >)</a
+      ><a name="2080"
+      > </a
+      ><a name="2081" class="Keyword"
+      >rewrite</a
+      ><a name="2088"
+      > </a
+      ><a name="2089" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2103"
+      > </a
+      ><a name="2104" href="Logic.LambekGrishin.Type.Polarised.html#2074" class="Bound"
+      >A</a
+      ><a name="2105"
+      > </a
+      ><a name="2106" class="Symbol"
+      >|</a
+      ><a name="2107"
+      > </a
+      ><a name="2108" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2122"
+      > </a
+      ><a name="2123" href="Logic.LambekGrishin.Type.Polarised.html#2078" class="Bound"
+      >B</a
+      ><a name="2124"
+      > </a
+      ><a name="2125" class="Symbol"
+      >=</a
+      ><a name="2126"
+      > </a
+      ><a name="2127" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="2131"
+      >
+  </a
+      ><a name="2134" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2148"
+      > </a
+      ><a name="2149" class="Symbol"
+      >(</a
+      ><a name="2150" href="Logic.LambekGrishin.Type.Polarised.html#2150" class="Bound"
+      >A</a
+      ><a name="2151"
+      > </a
+      ><a name="2152" href="Logic.LambekGrishin.Type.Polarised.html#647" class="InductiveConstructor Operator"
+      >&#8666;</a
+      ><a name="2153"
+      > </a
+      ><a name="2154" href="Logic.LambekGrishin.Type.Polarised.html#2154" class="Bound"
+      >B</a
+      ><a name="2155" class="Symbol"
+      >)</a
+      ><a name="2156"
+      > </a
+      ><a name="2157" class="Keyword"
+      >rewrite</a
+      ><a name="2164"
+      > </a
+      ><a name="2165" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2179"
+      > </a
+      ><a name="2180" href="Logic.LambekGrishin.Type.Polarised.html#2150" class="Bound"
+      >A</a
+      ><a name="2181"
+      > </a
+      ><a name="2182" class="Symbol"
+      >|</a
+      ><a name="2183"
+      > </a
+      ><a name="2184" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2198"
+      > </a
+      ><a name="2199" href="Logic.LambekGrishin.Type.Polarised.html#2154" class="Bound"
+      >B</a
+      ><a name="2200"
+      > </a
+      ><a name="2201" class="Symbol"
+      >=</a
+      ><a name="2202"
+      > </a
+      ><a name="2203" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="2207"
+      >
+  </a
+      ><a name="2210" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2224"
+      > </a
+      ><a name="2225" class="Symbol"
+      >(</a
+      ><a name="2226" href="Logic.LambekGrishin.Type.Polarised.html#2226" class="Bound"
+      >A</a
+      ><a name="2227"
+      > </a
+      ><a name="2228" href="Logic.LambekGrishin.Type.Polarised.html#728" class="InductiveConstructor Operator"
+      >&#8667;</a
+      ><a name="2229"
+      > </a
+      ><a name="2230" href="Logic.LambekGrishin.Type.Polarised.html#2230" class="Bound"
+      >B</a
+      ><a name="2231" class="Symbol"
+      >)</a
+      ><a name="2232"
+      > </a
+      ><a name="2233" class="Keyword"
+      >rewrite</a
+      ><a name="2240"
+      > </a
+      ><a name="2241" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2255"
+      > </a
+      ><a name="2256" href="Logic.LambekGrishin.Type.Polarised.html#2226" class="Bound"
+      >A</a
+      ><a name="2257"
+      > </a
+      ><a name="2258" class="Symbol"
+      >|</a
+      ><a name="2259"
+      > </a
+      ><a name="2260" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2274"
+      > </a
+      ><a name="2275" href="Logic.LambekGrishin.Type.Polarised.html#2230" class="Bound"
+      >B</a
+      ><a name="2276"
+      > </a
+      ><a name="2277" class="Symbol"
+      >=</a
+      ><a name="2278"
+      > </a
+      ><a name="2279" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="2283"
+      >
+  </a
+      ><a name="2286" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2300"
+      > </a
+      ><a name="2301" class="Symbol"
+      >(</a
+      ><a name="2302" href="Logic.LambekGrishin.Type.Polarised.html#2302" class="Bound"
+      >A</a
+      ><a name="2303"
+      > </a
+      ><a name="2304" href="Logic.LambekGrishin.Type.Polarised.html#809" class="InductiveConstructor Operator"
+      >&#8853;</a
+      ><a name="2305"
+      > </a
+      ><a name="2306" href="Logic.LambekGrishin.Type.Polarised.html#2306" class="Bound"
+      >B</a
+      ><a name="2307" class="Symbol"
+      >)</a
+      ><a name="2308"
+      > </a
+      ><a name="2309" class="Keyword"
+      >rewrite</a
+      ><a name="2316"
+      > </a
+      ><a name="2317" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2331"
+      > </a
+      ><a name="2332" href="Logic.LambekGrishin.Type.Polarised.html#2302" class="Bound"
+      >A</a
+      ><a name="2333"
+      > </a
+      ><a name="2334" class="Symbol"
+      >|</a
+      ><a name="2335"
+      > </a
+      ><a name="2336" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2350"
+      > </a
+      ><a name="2351" href="Logic.LambekGrishin.Type.Polarised.html#2306" class="Bound"
+      >B</a
+      ><a name="2352"
+      > </a
+      ><a name="2353" class="Symbol"
+      >=</a
+      ><a name="2354"
+      > </a
+      ><a name="2355" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="2359"
+      >
+  </a
+      ><a name="2362" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2376"
+      > </a
+      ><a name="2377" class="Symbol"
+      >(</a
+      ><a name="2378" href="Logic.LambekGrishin.Type.Polarised.html#2378" class="Bound"
+      >A</a
+      ><a name="2379"
+      > </a
+      ><a name="2380" href="Logic.LambekGrishin.Type.Polarised.html#890" class="InductiveConstructor Operator"
+      >&#8656;</a
+      ><a name="2381"
+      > </a
+      ><a name="2382" href="Logic.LambekGrishin.Type.Polarised.html#2382" class="Bound"
+      >B</a
+      ><a name="2383" class="Symbol"
+      >)</a
+      ><a name="2384"
+      > </a
+      ><a name="2385" class="Keyword"
+      >rewrite</a
+      ><a name="2392"
+      > </a
+      ><a name="2393" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2407"
+      > </a
+      ><a name="2408" href="Logic.LambekGrishin.Type.Polarised.html#2378" class="Bound"
+      >A</a
+      ><a name="2409"
+      > </a
+      ><a name="2410" class="Symbol"
+      >|</a
+      ><a name="2411"
+      > </a
+      ><a name="2412" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2426"
+      > </a
+      ><a name="2427" href="Logic.LambekGrishin.Type.Polarised.html#2382" class="Bound"
+      >B</a
+      ><a name="2428"
+      > </a
+      ><a name="2429" class="Symbol"
+      >=</a
+      ><a name="2430"
+      > </a
+      ><a name="2431" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="2435"
+      >
+  </a
+      ><a name="2438" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2452"
+      > </a
+      ><a name="2453" class="Symbol"
+      >(</a
+      ><a name="2454" href="Logic.LambekGrishin.Type.Polarised.html#2454" class="Bound"
+      >A</a
+      ><a name="2455"
+      > </a
+      ><a name="2456" href="Logic.LambekGrishin.Type.Polarised.html#971" class="InductiveConstructor Operator"
+      >&#8658;</a
+      ><a name="2457"
+      > </a
+      ><a name="2458" href="Logic.LambekGrishin.Type.Polarised.html#2458" class="Bound"
+      >B</a
+      ><a name="2459" class="Symbol"
+      >)</a
+      ><a name="2460"
+      > </a
+      ><a name="2461" class="Keyword"
+      >rewrite</a
+      ><a name="2468"
+      > </a
+      ><a name="2469" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2483"
+      > </a
+      ><a name="2484" href="Logic.LambekGrishin.Type.Polarised.html#2454" class="Bound"
+      >A</a
+      ><a name="2485"
+      > </a
+      ><a name="2486" class="Symbol"
+      >|</a
+      ><a name="2487"
+      > </a
+      ><a name="2488" href="Logic.LambekGrishin.Type.Polarised.html#1962" class="Function"
+      >forget-correct</a
+      ><a name="2502"
+      > </a
+      ><a name="2503" href="Logic.LambekGrishin.Type.Polarised.html#2458" class="Bound"
+      >B</a
+      ><a name="2504"
+      > </a
+      ><a name="2505" class="Symbol"
+      >=</a
+      ><a name="2506"
+      > </a
+      ><a name="2507" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="2511"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>

@@ -1,0 +1,619 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Logic.Reification</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="73"
+      >
+</a
+      ><a name="74" class="Comment"
+      >-- The Lambek Calculus in Agda</a
+      ><a name="104"
+      >
+</a
+      ><a name="105" class="Comment"
+      >--</a
+      ><a name="107"
+      >
+</a
+      ><a name="108" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="180"
+      >
+
+</a
+      ><a name="182" class="Keyword"
+      >open</a
+      ><a name="186"
+      > </a
+      ><a name="187" class="Keyword"
+      >import</a
+      ><a name="193"
+      > </a
+      ><a name="194" href="Level.html#1" class="Module"
+      >Level</a
+      ><a name="199"
+      > </a
+      ><a name="200" class="Keyword"
+      >using</a
+      ><a name="205"
+      > </a
+      ><a name="206" class="Symbol"
+      >(</a
+      ><a name="207"
+      >Level</a
+      ><a name="212" class="Symbol"
+      >;</a
+      ><a name="213"
+      > _&#8852;_</a
+      ><a name="217" class="Symbol"
+      >)</a
+      ><a name="218"
+      >
+</a
+      ><a name="219" class="Keyword"
+      >open</a
+      ><a name="223"
+      > </a
+      ><a name="224" class="Keyword"
+      >import</a
+      ><a name="230"
+      > </a
+      ><a name="231" href="Data.List.html#1" class="Module"
+      >Data.List</a
+      ><a name="240"
+      > </a
+      ><a name="241" class="Symbol"
+      >as</a
+      ><a name="243"
+      > </a
+      ><a name="244" class="Module"
+      >List</a
+      ><a name="248"
+      > </a
+      ><a name="249" class="Keyword"
+      >using</a
+      ><a name="254"
+      > </a
+      ><a name="255" class="Symbol"
+      >(</a
+      ><a name="256"
+      >List</a
+      ><a name="260" class="Symbol"
+      >)</a
+      ><a name="261"
+      >
+</a
+      ><a name="262" class="Keyword"
+      >open</a
+      ><a name="266"
+      > </a
+      ><a name="267" class="Keyword"
+      >import</a
+      ><a name="273"
+      > </a
+      ><a name="274" href="Data.Vec.html#1" class="Module"
+      >Data.Vec</a
+      ><a name="282"
+      > </a
+      ><a name="283" class="Symbol"
+      >as</a
+      ><a name="285"
+      > </a
+      ><a name="286" class="Module"
+      >Vec</a
+      ><a name="289"
+      > </a
+      ><a name="290" class="Keyword"
+      >using</a
+      ><a name="295"
+      > </a
+      ><a name="296" class="Symbol"
+      >(</a
+      ><a name="297"
+      >Vec</a
+      ><a name="300" class="Symbol"
+      >)</a
+      ><a name="301"
+      >
+
+</a
+      ><a name="303" class="Keyword"
+      >module</a
+      ><a name="309"
+      > </a
+      ><a name="310" href="Logic.Reification.html#1" class="Module"
+      >Logic.Reification</a
+      ><a name="327"
+      > </a
+      ><a name="328" class="Keyword"
+      >where</a
+      ><a name="333"
+      >
+
+
+</a
+      ><a name="336" class="Keyword"
+      >record</a
+      ><a name="342"
+      > </a
+      ><a name="343" href="Logic.Reification.html#343" class="Record"
+      >Reify</a
+      ><a name="348"
+      > </a
+      ><a name="349" class="Symbol"
+      >{</a
+      ><a name="350" href="Logic.Reification.html#350" class="Bound"
+      >a</a
+      ><a name="351"
+      > </a
+      ><a name="352" href="Logic.Reification.html#352" class="Bound"
+      >b</a
+      ><a name="353"
+      > </a
+      ><a name="354" class="Symbol"
+      >:</a
+      ><a name="355"
+      > </a
+      ><a name="356" href="Agda.Primitive.html#379" class="Postulate"
+      >Level</a
+      ><a name="361" class="Symbol"
+      >}</a
+      ><a name="362"
+      > </a
+      ><a name="363" class="Symbol"
+      >(</a
+      ><a name="364" href="Logic.Reification.html#364" class="Bound"
+      >A</a
+      ><a name="365"
+      > </a
+      ><a name="366" class="Symbol"
+      >:</a
+      ><a name="367"
+      > </a
+      ><a name="368" class="PrimitiveType"
+      >Set</a
+      ><a name="371"
+      > </a
+      ><a name="372" href="Logic.Reification.html#350" class="Bound"
+      >a</a
+      ><a name="373" class="Symbol"
+      >)</a
+      ><a name="374"
+      > </a
+      ><a name="375" class="Symbol"
+      >(</a
+      ><a name="376" href="Logic.Reification.html#376" class="Bound"
+      >B</a
+      ><a name="377"
+      > </a
+      ><a name="378" class="Symbol"
+      >:</a
+      ><a name="379"
+      > </a
+      ><a name="380" class="PrimitiveType"
+      >Set</a
+      ><a name="383"
+      > </a
+      ><a name="384" href="Logic.Reification.html#352" class="Bound"
+      >b</a
+      ><a name="385" class="Symbol"
+      >)</a
+      ><a name="386"
+      > </a
+      ><a name="387" class="Symbol"
+      >:</a
+      ><a name="388"
+      > </a
+      ><a name="389" class="PrimitiveType"
+      >Set</a
+      ><a name="392"
+      > </a
+      ><a name="393" class="Symbol"
+      >(</a
+      ><a name="394" href="Logic.Reification.html#350" class="Bound"
+      >a</a
+      ><a name="395"
+      > </a
+      ><a name="396" href="Agda.Primitive.html#626" class="Primitive Operator"
+      >&#8852;</a
+      ><a name="397"
+      > </a
+      ><a name="398" href="Logic.Reification.html#352" class="Bound"
+      >b</a
+      ><a name="399" class="Symbol"
+      >)</a
+      ><a name="400"
+      > </a
+      ><a name="401" class="Keyword"
+      >where</a
+      ><a name="406"
+      >
+  </a
+      ><a name="409" class="Keyword"
+      >field</a
+      ><a name="414"
+      >
+    </a
+      ><a name="419" href="Logic.Reification.html#419" class="Field Operator"
+      >&#10214;_&#10215;</a
+      ><a name="422"
+      > </a
+      ><a name="423" class="Symbol"
+      >:</a
+      ><a name="424"
+      > </a
+      ><a name="425" href="Logic.Reification.html#364" class="Bound"
+      >A</a
+      ><a name="426"
+      > </a
+      ><a name="427" class="Symbol"
+      >&#8594;</a
+      ><a name="428"
+      > </a
+      ><a name="429" href="Logic.Reification.html#376" class="Bound"
+      >B</a
+      ><a name="430"
+      >
+
+
+</a
+      ><a name="433" class="Keyword"
+      >open</a
+      ><a name="437"
+      > </a
+      ><a name="438" href="Logic.Reification.html#343" class="Module"
+      >Reify</a
+      ><a name="443"
+      > </a
+      ><a name="444" class="Symbol"
+      >{{...}}</a
+      ><a name="451"
+      > </a
+      ><a name="452" class="Keyword"
+      >public</a
+      ><a name="458"
+      >
+
+
+</a
+      ><a name="461" class="Keyword"
+      >instance</a
+      ><a name="469"
+      >
+  </a
+      ><a name="472" href="Logic.Reification.html#472" class="Function"
+      >ReifyList</a
+      ><a name="481"
+      > </a
+      ><a name="482" class="Symbol"
+      >:</a
+      ><a name="483"
+      > </a
+      ><a name="484" class="Symbol"
+      >&#8704;</a
+      ><a name="485"
+      > </a
+      ><a name="486" class="Symbol"
+      >{</a
+      ><a name="487" href="Logic.Reification.html#487" class="Bound"
+      >a</a
+      ><a name="488"
+      > </a
+      ><a name="489" href="Logic.Reification.html#489" class="Bound"
+      >b</a
+      ><a name="490"
+      > </a
+      ><a name="491" href="Logic.Reification.html#491" class="Bound"
+      >A</a
+      ><a name="492"
+      > </a
+      ><a name="493" href="Logic.Reification.html#493" class="Bound"
+      >B</a
+      ><a name="494" class="Symbol"
+      >}</a
+      ><a name="495"
+      > </a
+      ><a name="496" class="Symbol"
+      >{{</a
+      ><a name="498" href="Logic.Reification.html#498" class="Bound"
+      >dict</a
+      ><a name="502"
+      > </a
+      ><a name="503" class="Symbol"
+      >:</a
+      ><a name="504"
+      > </a
+      ><a name="505" href="Logic.Reification.html#343" class="Record"
+      >Reify</a
+      ><a name="510"
+      > </a
+      ><a name="511" class="Symbol"
+      >{</a
+      ><a name="512" href="Logic.Reification.html#487" class="Bound"
+      >a</a
+      ><a name="513" class="Symbol"
+      >}</a
+      ><a name="514"
+      > </a
+      ><a name="515" class="Symbol"
+      >{</a
+      ><a name="516" href="Logic.Reification.html#489" class="Bound"
+      >b</a
+      ><a name="517" class="Symbol"
+      >}</a
+      ><a name="518"
+      > </a
+      ><a name="519" href="Logic.Reification.html#491" class="Bound"
+      >A</a
+      ><a name="520"
+      > </a
+      ><a name="521" href="Logic.Reification.html#493" class="Bound"
+      >B</a
+      ><a name="522" class="Symbol"
+      >}}</a
+      ><a name="524"
+      > </a
+      ><a name="525" class="Symbol"
+      >&#8594;</a
+      ><a name="526"
+      > </a
+      ><a name="527" href="Logic.Reification.html#343" class="Record"
+      >Reify</a
+      ><a name="532"
+      > </a
+      ><a name="533" class="Symbol"
+      >(</a
+      ><a name="534" href="Data.List.html#659" class="Datatype"
+      >List</a
+      ><a name="538"
+      > </a
+      ><a name="539" href="Logic.Reification.html#491" class="Bound"
+      >A</a
+      ><a name="540" class="Symbol"
+      >)</a
+      ><a name="541"
+      > </a
+      ><a name="542" class="Symbol"
+      >(</a
+      ><a name="543" href="Data.List.html#659" class="Datatype"
+      >List</a
+      ><a name="547"
+      > </a
+      ><a name="548" href="Logic.Reification.html#493" class="Bound"
+      >B</a
+      ><a name="549" class="Symbol"
+      >)</a
+      ><a name="550"
+      >
+  </a
+      ><a name="553" href="Logic.Reification.html#472" class="Function"
+      >ReifyList</a
+      ><a name="562"
+      > </a
+      ><a name="563" class="Symbol"
+      >{{</a
+      ><a name="565" href="Logic.Reification.html#565" class="Bound"
+      >dict</a
+      ><a name="569" class="Symbol"
+      >}}</a
+      ><a name="571"
+      > </a
+      ><a name="572" class="Symbol"
+      >=</a
+      ><a name="573"
+      > </a
+      ><a name="574" class="Keyword"
+      >record</a
+      ><a name="580"
+      > </a
+      ><a name="581" class="Symbol"
+      >{</a
+      ><a name="582"
+      > </a
+      ><a name="583" class="Field Operator"
+      >&#10214;_&#10215;</a
+      ><a name="586"
+      > </a
+      ><a name="587" class="Symbol"
+      >=</a
+      ><a name="588"
+      > </a
+      ><a name="589" href="Data.List.html#1385" class="Function"
+      >List.map</a
+      ><a name="597"
+      > </a
+      ><a name="598" href="Logic.Reification.html#419" class="Function Operator"
+      >&#10214;_&#10215;</a
+      ><a name="601"
+      > </a
+      ><a name="602" class="Symbol"
+      >}</a
+      ><a name="603"
+      >
+
+
+</a
+      ><a name="606" class="Keyword"
+      >instance</a
+      ><a name="614"
+      >
+  </a
+      ><a name="617" href="Logic.Reification.html#617" class="Function"
+      >ReifyVec</a
+      ><a name="625"
+      > </a
+      ><a name="626" class="Symbol"
+      >:</a
+      ><a name="627"
+      > </a
+      ><a name="628" class="Symbol"
+      >&#8704;</a
+      ><a name="629"
+      > </a
+      ><a name="630" class="Symbol"
+      >{</a
+      ><a name="631" href="Logic.Reification.html#631" class="Bound"
+      >a</a
+      ><a name="632"
+      > </a
+      ><a name="633" href="Logic.Reification.html#633" class="Bound"
+      >b</a
+      ><a name="634"
+      > </a
+      ><a name="635" href="Logic.Reification.html#635" class="Bound"
+      >A</a
+      ><a name="636"
+      > </a
+      ><a name="637" href="Logic.Reification.html#637" class="Bound"
+      >B</a
+      ><a name="638" class="Symbol"
+      >}</a
+      ><a name="639"
+      > </a
+      ><a name="640" class="Symbol"
+      >{{</a
+      ><a name="642" href="Logic.Reification.html#642" class="Bound"
+      >dict</a
+      ><a name="646"
+      > </a
+      ><a name="647" class="Symbol"
+      >:</a
+      ><a name="648"
+      > </a
+      ><a name="649" href="Logic.Reification.html#343" class="Record"
+      >Reify</a
+      ><a name="654"
+      > </a
+      ><a name="655" class="Symbol"
+      >{</a
+      ><a name="656" href="Logic.Reification.html#631" class="Bound"
+      >a</a
+      ><a name="657" class="Symbol"
+      >}</a
+      ><a name="658"
+      > </a
+      ><a name="659" class="Symbol"
+      >{</a
+      ><a name="660" href="Logic.Reification.html#633" class="Bound"
+      >b</a
+      ><a name="661" class="Symbol"
+      >}</a
+      ><a name="662"
+      > </a
+      ><a name="663" href="Logic.Reification.html#635" class="Bound"
+      >A</a
+      ><a name="664"
+      > </a
+      ><a name="665" href="Logic.Reification.html#637" class="Bound"
+      >B</a
+      ><a name="666" class="Symbol"
+      >}}</a
+      ><a name="668"
+      > </a
+      ><a name="669" class="Symbol"
+      >{</a
+      ><a name="670" href="Logic.Reification.html#670" class="Bound"
+      >k</a
+      ><a name="671" class="Symbol"
+      >}</a
+      ><a name="672"
+      > </a
+      ><a name="673" class="Symbol"
+      >&#8594;</a
+      ><a name="674"
+      > </a
+      ><a name="675" href="Logic.Reification.html#343" class="Record"
+      >Reify</a
+      ><a name="680"
+      > </a
+      ><a name="681" class="Symbol"
+      >(</a
+      ><a name="682" href="Data.Vec.html#604" class="Datatype"
+      >Vec</a
+      ><a name="685"
+      > </a
+      ><a name="686" href="Logic.Reification.html#635" class="Bound"
+      >A</a
+      ><a name="687"
+      > </a
+      ><a name="688" href="Logic.Reification.html#670" class="Bound"
+      >k</a
+      ><a name="689" class="Symbol"
+      >)</a
+      ><a name="690"
+      > </a
+      ><a name="691" class="Symbol"
+      >(</a
+      ><a name="692" href="Data.Vec.html#604" class="Datatype"
+      >Vec</a
+      ><a name="695"
+      > </a
+      ><a name="696" href="Logic.Reification.html#637" class="Bound"
+      >B</a
+      ><a name="697"
+      > </a
+      ><a name="698" href="Logic.Reification.html#670" class="Bound"
+      >k</a
+      ><a name="699" class="Symbol"
+      >)</a
+      ><a name="700"
+      >
+  </a
+      ><a name="703" href="Logic.Reification.html#617" class="Function"
+      >ReifyVec</a
+      ><a name="711"
+      > </a
+      ><a name="712" class="Symbol"
+      >{{</a
+      ><a name="714" href="Logic.Reification.html#714" class="Bound"
+      >dict</a
+      ><a name="718" class="Symbol"
+      >}}</a
+      ><a name="720"
+      > </a
+      ><a name="721" class="Symbol"
+      >=</a
+      ><a name="722"
+      > </a
+      ><a name="723" class="Keyword"
+      >record</a
+      ><a name="729"
+      > </a
+      ><a name="730" class="Symbol"
+      >{</a
+      ><a name="731"
+      > </a
+      ><a name="732" class="Field Operator"
+      >&#10214;_&#10215;</a
+      ><a name="735"
+      > </a
+      ><a name="736" class="Symbol"
+      >=</a
+      ><a name="737"
+      > </a
+      ><a name="738" href="Data.Vec.html#1994" class="Function"
+      >Vec.map</a
+      ><a name="745"
+      > </a
+      ><a name="746" href="Logic.Reification.html#419" class="Function Operator"
+      >&#10214;_&#10215;</a
+      ><a name="749"
+      > </a
+      ><a name="750" class="Symbol"
+      >}</a
+      ><a name="751"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>
