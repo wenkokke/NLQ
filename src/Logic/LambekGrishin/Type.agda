@@ -15,9 +15,12 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 module Logic.LambekGrishin.Type {ℓ} (Univ : Set ℓ) where
 
 
-infixr 30 _⊗_ _⊕_
-infixr 20 _⇛_ _⇒_
-infixl 20 _⇚_ _⇐_
+infixr 30 _⊗_
+infixr 20 _⇛_
+infixl 20 _⇚_
+infixr 30 _⊕_
+infixr 20 _⇒_
+infixl 20 _⇐_
 
 
 data Type : Set ℓ where
@@ -134,5 +137,6 @@ module DecEq
   ... | _       | no  B≢D = no (B≢D ∘ proj₂ ∘ ⇒-injective)
 
 
-  decSetoid : DecSetoid _ _
-  decSetoid = P.decSetoid _≟-Type_
+  instance
+    decSetoid : DecSetoid _ _
+    decSetoid = P.decSetoid _≟-Type_

@@ -13,16 +13,16 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 open import Data.Unit using (⊤; tt)
 
 
-module Logic.Lambek.Judgement.Context.Polarised {ℓ} (Univ : Set ℓ) where
+module Logic.LambekGrishin.ResMon.Judgement.Context.Polarised {ℓ} (Univ : Set ℓ) where
 
 open import Logic.Polarity
-open import Logic.Lambek.Type                   Univ as T
-open import Logic.Lambek.Type.Context           Univ as TC
+open import Logic.LambekGrishin.Type                     Univ as T
+open import Logic.LambekGrishin.Type.Context             Univ as TC
      hiding (module Simple)
-open import Logic.Lambek.Type.Context.Polarised Univ as TCP
+open import Logic.LambekGrishin.Type.Context.Polarised   Univ as TCP
      hiding (module Simple; module Polarised) renaming (Polarised to PolarisedContext)
-open import Logic.Lambek.Judgement              Univ as J
-open import Logic.Lambek.Judgement.Context      Univ as JC
+open import Logic.LambekGrishin.ResMon.Judgement         Univ as J
+open import Logic.LambekGrishin.ResMon.Judgement.Context Univ as JC
      hiding (module Simple)
 
 

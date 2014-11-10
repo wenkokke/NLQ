@@ -10,6 +10,7 @@ open import Function using (_∘_)
 open import Data.Unit using (⊤; tt)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; uncurry)
 open import Relation.Nullary using (Dec; yes; no)
+open import Relation.Binary using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
@@ -17,6 +18,11 @@ module Logic.Lambek.Type.Context {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Lambek.Type Univ renaming (module DecEq to DecEqType)
+
+
+infixr 30 _⊗>_ _<⊗_
+infixr 20 _⇒>_ _<⇒_
+infixl 20 _⇐>_ _<⇐_
 
 
 -- Contexts encode incomplete types with a single hole.
@@ -55,7 +61,23 @@ data Context : Set ℓ where
 <⇐-injective refl = refl , refl
 
 
+-- Simple decision procedure which checks if a context is the empty
+-- context (superseded by the full decidable equality below, but
+-- doesn't require a decidable equality on universes).
+
+is-[]? : (A : Context) → Dec (A ≡ [])
+is-[]? []       = yes refl
+is-[]? (_ ⊗> _) = no (λ ())
+is-[]? (_ ⇒> _) = no (λ ())
+is-[]? (_ ⇐> _) = no (λ ())
+is-[]? (_ <⊗ _) = no (λ ())
+is-[]? (_ <⇒ _) = no (λ ())
+is-[]? (_ <⇐ _) = no (λ ())
+
+
 module Simple where
+
+  infix 50 _[_] _<_>
 
   -- Apply a context to a type by plugging the type into the context.
   _[_] : Context → Type → Type
@@ -154,7 +176,7 @@ instance
 -- Proof that if the given universe has decidable equality, then so do contexts.
 module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
 
-  open DecEqType _≟-Univ_
+  open DecEqType _≟-Univ_ using (_≟-Type_)
 
   infix 4 _≟-Context_
 
@@ -226,3 +248,6 @@ module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
   ... | yes Γ≡Δ | yes A≡B rewrite Γ≡Δ | A≡B = yes refl
   ... | no  Γ≢Δ | _       = no (Γ≢Δ ∘ proj₁ ∘ <⇐-injective)
   ... | _       | no  A≢B = no (A≢B ∘ proj₂ ∘ <⇐-injective)
+  instance
+    decSetoid : DecSetoid _ _
+    decSetoid = P.decSetoid _≟-Context_
