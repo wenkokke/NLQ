@@ -12,35 +12,58 @@ import qualified Data.List.Split as L (splitWhen)
 import           Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
-import           Debug.Trace (traceShow)
 import           Development.Shake
 import           Development.Shake.FilePath
+import           Prelude hiding (lines)
 
 
 main :: IO ()
 main = shakeArgs shakeOptions $ do
 
-  want ["src/Logic/Lambek/Type.agda"
-       ,"src/Logic/Lambek/Type/Context.agda"
-       ,"src/Logic/Lambek/Type/Context/Polarised.agda"
-       ,"src/Logic/Lambek/Judgement.agda"
-       ,"src/Logic/Lambek/Judgement/Context.agda"
-       ,"src/Logic/Lambek/Judgement/Context/Polarised.agda"
-       ,"src/Logic/Lambek/ResMon/Base.agda"
-       ,"src/Logic/Lambek/ResMon/Derivation.agda"
-       ,"src/Logic/Lambek/ResMon/Origin.agda"
-       ,"src/Logic/Lambek/ResMon/Trans.agda"]
+  -- Generating the files for the Lambek calculus
+  want filesForLambek
 
   "src/Logic/Lambek//*.agda" *> \target -> do
     let src = toLambekGrishin target
     need [src]
     liftIO $
-      T.writeFile target . handle replacementListForLambek blacklistForLambek =<< T.readFile src
+      T.writeFile target
+        .   restrictSource replacementListForLambek blacklistForLambek
+        =<< T.readFile src
 
+  -- Generating the HTML listings
+  phony "listings" $ do
+    (Just agdaHome) <- getEnv "AGDA_HOME"
+    need ["src/Everything.agda"]
+    cmd ("agda" :: String)
+        ["--include-path=src"
+        ,"--include-path=" ++ agdaHome
+        ,"--html"
+        ,"src/Everything.agda"
+        ,"-v0"]
+
+  "src/Everything.agda" *> \_ -> do
+    liftIO $ removeFiles "src" ["Everything.agda"]
+    cmd ("./GenerateEverything.hs" :: String)
+
+  -- Cleaning up after all code generators
+  phony "clobber" $ do
+    putNormal "Removing Everything.agda"
+    liftIO $ removeFiles "src" ["Everything.agda"]
+    putNormal "Removing generated files for Lambek calculus"
+    liftIO $ removeFiles "." filesForLambek
+
+
+
+
+--------------------------------------------------------------------------------
+-- Utility function which restricts an Agda source file to somewhat
+-- intelligently remove lines which refer to blacklisted symbols.
+-------------------------------------------------------------------------------
 
 -- |Parse a file and remove all groups which contain illegal symbols.
-handle :: [(Text, Text)] -> [Text] -> Text -> Text
-handle replacements blacklist input = let
+restrictSource :: [(Text, Text)] -> [Text] -> Text -> Text
+restrictSource replacements blacklist input = let
 
   -- The algorithm to remove illegal lines is as follows:
   -- First we divide the text up by lines, and group the lines that
@@ -129,8 +152,9 @@ handle replacements blacklist input = let
   isBlank = T.all isSpace
 
 
+
 --------------------------------------------------------------------------------
--- Constants which are specific to the "Lambek Grishin" => "Lambek" transition
+-- Constants which are specific to the "Lambek Grishin" => "Lambek" translation.
 --------------------------------------------------------------------------------
 
 -- |Map a filename to a file in the Lambek Grishin sub-directory.
@@ -139,6 +163,20 @@ toLambekGrishin  = joinPath . map go . splitDirectories
   where
     go "Lambek" = "LambekGrishin"
     go path     = path
+
+-- |Set of file paths which should be created for the Lambek calculus.
+filesForLambek :: [FilePath]
+filesForLambek =
+  ["src/Logic/Lambek/Type.agda"
+  ,"src/Logic/Lambek/Type/Context.agda"
+  ,"src/Logic/Lambek/Type/Context/Polarised.agda"
+  ,"src/Logic/Lambek/Judgement.agda"
+  ,"src/Logic/Lambek/Judgement/Context.agda"
+  ,"src/Logic/Lambek/Judgement/Context/Polarised.agda"
+  ,"src/Logic/Lambek/ResMon/Base.agda"
+  ,"src/Logic/Lambek/ResMon/Derivation.agda"
+  ,"src/Logic/Lambek/ResMon/Origin.agda"
+  ,"src/Logic/Lambek/ResMon/Trans.agda"]
 
 -- |Set of replacement rules for the Lambek Grishin to Lambek conversion.
 replacementListForLambek :: [(Text, Text)]

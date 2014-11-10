@@ -1,3 +1,5 @@
+#!/usr/bin/env runhaskell
+
 {-# LANGUAGE PatternGuards #-}
 
 import qualified Data.List as L -- package: base
