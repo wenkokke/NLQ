@@ -43,6 +43,7 @@ main = shakeArgs shakeOptions $ do
         ,"-v0"]
 
   "src/Everything.agda" *> \_ -> do
+    need filesForLambek
     liftIO $ removeFiles "src" ["Everything.agda"]
     cmd ("./GenerateEverything.hs" :: String)
 
@@ -171,6 +172,7 @@ filesForLambek =
   ,"src/Logic/Lambek/Type/Complexity.agda"
   ,"src/Logic/Lambek/Type/Context.agda"
   ,"src/Logic/Lambek/Type/Context/Polarised.agda"
+  ,"src/Logic/Lambek/ResMon.agda"
   ,"src/Logic/Lambek/ResMon/Judgement.agda"
   ,"src/Logic/Lambek/ResMon/Judgement/Context.agda"
   ,"src/Logic/Lambek/ResMon/Judgement/Context/Polarised.agda"

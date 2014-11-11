@@ -62,7 +62,7 @@ module el where
     viewOrigin ((A ⊗> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⊗> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A ⇛> B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇐ f)     = go (((A ⇛> B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₁ (mon-⇛ᴸ [] f₂)
+    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₂ (mon-⇛ᴿ f₁ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A ⇛> B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊕⇛ f)     = go (B <⊢ _)               f  (res-⊕⇛ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⇛> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
@@ -85,7 +85,7 @@ module el where
     viewOrigin ((A <⊗ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⊗ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A <⇛ B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇐ f)     = go (((A <⇛ B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₂ (mon-⇛ᴿ f₁ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₁ (mon-⇛ᴸ [] f₂)
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A <⇛ B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊕⇛ f)     = go (_ ⊢> (A <⊕ _))        f  (res-⊕⇛ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⇛ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
@@ -156,8 +156,6 @@ module el where
         where
           pr′ : g [ f ]ᴰ ≡ (g < f′ >ᴰ) [ id ]ᴰ
           pr′ rewrite <>ᴰ-def g f′ id = cong (_[_]ᴰ g) pr
-
-
 
 
 
@@ -232,7 +230,7 @@ module ⊗ where
     viewOrigin ((A ⊗> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⊗> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A ⇛> B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇐ f)     = go (((A ⇛> B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₁ (mon-⇛ᴸ [] f₂)
+    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₂ (mon-⇛ᴿ f₁ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A ⇛> B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊕⇛ f)     = go (B <⊢ _)               f  (res-⊕⇛ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⇛> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
@@ -255,7 +253,7 @@ module ⊗ where
     viewOrigin ((A <⊗ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⊗ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A <⇛ B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇐ f)     = go (((A <⇛ B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₂ (mon-⇛ᴿ f₁ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₁ (mon-⇛ᴸ [] f₂)
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A <⇛ B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊕⇛ f)     = go (_ ⊢> (A <⊕ _))        f  (res-⊕⇛ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⇛ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
@@ -356,7 +354,7 @@ module ⇚ where
     viewOrigin ((A ⊗> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⊗> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A ⇛> B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇐ f)     = go (((A ⇛> B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₁ (mon-⇛ᴸ [] f₂)
+    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₂ (mon-⇛ᴿ f₁ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A ⇛> B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊕⇛ f)     = go (B <⊢ _)               f  (res-⊕⇛ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⇛> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
@@ -379,7 +377,7 @@ module ⇚ where
     viewOrigin ((A <⊗ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⊗ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A <⇛ B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇐ f)     = go (((A <⇛ B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₂ (mon-⇛ᴿ f₁ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₁ (mon-⇛ᴸ [] f₂)
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A <⇛ B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊕⇛ f)     = go (_ ⊢> (A <⊕ _))        f  (res-⊕⇛ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⇛ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
@@ -413,7 +411,7 @@ module ⇛ where
 
   data Origin {J B C} (J⁻ : Polarised - J) (f : LG J [ B ⇛ C ]ᴶ) : Set ℓ where
        origin : ∀ {E F}
-                → (h₁ : LG F ⊢ C) (h₂ : LG B ⊢ E)
+                → (h₁ : LG B ⊢ E) (h₂ : LG F ⊢ C)
                 → (f′ : ∀ {G} → LG E ⇛ F ⊢ G ⋯ J [ G ]ᴶ)
                 → (pr : f ≡ f′ [ mon-⇛ h₁ h₂ ]ᴰ)
                 → Origin J⁻ f
@@ -480,7 +478,7 @@ module ⇛ where
     viewOrigin ((A ⊗> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⊗> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A ⇛> B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇐ f)     = go (((A ⇛> B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₁ (mon-⇛ᴸ [] f₂)
+    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₂ (mon-⇛ᴿ f₁ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A ⇛> B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊕⇛ f)     = go (B <⊢ _)               f  (res-⊕⇛ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⇛> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
@@ -503,7 +501,7 @@ module ⇛ where
     viewOrigin ((A <⊗ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⊗ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A <⇛ B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇐ f)     = go (((A <⇛ B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₂ (mon-⇛ᴿ f₁ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₁ (mon-⇛ᴸ [] f₂)
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A <⇛ B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊕⇛ f)     = go (_ ⊢> (A <⊕ _))        f  (res-⊕⇛ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⇛ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
@@ -557,7 +555,7 @@ module ⊕ where
     viewOrigin ((A ⊗> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⊗> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A ⇛> B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇐ f)     = go (((A ⇛> B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₁ (mon-⇛ᴸ [] f₂)
+    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₂ (mon-⇛ᴿ f₁ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A ⇛> B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊕⇛ f)     = go (B <⊢ _)               f  (res-⊕⇛ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⇛> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
@@ -580,7 +578,7 @@ module ⊕ where
     viewOrigin ((A <⊗ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⊗ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A <⇛ B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇐ f)     = go (((A <⇛ B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₂ (mon-⇛ᴿ f₁ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₁ (mon-⇛ᴸ [] f₂)
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A <⇛ B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊕⇛ f)     = go (_ ⊢> (A <⊕ _))        f  (res-⊕⇛ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⇛ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
@@ -680,7 +678,7 @@ module ⇐ where
     viewOrigin ((A ⊗> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⊗> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A ⇛> B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇐ f)     = go (((A ⇛> B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₁ (mon-⇛ᴸ [] f₂)
+    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₂ (mon-⇛ᴿ f₁ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A ⇛> B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊕⇛ f)     = go (B <⊢ _)               f  (res-⊕⇛ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⇛> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
@@ -703,7 +701,7 @@ module ⇐ where
     viewOrigin ((A <⊗ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⊗ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A <⇛ B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇐ f)     = go (((A <⇛ B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₂ (mon-⇛ᴿ f₁ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₁ (mon-⇛ᴸ [] f₂)
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A <⇛ B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊕⇛ f)     = go (_ ⊢> (A <⊕ _))        f  (res-⊕⇛ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⇛ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
@@ -803,7 +801,7 @@ module ⇒ where
     viewOrigin ((A ⊗> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⊗> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A ⇛> B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇐ f)     = go (((A ⇛> B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₁ (mon-⇛ᴸ [] f₂)
+    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₂ (mon-⇛ᴿ f₁ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A ⇛> B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⊕⇛ f)     = go (B <⊢ _)               f  (res-⊕⇛ [])
     viewOrigin ((A ⇛> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⇛> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
@@ -826,7 +824,7 @@ module ⇒ where
     viewOrigin ((A <⊗ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⊗ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A <⇛ B)) <⊢ _) f  (res-⊗⇒ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇐ f)     = go (((A <⇛ B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₂ (mon-⇛ᴿ f₁ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)               f₁ (mon-⇛ᴸ [] f₂)
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A <⇛ B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⊕⇛ f)     = go (_ ⊢> (A <⊕ _))        f  (res-⊕⇛ [])
     viewOrigin ((A <⇛ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⇛ B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])

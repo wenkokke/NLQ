@@ -56,8 +56,8 @@ data LG_⋯_ : (I J : Judgement) → Set ℓ where
   res-⇚⊕ : ∀ {J A B C}   → LG J ⋯ C ⇚ A ⊢ B → LG J ⋯ C ⊢ B ⊕ A
   mon-⊕ᴸ : ∀ {J A B C D} → LG J ⋯ A ⊢ B → LG C ⊢ D → LG J ⋯ A ⊕ C ⊢ B ⊕ D
   mon-⊕ᴿ : ∀ {J A B C D} → LG A ⊢ B → LG J ⋯ C ⊢ D → LG J ⋯ A ⊕ C ⊢ B ⊕ D
-  mon-⇛ᴸ : ∀ {J A B C D} → LG J ⋯ A ⊢ B → LG C ⊢ D → LG J ⋯ D ⇛ A ⊢ C ⇛ B
-  mon-⇛ᴿ : ∀ {J A B C D} → LG A ⊢ B → LG J ⋯ C ⊢ D → LG J ⋯ D ⇛ A ⊢ C ⇛ B
+  mon-⇛ᴸ : ∀ {J A B C D} → LG J ⋯ C ⊢ D → LG A ⊢ B → LG J ⋯ D ⇛ A ⊢ C ⇛ B
+  mon-⇛ᴿ : ∀ {J A B C D} → LG C ⊢ D → LG J ⋯ A ⊢ B → LG J ⋯ D ⇛ A ⊢ C ⇛ B
   mon-⇚ᴸ : ∀ {J A B C D} → LG J ⋯ A ⊢ B → LG C ⊢ D → LG J ⋯ A ⇚ D ⊢ B ⇚ C
   mon-⇚ᴿ : ∀ {J A B C D} → LG A ⊢ B → LG J ⋯ C ⊢ D → LG J ⋯ A ⇚ D ⊢ B ⇚ C
 

@@ -36,7 +36,7 @@ data LG_ : Judgement → Set ℓ where
 
   -- rules for co-residuation and co-monotonicity
   mon-⊕  : ∀ {A B C D} → LG A ⊢ B → LG C ⊢ D → LG A ⊕ C ⊢ B ⊕ D
-  mon-⇛  : ∀ {A B C D} → LG A ⊢ B → LG C ⊢ D → LG D ⇛ A ⊢ C ⇛ B
+  mon-⇛  : ∀ {A B C D} → LG C ⊢ D → LG A ⊢ B → LG D ⇛ A ⊢ C ⇛ B
   mon-⇚  : ∀ {A B C D} → LG A ⊢ B → LG C ⊢ D → LG A ⇚ D ⊢ B ⇚ C
   res-⇛⊕ : ∀ {A B C}   → LG B ⇛ C ⊢ A → LG C ⊢ B ⊕ A
   res-⊕⇛ : ∀ {A B C}   → LG C ⊢ B ⊕ A → LG B ⇛ C ⊢ A
@@ -119,16 +119,16 @@ res-⇒⇚′ : ∀ {A B C} → LG B ⇛ C ⊢ A → LG C ⇚ A ⊢ B
 res-⇒⇚′ = res-⊕⇚ ∘ res-⇛⊕
 
 -- Derived rules for application.
-appl-⇒′ : ∀ {A B} → LG A ⊗ (A ⇒ B) ⊢ B
-appl-⇒′ = res-⇒⊗ id′
-appl-⇐′ : ∀ {A B} → LG (B ⇐ A) ⊗ A ⊢ B
-appl-⇐′ = res-⇐⊗ id′
+appl-⇒′ : ∀ {A B C} → LG B ⊢ C → LG A ⊗ (A ⇒ B) ⊢ C
+appl-⇒′ f = res-⇒⊗ (mon-⇒ id′ f)
+appl-⇐′ : ∀ {A B C} → LG B ⊢ C → LG (B ⇐ A) ⊗ A ⊢ C
+appl-⇐′ f = res-⇐⊗ (mon-⇐ f id′)
 
 -- Derived rules for co-application.
-appl-⇛′ : ∀ {A B} → LG B ⊢ A ⊕ (A ⇛ B)
-appl-⇛′ = res-⇛⊕ id′
-appl-⇚′ : ∀ {A B} → LG B ⊢ (B ⇚ A) ⊕ A
-appl-⇚′ = res-⇚⊕ id′
+appl-⇛′ : ∀ {A B C} → LG B ⊢ C → LG B ⊢ A ⊕ (A ⇛ C)
+appl-⇛′ f = res-⇛⊕ (mon-⇛ id′ f)
+appl-⇚′ : ∀ {A B C} → LG B ⊢ C → LG B ⊢ (C ⇚ A) ⊕ A
+appl-⇚′ f = res-⇚⊕ (mon-⇚ f id′)
 
 
 infix 5 is-id_ is-id?_
