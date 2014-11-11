@@ -9,6 +9,7 @@ import           Data.Char as C (isSpace)
 import           Data.Either (isRight)
 import qualified Data.List as L
 import qualified Data.List.Split as L (splitWhen)
+import           Data.Maybe (fromJust)
 import           Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
@@ -20,11 +21,22 @@ import           Prelude hiding (lines)
 main :: IO ()
 main = shakeArgs shakeOptions $ do
 
+  -- Generating the files for the Linear calculus
+  want (map fst filesForLinear)
+
+  "src/Logic/Linear//*.agda" *> \target -> do
+    let src = fromJust (lookup target filesForLinear)
+    need [src]
+    liftIO $
+      T.writeFile target
+        .   restrictSource replacementListForLinear blacklistForLinear
+        =<< T.readFile src
+
   -- Generating the files for the Lambek calculus
-  want filesForLambek
+  want (map fst filesForLambek)
 
   "src/Logic/Lambek//*.agda" *> \target -> do
-    let src = toLambekGrishin target
+    let src = fromJust (lookup target filesForLambek)
     need [src]
     liftIO $
       T.writeFile target
@@ -43,6 +55,7 @@ main = shakeArgs shakeOptions $ do
         ,"-v0"]
 
   "src/Everything.agda" *> \_ -> do
+    need (map snd filesForLambek)
     liftIO $ removeFiles "src" ["Everything.agda"]
     cmd ("./GenerateEverything.hs" :: String)
 
@@ -51,7 +64,9 @@ main = shakeArgs shakeOptions $ do
     putNormal "Removing Everything.agda"
     liftIO $ removeFiles "src" ["Everything.agda"]
     putNormal "Removing generated files for Lambek calculus"
-    liftIO $ removeFiles "." filesForLambek
+    liftIO $ removeFiles "." (map fst filesForLambek)
+    putNormal "Removing generated files for Linear calculus"
+    liftIO $ removeFiles "." (map fst filesForLinear)
 
 
 
@@ -152,38 +167,37 @@ restrictSource replacements blacklist input = let
   isBlank = T.all isSpace
 
 
+(==>) :: a -> b -> (a , b)
+(==>) = (,)
+
 
 --------------------------------------------------------------------------------
 -- Constants which are specific to the "Lambek Grishin" => "Lambek" translation.
 --------------------------------------------------------------------------------
 
--- |Map a filename to a file in the Lambek Grishin sub-directory.
-toLambekGrishin :: FilePath -> FilePath
-toLambekGrishin  = joinPath . map go . splitDirectories
-  where
-    go "Lambek" = "LambekGrishin"
-    go path     = path
-
 -- |Set of file paths which should be created for the Lambek calculus.
-filesForLambek :: [FilePath]
+filesForLambek :: [(FilePath,FilePath)]
 filesForLambek =
-  ["src/Logic/Lambek/Type.agda"
-  ,"src/Logic/Lambek/Type/Complexity.agda"
-  ,"src/Logic/Lambek/Type/Context.agda"
-  ,"src/Logic/Lambek/Type/Context/Polarised.agda"
-  ,"src/Logic/Lambek/ResMon/Judgement.agda"
-  ,"src/Logic/Lambek/ResMon/Judgement/Context.agda"
-  ,"src/Logic/Lambek/ResMon/Judgement/Context/Polarised.agda"
-  ,"src/Logic/Lambek/ResMon/Base.agda"
-  ,"src/Logic/Lambek/ResMon/Derivation.agda"
-  ,"src/Logic/Lambek/ResMon/Origin.agda"
-  ,"src/Logic/Lambek/ResMon/Trans.agda"]
+  ["src/Logic/Lambek/Type.agda"                               ==> "src/Logic/LambekGrishin/Type.agda"
+  ,"src/Logic/Lambek/Type/Complexity.agda"                    ==> "src/Logic/LambekGrishin/Type/Complexity.agda"
+  ,"src/Logic/Lambek/Type/Context.agda"                       ==> "src/Logic/LambekGrishin/Type/Context.agda"
+  ,"src/Logic/Lambek/Type/Context/Polarised.agda"             ==> "src/Logic/LambekGrishin/Type/Context/Polarised.agda"
+  ,"src/Logic/Lambek/ResMon.agda"                             ==> "src/Logic/LambekGrishin/ResMon.agda"
+  ,"src/Logic/Lambek/ResMon/Judgement.agda"                   ==> "src/Logic/LambekGrishin/ResMon/Judgement.agda"
+  ,"src/Logic/Lambek/ResMon/Judgement/Context.agda"           ==> "src/Logic/LambekGrishin/ResMon/Judgement/Context.agda"
+  ,"src/Logic/Lambek/ResMon/Judgement/Context/Polarised.agda" ==> "src/Logic/LambekGrishin/ResMon/Judgement/Context/Polarised.agda"
+  ,"src/Logic/Lambek/ResMon/Base.agda"                        ==> "src/Logic/LambekGrishin/ResMon/Base.agda"
+  ,"src/Logic/Lambek/ResMon/Derivation.agda"                  ==> "src/Logic/LambekGrishin/ResMon/Derivation.agda"
+  ,"src/Logic/Lambek/ResMon/Origin.agda"                      ==> "src/Logic/LambekGrishin/ResMon/Origin.agda"
+  ,"src/Logic/Lambek/ResMon/Trans.agda"                       ==> "src/Logic/LambekGrishin/ResMon/Trans.agda"
+  ]
 
 -- |Set of replacement rules for the Lambek Grishin to Lambek conversion.
 replacementListForLambek :: [(Text, Text)]
 replacementListForLambek =
-  [ ("LambekGrishin" , "Lambek")
-  , ("LG", "NL")
+  [ "LambekGrishin" ==> "Lambek"
+  , "LG"            ==> "NL"
+  , "Structural⁺"   ==> "Structural"
   ]
 
 
@@ -195,3 +209,36 @@ blacklistForLambek =
 --, "res-⇛⊕" , "res-⊕⇛" , "res-⊕⇚" , "res-⇚⊕"
   , "grish₁" , "grish₂" , "grish₃" , "grish₄"
  ]
+
+
+--------------------------------------------------------------------------------
+-- Constants which are specific to the "Lambek Grishin" => "Linear" translation.
+--------------------------------------------------------------------------------
+
+-- |Set of file paths which should be created for the Lambek calculus.
+filesForLinear :: [(FilePath, FilePath)]
+filesForLinear =
+  ["src/Logic/Linear/Type.agda"                                         ==> "src/Logic/LambekGrishin/Type.agda"
+  ,"src/Logic/Linear/Type/Complexity.agda"                              ==> "src/Logic/LambekGrishin/Type/Complexity.agda"
+  ,"src/Logic/Linear/Type/Context.agda"                                 ==> "src/Logic/LambekGrishin/Type/Context.agda"
+  ,"src/Logic/Linear/Type/Context/Polarised.agda"                       ==> "src/Logic/LambekGrishin/Type/Context/Polarised.agda"
+  ,"src/Logic/Linear/LambekVanBenthem/Judgement.agda"                   ==> "src/Logic/LambekGrishin/ResMon/Judgement.agda"
+  ,"src/Logic/Linear/LambekVanBenthem/Judgement/Context.agda"           ==> "src/Logic/LambekGrishin/ResMon/Judgement/Context.agda"
+  ,"src/Logic/Linear/LambekVanBenthem/Judgement/Context/Polarised.agda" ==> "src/Logic/LambekGrishin/ResMon/Judgement/Context/Polarised.agda"
+  ]
+
+-- |Set of replacement rules for the Lambek Grishin to Lambek conversion.
+replacementListForLinear :: [(Text, Text)]
+replacementListForLinear =
+  [ "LambekGrishin" ==> "Linear"
+  , "LG"            ==> "LL"
+  , "ResMon"        ==> "LambekVanBenthem"
+  , "⇒"             ==> "⊸"
+  ]
+
+
+-- |Set of inference rules which may not occur in the Lambek calculus.
+blacklistForLinear :: [Text]
+blacklistForLinear = blacklistForLambek ++
+  [ "⇐"
+  ]

@@ -9,13 +9,12 @@ open import Algebra.ResiduatedAlgebra
 open import Relation.Binary using (Rel)
 
 
-module Logic.Lambek.SC.Complete {ℓ} (Univ : Set ℓ) where
+module Logic.Lambek.NaturalDeduction.Complete {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Lambek.Type         Univ as T
-open import Logic.Lambek.SC.Judgement Univ as SCJ
-open import Logic.Lambek.SC.Base      Univ as SCB
-open import Logic.Lambek.SC.Trans     Univ as SCT
+open import Logic.Lambek.Type                  Univ as T
+open import Logic.Lambek.ResMon.Judgement      Univ as NDJ
+open import Logic.Lambek.NaturalDeduction.Base Univ as NDB
 
 
 private
@@ -23,15 +22,16 @@ private
   A ≤ B = NL A ⊢ B
 
 
-open import Relation.Binary.PartialOrderToEquivalence _≤_ id′ trans′
+open import Relation.Binary.PartialOrderToEquivalence _≤_ id trans′
+
 
 
 isResiduatedAlgebra : IsResiduatedAlgebra _≈_ _≤_ _⊗_ _⇒_ _⇐_
 isResiduatedAlgebra = record
   { isPartialOrder = isPartialOrder
-  ; residual-⇒     = equivalence res-⇒⊗′ res-⊗⇒′
-  ; residual-⇐     = equivalence res-⊗⇐′ res-⇐⊗′
-  ; ∙-resp-≤       = mon-⊗
+  ; residual-⇒     = equivalence (λ f → ⇒E id f) (λ f → ⇒I f)
+  ; residual-⇐     = equivalence (λ f → ⇐I f) (λ f → ⇐E f id)
+  ; ∙-resp-≤       = ⊗I
   }
 
 

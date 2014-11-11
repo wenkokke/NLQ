@@ -71,10 +71,10 @@ res-⇒⇐′ : ∀ {A B C} → NL B ⊢ A ⇒ C → NL A ⊢ C ⇐ B
 res-⇒⇐′ = res-⊗⇐ ∘ res-⇒⊗
 
 -- Derived rules for application.
-appl-⇒′ : ∀ {A B} → NL A ⊗ (A ⇒ B) ⊢ B
-appl-⇒′ = res-⇒⊗ id′
-appl-⇐′ : ∀ {A B} → NL (B ⇐ A) ⊗ A ⊢ B
-appl-⇐′ = res-⇐⊗ id′
+appl-⇒′ : ∀ {A B C} → NL B ⊢ C → NL A ⊗ (A ⇒ B) ⊢ C
+appl-⇒′ f = res-⇒⊗ (mon-⇒ id′ f)
+appl-⇐′ : ∀ {A B C} → NL B ⊢ C → NL (B ⇐ A) ⊗ A ⊢ C
+appl-⇐′ f = res-⇐⊗ (mon-⇐ f id′)
 
 
 infix 5 is-id_ is-id?_

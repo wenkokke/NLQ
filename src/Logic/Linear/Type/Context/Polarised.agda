@@ -11,17 +11,17 @@ open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Lambek.Type.Context.Polarised {ℓ} (Univ : Set ℓ) where
+module Logic.Linear.Type.Context.Polarised {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Lambek.Type         Univ as T
-open import Logic.Lambek.Type.Context Univ as TC hiding (module Simple)
+open import Logic.Linear.Type         Univ as T
+open import Logic.Linear.Type.Context Univ as TC hiding (module Simple)
 
 
 -- The below definition for polarised context enforces the top polarity
 -- and the polarity of the hole. In doing so, it enforces that the contexts
--- maintain polarity---for instance, it excludes the context `A ⇒> ([] <⊗)`.
+-- maintain polarity---for instance, it excludes the context `A ⊸> ([] <⊗)`.
 -- However, it makes no attempt to maintain polarity in the nested types (as
 -- could be done with `Logic.Type.Polarised`).
 
@@ -31,17 +31,13 @@ data Polarised (p : Polarity) : Polarity → Context → Set ℓ where
 
   _⊗>_ : (A : Type) {B : Context} (B⁺ : Polarised p + B) → Polarised p + (A ⊗> B)
   _<⊗_ : {A : Context} (A⁺ : Polarised p + A) (B : Type) → Polarised p + (A <⊗ B)
-  _⇒>_ : (A : Type) {B : Context} (B⁻ : Polarised p - B) → Polarised p - (A ⇒> B)
-  _⇐>_ : (A : Type) {B : Context} (B⁺ : Polarised p + B) → Polarised p - (A ⇐> B)
-  _<⇒_ : {A : Context} (A⁺ : Polarised p + A) (B : Type) → Polarised p - (A <⇒ B)
-  _<⇐_ : {A : Context} (A⁻ : Polarised p - A) (B : Type) → Polarised p - (A <⇐ B)
-
-
+  _⊸>_ : (A : Type) {B : Context} (B⁻ : Polarised p - B) → Polarised p - (A ⊸> B)
+  _<⊸_ : {A : Context} (A⁺ : Polarised p + A) (B : Type) → Polarised p - (A <⊸ B)
 -- Structural contexts refer to contexts consisting solely of products
 -- or solely of sums.
 
-Structural : Context → Set ℓ
-Structural = Polarised + +
+Structural⁺ : Context → Set ℓ
+Structural⁺ = Polarised + +
 
 Structural⁻ : Context → Set ℓ
 Structural⁻ = Polarised - -
@@ -55,21 +51,17 @@ module Simple where
   _[_] : ∀ {p₁ p₂ A} → Polarised p₁ p₂ A → Type → Type
   []       [ A ] = A
   (B ⊗> C) [ A ] = B ⊗ (C [ A ])
-  (B ⇒> C) [ A ] = B ⇒ (C [ A ])
-  (B ⇐> C) [ A ] = B ⇐ (C [ A ])
+  (B ⊸> C) [ A ] = B ⊸ (C [ A ])
   (C <⊗ B) [ A ] = (C [ A ]) ⊗ B
-  (C <⇒ B) [ A ] = (C [ A ]) ⇒ B
-  (C <⇐ B) [ A ] = (C [ A ]) ⇐ B
+  (C <⊸ B) [ A ] = (C [ A ]) ⊸ B
   -- Compose two contexts to format new context.
   _<_> : ∀ {p₁ p₂ p₃ A B}
        → Polarised p₂ p₃ A → Polarised p₁ p₂ B → Polarised p₁ p₃ (A < B >′)
   []       < A > = A
   (B ⊗> C) < A > = B ⊗> (C < A >)
-  (B ⇒> C) < A > = B ⇒> (C < A >)
-  (B ⇐> C) < A > = B ⇐> (C < A >)
+  (B ⊸> C) < A > = B ⊸> (C < A >)
   (C <⊗ B) < A > = (C < A >) <⊗ B
-  (C <⇒ B) < A > = (C < A >) <⇒ B
-  (C <⇐ B) < A > = (C < A >) <⇐ B
+  (C <⊸ B) < A > = (C < A >) <⊸ B
 private
   -- We can attempt to prove correctness in the following manner:
   --
@@ -88,16 +80,11 @@ private
   forget []       = []
   forget (A ⊗> B) = A ⊗> forget B
   forget (A <⊗ B) = forget A <⊗ B
-  forget (A ⇒> B) = A ⇒> forget B
-  forget (A ⇐> B) = A ⇐> forget B
-  forget (A <⇒ B) = forget A <⇒ B
-  forget (A <⇐ B) = forget A <⇐ B
-
+  forget (A ⊸> B) = A ⊸> forget B
+  forget (A <⊸ B) = forget A <⊸ B
   forget-correct : ∀ {p₁ p₂ A} (Aᴾ : Polarised p₁ p₂ A) → forget Aᴾ ≡ A
   forget-correct []       = refl
   forget-correct (A ⊗> B) rewrite forget-correct B = refl
   forget-correct (A <⊗ B) rewrite forget-correct A = refl
-  forget-correct (A ⇒> B) rewrite forget-correct B = refl
-  forget-correct (A ⇐> B) rewrite forget-correct B = refl
-  forget-correct (A <⇒ B) rewrite forget-correct A = refl
-  forget-correct (A <⇐ B) rewrite forget-correct A = refl
+  forget-correct (A ⊸> B) rewrite forget-correct B = refl
+  forget-correct (A <⊸ B) rewrite forget-correct A = refl
