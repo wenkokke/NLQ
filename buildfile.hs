@@ -21,6 +21,17 @@ import           Prelude hiding (lines)
 main :: IO ()
 main = shakeArgs shakeOptions $ do
 
+  -- Generating the files for the Linear calculus
+  want (map fst filesForLinear)
+
+  "src/Logic/Linear//*.agda" *> \target -> do
+    let src = fromJust (lookup target filesForLinear)
+    need [src]
+    liftIO $
+      T.writeFile target
+        .   restrictSource replacementListForLinear blacklistForLinear
+        =<< T.readFile src
+
   -- Generating the files for the Lambek calculus
   want (map fst filesForLambek)
 
@@ -204,13 +215,13 @@ blacklistForLambek =
 -- |Set of file paths which should be created for the Lambek calculus.
 filesForLinear :: [(FilePath, FilePath)]
 filesForLinear =
-  ["src/Logic/Linear/Type.agda"                        ==> "src/Logic/LambekGrishin/Type.agda"
-  ,"src/Logic/Linear/Type/Complexity.agda"             ==> "src/Logic/LambekGrishin/Type/Complexity.agda"
-  ,"src/Logic/Linear/Type/Context.agda"                ==> "src/Logic/LambekGrishin/Type/Context.agda"
-  ,"src/Logic/Linear/Type/Context/Polarised.agda"      ==> "src/Logic/LambekGrishin/Type/Context/Polarised.agda"
-  ,"src/Logic/Linear/Judgement.agda"                   ==> "src/Logic/LambekGrishin/ResMon/Judgement.agda"
-  ,"src/Logic/Linear/Judgement/Context.agda"           ==> "src/Logic/LambekGrishin/ResMon/Judgement/Context.agda"
-  ,"src/Logic/Linear/Judgement/Context/Polarised.agda" ==> "src/Logic/LambekGrishin/ResMon/Judgement/Context/Polarised.agda"
+  ["src/Logic/Linear/Type.agda"                                         ==> "src/Logic/LambekGrishin/Type.agda"
+  ,"src/Logic/Linear/Type/Complexity.agda"                              ==> "src/Logic/LambekGrishin/Type/Complexity.agda"
+  ,"src/Logic/Linear/Type/Context.agda"                                 ==> "src/Logic/LambekGrishin/Type/Context.agda"
+  ,"src/Logic/Linear/Type/Context/Polarised.agda"                       ==> "src/Logic/LambekGrishin/Type/Context/Polarised.agda"
+  ,"src/Logic/Linear/NaturalDeduction/Judgement.agda"                   ==> "src/Logic/LambekGrishin/ResMon/Judgement.agda"
+  ,"src/Logic/Linear/NaturalDeduction/Judgement/Context.agda"           ==> "src/Logic/LambekGrishin/ResMon/Judgement/Context.agda"
+  ,"src/Logic/Linear/NaturalDeduction/Judgement/Context/Polarised.agda" ==> "src/Logic/LambekGrishin/ResMon/Judgement/Context/Polarised.agda"
   ]
 
 -- |Set of replacement rules for the Lambek Grishin to Lambek conversion.
