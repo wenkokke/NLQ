@@ -14,11 +14,11 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 open import Data.Unit as Unit using (⊤; tt)
 
 
-module Logic.Linear.ResMon.Judgement.Context {ℓ} (Univ : Set ℓ) where
+module Logic.Linear.LambekVanBenthem.Judgement.Context {ℓ} (Univ : Set ℓ) where
 
 open import Logic.Linear.Type             Univ as T
 open import Logic.Linear.Type.Context     Univ as TC hiding (module Simple)
-open import Logic.Linear.ResMon.Judgement Univ as J
+open import Logic.Linear.LambekVanBenthem.Judgement Univ as J
 
 
 infix 5 _<⊢_ _⊢>_
