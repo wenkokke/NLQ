@@ -11,9 +11,9 @@ module Main where
 
 
 data Univ : Set where
-  S  : Univ
-  N  : Univ
-  NP : Univ
+  S   : Univ
+  N   : Univ
+  NP  : Univ
 
 
 open import Logic.Lambek.Type             Univ as T
@@ -28,6 +28,7 @@ data Lexicon : Set where
   SOME      : Lexicon
   UNICORN   : Lexicon
 
+
 ⟦_⟧ : Lexicon → Type
 ⟦ EVERYBODY ⟧ = (el NP ⇐ el N) ⊗ el N
 ⟦ FINDS     ⟧ = (el NP ⇒ el S) ⇐ el NP
@@ -38,3 +39,6 @@ data Lexicon : Set where
 test₁ : NL ⟦ EVERYBODY ⟧ ⊗ ⟦ FINDS ⟧ ⊗ ⟦ SOME ⟧ ⊗ ⟦ UNICORN ⟧ ⊢ el S
 test₁ = res-⇒⊗ (res-⇒⊗  (appl-⇐′ (res-⊗⇒ (appl-⇐′
                (res-⇐⇒′ (appl-⇐′ (res-⊗⇐ (appl-⇒′ id))))))))
+
+test₂ : NL ⟦ EVERYBODY ⟧ ⊗ ⟦ FINDS ⟧ ⊗ ⟦ SOME ⟧ ⊗ ⟦ UNICORN ⟧ ⊢ el S
+test₂ = res-⇐⊗ (appl-⇐′ (res-⇒⇐′ (res-⇒⊗ (appl-⇐′ (res-⇐⇒′ id′) ))))

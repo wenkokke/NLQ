@@ -1,6 +1,8 @@
 ------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
 --
+-- Proof of completeness of the residuation-monotonicity calculus w.r.t.
+-- residuated algebras (or Lambek algebras).
 ------------------------------------------------------------------------
 
 
@@ -28,6 +30,11 @@ private
 
 open import Relation.Binary.PartialOrderToEquivalence _≤_ id′ trans′
 
+-- The proof is simple: show that we can implement the structure of
+-- residuated algebras using proofs in the residuation-monotonicity
+-- calculus. If we do so, we show that any derivation using a
+-- residuated algebra can be translated to a derivation in the
+-- residuation-monotonicity calculus.
 
 isResiduatedAlgebra : IsResiduatedAlgebra _≈_ _≤_ _⊗_ _⇒_ _⇐_
 isResiduatedAlgebra = record
