@@ -4,11 +4,11 @@
 ------------------------------------------------------------------------
 
 
-module Logic.Linear.NaturalDeduction.Base {ℓ} (Univ : Set ℓ) where
+module Logic.Linear.LambekVanBenthem.Base {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Linear.Type                       Univ as T
-open import Logic.Linear.NaturalDeduction.Judgement Univ as NDJ
+open import Logic.Linear.LambekVanBenthem.Judgement Univ as NDJ
 
 
 infix 3 LP_
