@@ -1,0 +1,1785 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Logic.Linear.Type</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="73"
+      >
+</a
+      ><a name="74" class="Comment"
+      >-- The Lambek Calculus in Agda</a
+      ><a name="104"
+      >
+</a
+      ><a name="105" class="Comment"
+      >--</a
+      ><a name="107"
+      >
+</a
+      ><a name="108" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="180"
+      >
+
+
+</a
+      ><a name="183" class="Keyword"
+      >open</a
+      ><a name="187"
+      > </a
+      ><a name="188" class="Keyword"
+      >import</a
+      ><a name="194"
+      > </a
+      ><a name="195" href="Function.html#1" class="Module"
+      >Function</a
+      ><a name="203"
+      > </a
+      ><a name="204" class="Keyword"
+      >using</a
+      ><a name="209"
+      > </a
+      ><a name="210" class="Symbol"
+      >(</a
+      ><a name="211"
+      >flip</a
+      ><a name="215" class="Symbol"
+      >;</a
+      ><a name="216"
+      > _&#8728;_</a
+      ><a name="220" class="Symbol"
+      >)</a
+      ><a name="221"
+      >
+</a
+      ><a name="222" class="Keyword"
+      >open</a
+      ><a name="226"
+      > </a
+      ><a name="227" class="Keyword"
+      >import</a
+      ><a name="233"
+      > </a
+      ><a name="234" href="Data.Product.html#1" class="Module"
+      >Data.Product</a
+      ><a name="246"
+      > </a
+      ><a name="247" class="Keyword"
+      >using</a
+      ><a name="252"
+      > </a
+      ><a name="253" class="Symbol"
+      >(</a
+      ><a name="254"
+      >_&#215;_</a
+      ><a name="257" class="Symbol"
+      >;</a
+      ><a name="258"
+      > _,_</a
+      ><a name="262" class="Symbol"
+      >;</a
+      ><a name="263"
+      > proj&#8321;</a
+      ><a name="269" class="Symbol"
+      >;</a
+      ><a name="270"
+      > proj&#8322;</a
+      ><a name="276" class="Symbol"
+      >)</a
+      ><a name="277"
+      >
+</a
+      ><a name="278" class="Keyword"
+      >open</a
+      ><a name="282"
+      > </a
+      ><a name="283" class="Keyword"
+      >import</a
+      ><a name="289"
+      > </a
+      ><a name="290" href="Data.Unit.html#1" class="Module"
+      >Data.Unit</a
+      ><a name="299"
+      > </a
+      ><a name="300" class="Keyword"
+      >using</a
+      ><a name="305"
+      > </a
+      ><a name="306" class="Symbol"
+      >(</a
+      ><a name="307"
+      >&#8868;</a
+      ><a name="308" class="Symbol"
+      >;</a
+      ><a name="309"
+      > tt</a
+      ><a name="312" class="Symbol"
+      >)</a
+      ><a name="313"
+      >
+</a
+      ><a name="314" class="Keyword"
+      >open</a
+      ><a name="318"
+      > </a
+      ><a name="319" class="Keyword"
+      >import</a
+      ><a name="325"
+      > </a
+      ><a name="326" href="Relation.Nullary.html#1" class="Module"
+      >Relation.Nullary</a
+      ><a name="342"
+      > </a
+      ><a name="343" class="Keyword"
+      >using</a
+      ><a name="348"
+      > </a
+      ><a name="349" class="Symbol"
+      >(</a
+      ><a name="350"
+      >Dec</a
+      ><a name="353" class="Symbol"
+      >;</a
+      ><a name="354"
+      > yes</a
+      ><a name="358" class="Symbol"
+      >;</a
+      ><a name="359"
+      > no</a
+      ><a name="362" class="Symbol"
+      >)</a
+      ><a name="363"
+      >
+</a
+      ><a name="364" class="Keyword"
+      >open</a
+      ><a name="368"
+      > </a
+      ><a name="369" class="Keyword"
+      >import</a
+      ><a name="375"
+      > </a
+      ><a name="376" href="Relation.Binary.html#1" class="Module"
+      >Relation.Binary</a
+      ><a name="391"
+      > </a
+      ><a name="392" class="Keyword"
+      >using</a
+      ><a name="397"
+      > </a
+      ><a name="398" class="Symbol"
+      >(</a
+      ><a name="399"
+      >DecSetoid</a
+      ><a name="408" class="Symbol"
+      >)</a
+      ><a name="409"
+      >
+</a
+      ><a name="410" class="Keyword"
+      >open</a
+      ><a name="414"
+      > </a
+      ><a name="415" class="Keyword"
+      >import</a
+      ><a name="421"
+      > </a
+      ><a name="422" href="Relation.Binary.PropositionalEquality.html#1" class="Module"
+      >Relation.Binary.PropositionalEquality</a
+      ><a name="459"
+      > </a
+      ><a name="460" class="Symbol"
+      >as</a
+      ><a name="462"
+      > </a
+      ><a name="463" class="Module"
+      >P</a
+      ><a name="464"
+      > </a
+      ><a name="465" class="Keyword"
+      >using</a
+      ><a name="470"
+      > </a
+      ><a name="471" class="Symbol"
+      >(</a
+      ><a name="472"
+      >_&#8801;_</a
+      ><a name="475" class="Symbol"
+      >;</a
+      ><a name="476"
+      > refl</a
+      ><a name="481" class="Symbol"
+      >)</a
+      ><a name="482"
+      >
+
+
+</a
+      ><a name="485" class="Keyword"
+      >module</a
+      ><a name="491"
+      > </a
+      ><a name="492" href="Logic.Linear.Type.html#1" class="Module"
+      >Logic.Linear.Type</a
+      ><a name="509"
+      > </a
+      ><a name="510" class="Symbol"
+      >{</a
+      ><a name="511" href="Logic.Linear.Type.html#511" class="Bound"
+      >&#8467;</a
+      ><a name="512" class="Symbol"
+      >}</a
+      ><a name="513"
+      > </a
+      ><a name="514" class="Symbol"
+      >(</a
+      ><a name="515" href="Logic.Linear.Type.html#515" class="Bound"
+      >Univ</a
+      ><a name="519"
+      > </a
+      ><a name="520" class="Symbol"
+      >:</a
+      ><a name="521"
+      > </a
+      ><a name="522" class="PrimitiveType"
+      >Set</a
+      ><a name="525"
+      > </a
+      ><a name="526" href="Logic.Linear.Type.html#511" class="Bound"
+      >&#8467;</a
+      ><a name="527" class="Symbol"
+      >)</a
+      ><a name="528"
+      > </a
+      ><a name="529" class="Keyword"
+      >where</a
+      ><a name="534"
+      >
+
+
+</a
+      ><a name="537" class="Keyword"
+      >infixr</a
+      ><a name="543"
+      > </a
+      ><a name="544" class="Number"
+      >30</a
+      ><a name="546"
+      > _&#8855;_
+</a
+      ><a name="551" class="Keyword"
+      >infixr</a
+      ><a name="557"
+      > </a
+      ><a name="558" class="Number"
+      >20</a
+      ><a name="560"
+      > _&#8888;_
+</a
+      ><a name="565" class="Keyword"
+      >data</a
+      ><a name="569"
+      > </a
+      ><a name="570" href="Logic.Linear.Type.html#570" class="Datatype"
+      >Type</a
+      ><a name="574"
+      > </a
+      ><a name="575" class="Symbol"
+      >:</a
+      ><a name="576"
+      > </a
+      ><a name="577" class="PrimitiveType"
+      >Set</a
+      ><a name="580"
+      > </a
+      ><a name="581" href="Logic.Linear.Type.html#511" class="Bound"
+      >&#8467;</a
+      ><a name="582"
+      > </a
+      ><a name="583" class="Keyword"
+      >where</a
+      ><a name="588"
+      >
+  </a
+      ><a name="591" href="Logic.Linear.Type.html#591" class="InductiveConstructor"
+      >el</a
+      ><a name="593"
+      >   </a
+      ><a name="596" class="Symbol"
+      >:</a
+      ><a name="597"
+      > </a
+      ><a name="598" href="Logic.Linear.Type.html#515" class="Bound"
+      >Univ</a
+      ><a name="602"
+      > </a
+      ><a name="603" class="Symbol"
+      >&#8594;</a
+      ><a name="604"
+      > </a
+      ><a name="605" href="Logic.Linear.Type.html#570" class="Datatype"
+      >Type</a
+      ><a name="609"
+      >
+  </a
+      ><a name="612" href="Logic.Linear.Type.html#612" class="InductiveConstructor Operator"
+      >_&#8855;_</a
+      ><a name="615"
+      >  </a
+      ><a name="617" class="Symbol"
+      >:</a
+      ><a name="618"
+      > </a
+      ><a name="619" href="Logic.Linear.Type.html#570" class="Datatype"
+      >Type</a
+      ><a name="623"
+      > </a
+      ><a name="624" class="Symbol"
+      >&#8594;</a
+      ><a name="625"
+      > </a
+      ><a name="626" href="Logic.Linear.Type.html#570" class="Datatype"
+      >Type</a
+      ><a name="630"
+      > </a
+      ><a name="631" class="Symbol"
+      >&#8594;</a
+      ><a name="632"
+      > </a
+      ><a name="633" href="Logic.Linear.Type.html#570" class="Datatype"
+      >Type</a
+      ><a name="637"
+      >
+  </a
+      ><a name="640" href="Logic.Linear.Type.html#640" class="InductiveConstructor Operator"
+      >_&#8888;_</a
+      ><a name="643"
+      >  </a
+      ><a name="645" class="Symbol"
+      >:</a
+      ><a name="646"
+      > </a
+      ><a name="647" href="Logic.Linear.Type.html#570" class="Datatype"
+      >Type</a
+      ><a name="651"
+      > </a
+      ><a name="652" class="Symbol"
+      >&#8594;</a
+      ><a name="653"
+      > </a
+      ><a name="654" href="Logic.Linear.Type.html#570" class="Datatype"
+      >Type</a
+      ><a name="658"
+      > </a
+      ><a name="659" class="Symbol"
+      >&#8594;</a
+      ><a name="660"
+      > </a
+      ><a name="661" href="Logic.Linear.Type.html#570" class="Datatype"
+      >Type</a
+      ><a name="665"
+      >
+
+
+</a
+      ><a name="668" class="Comment"
+      >-- Proofs which show that constructors of types (as all Agda</a
+      ><a name="728"
+      >
+</a
+      ><a name="729" class="Comment"
+      >-- data-constructors) respect equality.</a
+      ><a name="768"
+      >
+
+</a
+      ><a name="770" href="Logic.Linear.Type.html#770" class="Function"
+      >el-injective</a
+      ><a name="782"
+      > </a
+      ><a name="783" class="Symbol"
+      >:</a
+      ><a name="784"
+      > </a
+      ><a name="785" class="Symbol"
+      >&#8704;</a
+      ><a name="786"
+      > </a
+      ><a name="787" class="Symbol"
+      >{</a
+      ><a name="788" href="Logic.Linear.Type.html#788" class="Bound"
+      >A</a
+      ><a name="789"
+      > </a
+      ><a name="790" href="Logic.Linear.Type.html#790" class="Bound"
+      >B</a
+      ><a name="791" class="Symbol"
+      >}</a
+      ><a name="792"
+      > </a
+      ><a name="793" class="Symbol"
+      >&#8594;</a
+      ><a name="794"
+      > </a
+      ><a name="795" href="Logic.Linear.Type.html#591" class="InductiveConstructor"
+      >el</a
+      ><a name="797"
+      > </a
+      ><a name="798" href="Logic.Linear.Type.html#788" class="Bound"
+      >A</a
+      ><a name="799"
+      > </a
+      ><a name="800" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="801"
+      > </a
+      ><a name="802" href="Logic.Linear.Type.html#591" class="InductiveConstructor"
+      >el</a
+      ><a name="804"
+      > </a
+      ><a name="805" href="Logic.Linear.Type.html#790" class="Bound"
+      >B</a
+      ><a name="806"
+      > </a
+      ><a name="807" class="Symbol"
+      >&#8594;</a
+      ><a name="808"
+      > </a
+      ><a name="809" href="Logic.Linear.Type.html#788" class="Bound"
+      >A</a
+      ><a name="810"
+      > </a
+      ><a name="811" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="812"
+      > </a
+      ><a name="813" href="Logic.Linear.Type.html#790" class="Bound"
+      >B</a
+      ><a name="814"
+      >
+</a
+      ><a name="815" href="Logic.Linear.Type.html#770" class="Function"
+      >el-injective</a
+      ><a name="827"
+      > </a
+      ><a name="828" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="832"
+      > </a
+      ><a name="833" class="Symbol"
+      >=</a
+      ><a name="834"
+      > </a
+      ><a name="835" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="839"
+      >
+
+</a
+      ><a name="841" href="Logic.Linear.Type.html#841" class="Function"
+      >&#8855;-injective</a
+      ><a name="852"
+      > </a
+      ><a name="853" class="Symbol"
+      >:</a
+      ><a name="854"
+      > </a
+      ><a name="855" class="Symbol"
+      >&#8704;</a
+      ><a name="856"
+      > </a
+      ><a name="857" class="Symbol"
+      >{</a
+      ><a name="858" href="Logic.Linear.Type.html#858" class="Bound"
+      >A</a
+      ><a name="859"
+      > </a
+      ><a name="860" href="Logic.Linear.Type.html#860" class="Bound"
+      >B</a
+      ><a name="861"
+      > </a
+      ><a name="862" href="Logic.Linear.Type.html#862" class="Bound"
+      >C</a
+      ><a name="863"
+      > </a
+      ><a name="864" href="Logic.Linear.Type.html#864" class="Bound"
+      >D</a
+      ><a name="865" class="Symbol"
+      >}</a
+      ><a name="866"
+      > </a
+      ><a name="867" class="Symbol"
+      >&#8594;</a
+      ><a name="868"
+      > </a
+      ><a name="869" href="Logic.Linear.Type.html#858" class="Bound"
+      >A</a
+      ><a name="870"
+      > </a
+      ><a name="871" href="Logic.Linear.Type.html#612" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="872"
+      > </a
+      ><a name="873" href="Logic.Linear.Type.html#862" class="Bound"
+      >C</a
+      ><a name="874"
+      > </a
+      ><a name="875" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="876"
+      > </a
+      ><a name="877" href="Logic.Linear.Type.html#860" class="Bound"
+      >B</a
+      ><a name="878"
+      > </a
+      ><a name="879" href="Logic.Linear.Type.html#612" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="880"
+      > </a
+      ><a name="881" href="Logic.Linear.Type.html#864" class="Bound"
+      >D</a
+      ><a name="882"
+      > </a
+      ><a name="883" class="Symbol"
+      >&#8594;</a
+      ><a name="884"
+      > </a
+      ><a name="885" href="Logic.Linear.Type.html#858" class="Bound"
+      >A</a
+      ><a name="886"
+      > </a
+      ><a name="887" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="888"
+      > </a
+      ><a name="889" href="Logic.Linear.Type.html#860" class="Bound"
+      >B</a
+      ><a name="890"
+      > </a
+      ><a name="891" href="Data.Product.html#1055" class="Function Operator"
+      >&#215;</a
+      ><a name="892"
+      > </a
+      ><a name="893" href="Logic.Linear.Type.html#862" class="Bound"
+      >C</a
+      ><a name="894"
+      > </a
+      ><a name="895" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="896"
+      > </a
+      ><a name="897" href="Logic.Linear.Type.html#864" class="Bound"
+      >D</a
+      ><a name="898"
+      >
+</a
+      ><a name="899" href="Logic.Linear.Type.html#841" class="Function"
+      >&#8855;-injective</a
+      ><a name="910"
+      > </a
+      ><a name="911" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="915"
+      > </a
+      ><a name="916" class="Symbol"
+      >=</a
+      ><a name="917"
+      > </a
+      ><a name="918" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="922"
+      > </a
+      ><a name="923" href="Data.Product.html#509" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="924"
+      > </a
+      ><a name="925" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="929"
+      >
+
+</a
+      ><a name="931" href="Logic.Linear.Type.html#931" class="Function"
+      >&#8888;-injective</a
+      ><a name="942"
+      > </a
+      ><a name="943" class="Symbol"
+      >:</a
+      ><a name="944"
+      > </a
+      ><a name="945" class="Symbol"
+      >&#8704;</a
+      ><a name="946"
+      > </a
+      ><a name="947" class="Symbol"
+      >{</a
+      ><a name="948" href="Logic.Linear.Type.html#948" class="Bound"
+      >A</a
+      ><a name="949"
+      > </a
+      ><a name="950" href="Logic.Linear.Type.html#950" class="Bound"
+      >B</a
+      ><a name="951"
+      > </a
+      ><a name="952" href="Logic.Linear.Type.html#952" class="Bound"
+      >C</a
+      ><a name="953"
+      > </a
+      ><a name="954" href="Logic.Linear.Type.html#954" class="Bound"
+      >D</a
+      ><a name="955" class="Symbol"
+      >}</a
+      ><a name="956"
+      > </a
+      ><a name="957" class="Symbol"
+      >&#8594;</a
+      ><a name="958"
+      > </a
+      ><a name="959" href="Logic.Linear.Type.html#948" class="Bound"
+      >A</a
+      ><a name="960"
+      > </a
+      ><a name="961" href="Logic.Linear.Type.html#640" class="InductiveConstructor Operator"
+      >&#8888;</a
+      ><a name="962"
+      > </a
+      ><a name="963" href="Logic.Linear.Type.html#952" class="Bound"
+      >C</a
+      ><a name="964"
+      > </a
+      ><a name="965" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="966"
+      > </a
+      ><a name="967" href="Logic.Linear.Type.html#950" class="Bound"
+      >B</a
+      ><a name="968"
+      > </a
+      ><a name="969" href="Logic.Linear.Type.html#640" class="InductiveConstructor Operator"
+      >&#8888;</a
+      ><a name="970"
+      > </a
+      ><a name="971" href="Logic.Linear.Type.html#954" class="Bound"
+      >D</a
+      ><a name="972"
+      > </a
+      ><a name="973" class="Symbol"
+      >&#8594;</a
+      ><a name="974"
+      > </a
+      ><a name="975" href="Logic.Linear.Type.html#948" class="Bound"
+      >A</a
+      ><a name="976"
+      > </a
+      ><a name="977" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="978"
+      > </a
+      ><a name="979" href="Logic.Linear.Type.html#950" class="Bound"
+      >B</a
+      ><a name="980"
+      > </a
+      ><a name="981" href="Data.Product.html#1055" class="Function Operator"
+      >&#215;</a
+      ><a name="982"
+      > </a
+      ><a name="983" href="Logic.Linear.Type.html#952" class="Bound"
+      >C</a
+      ><a name="984"
+      > </a
+      ><a name="985" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="986"
+      > </a
+      ><a name="987" href="Logic.Linear.Type.html#954" class="Bound"
+      >D</a
+      ><a name="988"
+      >
+</a
+      ><a name="989" href="Logic.Linear.Type.html#931" class="Function"
+      >&#8888;-injective</a
+      ><a name="1000"
+      > </a
+      ><a name="1001" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="1005"
+      > </a
+      ><a name="1006" class="Symbol"
+      >=</a
+      ><a name="1007"
+      > </a
+      ><a name="1008" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="1012"
+      > </a
+      ><a name="1013" href="Data.Product.html#509" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="1014"
+      > </a
+      ><a name="1015" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="1019"
+      >
+
+
+</a
+      ><a name="1022" class="Comment"
+      >-- Proof that if the given universe has decidable equality, then so do types.</a
+      ><a name="1099"
+      >
+</a
+      ><a name="1100" class="Keyword"
+      >module</a
+      ><a name="1106"
+      > </a
+      ><a name="1107" href="Logic.Linear.Type.html#1107" class="Module"
+      >DecEq</a
+      ><a name="1112"
+      >
+       </a
+      ><a name="1120" class="Symbol"
+      >(</a
+      ><a name="1121" href="Logic.Linear.Type.html#1121" class="Bound Operator"
+      >_&#8799;-Univ_</a
+      ><a name="1129"
+      > </a
+      ><a name="1130" class="Symbol"
+      >:</a
+      ><a name="1131"
+      > </a
+      ><a name="1132" class="Symbol"
+      >(</a
+      ><a name="1133" href="Logic.Linear.Type.html#1133" class="Bound"
+      >A</a
+      ><a name="1134"
+      > </a
+      ><a name="1135" href="Logic.Linear.Type.html#1135" class="Bound"
+      >B</a
+      ><a name="1136"
+      > </a
+      ><a name="1137" class="Symbol"
+      >:</a
+      ><a name="1138"
+      > </a
+      ><a name="1139" href="Logic.Linear.Type.html#515" class="Bound"
+      >Univ</a
+      ><a name="1143" class="Symbol"
+      >)</a
+      ><a name="1144"
+      > </a
+      ><a name="1145" class="Symbol"
+      >&#8594;</a
+      ><a name="1146"
+      > </a
+      ><a name="1147" href="Relation.Nullary.Core.html#468" class="Datatype"
+      >Dec</a
+      ><a name="1150"
+      > </a
+      ><a name="1151" class="Symbol"
+      >(</a
+      ><a name="1152" href="Logic.Linear.Type.html#1133" class="Bound"
+      >A</a
+      ><a name="1153"
+      > </a
+      ><a name="1154" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="1155"
+      > </a
+      ><a name="1156" href="Logic.Linear.Type.html#1135" class="Bound"
+      >B</a
+      ><a name="1157" class="Symbol"
+      >))</a
+      ><a name="1159"
+      >
+       </a
+      ><a name="1167" class="Keyword"
+      >where</a
+      ><a name="1172"
+      >
+
+  </a
+      ><a name="1176" class="Keyword"
+      >infix</a
+      ><a name="1181"
+      > </a
+      ><a name="1182" class="Number"
+      >4</a
+      ><a name="1183"
+      > _&#8799;-Type_
+
+  </a
+      ><a name="1196" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >_&#8799;-Type_</a
+      ><a name="1204"
+      > </a
+      ><a name="1205" class="Symbol"
+      >:</a
+      ><a name="1206"
+      > </a
+      ><a name="1207" class="Symbol"
+      >(</a
+      ><a name="1208" href="Logic.Linear.Type.html#1208" class="Bound"
+      >A</a
+      ><a name="1209"
+      > </a
+      ><a name="1210" href="Logic.Linear.Type.html#1210" class="Bound"
+      >B</a
+      ><a name="1211"
+      > </a
+      ><a name="1212" class="Symbol"
+      >:</a
+      ><a name="1213"
+      > </a
+      ><a name="1214" href="Logic.Linear.Type.html#570" class="Datatype"
+      >Type</a
+      ><a name="1218" class="Symbol"
+      >)</a
+      ><a name="1219"
+      > </a
+      ><a name="1220" class="Symbol"
+      >&#8594;</a
+      ><a name="1221"
+      > </a
+      ><a name="1222" href="Relation.Nullary.Core.html#468" class="Datatype"
+      >Dec</a
+      ><a name="1225"
+      > </a
+      ><a name="1226" class="Symbol"
+      >(</a
+      ><a name="1227" href="Logic.Linear.Type.html#1208" class="Bound"
+      >A</a
+      ><a name="1228"
+      > </a
+      ><a name="1229" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="1230"
+      > </a
+      ><a name="1231" href="Logic.Linear.Type.html#1210" class="Bound"
+      >B</a
+      ><a name="1232" class="Symbol"
+      >)</a
+      ><a name="1233"
+      >
+  </a
+      ><a name="1236" href="Logic.Linear.Type.html#591" class="InductiveConstructor"
+      >el</a
+      ><a name="1238"
+      > </a
+      ><a name="1239" href="Logic.Linear.Type.html#1239" class="Bound"
+      >A</a
+      ><a name="1240"
+      >  </a
+      ><a name="1242" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >&#8799;-Type</a
+      ><a name="1248"
+      > </a
+      ><a name="1249" href="Logic.Linear.Type.html#591" class="InductiveConstructor"
+      >el</a
+      ><a name="1251"
+      > </a
+      ><a name="1252" href="Logic.Linear.Type.html#1252" class="Bound"
+      >C</a
+      ><a name="1253"
+      >  </a
+      ><a name="1255" class="Keyword"
+      >with</a
+      ><a name="1259"
+      > </a
+      ><a name="1260" class="Symbol"
+      >(</a
+      ><a name="1261" href="Logic.Linear.Type.html#1239" class="Bound"
+      >A</a
+      ><a name="1262"
+      > </a
+      ><a name="1263" href="Logic.Linear.Type.html#1121" class="Bound Operator"
+      >&#8799;-Univ</a
+      ><a name="1269"
+      > </a
+      ><a name="1270" href="Logic.Linear.Type.html#1252" class="Bound"
+      >C</a
+      ><a name="1271" class="Symbol"
+      >)</a
+      ><a name="1272"
+      >
+  </a
+      ><a name="1275" class="Symbol"
+      >...</a
+      ><a name="1278"
+      > </a
+      ><a name="1279" class="Symbol"
+      >|</a
+      ><a name="1280"
+      > </a
+      ><a name="1281" href="Relation.Nullary.Core.html#504" class="InductiveConstructor"
+      >yes</a
+      ><a name="1284"
+      > </a
+      ><a name="1285" href="Logic.Linear.Type.html#1285" class="Bound"
+      >A&#8801;C</a
+      ><a name="1288"
+      > </a
+      ><a name="1289" class="Keyword"
+      >rewrite</a
+      ><a name="1296"
+      > </a
+      ><a name="1297" href="Logic.Linear.Type.html#1285" class="Bound"
+      >A&#8801;C</a
+      ><a name="1300"
+      > </a
+      ><a name="1301" class="Symbol"
+      >=</a
+      ><a name="1302"
+      > </a
+      ><a name="1303" href="Relation.Nullary.Core.html#504" class="InductiveConstructor"
+      >yes</a
+      ><a name="1306"
+      > </a
+      ><a name="1307" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="1311"
+      >
+  </a
+      ><a name="1314" class="Symbol"
+      >...</a
+      ><a name="1317"
+      > </a
+      ><a name="1318" class="Symbol"
+      >|</a
+      ><a name="1319"
+      > </a
+      ><a name="1320" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1322"
+      >  </a
+      ><a name="1324" href="Logic.Linear.Type.html#1324" class="Bound"
+      >A&#8802;C</a
+      ><a name="1327"
+      > </a
+      ><a name="1328" class="Symbol"
+      >=</a
+      ><a name="1329"
+      > </a
+      ><a name="1330" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1332"
+      > </a
+      ><a name="1333" class="Symbol"
+      >(</a
+      ><a name="1334" href="Logic.Linear.Type.html#1324" class="Bound"
+      >A&#8802;C</a
+      ><a name="1337"
+      > </a
+      ><a name="1338" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="1339"
+      > </a
+      ><a name="1340" href="Logic.Linear.Type.html#770" class="Function"
+      >el-injective</a
+      ><a name="1352" class="Symbol"
+      >)</a
+      ><a name="1353"
+      >
+  </a
+      ><a name="1356" href="Logic.Linear.Type.html#591" class="InductiveConstructor"
+      >el</a
+      ><a name="1358"
+      > </a
+      ><a name="1359" href="Logic.Linear.Type.html#1359" class="Bound"
+      >A</a
+      ><a name="1360"
+      >  </a
+      ><a name="1362" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >&#8799;-Type</a
+      ><a name="1368"
+      > </a
+      ><a name="1369" href="Logic.Linear.Type.html#1369" class="Bound"
+      >C</a
+      ><a name="1370"
+      > </a
+      ><a name="1371" href="Logic.Linear.Type.html#612" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="1372"
+      > </a
+      ><a name="1373" href="Logic.Linear.Type.html#1373" class="Bound"
+      >D</a
+      ><a name="1374"
+      > </a
+      ><a name="1375" class="Symbol"
+      >=</a
+      ><a name="1376"
+      > </a
+      ><a name="1377" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1379"
+      > </a
+      ><a name="1380" class="Symbol"
+      >(&#955;</a
+      ><a name="1382"
+      > </a
+      ><a name="1383" class="Symbol"
+      >())</a
+      ><a name="1386"
+      >
+  </a
+      ><a name="1389" href="Logic.Linear.Type.html#591" class="InductiveConstructor"
+      >el</a
+      ><a name="1391"
+      > </a
+      ><a name="1392" href="Logic.Linear.Type.html#1392" class="Bound"
+      >A</a
+      ><a name="1393"
+      >  </a
+      ><a name="1395" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >&#8799;-Type</a
+      ><a name="1401"
+      > </a
+      ><a name="1402" href="Logic.Linear.Type.html#1402" class="Bound"
+      >C</a
+      ><a name="1403"
+      > </a
+      ><a name="1404" href="Logic.Linear.Type.html#640" class="InductiveConstructor Operator"
+      >&#8888;</a
+      ><a name="1405"
+      > </a
+      ><a name="1406" href="Logic.Linear.Type.html#1406" class="Bound"
+      >D</a
+      ><a name="1407"
+      > </a
+      ><a name="1408" class="Symbol"
+      >=</a
+      ><a name="1409"
+      > </a
+      ><a name="1410" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1412"
+      > </a
+      ><a name="1413" class="Symbol"
+      >(&#955;</a
+      ><a name="1415"
+      > </a
+      ><a name="1416" class="Symbol"
+      >())</a
+      ><a name="1419"
+      >
+  </a
+      ><a name="1422" href="Logic.Linear.Type.html#1422" class="Bound"
+      >A</a
+      ><a name="1423"
+      > </a
+      ><a name="1424" href="Logic.Linear.Type.html#612" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="1425"
+      > </a
+      ><a name="1426" href="Logic.Linear.Type.html#1426" class="Bound"
+      >B</a
+      ><a name="1427"
+      > </a
+      ><a name="1428" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >&#8799;-Type</a
+      ><a name="1434"
+      > </a
+      ><a name="1435" href="Logic.Linear.Type.html#591" class="InductiveConstructor"
+      >el</a
+      ><a name="1437"
+      > </a
+      ><a name="1438" href="Logic.Linear.Type.html#1438" class="Bound"
+      >C</a
+      ><a name="1439"
+      >  </a
+      ><a name="1441" class="Symbol"
+      >=</a
+      ><a name="1442"
+      > </a
+      ><a name="1443" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1445"
+      > </a
+      ><a name="1446" class="Symbol"
+      >(&#955;</a
+      ><a name="1448"
+      > </a
+      ><a name="1449" class="Symbol"
+      >())</a
+      ><a name="1452"
+      >
+  </a
+      ><a name="1455" href="Logic.Linear.Type.html#1455" class="Bound"
+      >A</a
+      ><a name="1456"
+      > </a
+      ><a name="1457" href="Logic.Linear.Type.html#640" class="InductiveConstructor Operator"
+      >&#8888;</a
+      ><a name="1458"
+      > </a
+      ><a name="1459" href="Logic.Linear.Type.html#1459" class="Bound"
+      >B</a
+      ><a name="1460"
+      > </a
+      ><a name="1461" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >&#8799;-Type</a
+      ><a name="1467"
+      > </a
+      ><a name="1468" href="Logic.Linear.Type.html#591" class="InductiveConstructor"
+      >el</a
+      ><a name="1470"
+      > </a
+      ><a name="1471" href="Logic.Linear.Type.html#1471" class="Bound"
+      >C</a
+      ><a name="1472"
+      >  </a
+      ><a name="1474" class="Symbol"
+      >=</a
+      ><a name="1475"
+      > </a
+      ><a name="1476" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1478"
+      > </a
+      ><a name="1479" class="Symbol"
+      >(&#955;</a
+      ><a name="1481"
+      > </a
+      ><a name="1482" class="Symbol"
+      >())</a
+      ><a name="1485"
+      >
+  </a
+      ><a name="1488" href="Logic.Linear.Type.html#1488" class="Bound"
+      >A</a
+      ><a name="1489"
+      > </a
+      ><a name="1490" href="Logic.Linear.Type.html#612" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="1491"
+      > </a
+      ><a name="1492" href="Logic.Linear.Type.html#1492" class="Bound"
+      >B</a
+      ><a name="1493"
+      > </a
+      ><a name="1494" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >&#8799;-Type</a
+      ><a name="1500"
+      > </a
+      ><a name="1501" href="Logic.Linear.Type.html#1501" class="Bound"
+      >C</a
+      ><a name="1502"
+      > </a
+      ><a name="1503" href="Logic.Linear.Type.html#612" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="1504"
+      > </a
+      ><a name="1505" href="Logic.Linear.Type.html#1505" class="Bound"
+      >D</a
+      ><a name="1506"
+      > </a
+      ><a name="1507" class="Keyword"
+      >with</a
+      ><a name="1511"
+      > </a
+      ><a name="1512" class="Symbol"
+      >(</a
+      ><a name="1513" href="Logic.Linear.Type.html#1488" class="Bound"
+      >A</a
+      ><a name="1514"
+      > </a
+      ><a name="1515" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >&#8799;-Type</a
+      ><a name="1521"
+      > </a
+      ><a name="1522" href="Logic.Linear.Type.html#1501" class="Bound"
+      >C</a
+      ><a name="1523" class="Symbol"
+      >)</a
+      ><a name="1524"
+      > </a
+      ><a name="1525" class="Symbol"
+      >|</a
+      ><a name="1526"
+      > </a
+      ><a name="1527" class="Symbol"
+      >(</a
+      ><a name="1528" href="Logic.Linear.Type.html#1492" class="Bound"
+      >B</a
+      ><a name="1529"
+      > </a
+      ><a name="1530" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >&#8799;-Type</a
+      ><a name="1536"
+      > </a
+      ><a name="1537" href="Logic.Linear.Type.html#1505" class="Bound"
+      >D</a
+      ><a name="1538" class="Symbol"
+      >)</a
+      ><a name="1539"
+      >
+  </a
+      ><a name="1542" class="Symbol"
+      >...</a
+      ><a name="1545"
+      > </a
+      ><a name="1546" class="Symbol"
+      >|</a
+      ><a name="1547"
+      > </a
+      ><a name="1548" href="Relation.Nullary.Core.html#504" class="InductiveConstructor"
+      >yes</a
+      ><a name="1551"
+      > </a
+      ><a name="1552" href="Logic.Linear.Type.html#1552" class="Bound"
+      >A&#8801;C</a
+      ><a name="1555"
+      > </a
+      ><a name="1556" class="Symbol"
+      >|</a
+      ><a name="1557"
+      > </a
+      ><a name="1558" href="Relation.Nullary.Core.html#504" class="InductiveConstructor"
+      >yes</a
+      ><a name="1561"
+      > </a
+      ><a name="1562" href="Logic.Linear.Type.html#1562" class="Bound"
+      >B&#8801;D</a
+      ><a name="1565"
+      > </a
+      ><a name="1566" class="Keyword"
+      >rewrite</a
+      ><a name="1573"
+      > </a
+      ><a name="1574" href="Logic.Linear.Type.html#1552" class="Bound"
+      >A&#8801;C</a
+      ><a name="1577"
+      > </a
+      ><a name="1578" class="Symbol"
+      >|</a
+      ><a name="1579"
+      > </a
+      ><a name="1580" href="Logic.Linear.Type.html#1562" class="Bound"
+      >B&#8801;D</a
+      ><a name="1583"
+      > </a
+      ><a name="1584" class="Symbol"
+      >=</a
+      ><a name="1585"
+      > </a
+      ><a name="1586" href="Relation.Nullary.Core.html#504" class="InductiveConstructor"
+      >yes</a
+      ><a name="1589"
+      > </a
+      ><a name="1590" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="1594"
+      >     </a
+      ><a name="1599" class="Comment"
+      >-- doink</a
+      ><a name="1607"
+      >
+  </a
+      ><a name="1610" class="Symbol"
+      >...</a
+      ><a name="1613"
+      > </a
+      ><a name="1614" class="Symbol"
+      >|</a
+      ><a name="1615"
+      > </a
+      ><a name="1616" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1618"
+      >  </a
+      ><a name="1620" href="Logic.Linear.Type.html#1620" class="Bound"
+      >A&#8802;C</a
+      ><a name="1623"
+      > </a
+      ><a name="1624" class="Symbol"
+      >|</a
+      ><a name="1625"
+      > </a
+      ><a name="1626" class="Symbol"
+      >_</a
+      ><a name="1627"
+      >       </a
+      ><a name="1634" class="Symbol"
+      >=</a
+      ><a name="1635"
+      > </a
+      ><a name="1636" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1638"
+      > </a
+      ><a name="1639" class="Symbol"
+      >(</a
+      ><a name="1640" href="Logic.Linear.Type.html#1620" class="Bound"
+      >A&#8802;C</a
+      ><a name="1643"
+      > </a
+      ><a name="1644" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="1645"
+      > </a
+      ><a name="1646" href="Data.Product.html#525" class="Field"
+      >proj&#8321;</a
+      ><a name="1651"
+      > </a
+      ><a name="1652" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="1653"
+      > </a
+      ><a name="1654" href="Logic.Linear.Type.html#841" class="Function"
+      >&#8855;-injective</a
+      ><a name="1665" class="Symbol"
+      >)</a
+      ><a name="1666"
+      > </a
+      ><a name="1667" class="Comment"
+      >-- doink</a
+      ><a name="1675"
+      >
+  </a
+      ><a name="1678" class="Symbol"
+      >...</a
+      ><a name="1681"
+      > </a
+      ><a name="1682" class="Symbol"
+      >|</a
+      ><a name="1683"
+      > </a
+      ><a name="1684" class="Symbol"
+      >_</a
+      ><a name="1685"
+      >       </a
+      ><a name="1692" class="Symbol"
+      >|</a
+      ><a name="1693"
+      > </a
+      ><a name="1694" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1696"
+      >  </a
+      ><a name="1698" href="Logic.Linear.Type.html#1698" class="Bound"
+      >B&#8802;D</a
+      ><a name="1701"
+      > </a
+      ><a name="1702" class="Symbol"
+      >=</a
+      ><a name="1703"
+      > </a
+      ><a name="1704" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1706"
+      > </a
+      ><a name="1707" class="Symbol"
+      >(</a
+      ><a name="1708" href="Logic.Linear.Type.html#1698" class="Bound"
+      >B&#8802;D</a
+      ><a name="1711"
+      > </a
+      ><a name="1712" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="1713"
+      > </a
+      ><a name="1714" href="Data.Product.html#539" class="Field"
+      >proj&#8322;</a
+      ><a name="1719"
+      > </a
+      ><a name="1720" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="1721"
+      > </a
+      ><a name="1722" href="Logic.Linear.Type.html#841" class="Function"
+      >&#8855;-injective</a
+      ><a name="1733" class="Symbol"
+      >)</a
+      ><a name="1734"
+      > </a
+      ><a name="1735" class="Comment"
+      >-- doink</a
+      ><a name="1743"
+      >
+  </a
+      ><a name="1746" href="Logic.Linear.Type.html#1746" class="Bound"
+      >A</a
+      ><a name="1747"
+      > </a
+      ><a name="1748" href="Logic.Linear.Type.html#612" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="1749"
+      > </a
+      ><a name="1750" href="Logic.Linear.Type.html#1750" class="Bound"
+      >B</a
+      ><a name="1751"
+      > </a
+      ><a name="1752" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >&#8799;-Type</a
+      ><a name="1758"
+      > </a
+      ><a name="1759" href="Logic.Linear.Type.html#1759" class="Bound"
+      >C</a
+      ><a name="1760"
+      > </a
+      ><a name="1761" href="Logic.Linear.Type.html#640" class="InductiveConstructor Operator"
+      >&#8888;</a
+      ><a name="1762"
+      > </a
+      ><a name="1763" href="Logic.Linear.Type.html#1763" class="Bound"
+      >D</a
+      ><a name="1764"
+      > </a
+      ><a name="1765" class="Symbol"
+      >=</a
+      ><a name="1766"
+      > </a
+      ><a name="1767" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1769"
+      > </a
+      ><a name="1770" class="Symbol"
+      >(&#955;</a
+      ><a name="1772"
+      > </a
+      ><a name="1773" class="Symbol"
+      >())</a
+      ><a name="1776"
+      >
+  </a
+      ><a name="1779" href="Logic.Linear.Type.html#1779" class="Bound"
+      >A</a
+      ><a name="1780"
+      > </a
+      ><a name="1781" href="Logic.Linear.Type.html#640" class="InductiveConstructor Operator"
+      >&#8888;</a
+      ><a name="1782"
+      > </a
+      ><a name="1783" href="Logic.Linear.Type.html#1783" class="Bound"
+      >B</a
+      ><a name="1784"
+      > </a
+      ><a name="1785" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >&#8799;-Type</a
+      ><a name="1791"
+      > </a
+      ><a name="1792" href="Logic.Linear.Type.html#1792" class="Bound"
+      >C</a
+      ><a name="1793"
+      > </a
+      ><a name="1794" href="Logic.Linear.Type.html#612" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="1795"
+      > </a
+      ><a name="1796" href="Logic.Linear.Type.html#1796" class="Bound"
+      >D</a
+      ><a name="1797"
+      > </a
+      ><a name="1798" class="Symbol"
+      >=</a
+      ><a name="1799"
+      > </a
+      ><a name="1800" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1802"
+      > </a
+      ><a name="1803" class="Symbol"
+      >(&#955;</a
+      ><a name="1805"
+      > </a
+      ><a name="1806" class="Symbol"
+      >())</a
+      ><a name="1809"
+      >
+  </a
+      ><a name="1812" href="Logic.Linear.Type.html#1812" class="Bound"
+      >A</a
+      ><a name="1813"
+      > </a
+      ><a name="1814" href="Logic.Linear.Type.html#640" class="InductiveConstructor Operator"
+      >&#8888;</a
+      ><a name="1815"
+      > </a
+      ><a name="1816" href="Logic.Linear.Type.html#1816" class="Bound"
+      >B</a
+      ><a name="1817"
+      > </a
+      ><a name="1818" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >&#8799;-Type</a
+      ><a name="1824"
+      > </a
+      ><a name="1825" href="Logic.Linear.Type.html#1825" class="Bound"
+      >C</a
+      ><a name="1826"
+      > </a
+      ><a name="1827" href="Logic.Linear.Type.html#640" class="InductiveConstructor Operator"
+      >&#8888;</a
+      ><a name="1828"
+      > </a
+      ><a name="1829" href="Logic.Linear.Type.html#1829" class="Bound"
+      >D</a
+      ><a name="1830"
+      > </a
+      ><a name="1831" class="Keyword"
+      >with</a
+      ><a name="1835"
+      > </a
+      ><a name="1836" class="Symbol"
+      >(</a
+      ><a name="1837" href="Logic.Linear.Type.html#1812" class="Bound"
+      >A</a
+      ><a name="1838"
+      > </a
+      ><a name="1839" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >&#8799;-Type</a
+      ><a name="1845"
+      > </a
+      ><a name="1846" href="Logic.Linear.Type.html#1825" class="Bound"
+      >C</a
+      ><a name="1847" class="Symbol"
+      >)</a
+      ><a name="1848"
+      > </a
+      ><a name="1849" class="Symbol"
+      >|</a
+      ><a name="1850"
+      > </a
+      ><a name="1851" class="Symbol"
+      >(</a
+      ><a name="1852" href="Logic.Linear.Type.html#1816" class="Bound"
+      >B</a
+      ><a name="1853"
+      > </a
+      ><a name="1854" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >&#8799;-Type</a
+      ><a name="1860"
+      > </a
+      ><a name="1861" href="Logic.Linear.Type.html#1829" class="Bound"
+      >D</a
+      ><a name="1862" class="Symbol"
+      >)</a
+      ><a name="1863"
+      >
+  </a
+      ><a name="1866" class="Symbol"
+      >...</a
+      ><a name="1869"
+      > </a
+      ><a name="1870" class="Symbol"
+      >|</a
+      ><a name="1871"
+      > </a
+      ><a name="1872" href="Relation.Nullary.Core.html#504" class="InductiveConstructor"
+      >yes</a
+      ><a name="1875"
+      > </a
+      ><a name="1876" href="Logic.Linear.Type.html#1876" class="Bound"
+      >A&#8801;C</a
+      ><a name="1879"
+      > </a
+      ><a name="1880" class="Symbol"
+      >|</a
+      ><a name="1881"
+      > </a
+      ><a name="1882" href="Relation.Nullary.Core.html#504" class="InductiveConstructor"
+      >yes</a
+      ><a name="1885"
+      > </a
+      ><a name="1886" href="Logic.Linear.Type.html#1886" class="Bound"
+      >B&#8801;D</a
+      ><a name="1889"
+      > </a
+      ><a name="1890" class="Keyword"
+      >rewrite</a
+      ><a name="1897"
+      > </a
+      ><a name="1898" href="Logic.Linear.Type.html#1876" class="Bound"
+      >A&#8801;C</a
+      ><a name="1901"
+      > </a
+      ><a name="1902" class="Symbol"
+      >|</a
+      ><a name="1903"
+      > </a
+      ><a name="1904" href="Logic.Linear.Type.html#1886" class="Bound"
+      >B&#8801;D</a
+      ><a name="1907"
+      > </a
+      ><a name="1908" class="Symbol"
+      >=</a
+      ><a name="1909"
+      > </a
+      ><a name="1910" href="Relation.Nullary.Core.html#504" class="InductiveConstructor"
+      >yes</a
+      ><a name="1913"
+      > </a
+      ><a name="1914" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="1918"
+      >
+  </a
+      ><a name="1921" class="Symbol"
+      >...</a
+      ><a name="1924"
+      > </a
+      ><a name="1925" class="Symbol"
+      >|</a
+      ><a name="1926"
+      > </a
+      ><a name="1927" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1929"
+      >  </a
+      ><a name="1931" href="Logic.Linear.Type.html#1931" class="Bound"
+      >A&#8802;C</a
+      ><a name="1934"
+      > </a
+      ><a name="1935" class="Symbol"
+      >|</a
+      ><a name="1936"
+      > </a
+      ><a name="1937" class="Symbol"
+      >_</a
+      ><a name="1938"
+      >       </a
+      ><a name="1945" class="Symbol"
+      >=</a
+      ><a name="1946"
+      > </a
+      ><a name="1947" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1949"
+      > </a
+      ><a name="1950" class="Symbol"
+      >(</a
+      ><a name="1951" href="Logic.Linear.Type.html#1931" class="Bound"
+      >A&#8802;C</a
+      ><a name="1954"
+      > </a
+      ><a name="1955" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="1956"
+      > </a
+      ><a name="1957" href="Data.Product.html#525" class="Field"
+      >proj&#8321;</a
+      ><a name="1962"
+      > </a
+      ><a name="1963" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="1964"
+      > </a
+      ><a name="1965" href="Logic.Linear.Type.html#931" class="Function"
+      >&#8888;-injective</a
+      ><a name="1976" class="Symbol"
+      >)</a
+      ><a name="1977"
+      >
+  </a
+      ><a name="1980" class="Symbol"
+      >...</a
+      ><a name="1983"
+      > </a
+      ><a name="1984" class="Symbol"
+      >|</a
+      ><a name="1985"
+      > </a
+      ><a name="1986" class="Symbol"
+      >_</a
+      ><a name="1987"
+      >       </a
+      ><a name="1994" class="Symbol"
+      >|</a
+      ><a name="1995"
+      > </a
+      ><a name="1996" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1998"
+      >  </a
+      ><a name="2000" href="Logic.Linear.Type.html#2000" class="Bound"
+      >B&#8802;D</a
+      ><a name="2003"
+      > </a
+      ><a name="2004" class="Symbol"
+      >=</a
+      ><a name="2005"
+      > </a
+      ><a name="2006" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="2008"
+      > </a
+      ><a name="2009" class="Symbol"
+      >(</a
+      ><a name="2010" href="Logic.Linear.Type.html#2000" class="Bound"
+      >B&#8802;D</a
+      ><a name="2013"
+      > </a
+      ><a name="2014" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="2015"
+      > </a
+      ><a name="2016" href="Data.Product.html#539" class="Field"
+      >proj&#8322;</a
+      ><a name="2021"
+      > </a
+      ><a name="2022" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="2023"
+      > </a
+      ><a name="2024" href="Logic.Linear.Type.html#931" class="Function"
+      >&#8888;-injective</a
+      ><a name="2035" class="Symbol"
+      >)</a
+      ><a name="2036"
+      >
+
+
+  </a
+      ><a name="2041" class="Keyword"
+      >instance</a
+      ><a name="2049"
+      >
+    </a
+      ><a name="2054" href="Logic.Linear.Type.html#2054" class="Function"
+      >decSetoid</a
+      ><a name="2063"
+      > </a
+      ><a name="2064" class="Symbol"
+      >:</a
+      ><a name="2065"
+      > </a
+      ><a name="2066" href="Relation.Binary.html#2921" class="Record"
+      >DecSetoid</a
+      ><a name="2075"
+      > </a
+      ><a name="2076" class="Symbol"
+      >_</a
+      ><a name="2077"
+      > </a
+      ><a name="2078" class="Symbol"
+      >_</a
+      ><a name="2079"
+      >
+    </a
+      ><a name="2084" href="Logic.Linear.Type.html#2054" class="Function"
+      >decSetoid</a
+      ><a name="2093"
+      > </a
+      ><a name="2094" class="Symbol"
+      >=</a
+      ><a name="2095"
+      > </a
+      ><a name="2096" href="Relation.Binary.PropositionalEquality.html#1663" class="Function"
+      >P.decSetoid</a
+      ><a name="2107"
+      > </a
+      ><a name="2108" href="Logic.Linear.Type.html#1196" class="Function Operator"
+      >_&#8799;-Type_</a
+      ><a name="2116"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>

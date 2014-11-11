@@ -1,0 +1,900 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Logic.Linear.LambekVanBenthem.Judgement</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="73"
+      >
+</a
+      ><a name="74" class="Comment"
+      >-- The Lambek Calculus in Agda</a
+      ><a name="104"
+      >
+</a
+      ><a name="105" class="Comment"
+      >--</a
+      ><a name="107"
+      >
+</a
+      ><a name="108" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="180"
+      >
+
+
+</a
+      ><a name="183" class="Keyword"
+      >open</a
+      ><a name="187"
+      > </a
+      ><a name="188" class="Keyword"
+      >import</a
+      ><a name="194"
+      > </a
+      ><a name="195" href="Level.html#1" class="Module"
+      >Level</a
+      ><a name="200"
+      > </a
+      ><a name="201" class="Keyword"
+      >using</a
+      ><a name="206"
+      > </a
+      ><a name="207" class="Symbol"
+      >(</a
+      ><a name="208"
+      >Level</a
+      ><a name="213" class="Symbol"
+      >;</a
+      ><a name="214"
+      > _&#8852;_</a
+      ><a name="218" class="Symbol"
+      >)</a
+      ><a name="219"
+      >
+</a
+      ><a name="220" class="Keyword"
+      >open</a
+      ><a name="224"
+      > </a
+      ><a name="225" class="Keyword"
+      >import</a
+      ><a name="231"
+      > </a
+      ><a name="232" href="Function.html#1" class="Module"
+      >Function</a
+      ><a name="240"
+      > </a
+      ><a name="241" class="Keyword"
+      >using</a
+      ><a name="246"
+      > </a
+      ><a name="247" class="Symbol"
+      >(</a
+      ><a name="248"
+      >_&#8728;_</a
+      ><a name="251" class="Symbol"
+      >)</a
+      ><a name="252"
+      >
+</a
+      ><a name="253" class="Keyword"
+      >open</a
+      ><a name="257"
+      > </a
+      ><a name="258" class="Keyword"
+      >import</a
+      ><a name="264"
+      > </a
+      ><a name="265" href="Data.Product.html#1" class="Module"
+      >Data.Product</a
+      ><a name="277"
+      > </a
+      ><a name="278" class="Keyword"
+      >using</a
+      ><a name="283"
+      > </a
+      ><a name="284" class="Symbol"
+      >(</a
+      ><a name="285"
+      >_&#215;_</a
+      ><a name="288" class="Symbol"
+      >;</a
+      ><a name="289"
+      > _,_</a
+      ><a name="293" class="Symbol"
+      >;</a
+      ><a name="294"
+      > proj&#8321;</a
+      ><a name="300" class="Symbol"
+      >;</a
+      ><a name="301"
+      > proj&#8322;</a
+      ><a name="307" class="Symbol"
+      >)</a
+      ><a name="308"
+      >
+</a
+      ><a name="309" class="Keyword"
+      >open</a
+      ><a name="313"
+      > </a
+      ><a name="314" class="Keyword"
+      >import</a
+      ><a name="320"
+      > </a
+      ><a name="321" href="Relation.Nullary.html#1" class="Module"
+      >Relation.Nullary</a
+      ><a name="337"
+      > </a
+      ><a name="338" class="Keyword"
+      >using</a
+      ><a name="343"
+      > </a
+      ><a name="344" class="Symbol"
+      >(</a
+      ><a name="345"
+      >Dec</a
+      ><a name="348" class="Symbol"
+      >;</a
+      ><a name="349"
+      > yes</a
+      ><a name="353" class="Symbol"
+      >;</a
+      ><a name="354"
+      > no</a
+      ><a name="357" class="Symbol"
+      >)</a
+      ><a name="358"
+      >
+</a
+      ><a name="359" class="Keyword"
+      >open</a
+      ><a name="363"
+      > </a
+      ><a name="364" class="Keyword"
+      >import</a
+      ><a name="370"
+      > </a
+      ><a name="371" href="Relation.Binary.html#1" class="Module"
+      >Relation.Binary</a
+      ><a name="386"
+      > </a
+      ><a name="387" class="Keyword"
+      >using</a
+      ><a name="392"
+      > </a
+      ><a name="393" class="Symbol"
+      >(</a
+      ><a name="394"
+      >DecSetoid</a
+      ><a name="403" class="Symbol"
+      >)</a
+      ><a name="404"
+      >
+</a
+      ><a name="405" class="Keyword"
+      >open</a
+      ><a name="409"
+      > </a
+      ><a name="410" class="Keyword"
+      >import</a
+      ><a name="416"
+      > </a
+      ><a name="417" href="Relation.Binary.PropositionalEquality.html#1" class="Module"
+      >Relation.Binary.PropositionalEquality</a
+      ><a name="454"
+      > </a
+      ><a name="455" class="Symbol"
+      >as</a
+      ><a name="457"
+      > </a
+      ><a name="458" class="Module"
+      >P</a
+      ><a name="459"
+      > </a
+      ><a name="460" class="Keyword"
+      >using</a
+      ><a name="465"
+      > </a
+      ><a name="466" class="Symbol"
+      >(</a
+      ><a name="467"
+      >_&#8801;_</a
+      ><a name="470" class="Symbol"
+      >;</a
+      ><a name="471"
+      > refl</a
+      ><a name="476" class="Symbol"
+      >)</a
+      ><a name="477"
+      >
+
+
+</a
+      ><a name="480" class="Keyword"
+      >module</a
+      ><a name="486"
+      > </a
+      ><a name="487" href="Logic.Linear.LambekVanBenthem.Judgement.html#1" class="Module"
+      >Logic.Linear.LambekVanBenthem.Judgement</a
+      ><a name="526"
+      > </a
+      ><a name="527" class="Symbol"
+      >{</a
+      ><a name="528" href="Logic.Linear.LambekVanBenthem.Judgement.html#528" class="Bound"
+      >&#8467;</a
+      ><a name="529" class="Symbol"
+      >}</a
+      ><a name="530"
+      > </a
+      ><a name="531" class="Symbol"
+      >(</a
+      ><a name="532" href="Logic.Linear.LambekVanBenthem.Judgement.html#532" class="Bound"
+      >Univ</a
+      ><a name="536"
+      > </a
+      ><a name="537" class="Symbol"
+      >:</a
+      ><a name="538"
+      > </a
+      ><a name="539" class="PrimitiveType"
+      >Set</a
+      ><a name="542"
+      > </a
+      ><a name="543" href="Logic.Linear.LambekVanBenthem.Judgement.html#528" class="Bound"
+      >&#8467;</a
+      ><a name="544" class="Symbol"
+      >)</a
+      ><a name="545"
+      > </a
+      ><a name="546" class="Keyword"
+      >where</a
+      ><a name="551"
+      >
+
+
+</a
+      ><a name="554" class="Keyword"
+      >open</a
+      ><a name="558"
+      > </a
+      ><a name="559" class="Keyword"
+      >import</a
+      ><a name="565"
+      > </a
+      ><a name="566" href="Logic.Linear.Type.html#1" class="Module"
+      >Logic.Linear.Type</a
+      ><a name="583"
+      > </a
+      ><a name="584" href="Logic.Linear.LambekVanBenthem.Judgement.html#532" class="Bound"
+      >Univ</a
+      ><a name="588"
+      > </a
+      ><a name="589" class="Keyword"
+      >hiding</a
+      ><a name="595"
+      > </a
+      ><a name="596" class="Symbol"
+      >(</a
+      ><a name="597" class="Keyword"
+      >module</a
+      ><a name="603"
+      > DecEq</a
+      ><a name="609" class="Symbol"
+      >)</a
+      ><a name="610"
+      >
+
+
+</a
+      ><a name="613" class="Keyword"
+      >infix</a
+      ><a name="618"
+      > </a
+      ><a name="619" class="Number"
+      >5</a
+      ><a name="620"
+      > _&#8866;_
+
+</a
+      ><a name="626" class="Keyword"
+      >data</a
+      ><a name="630"
+      > </a
+      ><a name="631" href="Logic.Linear.LambekVanBenthem.Judgement.html#631" class="Datatype"
+      >Judgement</a
+      ><a name="640"
+      > </a
+      ><a name="641" class="Symbol"
+      >:</a
+      ><a name="642"
+      > </a
+      ><a name="643" class="PrimitiveType"
+      >Set</a
+      ><a name="646"
+      > </a
+      ><a name="647" href="Logic.Linear.LambekVanBenthem.Judgement.html#528" class="Bound"
+      >&#8467;</a
+      ><a name="648"
+      > </a
+      ><a name="649" class="Keyword"
+      >where</a
+      ><a name="654"
+      >
+  </a
+      ><a name="657" href="Logic.Linear.LambekVanBenthem.Judgement.html#657" class="InductiveConstructor Operator"
+      >_&#8866;_</a
+      ><a name="660"
+      > </a
+      ><a name="661" class="Symbol"
+      >:</a
+      ><a name="662"
+      > </a
+      ><a name="663" href="Logic.Linear.Type.html#570" class="Datatype"
+      >Type</a
+      ><a name="667"
+      > </a
+      ><a name="668" class="Symbol"
+      >&#8594;</a
+      ><a name="669"
+      > </a
+      ><a name="670" href="Logic.Linear.Type.html#570" class="Datatype"
+      >Type</a
+      ><a name="674"
+      > </a
+      ><a name="675" class="Symbol"
+      >&#8594;</a
+      ><a name="676"
+      > </a
+      ><a name="677" href="Logic.Linear.LambekVanBenthem.Judgement.html#631" class="Datatype"
+      >Judgement</a
+      ><a name="686"
+      >
+
+
+</a
+      ><a name="689" href="Logic.Linear.LambekVanBenthem.Judgement.html#689" class="Function"
+      >&#8866;-injective</a
+      ><a name="700"
+      > </a
+      ><a name="701" class="Symbol"
+      >:</a
+      ><a name="702"
+      > </a
+      ><a name="703" class="Symbol"
+      >&#8704;</a
+      ><a name="704"
+      > </a
+      ><a name="705" class="Symbol"
+      >{</a
+      ><a name="706" href="Logic.Linear.LambekVanBenthem.Judgement.html#706" class="Bound"
+      >A&#8321;</a
+      ><a name="708"
+      > </a
+      ><a name="709" href="Logic.Linear.LambekVanBenthem.Judgement.html#709" class="Bound"
+      >A&#8322;</a
+      ><a name="711"
+      > </a
+      ><a name="712" href="Logic.Linear.LambekVanBenthem.Judgement.html#712" class="Bound"
+      >B&#8321;</a
+      ><a name="714"
+      > </a
+      ><a name="715" href="Logic.Linear.LambekVanBenthem.Judgement.html#715" class="Bound"
+      >B&#8322;</a
+      ><a name="717" class="Symbol"
+      >}</a
+      ><a name="718"
+      > </a
+      ><a name="719" class="Symbol"
+      >&#8594;</a
+      ><a name="720"
+      > </a
+      ><a name="721" href="Logic.Linear.LambekVanBenthem.Judgement.html#706" class="Bound"
+      >A&#8321;</a
+      ><a name="723"
+      > </a
+      ><a name="724" href="Logic.Linear.LambekVanBenthem.Judgement.html#657" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="725"
+      > </a
+      ><a name="726" href="Logic.Linear.LambekVanBenthem.Judgement.html#712" class="Bound"
+      >B&#8321;</a
+      ><a name="728"
+      > </a
+      ><a name="729" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="730"
+      > </a
+      ><a name="731" href="Logic.Linear.LambekVanBenthem.Judgement.html#709" class="Bound"
+      >A&#8322;</a
+      ><a name="733"
+      > </a
+      ><a name="734" href="Logic.Linear.LambekVanBenthem.Judgement.html#657" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="735"
+      > </a
+      ><a name="736" href="Logic.Linear.LambekVanBenthem.Judgement.html#715" class="Bound"
+      >B&#8322;</a
+      ><a name="738"
+      > </a
+      ><a name="739" class="Symbol"
+      >&#8594;</a
+      ><a name="740"
+      > </a
+      ><a name="741" href="Logic.Linear.LambekVanBenthem.Judgement.html#706" class="Bound"
+      >A&#8321;</a
+      ><a name="743"
+      > </a
+      ><a name="744" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="745"
+      > </a
+      ><a name="746" href="Logic.Linear.LambekVanBenthem.Judgement.html#709" class="Bound"
+      >A&#8322;</a
+      ><a name="748"
+      > </a
+      ><a name="749" href="Data.Product.html#1055" class="Function Operator"
+      >&#215;</a
+      ><a name="750"
+      > </a
+      ><a name="751" href="Logic.Linear.LambekVanBenthem.Judgement.html#712" class="Bound"
+      >B&#8321;</a
+      ><a name="753"
+      > </a
+      ><a name="754" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="755"
+      > </a
+      ><a name="756" href="Logic.Linear.LambekVanBenthem.Judgement.html#715" class="Bound"
+      >B&#8322;</a
+      ><a name="758"
+      >
+</a
+      ><a name="759" href="Logic.Linear.LambekVanBenthem.Judgement.html#689" class="Function"
+      >&#8866;-injective</a
+      ><a name="770"
+      > </a
+      ><a name="771" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="775"
+      > </a
+      ><a name="776" class="Symbol"
+      >=</a
+      ><a name="777"
+      > </a
+      ><a name="778" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="782"
+      > </a
+      ><a name="783" href="Data.Product.html#509" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="784"
+      > </a
+      ><a name="785" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="789"
+      >
+
+
+</a
+      ><a name="792" class="Keyword"
+      >module</a
+      ><a name="798"
+      > </a
+      ><a name="799" href="Logic.Linear.LambekVanBenthem.Judgement.html#799" class="Module"
+      >DecEq</a
+      ><a name="804"
+      > </a
+      ><a name="805" class="Symbol"
+      >(</a
+      ><a name="806" href="Logic.Linear.LambekVanBenthem.Judgement.html#806" class="Bound Operator"
+      >_&#8799;-Type_</a
+      ><a name="814"
+      > </a
+      ><a name="815" class="Symbol"
+      >:</a
+      ><a name="816"
+      > </a
+      ><a name="817" class="Symbol"
+      >(</a
+      ><a name="818" href="Logic.Linear.LambekVanBenthem.Judgement.html#818" class="Bound"
+      >X</a
+      ><a name="819"
+      > </a
+      ><a name="820" href="Logic.Linear.LambekVanBenthem.Judgement.html#820" class="Bound"
+      >Y</a
+      ><a name="821"
+      > </a
+      ><a name="822" class="Symbol"
+      >:</a
+      ><a name="823"
+      > </a
+      ><a name="824" href="Logic.Linear.Type.html#570" class="Datatype"
+      >Type</a
+      ><a name="828" class="Symbol"
+      >)</a
+      ><a name="829"
+      > </a
+      ><a name="830" class="Symbol"
+      >&#8594;</a
+      ><a name="831"
+      > </a
+      ><a name="832" href="Relation.Nullary.Core.html#468" class="Datatype"
+      >Dec</a
+      ><a name="835"
+      > </a
+      ><a name="836" class="Symbol"
+      >(</a
+      ><a name="837" href="Logic.Linear.LambekVanBenthem.Judgement.html#818" class="Bound"
+      >X</a
+      ><a name="838"
+      > </a
+      ><a name="839" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="840"
+      > </a
+      ><a name="841" href="Logic.Linear.LambekVanBenthem.Judgement.html#820" class="Bound"
+      >Y</a
+      ><a name="842" class="Symbol"
+      >))</a
+      ><a name="844"
+      > </a
+      ><a name="845" class="Keyword"
+      >where</a
+      ><a name="850"
+      >
+
+  </a
+      ><a name="854" href="Logic.Linear.LambekVanBenthem.Judgement.html#854" class="Function Operator"
+      >_&#8799;-Judgement_</a
+      ><a name="867"
+      > </a
+      ><a name="868" class="Symbol"
+      >:</a
+      ><a name="869"
+      > </a
+      ><a name="870" class="Symbol"
+      >(</a
+      ><a name="871" href="Logic.Linear.LambekVanBenthem.Judgement.html#871" class="Bound"
+      >I</a
+      ><a name="872"
+      > </a
+      ><a name="873" href="Logic.Linear.LambekVanBenthem.Judgement.html#873" class="Bound"
+      >J</a
+      ><a name="874"
+      > </a
+      ><a name="875" class="Symbol"
+      >:</a
+      ><a name="876"
+      > </a
+      ><a name="877" href="Logic.Linear.LambekVanBenthem.Judgement.html#631" class="Datatype"
+      >Judgement</a
+      ><a name="886" class="Symbol"
+      >)</a
+      ><a name="887"
+      > </a
+      ><a name="888" class="Symbol"
+      >&#8594;</a
+      ><a name="889"
+      > </a
+      ><a name="890" href="Relation.Nullary.Core.html#468" class="Datatype"
+      >Dec</a
+      ><a name="893"
+      > </a
+      ><a name="894" class="Symbol"
+      >(</a
+      ><a name="895" href="Logic.Linear.LambekVanBenthem.Judgement.html#871" class="Bound"
+      >I</a
+      ><a name="896"
+      > </a
+      ><a name="897" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="898"
+      > </a
+      ><a name="899" href="Logic.Linear.LambekVanBenthem.Judgement.html#873" class="Bound"
+      >J</a
+      ><a name="900" class="Symbol"
+      >)</a
+      ><a name="901"
+      >
+  </a
+      ><a name="904" class="Symbol"
+      >(</a
+      ><a name="905" href="Logic.Linear.LambekVanBenthem.Judgement.html#905" class="Bound"
+      >A&#8321;</a
+      ><a name="907"
+      > </a
+      ><a name="908" href="Logic.Linear.LambekVanBenthem.Judgement.html#657" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="909"
+      > </a
+      ><a name="910" href="Logic.Linear.LambekVanBenthem.Judgement.html#910" class="Bound"
+      >B&#8321;</a
+      ><a name="912" class="Symbol"
+      >)</a
+      ><a name="913"
+      > </a
+      ><a name="914" href="Logic.Linear.LambekVanBenthem.Judgement.html#854" class="Function Operator"
+      >&#8799;-Judgement</a
+      ><a name="925"
+      > </a
+      ><a name="926" class="Symbol"
+      >(</a
+      ><a name="927" href="Logic.Linear.LambekVanBenthem.Judgement.html#927" class="Bound"
+      >A&#8322;</a
+      ><a name="929"
+      > </a
+      ><a name="930" href="Logic.Linear.LambekVanBenthem.Judgement.html#657" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="931"
+      > </a
+      ><a name="932" href="Logic.Linear.LambekVanBenthem.Judgement.html#932" class="Bound"
+      >B&#8322;</a
+      ><a name="934" class="Symbol"
+      >)</a
+      ><a name="935"
+      > </a
+      ><a name="936" class="Keyword"
+      >with</a
+      ><a name="940"
+      > </a
+      ><a name="941" class="Symbol"
+      >(</a
+      ><a name="942" href="Logic.Linear.LambekVanBenthem.Judgement.html#905" class="Bound"
+      >A&#8321;</a
+      ><a name="944"
+      > </a
+      ><a name="945" href="Logic.Linear.LambekVanBenthem.Judgement.html#806" class="Bound Operator"
+      >&#8799;-Type</a
+      ><a name="951"
+      > </a
+      ><a name="952" href="Logic.Linear.LambekVanBenthem.Judgement.html#927" class="Bound"
+      >A&#8322;</a
+      ><a name="954" class="Symbol"
+      >)</a
+      ><a name="955"
+      > </a
+      ><a name="956" class="Symbol"
+      >|</a
+      ><a name="957"
+      > </a
+      ><a name="958" class="Symbol"
+      >(</a
+      ><a name="959" href="Logic.Linear.LambekVanBenthem.Judgement.html#910" class="Bound"
+      >B&#8321;</a
+      ><a name="961"
+      > </a
+      ><a name="962" href="Logic.Linear.LambekVanBenthem.Judgement.html#806" class="Bound Operator"
+      >&#8799;-Type</a
+      ><a name="968"
+      > </a
+      ><a name="969" href="Logic.Linear.LambekVanBenthem.Judgement.html#932" class="Bound"
+      >B&#8322;</a
+      ><a name="971" class="Symbol"
+      >)</a
+      ><a name="972"
+      >
+  </a
+      ><a name="975" class="Symbol"
+      >...</a
+      ><a name="978"
+      > </a
+      ><a name="979" class="Symbol"
+      >|</a
+      ><a name="980"
+      > </a
+      ><a name="981" href="Relation.Nullary.Core.html#504" class="InductiveConstructor"
+      >yes</a
+      ><a name="984"
+      > </a
+      ><a name="985" href="Logic.Linear.LambekVanBenthem.Judgement.html#985" class="Bound"
+      >A&#8321;&#8801;A&#8322;</a
+      ><a name="990"
+      > </a
+      ><a name="991" class="Symbol"
+      >|</a
+      ><a name="992"
+      > </a
+      ><a name="993" href="Relation.Nullary.Core.html#504" class="InductiveConstructor"
+      >yes</a
+      ><a name="996"
+      > </a
+      ><a name="997" href="Logic.Linear.LambekVanBenthem.Judgement.html#997" class="Bound"
+      >B&#8321;&#8801;B&#8322;</a
+      ><a name="1002"
+      > </a
+      ><a name="1003" class="Keyword"
+      >rewrite</a
+      ><a name="1010"
+      > </a
+      ><a name="1011" href="Logic.Linear.LambekVanBenthem.Judgement.html#985" class="Bound"
+      >A&#8321;&#8801;A&#8322;</a
+      ><a name="1016"
+      > </a
+      ><a name="1017" class="Symbol"
+      >|</a
+      ><a name="1018"
+      > </a
+      ><a name="1019" href="Logic.Linear.LambekVanBenthem.Judgement.html#997" class="Bound"
+      >B&#8321;&#8801;B&#8322;</a
+      ><a name="1024"
+      > </a
+      ><a name="1025" class="Symbol"
+      >=</a
+      ><a name="1026"
+      > </a
+      ><a name="1027" href="Relation.Nullary.Core.html#504" class="InductiveConstructor"
+      >yes</a
+      ><a name="1030"
+      > </a
+      ><a name="1031" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="1035"
+      >
+  </a
+      ><a name="1038" class="Symbol"
+      >...</a
+      ><a name="1041"
+      > </a
+      ><a name="1042" class="Symbol"
+      >|</a
+      ><a name="1043"
+      > </a
+      ><a name="1044" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1046"
+      >  </a
+      ><a name="1048" href="Logic.Linear.LambekVanBenthem.Judgement.html#1048" class="Bound"
+      >A&#8321;&#8802;A&#8322;</a
+      ><a name="1053"
+      > </a
+      ><a name="1054" class="Symbol"
+      >|</a
+      ><a name="1055"
+      > </a
+      ><a name="1056" class="Symbol"
+      >_</a
+      ><a name="1057"
+      >         </a
+      ><a name="1066" class="Symbol"
+      >=</a
+      ><a name="1067"
+      > </a
+      ><a name="1068" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1070"
+      > </a
+      ><a name="1071" class="Symbol"
+      >(</a
+      ><a name="1072" href="Logic.Linear.LambekVanBenthem.Judgement.html#1048" class="Bound"
+      >A&#8321;&#8802;A&#8322;</a
+      ><a name="1077"
+      > </a
+      ><a name="1078" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="1079"
+      > </a
+      ><a name="1080" href="Data.Product.html#525" class="Field"
+      >proj&#8321;</a
+      ><a name="1085"
+      > </a
+      ><a name="1086" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="1087"
+      > </a
+      ><a name="1088" href="Logic.Linear.LambekVanBenthem.Judgement.html#689" class="Function"
+      >&#8866;-injective</a
+      ><a name="1099" class="Symbol"
+      >)</a
+      ><a name="1100"
+      >
+  </a
+      ><a name="1103" class="Symbol"
+      >...</a
+      ><a name="1106"
+      > </a
+      ><a name="1107" class="Symbol"
+      >|</a
+      ><a name="1108"
+      > </a
+      ><a name="1109" class="Symbol"
+      >_</a
+      ><a name="1110"
+      >         </a
+      ><a name="1119" class="Symbol"
+      >|</a
+      ><a name="1120"
+      > </a
+      ><a name="1121" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1123"
+      >  </a
+      ><a name="1125" href="Logic.Linear.LambekVanBenthem.Judgement.html#1125" class="Bound"
+      >B&#8321;&#8802;B&#8322;</a
+      ><a name="1130"
+      > </a
+      ><a name="1131" class="Symbol"
+      >=</a
+      ><a name="1132"
+      > </a
+      ><a name="1133" href="Relation.Nullary.Core.html#531" class="InductiveConstructor"
+      >no</a
+      ><a name="1135"
+      > </a
+      ><a name="1136" class="Symbol"
+      >(</a
+      ><a name="1137" href="Logic.Linear.LambekVanBenthem.Judgement.html#1125" class="Bound"
+      >B&#8321;&#8802;B&#8322;</a
+      ><a name="1142"
+      > </a
+      ><a name="1143" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="1144"
+      > </a
+      ><a name="1145" href="Data.Product.html#539" class="Field"
+      >proj&#8322;</a
+      ><a name="1150"
+      > </a
+      ><a name="1151" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="1152"
+      > </a
+      ><a name="1153" href="Logic.Linear.LambekVanBenthem.Judgement.html#689" class="Function"
+      >&#8866;-injective</a
+      ><a name="1164" class="Symbol"
+      >)</a
+      ><a name="1165"
+      >
+
+
+  </a
+      ><a name="1170" href="Logic.Linear.LambekVanBenthem.Judgement.html#1170" class="Function"
+      >decSetoid</a
+      ><a name="1179"
+      > </a
+      ><a name="1180" class="Symbol"
+      >:</a
+      ><a name="1181"
+      > </a
+      ><a name="1182" href="Relation.Binary.html#2921" class="Record"
+      >DecSetoid</a
+      ><a name="1191"
+      > </a
+      ><a name="1192" class="Symbol"
+      >_</a
+      ><a name="1193"
+      > </a
+      ><a name="1194" class="Symbol"
+      >_</a
+      ><a name="1195"
+      >
+  </a
+      ><a name="1198" href="Logic.Linear.LambekVanBenthem.Judgement.html#1170" class="Function"
+      >decSetoid</a
+      ><a name="1207"
+      > </a
+      ><a name="1208" class="Symbol"
+      >=</a
+      ><a name="1209"
+      > </a
+      ><a name="1210" href="Relation.Binary.PropositionalEquality.html#1663" class="Function"
+      >P.decSetoid</a
+      ><a name="1221"
+      > </a
+      ><a name="1222" href="Logic.Linear.LambekVanBenthem.Judgement.html#854" class="Function Operator"
+      >_&#8799;-Judgement_</a
+      ><a name="1235"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>

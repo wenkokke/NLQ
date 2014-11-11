@@ -1,0 +1,801 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Main</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="73"
+      >
+</a
+      ><a name="74" class="Comment"
+      >-- The Lambek Calculus in Agda</a
+      ><a name="104"
+      >
+</a
+      ><a name="105" class="Comment"
+      >--</a
+      ><a name="107"
+      >
+</a
+      ><a name="108" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="180"
+      >
+
+
+</a
+      ><a name="183" class="Keyword"
+      >open</a
+      ><a name="187"
+      > </a
+      ><a name="188" class="Keyword"
+      >import</a
+      ><a name="194"
+      > </a
+      ><a name="195" href="Data.List.html#1" class="Module"
+      >Data.List</a
+      ><a name="204"
+      > </a
+      ><a name="205" class="Keyword"
+      >using</a
+      ><a name="210"
+      > </a
+      ><a name="211" class="Symbol"
+      >(</a
+      ><a name="212"
+      >[]</a
+      ><a name="214" class="Symbol"
+      >)</a
+      ><a name="215"
+      >
+
+
+</a
+      ><a name="218" class="Keyword"
+      >module</a
+      ><a name="224"
+      > </a
+      ><a name="225" href="Main.html#1" class="Module"
+      >Main</a
+      ><a name="229"
+      > </a
+      ><a name="230" class="Keyword"
+      >where</a
+      ><a name="235"
+      >
+
+
+</a
+      ><a name="238" class="Keyword"
+      >data</a
+      ><a name="242"
+      > </a
+      ><a name="243" href="Main.html#243" class="Datatype"
+      >Univ</a
+      ><a name="247"
+      > </a
+      ><a name="248" class="Symbol"
+      >:</a
+      ><a name="249"
+      > </a
+      ><a name="250" class="PrimitiveType"
+      >Set</a
+      ><a name="253"
+      > </a
+      ><a name="254" class="Keyword"
+      >where</a
+      ><a name="259"
+      >
+  </a
+      ><a name="262" href="Main.html#262" class="InductiveConstructor"
+      >S</a
+      ><a name="263"
+      >   </a
+      ><a name="266" class="Symbol"
+      >:</a
+      ><a name="267"
+      > </a
+      ><a name="268" href="Main.html#243" class="Datatype"
+      >Univ</a
+      ><a name="272"
+      >
+  </a
+      ><a name="275" href="Main.html#275" class="InductiveConstructor"
+      >N</a
+      ><a name="276"
+      >   </a
+      ><a name="279" class="Symbol"
+      >:</a
+      ><a name="280"
+      > </a
+      ><a name="281" href="Main.html#243" class="Datatype"
+      >Univ</a
+      ><a name="285"
+      >
+  </a
+      ><a name="288" href="Main.html#288" class="InductiveConstructor"
+      >NP</a
+      ><a name="290"
+      >  </a
+      ><a name="292" class="Symbol"
+      >:</a
+      ><a name="293"
+      > </a
+      ><a name="294" href="Main.html#243" class="Datatype"
+      >Univ</a
+      ><a name="298"
+      >
+
+
+</a
+      ><a name="301" class="Keyword"
+      >open</a
+      ><a name="305"
+      > </a
+      ><a name="306" class="Keyword"
+      >import</a
+      ><a name="312"
+      > </a
+      ><a name="313" href="Logic.Lambek.Type.html#1" class="Module"
+      >Logic.Lambek.Type</a
+      ><a name="330"
+      >             </a
+      ><a name="343" href="Main.html#243" class="Datatype"
+      >Univ</a
+      ><a name="347"
+      > </a
+      ><a name="348" class="Symbol"
+      >as</a
+      ><a name="350"
+      > </a
+      ><a name="351" href="Main.html#351" class="Module"
+      >T</a
+      ><a name="352"
+      >
+</a
+      ><a name="353" class="Keyword"
+      >open</a
+      ><a name="357"
+      > </a
+      ><a name="358" class="Keyword"
+      >import</a
+      ><a name="364"
+      > </a
+      ><a name="365" href="Logic.Lambek.ResMon.Judgement.html#1" class="Module"
+      >Logic.Lambek.ResMon.Judgement</a
+      ><a name="394"
+      > </a
+      ><a name="395" href="Main.html#243" class="Datatype"
+      >Univ</a
+      ><a name="399"
+      > </a
+      ><a name="400" class="Symbol"
+      >as</a
+      ><a name="402"
+      > </a
+      ><a name="403" href="Main.html#403" class="Module"
+      >RMJ</a
+      ><a name="406"
+      >
+</a
+      ><a name="407" class="Keyword"
+      >open</a
+      ><a name="411"
+      > </a
+      ><a name="412" class="Keyword"
+      >import</a
+      ><a name="418"
+      > </a
+      ><a name="419" href="Logic.Lambek.ResMon.Base.html#1" class="Module"
+      >Logic.Lambek.ResMon.Base</a
+      ><a name="443"
+      >      </a
+      ><a name="449" href="Main.html#243" class="Datatype"
+      >Univ</a
+      ><a name="453"
+      > </a
+      ><a name="454" class="Symbol"
+      >as</a
+      ><a name="456"
+      > </a
+      ><a name="457" href="Main.html#457" class="Module"
+      >RMB</a
+      ><a name="460"
+      >
+</a
+      ><a name="461" class="Keyword"
+      >open</a
+      ><a name="465"
+      > </a
+      ><a name="466" class="Keyword"
+      >import</a
+      ><a name="472"
+      > </a
+      ><a name="473" href="Logic.Lambek.ResMon.Trans.html#1" class="Module"
+      >Logic.Lambek.ResMon.Trans</a
+      ><a name="498"
+      >     </a
+      ><a name="503" href="Main.html#243" class="Datatype"
+      >Univ</a
+      ><a name="507"
+      > </a
+      ><a name="508" class="Symbol"
+      >as</a
+      ><a name="510"
+      > </a
+      ><a name="511" href="Main.html#511" class="Module"
+      >RMT</a
+      ><a name="514"
+      >
+
+
+</a
+      ><a name="517" class="Keyword"
+      >data</a
+      ><a name="521"
+      > </a
+      ><a name="522" href="Main.html#522" class="Datatype"
+      >Lexicon</a
+      ><a name="529"
+      > </a
+      ><a name="530" class="Symbol"
+      >:</a
+      ><a name="531"
+      > </a
+      ><a name="532" class="PrimitiveType"
+      >Set</a
+      ><a name="535"
+      > </a
+      ><a name="536" class="Keyword"
+      >where</a
+      ><a name="541"
+      >
+  </a
+      ><a name="544" href="Main.html#544" class="InductiveConstructor"
+      >EVERYBODY</a
+      ><a name="553"
+      > </a
+      ><a name="554" class="Symbol"
+      >:</a
+      ><a name="555"
+      > </a
+      ><a name="556" href="Main.html#522" class="Datatype"
+      >Lexicon</a
+      ><a name="563"
+      >
+  </a
+      ><a name="566" href="Main.html#566" class="InductiveConstructor"
+      >FINDS</a
+      ><a name="571"
+      >     </a
+      ><a name="576" class="Symbol"
+      >:</a
+      ><a name="577"
+      > </a
+      ><a name="578" href="Main.html#522" class="Datatype"
+      >Lexicon</a
+      ><a name="585"
+      >
+  </a
+      ><a name="588" href="Main.html#588" class="InductiveConstructor"
+      >SOME</a
+      ><a name="592"
+      >      </a
+      ><a name="598" class="Symbol"
+      >:</a
+      ><a name="599"
+      > </a
+      ><a name="600" href="Main.html#522" class="Datatype"
+      >Lexicon</a
+      ><a name="607"
+      >
+  </a
+      ><a name="610" href="Main.html#610" class="InductiveConstructor"
+      >UNICORN</a
+      ><a name="617"
+      >   </a
+      ><a name="620" class="Symbol"
+      >:</a
+      ><a name="621"
+      > </a
+      ><a name="622" href="Main.html#522" class="Datatype"
+      >Lexicon</a
+      ><a name="629"
+      >
+
+
+</a
+      ><a name="632" href="Main.html#632" class="Function Operator"
+      >&#10214;_&#10215;</a
+      ><a name="635"
+      > </a
+      ><a name="636" class="Symbol"
+      >:</a
+      ><a name="637"
+      > </a
+      ><a name="638" href="Main.html#522" class="Datatype"
+      >Lexicon</a
+      ><a name="645"
+      > </a
+      ><a name="646" class="Symbol"
+      >&#8594;</a
+      ><a name="647"
+      > </a
+      ><a name="648" href="Logic.Lambek.Type.html#586" class="Datatype"
+      >Type</a
+      ><a name="652"
+      >
+</a
+      ><a name="653" href="Main.html#632" class="Function Operator"
+      >&#10214;</a
+      ><a name="654"
+      > </a
+      ><a name="655" href="Main.html#544" class="InductiveConstructor"
+      >EVERYBODY</a
+      ><a name="664"
+      > </a
+      ><a name="665" href="Main.html#632" class="Function Operator"
+      >&#10215;</a
+      ><a name="666"
+      > </a
+      ><a name="667" class="Symbol"
+      >=</a
+      ><a name="668"
+      > </a
+      ><a name="669" class="Symbol"
+      >(</a
+      ><a name="670" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="672"
+      > </a
+      ><a name="673" href="Main.html#288" class="InductiveConstructor"
+      >NP</a
+      ><a name="675"
+      > </a
+      ><a name="676" href="Logic.Lambek.Type.html#656" class="InductiveConstructor Operator"
+      >&#8656;</a
+      ><a name="677"
+      > </a
+      ><a name="678" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="680"
+      > </a
+      ><a name="681" href="Main.html#275" class="InductiveConstructor"
+      >N</a
+      ><a name="682" class="Symbol"
+      >)</a
+      ><a name="683"
+      > </a
+      ><a name="684" href="Logic.Lambek.Type.html#628" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="685"
+      > </a
+      ><a name="686" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="688"
+      > </a
+      ><a name="689" href="Main.html#275" class="InductiveConstructor"
+      >N</a
+      ><a name="690"
+      >
+</a
+      ><a name="691" href="Main.html#632" class="Function Operator"
+      >&#10214;</a
+      ><a name="692"
+      > </a
+      ><a name="693" href="Main.html#566" class="InductiveConstructor"
+      >FINDS</a
+      ><a name="698"
+      >     </a
+      ><a name="703" href="Main.html#632" class="Function Operator"
+      >&#10215;</a
+      ><a name="704"
+      > </a
+      ><a name="705" class="Symbol"
+      >=</a
+      ><a name="706"
+      > </a
+      ><a name="707" class="Symbol"
+      >(</a
+      ><a name="708" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="710"
+      > </a
+      ><a name="711" href="Main.html#288" class="InductiveConstructor"
+      >NP</a
+      ><a name="713"
+      > </a
+      ><a name="714" href="Logic.Lambek.Type.html#684" class="InductiveConstructor Operator"
+      >&#8658;</a
+      ><a name="715"
+      > </a
+      ><a name="716" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="718"
+      > </a
+      ><a name="719" href="Main.html#262" class="InductiveConstructor"
+      >S</a
+      ><a name="720" class="Symbol"
+      >)</a
+      ><a name="721"
+      > </a
+      ><a name="722" href="Logic.Lambek.Type.html#656" class="InductiveConstructor Operator"
+      >&#8656;</a
+      ><a name="723"
+      > </a
+      ><a name="724" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="726"
+      > </a
+      ><a name="727" href="Main.html#288" class="InductiveConstructor"
+      >NP</a
+      ><a name="729"
+      >
+</a
+      ><a name="730" href="Main.html#632" class="Function Operator"
+      >&#10214;</a
+      ><a name="731"
+      > </a
+      ><a name="732" href="Main.html#588" class="InductiveConstructor"
+      >SOME</a
+      ><a name="736"
+      >      </a
+      ><a name="742" href="Main.html#632" class="Function Operator"
+      >&#10215;</a
+      ><a name="743"
+      > </a
+      ><a name="744" class="Symbol"
+      >=</a
+      ><a name="745"
+      > </a
+      ><a name="746" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="748"
+      > </a
+      ><a name="749" href="Main.html#288" class="InductiveConstructor"
+      >NP</a
+      ><a name="751"
+      > </a
+      ><a name="752" href="Logic.Lambek.Type.html#656" class="InductiveConstructor Operator"
+      >&#8656;</a
+      ><a name="753"
+      > </a
+      ><a name="754" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="756"
+      > </a
+      ><a name="757" href="Main.html#275" class="InductiveConstructor"
+      >N</a
+      ><a name="758"
+      >
+</a
+      ><a name="759" href="Main.html#632" class="Function Operator"
+      >&#10214;</a
+      ><a name="760"
+      > </a
+      ><a name="761" href="Main.html#610" class="InductiveConstructor"
+      >UNICORN</a
+      ><a name="768"
+      >   </a
+      ><a name="771" href="Main.html#632" class="Function Operator"
+      >&#10215;</a
+      ><a name="772"
+      > </a
+      ><a name="773" class="Symbol"
+      >=</a
+      ><a name="774"
+      > </a
+      ><a name="775" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="777"
+      > </a
+      ><a name="778" href="Main.html#275" class="InductiveConstructor"
+      >N</a
+      ><a name="779"
+      >
+
+
+</a
+      ><a name="782" href="Main.html#782" class="Function"
+      >test&#8321;</a
+      ><a name="787"
+      > </a
+      ><a name="788" class="Symbol"
+      >:</a
+      ><a name="789"
+      > </a
+      ><a name="790" href="Logic.Lambek.ResMon.Base.html#690" class="Datatype Operator"
+      >NL</a
+      ><a name="792"
+      > </a
+      ><a name="793" href="Main.html#632" class="Function Operator"
+      >&#10214;</a
+      ><a name="794"
+      > </a
+      ><a name="795" href="Main.html#544" class="InductiveConstructor"
+      >EVERYBODY</a
+      ><a name="804"
+      > </a
+      ><a name="805" href="Main.html#632" class="Function Operator"
+      >&#10215;</a
+      ><a name="806"
+      > </a
+      ><a name="807" href="Logic.Lambek.Type.html#628" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="808"
+      > </a
+      ><a name="809" href="Main.html#632" class="Function Operator"
+      >&#10214;</a
+      ><a name="810"
+      > </a
+      ><a name="811" href="Main.html#566" class="InductiveConstructor"
+      >FINDS</a
+      ><a name="816"
+      > </a
+      ><a name="817" href="Main.html#632" class="Function Operator"
+      >&#10215;</a
+      ><a name="818"
+      > </a
+      ><a name="819" href="Logic.Lambek.Type.html#628" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="820"
+      > </a
+      ><a name="821" href="Main.html#632" class="Function Operator"
+      >&#10214;</a
+      ><a name="822"
+      > </a
+      ><a name="823" href="Main.html#588" class="InductiveConstructor"
+      >SOME</a
+      ><a name="827"
+      > </a
+      ><a name="828" href="Main.html#632" class="Function Operator"
+      >&#10215;</a
+      ><a name="829"
+      > </a
+      ><a name="830" href="Logic.Lambek.Type.html#628" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="831"
+      > </a
+      ><a name="832" href="Main.html#632" class="Function Operator"
+      >&#10214;</a
+      ><a name="833"
+      > </a
+      ><a name="834" href="Main.html#610" class="InductiveConstructor"
+      >UNICORN</a
+      ><a name="841"
+      > </a
+      ><a name="842" href="Main.html#632" class="Function Operator"
+      >&#10215;</a
+      ><a name="843"
+      > </a
+      ><a name="844" href="Logic.Lambek.ResMon.Judgement.html#647" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="845"
+      > </a
+      ><a name="846" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="848"
+      > </a
+      ><a name="849" href="Main.html#262" class="InductiveConstructor"
+      >S</a
+      ><a name="850"
+      >
+</a
+      ><a name="851" href="Main.html#782" class="Function"
+      >test&#8321;</a
+      ><a name="856"
+      > </a
+      ><a name="857" class="Symbol"
+      >=</a
+      ><a name="858"
+      > </a
+      ><a name="859" href="Logic.Lambek.ResMon.Base.html#1000" class="InductiveConstructor"
+      >res-&#8658;&#8855;</a
+      ><a name="865"
+      > </a
+      ><a name="866" class="Symbol"
+      >(</a
+      ><a name="867" href="Logic.Lambek.ResMon.Base.html#1000" class="InductiveConstructor"
+      >res-&#8658;&#8855;</a
+      ><a name="873"
+      >  </a
+      ><a name="875" class="Symbol"
+      >(</a
+      ><a name="876" href="Logic.Lambek.ResMon.Base.html#2804" class="Function"
+      >appl-&#8656;&#8242;</a
+      ><a name="883"
+      > </a
+      ><a name="884" class="Symbol"
+      >(</a
+      ><a name="885" href="Logic.Lambek.ResMon.Base.html#1053" class="InductiveConstructor"
+      >res-&#8855;&#8658;</a
+      ><a name="891"
+      > </a
+      ><a name="892" class="Symbol"
+      >(</a
+      ><a name="893" href="Logic.Lambek.ResMon.Base.html#2804" class="Function"
+      >appl-&#8656;&#8242;</a
+      ><a name="900"
+      >
+               </a
+      ><a name="916" class="Symbol"
+      >(</a
+      ><a name="917" href="Logic.Lambek.ResMon.Base.html#2532" class="Function"
+      >res-&#8656;&#8658;&#8242;</a
+      ><a name="924"
+      > </a
+      ><a name="925" class="Symbol"
+      >(</a
+      ><a name="926" href="Logic.Lambek.ResMon.Base.html#2804" class="Function"
+      >appl-&#8656;&#8242;</a
+      ><a name="933"
+      > </a
+      ><a name="934" class="Symbol"
+      >(</a
+      ><a name="935" href="Logic.Lambek.ResMon.Base.html#1159" class="InductiveConstructor"
+      >res-&#8855;&#8656;</a
+      ><a name="941"
+      > </a
+      ><a name="942" class="Symbol"
+      >(</a
+      ><a name="943" href="Logic.Lambek.ResMon.Base.html#2719" class="Function"
+      >appl-&#8658;&#8242;</a
+      ><a name="950"
+      > </a
+      ><a name="951" href="Logic.Lambek.ResMon.Base.html#723" class="InductiveConstructor"
+      >id</a
+      ><a name="953" class="Symbol"
+      >))))))))</a
+      ><a name="961"
+      >
+
+</a
+      ><a name="963" href="Main.html#963" class="Function"
+      >test&#8322;</a
+      ><a name="968"
+      > </a
+      ><a name="969" class="Symbol"
+      >:</a
+      ><a name="970"
+      > </a
+      ><a name="971" href="Logic.Lambek.ResMon.Base.html#690" class="Datatype Operator"
+      >NL</a
+      ><a name="973"
+      > </a
+      ><a name="974" href="Main.html#632" class="Function Operator"
+      >&#10214;</a
+      ><a name="975"
+      > </a
+      ><a name="976" href="Main.html#544" class="InductiveConstructor"
+      >EVERYBODY</a
+      ><a name="985"
+      > </a
+      ><a name="986" href="Main.html#632" class="Function Operator"
+      >&#10215;</a
+      ><a name="987"
+      > </a
+      ><a name="988" href="Logic.Lambek.Type.html#628" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="989"
+      > </a
+      ><a name="990" href="Main.html#632" class="Function Operator"
+      >&#10214;</a
+      ><a name="991"
+      > </a
+      ><a name="992" href="Main.html#566" class="InductiveConstructor"
+      >FINDS</a
+      ><a name="997"
+      > </a
+      ><a name="998" href="Main.html#632" class="Function Operator"
+      >&#10215;</a
+      ><a name="999"
+      > </a
+      ><a name="1000" href="Logic.Lambek.Type.html#628" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="1001"
+      > </a
+      ><a name="1002" href="Main.html#632" class="Function Operator"
+      >&#10214;</a
+      ><a name="1003"
+      > </a
+      ><a name="1004" href="Main.html#588" class="InductiveConstructor"
+      >SOME</a
+      ><a name="1008"
+      > </a
+      ><a name="1009" href="Main.html#632" class="Function Operator"
+      >&#10215;</a
+      ><a name="1010"
+      > </a
+      ><a name="1011" href="Logic.Lambek.Type.html#628" class="InductiveConstructor Operator"
+      >&#8855;</a
+      ><a name="1012"
+      > </a
+      ><a name="1013" href="Main.html#632" class="Function Operator"
+      >&#10214;</a
+      ><a name="1014"
+      > </a
+      ><a name="1015" href="Main.html#610" class="InductiveConstructor"
+      >UNICORN</a
+      ><a name="1022"
+      > </a
+      ><a name="1023" href="Main.html#632" class="Function Operator"
+      >&#10215;</a
+      ><a name="1024"
+      > </a
+      ><a name="1025" href="Logic.Lambek.ResMon.Judgement.html#647" class="InductiveConstructor Operator"
+      >&#8866;</a
+      ><a name="1026"
+      > </a
+      ><a name="1027" href="Logic.Lambek.Type.html#607" class="InductiveConstructor"
+      >el</a
+      ><a name="1029"
+      > </a
+      ><a name="1030" href="Main.html#262" class="InductiveConstructor"
+      >S</a
+      ><a name="1031"
+      >
+</a
+      ><a name="1032" href="Main.html#963" class="Function"
+      >test&#8322;</a
+      ><a name="1037"
+      > </a
+      ><a name="1038" class="Symbol"
+      >=</a
+      ><a name="1039"
+      > </a
+      ><a name="1040" href="Logic.Lambek.ResMon.Base.html#1106" class="InductiveConstructor"
+      >res-&#8656;&#8855;</a
+      ><a name="1046"
+      > </a
+      ><a name="1047" class="Symbol"
+      >(</a
+      ><a name="1048" href="Logic.Lambek.ResMon.Base.html#2804" class="Function"
+      >appl-&#8656;&#8242;</a
+      ><a name="1055"
+      > </a
+      ><a name="1056" class="Symbol"
+      >(</a
+      ><a name="1057" href="Logic.Lambek.ResMon.Base.html#2608" class="Function"
+      >res-&#8658;&#8656;&#8242;</a
+      ><a name="1064"
+      > </a
+      ><a name="1065" class="Symbol"
+      >(</a
+      ><a name="1066" href="Logic.Lambek.ResMon.Base.html#1000" class="InductiveConstructor"
+      >res-&#8658;&#8855;</a
+      ><a name="1072"
+      > </a
+      ><a name="1073" class="Symbol"
+      >(</a
+      ><a name="1074" href="Logic.Lambek.ResMon.Base.html#2804" class="Function"
+      >appl-&#8656;&#8242;</a
+      ><a name="1081"
+      > </a
+      ><a name="1082" class="Symbol"
+      >(</a
+      ><a name="1083" href="Logic.Lambek.ResMon.Base.html#2532" class="Function"
+      >res-&#8656;&#8658;&#8242;</a
+      ><a name="1090"
+      > </a
+      ><a name="1091" href="Logic.Lambek.ResMon.Base.html#2363" class="Function"
+      >id&#8242;</a
+      ><a name="1094" class="Symbol"
+      >)</a
+      ><a name="1095"
+      > </a
+      ><a name="1096" class="Symbol"
+      >))))</a
+      ><a name="1100"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>
