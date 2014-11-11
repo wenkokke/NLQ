@@ -195,8 +195,9 @@ filesForLambek =
 -- |Set of replacement rules for the Lambek Grishin to Lambek conversion.
 replacementListForLambek :: [(Text, Text)]
 replacementListForLambek =
-  [ ("LambekGrishin" , "Lambek")
-  , ("LG", "NL")
+  [ "LambekGrishin" ==> "Lambek"
+  , "LG"            ==> "NL"
+  , "Structural⁺"   ==> "Structural"
   ]
 
 

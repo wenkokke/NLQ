@@ -37,6 +37,16 @@ data Polarised (p : Polarity) : Polarity → Context → Set ℓ where
   _<⇐_ : {A : Context} (A⁻ : Polarised p - A) (B : Type) → Polarised p - (A <⇐ B)
 
 
+-- Structural contexts refer to contexts consisting solely of products
+-- or solely of sums.
+
+Structural : Context → Set ℓ
+Structural = Polarised + +
+
+Structural⁻ : Context → Set ℓ
+Structural⁻ = Polarised - -
+
+
 module Simple where
 
   open TC.Simple renaming (_[_] to _[_]′; _<_> to _<_>′)
