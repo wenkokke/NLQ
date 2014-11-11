@@ -11,12 +11,11 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_)
 
 module Logic.Lambek.SC.EquivalentToResMon {ℓ} (Univ : Set ℓ) where
 
-open import Logic.Lambek.Type             Univ as T
-open import Logic.Lambek.Type.Context     Univ as TC hiding (module Simple)
-open import Logic.Lambek.ResMon.Judgement Univ as RMJ
-open import Logic.Lambek.ResMon.Base      Univ as RMB renaming (NL_ to RM_)
-open import Logic.Lambek.SC.Judgement     Univ as SCJ
-open import Logic.Lambek.SC.Base          Univ as SCB hiding (contᴺ′; contᴾ′) renaming (NL_ to SC_)
+open import Logic.Lambek.Type         Univ as T
+open import Logic.Lambek.Type.Context Univ as TC hiding (module Simple)
+open import Logic.Lambek.ResMon       Univ as RM renaming (NL_ to RM_)
+open import Logic.Lambek.SC.Judgement Univ as SCJ
+open import Logic.Lambek.SC.Base      Univ as SCB hiding (contᴺ′; contᴾ′) renaming (NL_ to SC_)
 
 
 module Simple where

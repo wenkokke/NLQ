@@ -90,8 +90,6 @@ module el where
 
 
 
-
-
 module ⊗ where
 
   data Origin {J B C} (J⁻ : Polarised - J) (f : NL J [ B ⊗ C ]ᴶ) : Set ℓ where
