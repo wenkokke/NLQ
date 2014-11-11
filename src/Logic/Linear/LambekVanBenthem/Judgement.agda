@@ -12,7 +12,7 @@ open import Relation.Binary using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Linear.ResMon.Judgement {ℓ} (Univ : Set ℓ) where
+module Logic.Linear.LambekVanBenthem.Judgement {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Linear.Type Univ hiding (module DecEq)

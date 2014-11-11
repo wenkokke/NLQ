@@ -13,7 +13,7 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 open import Data.Unit using (⊤; tt)
 
 
-module Logic.Linear.ResMon.Judgement.Context.Polarised {ℓ} (Univ : Set ℓ) where
+module Logic.Linear.LambekVanBenthem.Judgement.Context.Polarised {ℓ} (Univ : Set ℓ) where
 
 open import Logic.Polarity
 open import Logic.Linear.Type                     Univ as T
@@ -21,8 +21,8 @@ open import Logic.Linear.Type.Context             Univ as TC
      hiding (module Simple)
 open import Logic.Linear.Type.Context.Polarised   Univ as TCP
      hiding (module Simple; module Polarised) renaming (Polarised to PolarisedContext)
-open import Logic.Linear.ResMon.Judgement         Univ as J
-open import Logic.Linear.ResMon.Judgement.Context Univ as JC
+open import Logic.Linear.LambekVanBenthem.Judgement         Univ as J
+open import Logic.Linear.LambekVanBenthem.Judgement.Context Univ as JC
      hiding (module Simple)
 
 

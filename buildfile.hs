@@ -65,6 +65,8 @@ main = shakeArgs shakeOptions $ do
     liftIO $ removeFiles "src" ["Everything.agda"]
     putNormal "Removing generated files for Lambek calculus"
     liftIO $ removeFiles "." (map fst filesForLambek)
+    putNormal "Removing generated files for Linear calculus"
+    liftIO $ removeFiles "." (map fst filesForLinear)
 
 
 
@@ -219,9 +221,9 @@ filesForLinear =
   ,"src/Logic/Linear/Type/Complexity.agda"                              ==> "src/Logic/LambekGrishin/Type/Complexity.agda"
   ,"src/Logic/Linear/Type/Context.agda"                                 ==> "src/Logic/LambekGrishin/Type/Context.agda"
   ,"src/Logic/Linear/Type/Context/Polarised.agda"                       ==> "src/Logic/LambekGrishin/Type/Context/Polarised.agda"
-  ,"src/Logic/Linear/NaturalDeduction/Judgement.agda"                   ==> "src/Logic/LambekGrishin/ResMon/Judgement.agda"
-  ,"src/Logic/Linear/NaturalDeduction/Judgement/Context.agda"           ==> "src/Logic/LambekGrishin/ResMon/Judgement/Context.agda"
-  ,"src/Logic/Linear/NaturalDeduction/Judgement/Context/Polarised.agda" ==> "src/Logic/LambekGrishin/ResMon/Judgement/Context/Polarised.agda"
+  ,"src/Logic/Linear/LambekVanBenthem/Judgement.agda"                   ==> "src/Logic/LambekGrishin/ResMon/Judgement.agda"
+  ,"src/Logic/Linear/LambekVanBenthem/Judgement/Context.agda"           ==> "src/Logic/LambekGrishin/ResMon/Judgement/Context.agda"
+  ,"src/Logic/Linear/LambekVanBenthem/Judgement/Context/Polarised.agda" ==> "src/Logic/LambekGrishin/ResMon/Judgement/Context/Polarised.agda"
   ]
 
 -- |Set of replacement rules for the Lambek Grishin to Lambek conversion.
@@ -229,6 +231,7 @@ replacementListForLinear :: [(Text, Text)]
 replacementListForLinear =
   [ "LambekGrishin" ==> "Linear"
   , "LG"            ==> "LL"
+  , "ResMon"        ==> "LambekVanBenthem"
   , "⇒"             ==> "⊸"
   ]
 
