@@ -57,7 +57,6 @@ el-injective refl = refl
 ⇚-injective : ∀ {A B C D} → A ⇚ C ≡ B ⇚ D → A ≡ B × C ≡ D
 ⇚-injective refl = refl , refl
 
-
 -- Proof that if the given universe has decidable equality, then so do types.
 module DecEq
        (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B))

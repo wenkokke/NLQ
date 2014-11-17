@@ -10,10 +10,10 @@ open import Relation.Binary using (module StrictTotalOrder)
 open import Relation.Binary.PropositionalEquality using (_≡_; _≢_; refl; cong)
 
 
-module Logic.Linear.Type.Complexity {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Type.Complexity {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Linear.Type Univ
+open import Logic.Intuitionistic.Type Univ
 open StrictTotalOrder NatProps.strictTotalOrder using (irrefl)
 
 
@@ -24,6 +24,7 @@ infix 10 ∣_∣
 ∣_∣ : Type → ℕ
 ∣ el A ∣  = suc zero
 ∣ A ⊗ B ∣ = suc (∣ A ∣ + ∣ B ∣)
+∣ A ⇛ B ∣ = suc (∣ A ∣ + ∣ B ∣)
 ∣ A ⇒ B ∣ = suc (∣ A ∣ + ∣ B ∣)
 
 
@@ -31,6 +32,7 @@ infix 10 ∣_∣
 ∣A∣≥1 : ∀ A → ∣ A ∣ ≥ 1
 ∣A∣≥1 (el _)  = s≤s z≤n
 ∣A∣≥1 (_ ⊗ _) = s≤s z≤n
+∣A∣≥1 (_ ⇛ _) = s≤s z≤n
 ∣A∣≥1 (_ ⇒ _) = s≤s z≤n
 
 
@@ -39,6 +41,7 @@ infix 10 ∣_∣
 ∣A∣≮∣elB∣ : ∀ A B → ∣ A ∣ ≮ ∣ el B ∣
 ∣A∣≮∣elB∣ (el A)    B (s≤s ())
 ∣A∣≮∣elB∣ (A₁ ⊗ A₂) B (s≤s ())
+∣A∣≮∣elB∣ (A₁ ⇛ A₂) B (s≤s ())
 ∣A∣≮∣elB∣ (A₁ ⇒ A₂) B (s≤s ())
 -- Lemma which shows that if types are not of the same complexity,
 -- then they cannot be equal.

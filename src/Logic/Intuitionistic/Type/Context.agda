@@ -16,14 +16,15 @@ open import Relation.Binary using (DecSetoid; module DecTotalOrder; module Stric
 open import Relation.Binary.PropositionalEquality as P using (_≡_; _≢_; refl; cong)
 
 
-module Logic.Linear.Type.Context {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Type.Context {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Linear.Type Univ renaming (module DecEq to DecEqType)
-open import Logic.Linear.Type.Complexity Univ
+open import Logic.Intuitionistic.Type Univ renaming (module DecEq to DecEqType)
+open import Logic.Intuitionistic.Type.Complexity Univ
 
 
 infixr 30 _⊗>_ _<⊗_
+infixr 20 _⇛>_ _<⇛_
 infixr 20 _⇒>_ _<⇒_
 -- Contexts encode incomplete types with a single hole.
 data Context : Set ℓ where
@@ -31,8 +32,10 @@ data Context : Set ℓ where
   []   : Context
 
   _⊗>_ : Type → Context → Context
+  _⇛>_ : Type → Context → Context
   _⇒>_ : Type → Context → Context
   _<⊗_ : Context → Type → Context
+  _<⇛_ : Context → Type → Context
   _<⇒_ : Context → Type → Context
 -- Proofs which show that constructors of contexts (as all Agda
 -- data-constructors) respect equality.
@@ -49,6 +52,12 @@ data Context : Set ℓ where
 <⇒-injective : ∀ {A B C D} → A <⇒ B ≡ C <⇒ D → A ≡ C × B ≡ D
 <⇒-injective refl = refl , refl
 
+⇛>-injective : ∀ {A B C D} → A ⇛> B ≡ C ⇛> D → A ≡ C × B ≡ D
+⇛>-injective refl = refl , refl
+
+<⇛-injective : ∀ {A B C D} → A <⇛ B ≡ C <⇛ D → A ≡ C × B ≡ D
+<⇛-injective refl = refl , refl
+
 
 module Simple where
 
@@ -59,23 +68,29 @@ module Simple where
   []       [ A ] = A
   (B ⊗> C) [ A ] = B ⊗ (C [ A ])
   (B ⇒> C) [ A ] = B ⇒ (C [ A ])
+  (B ⇛> C) [ A ] = B ⇛ (C [ A ])
   (C <⊗ B) [ A ] = (C [ A ]) ⊗ B
   (C <⇒ B) [ A ] = (C [ A ]) ⇒ B
+  (C <⇛ B) [ A ] = (C [ A ]) ⇛ B
   -- Compose two contexts to form a new context.
   _<_> : Context → Context → Context
   []       < A > = A
   (B ⊗> C) < A > = B ⊗> (C < A >)
   (B ⇒> C) < A > = B ⇒> (C < A >)
+  (B ⇛> C) < A > = B ⇛> (C < A >)
   (C <⊗ B) < A > = (C < A >) <⊗ B
   (C <⇒ B) < A > = (C < A >) <⇒ B
+  (C <⇛ B) < A > = (C < A >) <⇛ B
   -- Lemma which shows how context composition `_<_>` and context
   -- application `_[_]` interact.
   <>-def : ∀ A B C → A < B > [ C ] ≡ A [ B [ C ] ]
   <>-def [] B C = refl
   <>-def (_ ⊗> A) B C rewrite <>-def A B C = refl
   <>-def (_ ⇒> A) B C rewrite <>-def A B C = refl
+  <>-def (_ ⇛> A) B C rewrite <>-def A B C = refl
   <>-def (A <⊗ _) B C rewrite <>-def A B C = refl
   <>-def (A <⇒ _) B C rewrite <>-def A B C = refl
+  <>-def (A <⇛ _) B C rewrite <>-def A B C = refl
   -- Lemma which shows that context composition respects propositional
   -- equality.
   <>-cong : ∀ {Γ Δ Π Σ} → Γ ≡ Δ → Π ≡ Σ → Γ < Π > ≡ Δ < Σ >
@@ -88,8 +103,10 @@ module Simple where
   <>-assoc []       B C = refl
   <>-assoc (_ ⊗> A) B C rewrite <>-assoc A B C = refl
   <>-assoc (_ ⇒> A) B C rewrite <>-assoc A B C = refl
+  <>-assoc (_ ⇛> A) B C rewrite <>-assoc A B C = refl
   <>-assoc (A <⊗ _) B C rewrite <>-assoc A B C = refl
   <>-assoc (A <⇒ _) B C rewrite <>-assoc A B C = refl
+  <>-assoc (A <⇛ _) B C rewrite <>-assoc A B C = refl
   -- Lemma which shows that `[]` is the identity element for the context
   -- composition function `_<_>`.
   <>-identityˡ : ∀ Γ → [] < Γ > ≡ Γ
@@ -99,8 +116,10 @@ module Simple where
   <>-identityʳ [] = refl
   <>-identityʳ (A ⊗> Γ) rewrite <>-identityʳ Γ = refl
   <>-identityʳ (A ⇒> Γ) rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (A ⇛> Γ) rewrite <>-identityʳ Γ = refl
   <>-identityʳ (Γ <⊗ A) rewrite <>-identityʳ Γ = refl
   <>-identityʳ (Γ <⇒ A) rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (Γ <⇛ A) rewrite <>-identityʳ Γ = refl
 -- Collection of proofs regarding emptiness
 module Empty where
 
@@ -115,15 +134,19 @@ module Empty where
   is-[]? : (A : Context) → Dec (A ≡ [])
   is-[]? []       = yes refl
   is-[]? (_ ⊗> _) = no (λ ())
+  is-[]? (_ ⇛> _) = no (λ ())
   is-[]? (_ ⇒> _) = no (λ ())
   is-[]? (_ <⊗ _) = no (λ ())
+  is-[]? (_ <⇛ _) = no (λ ())
   is-[]? (_ <⇒ _) = no (λ ())
   -- Lemma which shows that if a context is not empty, then applying it
   -- to a type may never result in an elementary type.
   Γ≠[]→elB≠Γ[A] : ∀ {A B} Γ → Γ ≢ [] → el B ≢ Γ [ A ]
   Γ≠[]→elB≠Γ[A] [] Γ≠[] p = Γ≠[] refl
   Γ≠[]→elB≠Γ[A] (_ ⊗> Γ) Γ≠[] ()
+  Γ≠[]→elB≠Γ[A] (_ ⇛> Γ) Γ≠[] ()
   Γ≠[]→elB≠Γ[A] (Γ <⊗ _) Γ≠[] ()
+  Γ≠[]→elB≠Γ[A] (Γ <⇛ _) Γ≠[] ()
   Γ≠[]→elB≠Γ[A] (_ ⇒> Γ) Γ≠[] ()
   Γ≠[]→elB≠Γ[A] (Γ <⇒ _) Γ≠[] ()
   -- Lemma which shows that if a context is not empty, then wrapping it
@@ -131,7 +154,9 @@ module Empty where
   Δ≠[]→Δ<Γ>≠[] : ∀ Γ Δ → Δ ≢ [] → Δ < Γ > ≢ []
   Δ≠[]→Δ<Γ>≠[] Γ [] Δ≠[] _ = Δ≠[] refl
   Δ≠[]→Δ<Γ>≠[] Γ (_ ⊗> Δ) Δ≠[] ()
+  Δ≠[]→Δ<Γ>≠[] Γ (_ ⇛> Δ) Δ≠[] ()
   Δ≠[]→Δ<Γ>≠[] Γ (Δ <⊗ _) Δ≠[] ()
+  Δ≠[]→Δ<Γ>≠[] Γ (Δ <⇛ _) Δ≠[] ()
   Δ≠[]→Δ<Γ>≠[] Γ (_ ⇒> Δ) Δ≠[] ()
   Δ≠[]→Δ<Γ>≠[] Γ (Δ <⇒ _) Δ≠[] ()
   -- Lemma which shows that the complexity of a type embedded in a
@@ -140,7 +165,9 @@ module Empty where
   A≤Γ[A] : ∀ A Γ → ∣ A ∣ ≤ ∣ Γ [ A ] ∣
   A≤Γ[A] A [] = ≤-refl
   A≤Γ[A] A (B ⊗> Γ) = ≤-step (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  A≤Γ[A] A (B ⇛> Γ) = ≤-step (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
   A≤Γ[A] A (Γ <⊗ B) = ≤-step (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+  A≤Γ[A] A (Γ <⇛ B) = ≤-step (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
   A≤Γ[A] A (B ⇒> Γ) = ≤-step (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
   A≤Γ[A] A (Γ <⇒ B) = ≤-step (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
   -- Lemma which shows that if a context is not empty, then the
@@ -149,7 +176,9 @@ module Empty where
   Γ≠[]→A<Γ[A] : ∀ A Γ → Γ ≢ [] → ∣ A ∣ < ∣ Γ [ A ] ∣
   Γ≠[]→A<Γ[A] A [] Γ≠[] = ⊥-elim (Γ≠[] refl)
   Γ≠[]→A<Γ[A] A (B ⊗> Γ) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
+  Γ≠[]→A<Γ[A] A (B ⇛> Γ) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
   Γ≠[]→A<Γ[A] A (Γ <⊗ B) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
+  Γ≠[]→A<Γ[A] A (Γ <⇛ B) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
   Γ≠[]→A<Γ[A] A (B ⇒> Γ) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (n≤m+n (∣ B ∣) (∣ Γ [ A ] ∣)))
   Γ≠[]→A<Γ[A] A (Γ <⇒ B) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (m≤m+n (∣ Γ [ A ] ∣) (∣ B ∣)))
   -- Lemma which shows that if a context is not empty, the embedding of
@@ -217,40 +246,70 @@ module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
   []     ≟-Context []     = yes refl
   []     ≟-Context B ⊗> Δ = no (λ ())
   []     ≟-Context B ⇒> Δ = no (λ ())
+  []     ≟-Context B ⇛> Δ = no (λ ())
   []     ≟-Context Δ <⊗ B = no (λ ())
   []     ≟-Context Δ <⇒ B = no (λ ())
+  []     ≟-Context Δ <⇛ B = no (λ ())
   A ⊗> Γ ≟-Context []     = no (λ ())
   A ⇒> Γ ≟-Context []     = no (λ ())
+  A ⇛> Γ ≟-Context []     = no (λ ())
   Γ <⊗ A ≟-Context []     = no (λ ())
   Γ <⇒ A ≟-Context []     = no (λ ())
+  Γ <⇛ A ≟-Context []     = no (λ ())
   A ⊗> Γ ≟-Context B ⊗> Δ with (A ≟-Type B) | (Γ ≟-Context Δ)
   ... | yes A≡B | yes Γ≡Δ rewrite A≡B | Γ≡Δ = yes refl
   ... | no  A≢B | _       = no (A≢B ∘ proj₁ ∘ ⊗>-injective)
   ... | _       | no  Γ≢Δ = no (Γ≢Δ ∘ proj₂ ∘ ⊗>-injective)
   A ⊗> Γ ≟-Context B ⇒> Δ = no (λ ())
+  A ⊗> Γ ≟-Context B ⇛> Δ = no (λ ())
   A ⊗> Γ ≟-Context Δ <⊗ B = no (λ ())
   A ⊗> Γ ≟-Context Δ <⇒ B = no (λ ())
+  A ⊗> Γ ≟-Context Δ <⇛ B = no (λ ())
   A ⇒> Γ ≟-Context B ⊗> Δ = no (λ ())
   A ⇒> Γ ≟-Context B ⇒> Δ with (A ≟-Type B) | (Γ ≟-Context Δ)
   ... | yes A≡B | yes Γ≡Δ rewrite A≡B | Γ≡Δ = yes refl
   ... | no  A≢B | _       = no (A≢B ∘ proj₁ ∘ ⇒>-injective)
   ... | _       | no  Γ≢Δ = no (Γ≢Δ ∘ proj₂ ∘ ⇒>-injective)
+  A ⇒> Γ ≟-Context B ⇛> Δ = no (λ ())
   A ⇒> Γ ≟-Context Δ <⊗ B = no (λ ())
   A ⇒> Γ ≟-Context Δ <⇒ B = no (λ ())
+  A ⇒> Γ ≟-Context Δ <⇛ B = no (λ ())
+  A ⇛> Γ ≟-Context B ⊗> Δ = no (λ ())
+  A ⇛> Γ ≟-Context B ⇒> Δ = no (λ ())
+  A ⇛> Γ ≟-Context B ⇛> Δ with (A ≟-Type B) | (Γ ≟-Context Δ)
+  ... | yes A≡B | yes Γ≡Δ rewrite A≡B | Γ≡Δ = yes refl
+  ... | no  A≢B | _       = no (A≢B ∘ proj₁ ∘ ⇛>-injective)
+  ... | _       | no  Γ≢Δ = no (Γ≢Δ ∘ proj₂ ∘ ⇛>-injective)
+  A ⇛> Γ ≟-Context Δ <⊗ B = no (λ ())
+  A ⇛> Γ ≟-Context Δ <⇒ B = no (λ ())
+  A ⇛> Γ ≟-Context Δ <⇛ B = no (λ ())
   Γ <⊗ A ≟-Context B ⊗> Δ = no (λ ())
   Γ <⊗ A ≟-Context B ⇒> Δ = no (λ ())
+  Γ <⊗ A ≟-Context B ⇛> Δ = no (λ ())
   Γ <⊗ A ≟-Context Δ <⊗ B with (Γ ≟-Context Δ) | (A ≟-Type B)
   ... | yes Γ≡Δ | yes A≡B rewrite Γ≡Δ | A≡B = yes refl
   ... | no  Γ≢Δ | _       = no (Γ≢Δ ∘ proj₁ ∘ <⊗-injective)
   ... | _       | no  A≢B = no (A≢B ∘ proj₂ ∘ <⊗-injective)
   Γ <⊗ A ≟-Context Δ <⇒ B = no (λ ())
+  Γ <⊗ A ≟-Context Δ <⇛ B = no (λ ())
   Γ <⇒ A ≟-Context B ⊗> Δ = no (λ ())
   Γ <⇒ A ≟-Context B ⇒> Δ = no (λ ())
+  Γ <⇒ A ≟-Context B ⇛> Δ = no (λ ())
   Γ <⇒ A ≟-Context Δ <⊗ B = no (λ ())
   Γ <⇒ A ≟-Context Δ <⇒ B with (Γ ≟-Context Δ) | (A ≟-Type B)
   ... | yes Γ≡Δ | yes A≡B rewrite Γ≡Δ | A≡B = yes refl
   ... | no  Γ≢Δ | _       = no (Γ≢Δ ∘ proj₁ ∘ <⇒-injective)
   ... | _       | no  A≢B = no (A≢B ∘ proj₂ ∘ <⇒-injective)
+  Γ <⇒ A ≟-Context Δ <⇛ B = no (λ ())
+  Γ <⇛ A ≟-Context B ⊗> Δ = no (λ ())
+  Γ <⇛ A ≟-Context B ⇒> Δ = no (λ ())
+  Γ <⇛ A ≟-Context B ⇛> Δ = no (λ ())
+  Γ <⇛ A ≟-Context Δ <⊗ B = no (λ ())
+  Γ <⇛ A ≟-Context Δ <⇒ B = no (λ ())
+  Γ <⇛ A ≟-Context Δ <⇛ B with (Γ ≟-Context Δ) | (A ≟-Type B)
+  ... | yes Γ≡Δ | yes A≡B rewrite Γ≡Δ | A≡B = yes refl
+  ... | no  Γ≢Δ | _       = no (Γ≢Δ ∘ proj₁ ∘ <⇛-injective)
+  ... | _       | no  A≢B = no (A≢B ∘ proj₂ ∘ <⇛-injective)
   instance
     decSetoid : DecSetoid _ _
     decSetoid = P.decSetoid _≟-Context_

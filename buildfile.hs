@@ -21,6 +21,16 @@ import           Prelude hiding (lines)
 main :: IO ()
 main = shakeArgs shakeOptions $ do
 
+  -- Generating the files for the Intuitionistic calculus
+  want (map fst filesForIntuitionistic)
+
+  "src/Logic/Intuitionistic//*.agda" *> \target -> do
+    let src = fromJust (lookup target filesForIntuitionistic)
+    liftIO $
+      T.writeFile target
+        .   restrictSource replacementListForIntuitionistic blacklistForIntuitionistic
+        =<< T.readFile src
+
   -- Generating the files for the Linear calculus
   want (map fst filesForLinear)
 
@@ -54,6 +64,8 @@ main = shakeArgs shakeOptions $ do
         ,"src/Everything.agda"
         ,"-v0"]
 
+  want ["src/Everything.agda"]
+
   "src/Everything.agda" *> \_ -> do
     need (map snd filesForLambek)
     liftIO $ removeFiles "src" ["Everything.agda"]
@@ -67,6 +79,8 @@ main = shakeArgs shakeOptions $ do
     liftIO $ removeFiles "." (map fst filesForLambek)
     putNormal "Removing generated files for Linear calculus"
     liftIO $ removeFiles "." (map fst filesForLinear)
+    putNormal "Removing generated files for Intuitionistic calculus"
+    liftIO $ removeFiles "." (map fst filesForIntuitionistic)
 
 
 
@@ -233,7 +247,6 @@ replacementListForLinear =
   [ "LambekGrishin" ==> "Linear"
   , "LG"            ==> "LL"
   , "ResMon"        ==> "LambekVanBenthem"
-  , "⇒"             ==> "⊸"
   ]
 
 
@@ -241,4 +254,40 @@ replacementListForLinear =
 blacklistForLinear :: [Text]
 blacklistForLinear = blacklistForLambek ++
   [ "⇐"
+  ]
+
+
+--------------------------------------------------------------------------------
+-- Constants which are specific to the "Lambek Grishin" => "Intuitionistic" translation.
+--------------------------------------------------------------------------------
+
+-- |Set of file paths which should be created for the Lambek calculus.
+filesForIntuitionistic :: [(FilePath, FilePath)]
+filesForIntuitionistic =
+  ["src/Logic/Intuitionistic/Type.agda"                        ==> "src/Logic/LambekGrishin/Type.agda"
+  ,"src/Logic/Intuitionistic/Type/Complexity.agda"             ==> "src/Logic/LambekGrishin/Type/Complexity.agda"
+  ,"src/Logic/Intuitionistic/Type/Context.agda"                ==> "src/Logic/LambekGrishin/Type/Context.agda"
+  ,"src/Logic/Intuitionistic/Type/Context/Polarised.agda"      ==> "src/Logic/LambekGrishin/Type/Context/Polarised.agda"
+  ,"src/Logic/Intuitionistic/Judgement.agda"                   ==> "src/Logic/Linear/NaturalDeduction/Judgement.agda"
+  ,"src/Logic/Intuitionistic/Structure.agda"                   ==> "src/Logic/Linear/NaturalDeduction/Structure.agda"
+  ,"src/Logic/Intuitionistic/Structure/Context.agda"           ==> "src/Logic/Linear/NaturalDeduction/Structure/Context.agda"
+  ]
+
+-- |Set of replacement rules for the Lambek Grishin to Lambek conversion.
+replacementListForIntuitionistic :: [(Text, Text)]
+replacementListForIntuitionistic =
+  [ "LambekGrishin"           ==> "Intuitionistic"
+  , "LG"                      ==> "IL"
+  , "ResMon"                  ==> "Subtractive"
+  , "Linear.NaturalDeduction" ==> "Intuitionistic"
+  , "Linear"                  ==> "Intuitionistic"
+  , "LL"                      ==> "IL"
+  ]
+
+
+-- |Set of inference rules which may not occur in the Lambek calculus.
+blacklistForIntuitionistic :: [Text]
+blacklistForIntuitionistic =
+  [ "⊕"      , "⇐"      , "⇚"
+  , "grish₁" , "grish₂" , "grish₃" , "grish₄"
   ]
