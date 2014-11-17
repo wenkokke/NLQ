@@ -15,7 +15,7 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 module Logic.Linear.LambekVanBenthem.Judgement {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Linear.Type Univ hiding (module DecEq)
+open import Logic.Linear.Type Univ as T hiding (module DecEq)
 
 
 infix 5 _⊢_
@@ -28,7 +28,9 @@ data Judgement : Set ℓ where
 ⊢-injective refl = refl , refl
 
 
-module DecEq (_≟-Type_ : (X Y : Type) → Dec (X ≡ Y)) where
+module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
+
+  open T.DecEq _≟-Univ_ using (_≟-Type_ )
 
   _≟-Judgement_ : (I J : Judgement) → Dec (I ≡ J)
   (A₁ ⊢ B₁) ≟-Judgement (A₂ ⊢ B₂) with (A₁ ≟-Type A₂) | (B₁ ≟-Type B₂)

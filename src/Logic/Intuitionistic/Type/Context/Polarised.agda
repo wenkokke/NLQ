@@ -11,12 +11,12 @@ open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Linear.Type.Context.Polarised {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Type.Context.Polarised {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Linear.Type         Univ as T
-open import Logic.Linear.Type.Context Univ as TC hiding (module Simple)
+open import Logic.Intuitionistic.Type         Univ as T
+open import Logic.Intuitionistic.Type.Context Univ as TC hiding (module Simple)
 
 
 -- The below definition for polarised context enforces the top polarity
@@ -30,7 +30,9 @@ data Polarised (p : Polarity) : Polarity → Context → Set ℓ where
   []   : Polarised p p []
 
   _⊗>_ : (A : Type) {B : Context} (B⁺ : Polarised p + B) → Polarised p + (A ⊗> B)
+  _⇛>_ : (A : Type) {B : Context} (B⁺ : Polarised p + B) → Polarised p + (A ⇛> B)
   _<⊗_ : {A : Context} (A⁺ : Polarised p + A) (B : Type) → Polarised p + (A <⊗ B)
+  _<⇛_ : {A : Context} (A⁻ : Polarised p - A) (B : Type) → Polarised p + (A <⇛ B)
   _⇒>_ : (A : Type) {B : Context} (B⁻ : Polarised p - B) → Polarised p - (A ⇒> B)
   _<⇒_ : {A : Context} (A⁺ : Polarised p + A) (B : Type) → Polarised p - (A <⇒ B)
 -- Structural contexts refer to contexts consisting solely of products
@@ -52,16 +54,20 @@ module Simple where
   []       [ A ] = A
   (B ⊗> C) [ A ] = B ⊗ (C [ A ])
   (B ⇒> C) [ A ] = B ⇒ (C [ A ])
+  (B ⇛> C) [ A ] = B ⇛ (C [ A ])
   (C <⊗ B) [ A ] = (C [ A ]) ⊗ B
   (C <⇒ B) [ A ] = (C [ A ]) ⇒ B
+  (C <⇛ B) [ A ] = (C [ A ]) ⇛ B
   -- Compose two contexts to format new context.
   _<_> : ∀ {p₁ p₂ p₃ A B}
        → Polarised p₂ p₃ A → Polarised p₁ p₂ B → Polarised p₁ p₃ (A < B >′)
   []       < A > = A
   (B ⊗> C) < A > = B ⊗> (C < A >)
   (B ⇒> C) < A > = B ⇒> (C < A >)
+  (B ⇛> C) < A > = B ⇛> (C < A >)
   (C <⊗ B) < A > = (C < A >) <⊗ B
   (C <⇒ B) < A > = (C < A >) <⇒ B
+  (C <⇛ B) < A > = (C < A >) <⇛ B
 private
   -- We can attempt to prove correctness in the following manner:
   --
@@ -79,12 +85,16 @@ private
   forget : ∀ {p₁ p₂ A} → Polarised p₁ p₂ A → Context
   forget []       = []
   forget (A ⊗> B) = A ⊗> forget B
+  forget (A ⇛> B) = A ⇛> forget B
   forget (A <⊗ B) = forget A <⊗ B
+  forget (A <⇛ B) = forget A <⇛ B
   forget (A ⇒> B) = A ⇒> forget B
   forget (A <⇒ B) = forget A <⇒ B
   forget-correct : ∀ {p₁ p₂ A} (Aᴾ : Polarised p₁ p₂ A) → forget Aᴾ ≡ A
   forget-correct []       = refl
   forget-correct (A ⊗> B) rewrite forget-correct B = refl
+  forget-correct (A ⇛> B) rewrite forget-correct B = refl
   forget-correct (A <⊗ B) rewrite forget-correct A = refl
+  forget-correct (A <⇛ B) rewrite forget-correct A = refl
   forget-correct (A ⇒> B) rewrite forget-correct B = refl
   forget-correct (A <⇒ B) rewrite forget-correct A = refl
