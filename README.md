@@ -1,16 +1,18 @@
-### Thesis
+### Things that need to be in the paper
 
-- The reason that delimited control is important in the context of
-  linguistics has to do with the following:
+- While I could have taken an approach such as [citation needed],
+  abstracting over connectives and proving properties in general based
+  on properties of the connectives, I chose not to. The reason for
+  this is that such systems are much more complex, and therefore
+  harder to mutate. In addition, it is very hard for them to not
+  become syntactically unwieldy. Perhaps if all this is over I'll look
+  into adding a surface logic on top of such a system, as Gergo Érdi
+  does in *Simply Typed Lambda Calculus in Agda, Without Shortcuts*.
 
-  "While *any complete program* that uses [operations such as
-  Felleisen's C or shift and reset] can be *globally transformed* to a
-  purely functional program [..] the additional expressiveness of the
-  control operators comes from the fact that no *local
-  transformations* of *program fragments* using control operators is
-  possible." (Ariola, Herbelin and Sabry)
 
-  (Does it really? I mean, we *could* just use these operators in the
-  lexicon and only translate to, for instance, pure intuitionistic
-  lambda calculus when we have a complete derivation. So no, it
-  doesn't. But it's still a kickass quote.)
+### To-Do
+
+- think of a name for the logic now called "subtractive";
+- move the reifications for types and judgements into "subtractive";
+- create a new logic which separates the two contexts (types and co-types);
+- try to limit the structural rules for the types (not for the co-types).

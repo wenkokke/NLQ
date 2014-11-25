@@ -13,19 +13,14 @@ open import Relation.Binary using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Intuitionistic.Structure {ℓ} (Univ : Set ℓ) where
-
-
-open import Logic.Intuitionistic.Type Univ as T hiding (module DecEq)
+module Logic.Intuitionistic.Structure {ℓ} (Type : Set ℓ) where
 
 
 open List public using (List; _++_) renaming ([] to ∅; _∷_ to _,_; _∷ʳ_ to _,′_)
 open ListProp public using () renaming (∷-injective to ,-injective)
 
 
-module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
-
-  open T.DecEq _≟-Univ_ using (_≟-Type_)
+module DecEq (_≟-Type_ : (A B : Type) → Dec (A ≡ B)) where
 
   infix 1 _≟-Structure_
 

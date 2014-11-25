@@ -10,16 +10,15 @@ open import Logic.Reification
 
 
 module Logic.Intuitionistic.Agda.Environment
-  {ℓ₁ ℓ₂} (Univ : Set ℓ₁) (Univ→Set : Reify Univ (Set ℓ₂)) where
+  {ℓ₁ ℓ₂} (Type : Set ℓ₁) (Type→Set : Reify Type (Set ℓ₂))
+  where
 
 
-open import Logic.Intuitionistic.Type             Univ
-open import Logic.Intuitionistic.Type.ToAgda      Univ Univ→Set
-open import Logic.Intuitionistic.Structure        Univ
-open import Logic.Intuitionistic.Structure.ToAgda Univ Univ→Set
+open import Logic.Intuitionistic.Structure Type
+open import Logic.Intuitionistic.Structure.ToAgda Type Type→Set
 
-open Reify Type→Set      renaming (⟦_⟧ to ⟦_⟧ᵗ)
-open Reify Structure→Set renaming (⟦_⟧ to ⟦_⟧ˢ)
+
+open Reify Type→Set renaming (⟦_⟧ to ⟦_⟧ᵗ)
 
 
 infixr 5 _,_

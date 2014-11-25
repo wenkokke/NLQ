@@ -10,7 +10,7 @@ open import Data.Empty using (⊥)
 open import Data.Product using (_×_; _,_)
 open import Logic.Reification
 
-module Logic.Intuitionistic.Subtractive.ToAgda
+module Logic.Intuitionistic.Delimited1.ToAgda
        {ℓ₁ ℓ₂}
        (Univ : Set ℓ₁)
        (Univ→Set : Reify Univ (Set ℓ₂))
@@ -22,7 +22,7 @@ module Logic.Intuitionistic.Subtractive.ToAgda
 open import Logic.Intuitionistic.Type             Univ
 open import Logic.Intuitionistic.Structure        Univ
 open import Logic.Intuitionistic.Judgement        Univ
-open import Logic.Intuitionistic.Subtractive.Base Univ ⫫
+open import Logic.Intuitionistic.Delimited1.Base Univ ⫫
 open import Logic.Intuitionistic.Agda.Base        Univ Univ→Set
 open import Logic.Intuitionistic.Agda.Environment Univ Univ→Set as Env
 
