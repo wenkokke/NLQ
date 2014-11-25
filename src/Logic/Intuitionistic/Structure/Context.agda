@@ -11,11 +11,10 @@ open import Relation.Binary using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Intuitionistic.Structure.Context {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Structure.Context {ℓ} (Type : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Type                       Univ as T hiding (module DecEq)
-open import Logic.Intuitionistic.Structure Univ as S
+open import Logic.Intuitionistic.Structure Type as S
 
 
 infixr 30 _<,_ _,>_

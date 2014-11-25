@@ -11,11 +11,11 @@ open import Relation.Binary using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Intuitionistic.Judgement {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.CMinus0.Judgement {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Type                       Univ as T hiding (module DecEq)
-open import Logic.Intuitionistic.Structure Univ as S hiding (module DecEq)
+open import Logic.Intuitionistic.Type      Univ as T hiding (module DecEq)
+open import Logic.Intuitionistic.Structure Type as S hiding (module DecEq)
 
 
 infix 5 _⊢_
@@ -31,7 +31,7 @@ data Judgement  : Set ℓ where
 module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
 
   open T.DecEq _≟-Univ_ using (_≟-Type_)
-  open S.DecEq _≟-Univ_ using (_≟-Structure_)
+  open S.DecEq _≟-Type_ using (_≟-Structure_)
 
   infix 1 _≟-Judgement_
 
