@@ -1,11 +1,18 @@
 ------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
 --
+-- λC⁻-calculus in Parigot's style, which I am guessing is strictly
+-- less expressive than when formulated in Prawitz's style.
+--
+-- TODO: Drop out the left structural rules, rename ⇛ to -, add the
+-- product and the left implication.
 ------------------------------------------------------------------------
 
 
 open import Algebra using (module Monoid)
 open import Data.List using (monoid)
+open import Data.Product using (proj₁; proj₂)
+open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym; subst)
 
 
 module Logic.Intuitionistic.CMinus1.Base {ℓ} (Univ : Set ℓ) (⫫ : Univ) where
@@ -14,7 +21,7 @@ module Logic.Intuitionistic.CMinus1.Base {ℓ} (Univ : Set ℓ) (⫫ : Univ) whe
 open import Logic.Intuitionistic.Type                 Univ as SST
 open import Logic.Intuitionistic.Structure            Univ as SSS
 open import Logic.Intuitionistic.CMinus1.Judgement Univ as SSJ
-open Monoid (monoid Type) using (identity)
+open Monoid (monoid Type) using (identity; assoc)
 
 
 infix 1 λC⁻_
@@ -22,7 +29,7 @@ infix 1 λC⁻_
 data λC⁻_ : Judgement → Set ℓ where
 
   id    : ∀ {A}
-        → λC⁻ A , ∅ ⊢ A ∣ ∅
+        → λC⁻ A , ∅ ⊢ el ⫫ ∣ A , ∅
 
   ⇒i    : ∀ {Γ Δ A B}
         → λC⁻ A , Γ ⊢     B ∣ Δ
@@ -74,3 +81,33 @@ data λC⁻_ : Judgement → Set ℓ where
   exchr : ∀ {Γ} → ∀ Δ₁ Δ₂ Δ₃ Δ₄ → ∀ {A}
         → λC⁻ Γ ⊢ A ∣ (Δ₁ ++ Δ₃) ++ (Δ₂ ++ Δ₄)
         → λC⁻ Γ ⊢ A ∣ (Δ₁ ++ Δ₂) ++ (Δ₃ ++ Δ₄)
+
+
+XZY→XYZᴸ : ∀ Γ₁ Γ₂ Γ₃ → ∀ {A Δ}
+         → λC⁻ (Γ₁ ++ Γ₃) ++ Γ₂ ⊢ A ∣ Δ
+         → λC⁻ (Γ₁ ++ Γ₂) ++ Γ₃ ⊢ A ∣ Δ
+XZY→XYZᴸ Γ₁ Γ₂ Γ₃ {A} {Δ} f =
+  subst (λ Γ₃ → λC⁻ (Γ₁ ++ Γ₂) ++ Γ₃ ⊢ A ∣ Δ) (proj₂ identity Γ₃) (
+  exchl Γ₁ Γ₂ Γ₃ ∅ (
+  subst (λ Γ₂ → λC⁻ (Γ₁ ++ Γ₃) ++ Γ₂ ⊢ A ∣ Δ) (sym (proj₂ identity Γ₂))
+  f))
+
+++-commᴸ : ∀ Γ₁ Γ₂ → ∀ {A Δ}
+         → λC⁻ Γ₂ ++ Γ₁ ⊢ A ∣ Δ
+         → λC⁻ Γ₁ ++ Γ₂ ⊢ A ∣ Δ
+++-commᴸ = XZY→XYZᴸ ∅
+
+
+XZY→XYZᴿ : ∀ {Γ A} → ∀ Δ₁ Δ₂ Δ₃
+         → λC⁻ Γ ⊢ A ∣ (Δ₁ ++ Δ₃) ++ Δ₂
+         → λC⁻ Γ ⊢ A ∣ (Δ₁ ++ Δ₂) ++ Δ₃
+XZY→XYZᴿ {Γ} {A} Δ₁ Δ₂ Δ₃ f =
+  subst (λ Δ₃ → λC⁻ Γ ⊢ A ∣ (Δ₁ ++ Δ₂) ++ Δ₃) (proj₂ identity Δ₃) (
+  exchr Δ₁ Δ₂ Δ₃ ∅ (
+  subst (λ Δ₂ → λC⁻ Γ ⊢ A ∣ (Δ₁ ++ Δ₃) ++ Δ₂) (sym (proj₂ identity Δ₂))
+  f))
+
+++-commᴿ : ∀ {Γ A} → ∀ Δ₁ Δ₂
+         → λC⁻ Γ ⊢ A ∣ Δ₂ ++ Δ₁
+         → λC⁻ Γ ⊢ A ∣ Δ₁ ++ Δ₂
+++-commᴿ = XZY→XYZᴿ ∅
