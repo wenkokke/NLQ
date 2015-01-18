@@ -60,10 +60,9 @@ data AHS_ : Judgement → Set ℓ₁ where
 
 
 --------------------------------------------------------------------------------
--- Private:
---   Large collection of lemmas to use for altering finite-type indices into
---   lists. These are mostly useful for implementing exchange for axiomatisa-
---   tions which use finite-types as variables.
+-- Lemma: eˣ shows that we can, given a de Bruijn index `x` into a context
+--        `(Γ₁ ++ Γ₃) ++ (Γ₂ ++ Γ₄)`, compute a new index `y` which will point
+--        to the same value in the permuted context `(Γ₁ ++ Γ₂) ++ (Γ₃ ++ Γ₄)`.
 --------------------------------------------------------------------------------
 
 private
@@ -125,4 +124,15 @@ mutual
   eᴿ   : ∀ {Γ A} (Δ₁ Δ₂ Δ₃ Δ₄ : List Type)
        → AHS Γ ⊢[ A ] (Δ₁ ++ Δ₃) ++ (Δ₂ ++ Δ₄)
        → AHS Γ ⊢[ A ] (Δ₁ ++ Δ₂) ++ (Δ₃ ++ Δ₄)
-  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ f = {!!}
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (ax  x)   = ax x
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⇾ᵢ  f)   = ⇾ᵢ  (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f)
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⇾ₑ  f g) = ⇾ₑ  (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ g)
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (raa f)   = raa (eᴿ′ (_ , Δ₁) Δ₂ Δ₃ Δ₄ f)
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ᵢ  f g) = -ᵢ  (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ′      Δ₁  Δ₂ Δ₃ Δ₄ g)
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ₑ  f g) = -ₑ  (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ  (_ , Δ₁) Δ₂ Δ₃ Δ₄ g)
+
+  eᴿ′  : ∀ {Γ} (Δ₁ Δ₂ Δ₃ Δ₄ : List Type)
+       → AHS Γ ⊢      (Δ₁ ++ Δ₃) ++ (Δ₂ ++ Δ₄)
+       → AHS Γ ⊢      (Δ₁ ++ Δ₂) ++ (Δ₃ ++ Δ₄)
+  eᴿ′  Δ₁ Δ₂ Δ₃ Δ₄ (⇾ₑᵏ α f) with (eˣ Δ₁ Δ₂ Δ₃ Δ₄ α)
+  eᴿ′  Δ₁ Δ₂ Δ₃ Δ₄ (⇾ₑᵏ α f) | β , p rewrite p = ⇾ₑᵏ β (eᴿ Δ₁ Δ₂ Δ₃ Δ₄ f)
