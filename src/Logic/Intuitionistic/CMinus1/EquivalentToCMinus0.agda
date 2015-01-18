@@ -4,14 +4,18 @@
 ------------------------------------------------------------------------
 
 open import Algebra using (module Monoid)
-open import Data.Bool using (Bool; true; false)
+open import Function using (_∘_)
+open import Data.Bool using (Bool; true; false; not)
 open import Data.List as List using (map; partition)
 open import Data.List.Properties using (map-++-commute)
-open import Data.Product using (_,_)
+open import Data.Product using (∃; _,_; proj₁; proj₂)
+open import Relation.Nullary using (Dec; yes; no)
+open import Relation.Nullary.Decidable using (⌊_⌋)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym)
 
 
-module Logic.Intuitionistic.CMinus1.EquivalentToCMinus0 {ℓ} (Univ : Set ℓ) (⫫ : Univ) where
+module Logic.Intuitionistic.CMinus1.EquivalentToCMinus0
+  {ℓ} (Univ : Set ℓ) (⫫ : Univ) (is-⫫? : ∀ A → Dec (A ≡ ⫫)) where
 
 
 open import Logic.Intuitionistic.Type              Univ
@@ -21,25 +25,36 @@ open import Logic.Intuitionistic.CMinus0.Base      Univ ⫫ renaming (λC⁻_ to
 open import Logic.Intuitionistic.CMinus1.Judgement Univ   renaming (Judgement to Judgement₁)
 open import Logic.Intuitionistic.CMinus1.Base      Univ ⫫ renaming (λC⁻_ to λC⁻₁_)
 open import Relation.Binary.EqReasoning (P.setoid (List Type))
+open P.Deprecated-inspect using (Inspect; inspect; _with-≡_)
 open Monoid (List.monoid Type) using (assoc)
 
 
 ¬_ : Type → Type
 ¬ A = A ⇒ el ⫫
 
-
-is-¬? : Type → Bool
-is-¬? (_ ⇒ el ⫫) = true
-is-¬?  _         = false
+is-¬ : Type → Set ℓ
+is-¬ A = ∃ (λ B → A ≡ B ⇒ el ⫫)
 
 
-⟦_⟧₀¹ : Judgement₀ → Judgement₁
-⟦ Γ ⊢ A ⟧₀¹ with (partition is-¬? Γ)
-⟦ _ ⊢ A ⟧₀¹ | (Δ , Γ) = Γ ⊢ A ∣ Δ
+is-¬? : (A : Type) → Dec (is-¬ A)
+is-¬? (el _) = no (λ {(_ , ())})
+is-¬? (_ ⊗ _) = no (λ {(_ , ())})
+is-¬? (_ ⇛ _) = no (λ {(_ , ())})
+is-¬? (_ ⇒ _ ⊗ _) = no (λ {(_ , ())})
+is-¬? (_ ⇒ _ ⇛ _) = no (λ {(_ , ())})
+is-¬? (_ ⇒ _ ⇒ _) = no (λ {(_ , ())})
+is-¬? (A ⇒ el B) with is-⫫? B
+is-¬? (A ⇒ el B) | yes B≡⫫ rewrite B≡⫫ = yes (A , refl)
+is-¬? (A ⇒ el B) | no  B≢⫫ =
+  no (B≢⫫ ∘ el-injective ∘ proj₂ ∘ ⇒-injective ∘ proj₂)
 
 
 ⟦_⟧₁⁰ : Judgement₁ → Judgement₀
 ⟦ Γ ⊢ A ∣ Δ ⟧₁⁰ = Γ ++ (map ¬_ Δ) ⊢ A
+
+⟦_⟧₀¹ : Judgement₀ → Judgement₁
+⟦ Γ ⊢ A ⟧₀¹ with partition (not ∘ ⌊_⌋ ∘ is-¬?) Γ
+⟦ _ ⊢ A ⟧₀¹ | Γ , Δ = Γ ⊢ A ∣ Δ
 
 
 -- lemma which shows how to translate binary rules from  λC⁻₁ to λC⁻₀.
@@ -51,19 +66,10 @@ private
     rewrite map-++-commute ¬_ Δ₁ Δ₂ = exch Γ₁ Γ₂ (map ¬_ Δ₁) (map ¬_ Δ₂)
 
 
-⇒e′ : ∀ {Γ₁ Δ₁ Γ₂ Δ₂ A B}
-    → λC⁻₀  Γ₁        ++ map ¬_  Δ₁        ⊢ A ⇒ B
-    → λC⁻₀        Γ₂  ++ map ¬_        Δ₂  ⊢ A
-    → λC⁻₀ (Γ₁ ++ Γ₂) ++ map ¬_ (Δ₁ ++ Δ₂) ⊢ B
-⇒e′ {Γ₁} {Δ₁} f g = lem-⟦_⟧₁⁰ {Γ₁} {Δ₁} (⇒e f g)
-
-
-
-
 from : {J : Judgement₁} → λC⁻₁ J → λC⁻₀ ⟦ J ⟧₁⁰
-from id                                   = id
+from (id {A})                             = ++-comm (A , ∅) (¬ A , ∅) (⇒e id id)
 from (⇒i f)                               = ⇒i (from f)
-from (⇒e {Γ₁} {Δ₁} {Γ₂} {Δ₂} f g)         = ⇒e′ {Γ₁} {Δ₁} (from f) (from g)
+from (⇒e {Γ₁} {Δ₁} {Γ₂} {Δ₂} f g)         = lem-⟦_⟧₁⁰ {Γ₁} {Δ₁} (⇒e (from f) (from g))
 from (⇛i {Γ₁} {Δ₁} {Γ₂} {Δ₂} f g)         = lem-⟦_⟧₁⁰ {Γ₁} {Δ₁} (⇛i (from f) (from g))
 from (⇛e {Γ₁} {Δ₁} {Γ₂} {Δ₂} {A} {B} f g) = lem-⟦_⟧₁⁰ {Γ₁} {Δ₁} (⇛e (from f) (exch (A , ∅) (¬ B , ∅) Γ₂ (map ¬_ Δ₂) (from g)))
 from (raa {Γ} {Δ} {A} f)                  = raa (exch ∅ (¬ A , ∅) Γ (map ¬_ Δ) (from f))
@@ -102,5 +108,15 @@ from (exchr {Γ} Δ₁ Δ₂ Δ₃ Δ₄ {A} f) = lem₂
                | sym (assoc Γ (map ¬_ Δ₁)  (map ¬_ Δ₂))
                = exch (Γ ++ map ¬_ Δ₁) (map ¬_ Δ₂) (map ¬_ Δ₃) (map ¬_ Δ₄) lem₁
 
-to : {J : Judgement₀} → λC⁻₀ J → λC⁻₁ ⟦ J ⟧₀¹
-to f = {!!}
+
+-- to : {J : Judgement₀} → λC⁻₀ J → λC⁻₁ ⟦ J ⟧₀¹
+-- to id          = {!!}
+-- to (⇒i  f)     = {!!}
+-- to (⇒e  f g)   = {!!}
+-- to (raa f)     = {!!}
+-- to (⇒ke f)     = {!!}
+-- to (⇛i  f g)   = {!!}
+-- to (⇛e  f g)   = {!!}
+-- to (weak Γ₂ f) = {!!}
+-- to (cont f)    = {!!}
+-- to (exch Γ₁ Γ₂ Γ₃ Γ₄ f) = {!!}
