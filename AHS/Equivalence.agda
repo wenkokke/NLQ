@@ -5,7 +5,7 @@ open import Data.Product                          using (Σ; Σ-syntax; _,_; pro
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; subst)
 
 
-module AHS.Equivalence {ℓ₁} (Univ : Set ℓ₁) where
+module AHS.Equivalence {u} (Univ : Set u) where
 
 
 open import AHS.Type Univ
@@ -30,7 +30,7 @@ from (E.cᴸ₁              f   ) = I.cᴸ₁  (from f)
 from (E.cᴸ₁′             f   ) = I.cᴸ₁′ (from f)
 from (E.wᴸ₁              f   ) = I.wᴸ₁  (from f)
 from (E.wᴸ₁′             f   ) = I.wᴸ₁′ (from f)
-from (E.eᴿ  Δ₁ Δ₂ Δ₃ Δ₄  f   ) = I.eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (from f)   
+from (E.eᴿ  Δ₁ Δ₂ Δ₃ Δ₄  f   ) = I.eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (from f)  
 from (E.eᴿ′ Δ₁ Δ₂ Δ₃ Δ₄  f   ) = I.eᴿ′  Δ₁ Δ₂ Δ₃ Δ₄ (from f)
 
 
