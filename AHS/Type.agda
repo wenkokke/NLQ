@@ -4,7 +4,6 @@ open import Data.Empty       using (⊥)
 open import Data.Fin         using (Fin; suc; zero)
 open import Data.List        using (List; map; length; _++_) renaming ([] to ·; _∷_ to _,_)
 open import Data.Product     using (Σ; Σ-syntax; _×_; _,_; proj₁; proj₂; uncurry′)
-open import Relation.Nullary using (¬_)
 open import Relation.Binary.PropositionalEquality as P 
 
 
@@ -38,14 +37,14 @@ module AHS.Type {u} (Univ : Set u) where
   split A , Γ at suc α | Γ₁ , (B , (Γ₂ , (p , q))) rewrite p | q = (A , Γ₁) , (B , (Γ₂ , (refl , refl )))
 
 
-module Environment {ℓ₂} where
+module Environment {ℓ} where
 
-  data Env : List (Set ℓ₂) → Set (lsuc ℓ₂) where
+  data Env : List (Set ℓ) → Set (lsuc ℓ) where
     ·   : Env ·
-    _,_ : {A : Set ℓ₂} {Γ : List (Set ℓ₂)} → A → Env Γ → Env (A , Γ)
+    _,_ : {A : Set ℓ} {Γ : List (Set ℓ)} → A → Env Γ → Env (A , Γ)
 
   private
-    module AbstractOverF {f : Type → Set ℓ₂} where
+    module AbstractOverF {f : Type → Set ℓ} where
 
       lookup : ∀ {Γ} (e : Env (map f Γ)) (x : Fin (length Γ)) → f (Γ ‼ x)
       lookup {    ·} · ()
@@ -77,35 +76,38 @@ module Environment {ℓ₂} where
   open AbstractOverF public
 
 
-module ToAgda {ℓ₂} (⟦_⟧ᵁ : Univ → Set ℓ₂) where
+module ToAgda {ℓ} (⟦_⟧ᵁ : Univ → Set ℓ) (R : Set ℓ) where
 
   open Environment public
 
+  ¬_  : Set ℓ → Set ℓ
+  ¬ A = A → R
+
 
   private
-    lemma-⇒ : ∀ {a b} {A : Set a} {B : Set b} (k : ¬ ¬ (A → B)) → (¬ B → ¬ A)
+    lemma-⇒ : ∀ {A B} (k : ¬ ¬ (A → B)) → (¬ B → ¬ A)
     lemma-⇒ ¬¬[A→B] ¬B A = ¬¬[A→B] (λ A→B → ¬B (A→B A))
 
-    lemma-⊗ : ∀ {a b} {A : Set a} {B : Set b} (k : ¬ ¬ (A × B)) → (¬ ¬ A × ¬ ¬ B)
+    lemma-⊗ : ∀ {A B} (k : ¬ ¬ (A × B)) → (¬ ¬ A × ¬ ¬ B)
     lemma-⊗ ¬¬[A×B] = (λ ¬A → ¬¬[A×B] (λ A×B → ¬A (proj₁ A×B)))
                     , (λ ¬B → ¬¬[A×B] (λ A×B → ¬B (proj₂ A×B)))
-
+  
 
   infix 1 λΠ_
 
-  ⟦_⟧ : Type → Set ℓ₂
+  ⟦_⟧ : Type → Set ℓ
   ⟦ el A  ⟧ =   ⟦ A ⟧ᵁ
   ⟦ A ⇒ B ⟧ =      ¬ ⟦ B ⟧ → ¬ ⟦ A ⟧
   ⟦ A - B ⟧ =      ¬ ⟦ B ⟧ ×   ⟦ A ⟧
   ⟦ A ⊗ B ⟧ = ¬ ¬ (  ⟦ A ⟧ ×   ⟦ B ⟧)
 
-  ⟦_⟧⁺ : List Type → List (Set ℓ₂) 
+  ⟦_⟧⁺ : List Type → List (Set ℓ) 
   ⟦_⟧⁺ = map ⟦_⟧
 
-  ⟦_⟧⁻ : List Type → List (Set ℓ₂)
+  ⟦_⟧⁻ : List Type → List (Set ℓ)
   ⟦_⟧⁻ = map (¬_ ∘ ⟦_⟧)
 
-  λΠ_ : Judgement → Set (lsuc ℓ₂)
-  λΠ Γ ⊢      Δ = Env ⟦ Γ ⟧⁺ → Env ⟦     Δ ⟧⁻ → ⊥
-  λΠ Γ ⊢[ A ] Δ = Env ⟦ Γ ⟧⁺ → Env ⟦ A , Δ ⟧⁻ → ⊥
+  λΠ_ : Judgement → Set (lsuc ℓ)
+  λΠ Γ ⊢      Δ = Env ⟦ Γ ⟧⁺ → Env ⟦     Δ ⟧⁻ → R
+  λΠ Γ ⊢[ A ] Δ = Env ⟦ Γ ⟧⁺ → Env ⟦ A , Δ ⟧⁻ → R
 
