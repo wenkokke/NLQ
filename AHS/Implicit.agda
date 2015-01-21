@@ -6,7 +6,7 @@ open import Data.Product                          using (Σ; Σ-syntax; _×_; _,
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; subst; subst₂)
 
 
-module AHS.Implicit {ℓ₁} (Univ : Set ℓ₁) where
+module AHS.Implicit {u} (Univ : Set u) where
 
 
 open import AHS.Type Univ as Type hiding (module ToAgda)
@@ -15,8 +15,7 @@ open Monoid (List.monoid Type) using (identity; assoc)
 
 infix  1 AHS_
 
-
-data AHS_ : Judgement → Set ℓ₁ where
+data AHS_ : Judgement → Set u where
 
   ax   : ∀ {Γ Δ}
        → (x : Fin (length Γ))
@@ -62,9 +61,9 @@ data AHS_ : Judgement → Set ℓ₁ where
 
 
 -- Lemma: eˣ shows that we can, given a de Bruijn index `x` into a
---        context `(Γ₁ ++ Γ₃) ++ (Γ₂ ++ Γ₄)`, compute a new index `y`
---        which will point to the same value in the permuted context
---        `(Γ₁ ++ Γ₂) ++ (Γ₃ ++ Γ₄)`. 
+-- context `(Γ₁ ++ Γ₃) ++ (Γ₂ ++ Γ₄)`, compute a new index `y` which
+-- will point to the same value in the permuted context `(Γ₁ ++ Γ₂) ++
+-- (Γ₃ ++ Γ₄)`.  
 private
   eˣ : ∀ (Γ₁ Γ₂ Γ₃ Γ₄ : List Type) (x : _) → Σ[ y ∈ _ ]
          (Γ₁ ++ Γ₃) ++ (Γ₂ ++ Γ₄) ‼ x ≡ (Γ₁ ++ Γ₂) ++ (Γ₃ ++ Γ₄) ‼ y
@@ -127,8 +126,8 @@ mutual
   eᴸ′  Γ₁ Γ₂ Γ₃ Γ₄ (⇒ₑᵏ α f) = ⇒ₑᵏ α (eᴸ Γ₁ Γ₂ Γ₃ Γ₄ f)
   
 
--- Lemma: weaker version of exchange which swaps
---        the first two elements in the context.
+-- Lemma: weaker version of exchange which swaps the first two
+-- elements in the context. 
 eᴸ₁  : ∀ {Γ A B C Δ}
      → AHS B , (A , Γ) ⊢[ C ] Δ
      → AHS A , (B , Γ) ⊢[ C ] Δ
@@ -145,9 +144,7 @@ eᴸ₂  : ∀ {Γ A B C D Δ}
 eᴸ₂  = eᴸ · (_ , (_ , ·)) (_ , ·) _
 
 
-
--- Lemma: simplified exchange which swaps two
---        contexts.
+-- Lemma: simplified exchange which swaps two contexts.
 sᴸ  : ∀ (Γ₁ Γ₂ : List Type) {A Δ} → AHS Γ₂ ++ Γ₁ ⊢[ A ] Δ → AHS Γ₁ ++ Γ₂ ⊢[ A ] Δ
 sᴸ  ·  Γ₂ {A} {Δ} = subst  (λ Γ → AHS Γ ⊢[ A ] Δ) (     proj₂ identity Γ₂ )
 sᴸ  Γ₁ ·  {A} {Δ} = subst  (λ Γ → AHS Γ ⊢[ A ] Δ) (sym (proj₂ identity Γ₁))
@@ -179,8 +176,8 @@ mutual
   eᴿ′  Δ₁ Δ₂ Δ₃ Δ₄ (⇒ₑᵏ α f) | β , p rewrite p = ⇒ₑᵏ β (eᴿ Δ₁ Δ₂ Δ₃ Δ₄ f)
 
 
--- Lemma: simplified exchange which swaps the
---        first two elements in the context.
+-- Lemma: simplified exchange which swaps the first two elements in
+-- the context. 
 eᴿ₁  : ∀ {Γ A B C Δ}
      → AHS Γ ⊢[ A ] C , (B , Δ)
      → AHS Γ ⊢[ A ] B , (C , Δ)
@@ -262,8 +259,8 @@ mutual
   wᴿ₁′ (⇒ₑᵏ α f) = ⇒ₑᵏ (suc α) (wᴿ₁ f)
 
 
--- Proof: full weakening for right-hand side context
---        follows easily from the simplified weakening.
+-- Proof: full weakening for right-hand side context follows easily
+-- from the simplified weakening. 
 wᴿ  : ∀ {Γ A} Δ₁ {Δ₂} → AHS Γ ⊢[ A ] Δ₂ → AHS Γ ⊢[ A ] Δ₁ ++ Δ₂
 wᴿ       ·   f = f
 wᴿ  (A , Δ₁) f = wᴿ₁  (wᴿ  Δ₁ f)
@@ -273,8 +270,8 @@ wᴿ′      ·   f = f
 wᴿ′ (A , Δ₁) f = wᴿ₁′ (wᴿ′ Δ₁ f) 
 
 
--- Proof: contraction for the right-hand side
---        context follows from the axioms.
+-- Proof: contraction for the right-hand side context follows from the
+-- axioms. 
 cᴸ₁  : ∀ {Γ A B Δ}
      → AHS A , (A , Γ) ⊢[ B ] Δ
      → AHS      A , Γ  ⊢[ B ] Δ
@@ -287,8 +284,8 @@ cᴸ₁′ (⇒ₑᵏ α f) = ⇒ₑᵏ α (cᴸ₁ f)
 
 
 
--- Proof: contraction for the right-hand side
---        context follows from the axioms.
+-- Proof: contraction for the right-hand side context follows from the
+-- axioms. 
 cᴿ₁  : ∀ {Γ A Δ}
      → AHS Γ ⊢[ A ] A , Δ
      → AHS Γ ⊢[ A ]     Δ
@@ -298,3 +295,21 @@ cᴿ₁′ : ∀ {Γ A Δ}
      → AHS Γ ⊢ A , (A , Δ)
      → AHS Γ ⊢      A , Δ
 cᴿ₁′ f = ⇒ₑᵏ (# 0) (raa f)
+
+
+-- Proof: the system AHS can be translated to Agda by means of a
+-- Fisher-style call-by-value CPS translation. 
+module ToAgda {ℓ} (⟦_⟧ᵁ : Univ → Set ℓ) where
+
+  open Type.ToAgda ⟦_⟧ᵁ
+
+  [_] : ∀ {J} → AHS J → λΠ J
+  [ ax  x   ] e (k , _) = k (lookup e x)
+  [ ⇒ᵢ  f   ] e (k , r) = k (λ k x → [ f ] (x , e) (k , r))
+  [ ⇒ₑ  f g ] e (k , r) = [ f ] e ((λ x → [ g ] e (x k , r)) , r)
+  [ raa f   ] e (k , r) = [ f ] e (     k , r )
+  [ ⇒ₑᵏ α f ] e      r  = [ f ] e (lookup r α , r)
+  [ -ᵢ  f g ] e (k , r) = [ f ] e ((λ x → k ((λ y → [ g ] (y , e) r) , x)) , r) 
+  [ -ₑ  f g ] e (k , r) = [ f ] e ((λ {(x , y) → [ g ] (y , e) (k , (x , r))}) , r)
+  [ ⊗ᵢ  f g ] e (k , r) = [ f ] e ((λ x → [ g ] e ((λ y → k (λ l → l (x , y))) , r)) , r)
+  [ ⊗ₑ  f g ] e (k , r) = [ f ] e ((λ l → l (λ {(x , y) → [ g ] (x , (y , e)) (k , r)})) , r)

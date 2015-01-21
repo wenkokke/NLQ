@@ -8,20 +8,20 @@ open import Relation.Nullary using (¬_)
 open import Relation.Binary.PropositionalEquality as P 
 
 
-module AHS.Type {ℓ₁} (Univ : Set ℓ₁) where
+module AHS.Type {u} (Univ : Set u) where
 
   infix  3 _⊢_ _⊢[_]_
   infixl 5 _‼_
   infixr 7 _⇒_
   infixl 9 _-_
 
-  data Type : Set ℓ₁ where
+  data Type : Set u where
     el  : Univ → Type
     _⇒_ : Type → Type → Type
     _-_ : Type → Type → Type
     _⊗_ : Type → Type → Type
 
-  data Judgement : Set ℓ₁ where
+  data Judgement : Set u where
     _⊢_    : List Type →        List Type → Judgement
     _⊢[_]_ : List Type → Type → List Type → Judgement
 
@@ -46,6 +46,11 @@ module Environment {ℓ₂} where
 
   private
     module AbstractOverF {f : Type → Set ℓ₂} where
+
+      lookup : ∀ {Γ} (e : Env (map f Γ)) (x : Fin (length Γ)) → f (Γ ‼ x)
+      lookup {    ·} · ()
+      lookup {_ , Γ} (x , e)  zero   = x
+      lookup {_ , Γ} (_ , e) (suc i) = lookup e i
   
       split : ∀ {Γ₁ Γ₂} → Env (map f (Γ₁ ++ Γ₂)) → Env (map f Γ₁) × Env (map f Γ₂)
       split {Γ₁ = ·}      {Γ₂ = Γ₂}      e  =      ·   , e
@@ -88,17 +93,17 @@ module ToAgda {ℓ₂} (⟦_⟧ᵁ : Univ → Set ℓ₂) where
 
   infix 1 λΠ_
 
-  ⟦_⟧ᵀ : Type → Set ℓ₂
-  ⟦ el A  ⟧ᵀ =   ⟦ A ⟧ᵁ
-  ⟦ A ⇒ B ⟧ᵀ =      ¬ ⟦ B ⟧ᵀ → ¬ ⟦ A ⟧ᵀ
-  ⟦ A - B ⟧ᵀ =      ¬ ⟦ B ⟧ᵀ ×   ⟦ A ⟧ᵀ
-  ⟦ A ⊗ B ⟧ᵀ = ¬ ¬ (  ⟦ A ⟧ᵀ ×   ⟦ B ⟧ᵀ)
+  ⟦_⟧ : Type → Set ℓ₂
+  ⟦ el A  ⟧ =   ⟦ A ⟧ᵁ
+  ⟦ A ⇒ B ⟧ =      ¬ ⟦ B ⟧ → ¬ ⟦ A ⟧
+  ⟦ A - B ⟧ =      ¬ ⟦ B ⟧ ×   ⟦ A ⟧
+  ⟦ A ⊗ B ⟧ = ¬ ¬ (  ⟦ A ⟧ ×   ⟦ B ⟧)
 
   ⟦_⟧⁺ : List Type → List (Set ℓ₂) 
-  ⟦_⟧⁺ = map ⟦_⟧ᵀ
+  ⟦_⟧⁺ = map ⟦_⟧
 
   ⟦_⟧⁻ : List Type → List (Set ℓ₂)
-  ⟦_⟧⁻ = map (¬_ ∘ ⟦_⟧ᵀ)
+  ⟦_⟧⁻ = map (¬_ ∘ ⟦_⟧)
 
   λΠ_ : Judgement → Set (lsuc ℓ₂)
   λΠ Γ ⊢      Δ = Env ⟦ Γ ⟧⁺ → Env ⟦     Δ ⟧⁻ → ⊥
