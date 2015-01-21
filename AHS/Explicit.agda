@@ -244,9 +244,9 @@ ax′ {Γ = A , Γ} (suc x) = wᴸ₁ (ax′ {Γ} x)
 
 -- Proof: the system AHS can be translated to Agda by means of a
 -- Fisher-style call-by-value CPS translation. 
-module ToAgda {ℓ} (⟦_⟧ᵁ : Univ → Set ℓ) where
+module ToAgda {ℓ} (⟦_⟧ᵁ : Univ → Set ℓ) (R : Set ℓ) where
 
-  open Type.ToAgda ⟦_⟧ᵁ
+  open Type.ToAgda ⟦_⟧ᵁ R
 
   [_] : ∀ {J} → AHS J → λΠ J
   [ ax                   ] (x , _) (k , _) = k x
