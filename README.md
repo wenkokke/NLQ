@@ -1,18 +1,43 @@
-### Things that need to be in the paper
+### Design
 
-- While I could have taken an approach such as [citation needed],
-  abstracting over connectives and proving properties in general based
-  on properties of the connectives, I chose not to. The reason for
-  this is that such systems are much more complex, and therefore
-  harder to mutate. In addition, it is very hard for them to not
-  become syntactically unwieldy. Perhaps if all this is over I'll look
-  into adding a surface logic on top of such a system, as Gergo Érdi
-  does in *Simply Typed Lambda Calculus in Agda, Without Shortcuts*.
+#### Module structure
 
+There are two axes along which I classify my logics. The first of
+these is the axis of structure. In this axis, the different logics are
+based upon the presence and absence of three axioms: *contraction*,
+*weakening* and *exchange*. These axioms give us---respectively---the
+ability to duplicate information, to forget information and to reorder
+the values in our context.
 
-### To-Do
+This last axiom (of exchange) can be further taken apart into
+*commutativity* and *associativity* of the context building
+operator---usually $(\cdot\;,\cdot)$.
 
-- think of a name for the logic now called "subtractive";
-- move the reifications for types and judgements into "subtractive";
-- create a new logic which separates the two contexts (types and co-types);
-- try to limit the structural rules for the types (not for the co-types).
+Usually the axis is presented as follows:
+
+                        unrestricted
+                           / || \
+          (no contraction)/  ||  \(no weakening)
+                         /   ||   \
+                   affine    ||    relevant
+                         \   ||   /
+            (no weakening)\  ||  /(no contraction)
+                           \ || /
+                           linear
+                           / || \
+        (no commutativity)/  ||  \(no associativity)
+                         /   ||   \
+          non-commutative    ||    non-associative
+                         \   ||   /
+        (no associativity)\  ||  /(no commutativity)
+                           \ || /
+                           ordered
+
+While there are technically other possibilities (by dropping exchange
+before contraction and weakening) the presented logics are most
+thoroughly studied.
+However, for this paper, we will *only* deal with logics in the
+*unrestricted*, *linear* and *ordered* categories.
+
+The second axis is roughly spun by *intuitionistic* versus *classical*
+logics.

@@ -21,14 +21,14 @@ import           Prelude hiding (lines)
 main :: IO ()
 main = shakeArgs shakeOptions $ do
 
-  -- Generating the files for the Intuitionistic calculus
-  want (map fst filesForIntuitionistic)
+  -- Generating the files for the Unrestricted calculus
+  want (map fst filesForUnrestricted)
 
-  "src/Logic/Intuitionistic//*.agda" *> \target -> do
-    let src = fromJust (lookup target filesForIntuitionistic)
+  "src/Logic/Unrestricted//*.agda" *> \target -> do
+    let src = fromJust (lookup target filesForUnrestricted)
     liftIO $
       T.writeFile target
-        .   restrictSource replacementListForIntuitionistic blacklistForIntuitionistic
+        .   restrictSource replacementListForUnrestricted blacklistForUnrestricted
         =<< T.readFile src
 
   -- Generating the files for the Linear calculus
@@ -79,8 +79,8 @@ main = shakeArgs shakeOptions $ do
     liftIO $ removeFiles "." (map fst filesForLambek)
     putNormal "Removing generated files for Linear calculus"
     liftIO $ removeFiles "." (map fst filesForLinear)
-    putNormal "Removing generated files for Intuitionistic calculus"
-    liftIO $ removeFiles "." (map fst filesForIntuitionistic)
+    putNormal "Removing generated files for Unrestricted calculus"
+    liftIO $ removeFiles "." (map fst filesForUnrestricted)
 
 
 
@@ -258,36 +258,35 @@ blacklistForLinear = blacklistForLambek ++
 
 
 --------------------------------------------------------------------------------
--- Constants which are specific to the "Lambek Grishin" => "Intuitionistic" translation.
+-- Constants which are specific to the "Lambek Grishin" => "Unrestricted" translation.
 --------------------------------------------------------------------------------
 
 -- |Set of file paths which should be created for the Lambek calculus.
-filesForIntuitionistic :: [(FilePath, FilePath)]
-filesForIntuitionistic =
-  ["src/Logic/Intuitionistic/Type.agda"                        ==> "src/Logic/LambekGrishin/Type.agda"
-  ,"src/Logic/Intuitionistic/Type/Complexity.agda"             ==> "src/Logic/LambekGrishin/Type/Complexity.agda"
-  ,"src/Logic/Intuitionistic/Type/Context.agda"                ==> "src/Logic/LambekGrishin/Type/Context.agda"
-  ,"src/Logic/Intuitionistic/Type/Context/Polarised.agda"      ==> "src/Logic/LambekGrishin/Type/Context/Polarised.agda"
-  ,"src/Logic/Intuitionistic/Judgement.agda"                   ==> "src/Logic/Linear/NaturalDeduction/Judgement.agda"
-  ,"src/Logic/Intuitionistic/Structure.agda"                   ==> "src/Logic/Linear/NaturalDeduction/Structure.agda"
-  ,"src/Logic/Intuitionistic/Structure/Context.agda"           ==> "src/Logic/Linear/NaturalDeduction/Structure/Context.agda"
+filesForUnrestricted :: [(FilePath, FilePath)]
+filesForUnrestricted =
+  ["src/Logic/Unrestricted/Type.agda"                        ==> "src/Logic/LambekGrishin/Type.agda"
+  ,"src/Logic/Unrestricted/Type/Complexity.agda"             ==> "src/Logic/LambekGrishin/Type/Complexity.agda"
+  ,"src/Logic/Unrestricted/Type/Context.agda"                ==> "src/Logic/LambekGrishin/Type/Context.agda"
+  ,"src/Logic/Unrestricted/Type/Context/Polarised.agda"      ==> "src/Logic/LambekGrishin/Type/Context/Polarised.agda"
+  ,"src/Logic/Unrestricted/Judgement.agda"                   ==> "src/Logic/Linear/NaturalDeduction/Judgement.agda"
+  ,"src/Logic/Unrestricted/Structure.agda"                   ==> "src/Logic/Linear/NaturalDeduction/Structure.agda"
+  ,"src/Logic/Unrestricted/Structure/Context.agda"           ==> "src/Logic/Linear/NaturalDeduction/Structure/Context.agda"
   ]
 
 -- |Set of replacement rules for the Lambek Grishin to Lambek conversion.
-replacementListForIntuitionistic :: [(Text, Text)]
-replacementListForIntuitionistic =
-  [ "LambekGrishin"           ==> "Intuitionistic"
+replacementListForUnrestricted :: [(Text, Text)]
+replacementListForUnrestricted =
+  [ "LambekGrishin"           ==> "Unrestricted"
   , "LG"                      ==> "IL"
-  , "ResMon"                  ==> "Subtractive"
-  , "Linear.NaturalDeduction" ==> "Intuitionistic"
-  , "Linear"                  ==> "Intuitionistic"
+  , "Linear.NaturalDeduction" ==> "Unrestricted"
+  , "Linear"                  ==> "Unrestricted"
   , "LL"                      ==> "IL"
   ]
 
 
 -- |Set of inference rules which may not occur in the Lambek calculus.
-blacklistForIntuitionistic :: [Text]
-blacklistForIntuitionistic =
+blacklistForUnrestricted :: [Text]
+blacklistForUnrestricted =
   [ "⊕"      , "⇐"      , "⇚"
   , "grish₁" , "grish₂" , "grish₃" , "grish₄"
   ]
