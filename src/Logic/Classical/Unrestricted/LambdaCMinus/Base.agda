@@ -10,9 +10,9 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst
 module Logic.Classical.Unrestricted.LambdaCMinus.Base {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type                Univ  renaming (_⇛_ to _-_)
-open import Logic.Index          {ℓ} {Type} renaming (lookup to _‼_)
-open import Logic.Classical.Judgement Univ
+open import Logic.Type  Univ  renaming (_⇚_ to _-_)
+open import Logic.Index       renaming (lookup to _‼_)
+open import Logic.Classical.Judgement (List Type) Type (List Type)
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 
@@ -135,24 +135,24 @@ eᴿ₁′ = eᴿ′ · (_ , ·) (_ , ·) _
 -- without allowing them to be embedded in further contexts are often
 -- useful as well.
 sᴸ  : ∀ (Γ₁ Γ₂ : List Type) {A Δ} → λC⁻ Γ₂ ++ Γ₁ ⊢[ A ] Δ → λC⁻ Γ₁ ++ Γ₂ ⊢[ A ] Δ
-sᴸ  ·  Γ₂ {A} {Δ} = subst  (λ Γ → λC⁻ Γ ⊢[ A ] Δ) (     proj₂ identity Γ₂ )
-sᴸ  Γ₁ ·  {A} {Δ} = subst  (λ Γ → λC⁻ Γ ⊢[ A ] Δ) (sym (proj₂ identity Γ₁))
-sᴸ  Γ₁ Γ₂ {A} {Δ} = subst₂ (λ Γ₁′ Γ₂′ → λC⁻ Γ₂ ++ Γ₁′ ⊢[ A ] Δ → λC⁻ Γ₁ ++ Γ₂′ ⊢[ A ] Δ) (proj₂ identity Γ₁) (proj₂ identity Γ₂) (eᴸ  · Γ₁ Γ₂ ·)
+sᴸ  Γ₁ ·  = subst  (λ Γ       → λC⁻       Γ   ⊢[ _ ] _)                          (sym (proj₂ identity Γ₁))
+sᴸ  ·  Γ₂ = subst  (λ     Γ   → λC⁻ Γ         ⊢[ _ ] _)                                                    (proj₂ identity Γ₂)
+sᴸ  Γ₁ Γ₂ = subst₂ (λ Γ₁′ Γ₂′ → λC⁻ Γ₂ ++ Γ₁′ ⊢[ _ ] _ → λC⁻ Γ₁ ++ Γ₂′ ⊢[ _ ] _) (     proj₂ identity Γ₁ ) (proj₂ identity Γ₂) (eᴸ  · Γ₁ Γ₂ ·)
 
 sᴸ′ : ∀ (Γ₁ Γ₂ : List Type) {Δ} → λC⁻ Γ₂ ++ Γ₁ ⊢ Δ → λC⁻ Γ₁ ++ Γ₂ ⊢ Δ
-sᴸ′ ·  Γ₂ {Δ} = subst  (λ Γ → λC⁻ Γ ⊢ Δ) (     proj₂ identity Γ₂ )
-sᴸ′ Γ₁ ·  {Δ} = subst  (λ Γ → λC⁻ Γ ⊢ Δ) (sym (proj₂ identity Γ₁))
-sᴸ′ Γ₁ Γ₂ {Δ} = subst₂ (λ Γ₁′ Γ₂′ → λC⁻ Γ₂ ++ Γ₁′ ⊢ Δ → λC⁻ Γ₁ ++ Γ₂′ ⊢ Δ) (proj₂ identity Γ₁) (proj₂ identity Γ₂) (eᴸ′ · Γ₁ Γ₂ ·)
+sᴸ′ Γ₁ ·  = subst  (λ Γ       → λC⁻       Γ   ⊢      _)                          (sym (proj₂ identity Γ₁))
+sᴸ′ ·  Γ₂ = subst  (λ     Γ   → λC⁻ Γ         ⊢      _)                                                    (proj₂ identity Γ₂)
+sᴸ′ Γ₁ Γ₂ = subst₂ (λ Γ₁′ Γ₂′ → λC⁻ Γ₂ ++ Γ₁′ ⊢      _ → λC⁻ Γ₁ ++ Γ₂′ ⊢      _) (     proj₂ identity Γ₁ ) (proj₂ identity Γ₂) (eᴸ′ · Γ₁ Γ₂ ·)
 
 sᴿ  : ∀ {Γ A} (Δ₁ Δ₂ : List Type) → λC⁻ Γ ⊢[ A ] Δ₂ ++ Δ₁ → λC⁻ Γ ⊢[ A ] Δ₁ ++ Δ₂
-sᴿ  ·  Δ₂ = subst  (λ Δ → λC⁻ _ ⊢[ _ ] Δ) (     proj₂ identity Δ₂ )
-sᴿ  Δ₁ ·  = subst  (λ Δ → λC⁻ _ ⊢[ _ ] Δ) (sym (proj₂ identity Δ₁))
-sᴿ  Δ₁ Δ₂ = subst₂ (λ Δ₁′ Δ₂′ → λC⁻ _ ⊢[ _ ] Δ₂ ++ Δ₁′ → λC⁻ _ ⊢[ _ ] Δ₁ ++ Δ₂′) (proj₂ identity Δ₁) (proj₂ identity Δ₂) (eᴿ  · Δ₁ Δ₂ ·)
+sᴿ  Δ₁ ·  = subst  (λ Δ       → λC⁻ _ ⊢[ _ ]       Δ)                            (sym (proj₂ identity Δ₁))
+sᴿ  ·  Δ₂ = subst  (λ     Δ   → λC⁻ _ ⊢[ _ ] Δ      )                                                      (proj₂ identity Δ₂)
+sᴿ  Δ₁ Δ₂ = subst₂ (λ Δ₁′ Δ₂′ → λC⁻ _ ⊢[ _ ] Δ₂ ++ Δ₁′ → λC⁻ _ ⊢[ _ ] Δ₁ ++ Δ₂′) (     proj₂ identity Δ₁ ) (proj₂ identity Δ₂) (eᴿ  · Δ₁ Δ₂ ·)
 
 sᴿ′ : ∀ {Γ} (Δ₁ Δ₂ : List Type) → λC⁻ Γ ⊢ Δ₂ ++ Δ₁ → λC⁻ Γ ⊢ Δ₁ ++ Δ₂
-sᴿ′ ·  Δ₂ = subst  (λ Δ → λC⁻ _ ⊢ Δ) (     proj₂ identity Δ₂ )
-sᴿ′ Δ₁ ·  = subst  (λ Δ → λC⁻ _ ⊢ Δ) (sym (proj₂ identity Δ₁))
-sᴿ′ Δ₁ Δ₂ = subst₂ (λ Δ₁′ Δ₂′ → λC⁻ _ ⊢ Δ₂ ++ Δ₁′ → λC⁻ _ ⊢ Δ₁ ++ Δ₂′) (proj₂ identity Δ₁) (proj₂ identity Δ₂) (eᴿ′ · Δ₁ Δ₂ ·)
+sᴿ′ Δ₁ ·  = subst  (λ Δ       → λC⁻ _ ⊢            Δ)                            (sym (proj₂ identity Δ₁))
+sᴿ′ ·  Δ₂ = subst  (λ     Δ   → λC⁻ _ ⊢      Δ      )                                                      (proj₂ identity Δ₂)
+sᴿ′ Δ₁ Δ₂ = subst₂ (λ Δ₁′ Δ₂′ → λC⁻ _ ⊢      Δ₂ ++ Δ₁′ → λC⁻ _ ⊢      Δ₁ ++ Δ₂′) (     proj₂ identity Δ₁ ) (proj₂ identity Δ₂) (eᴿ′ · Δ₁ Δ₂ ·)
 
 
 -- Lemma: weaker versions of weakning for which simply allows for the
@@ -256,6 +256,23 @@ cᴸ′  : ∀ (Γ₁ Γ₂ : List Type) {Δ}
      → λC⁻ Γ₁ ++ Γ₁ ++ Γ₂ ⊢      Δ
      → λC⁻ Γ₁       ++ Γ₂ ⊢      Δ
 cᴸ′ Γ₁ Γ₂ (⇒ₑᵏ α f) = ⇒ₑᵏ α (cᴸ Γ₁ Γ₂ f)
+
+cᴿ  : ∀ {Γ A} (Δ₁ Δ₂ : List Type)
+    → λC⁻ Γ ⊢[ A ] Δ₁ ++ Δ₁ ++ Δ₂
+    → λC⁻ Γ ⊢[ A ]       Δ₁ ++ Δ₂
+cᴿ      ·   Δ₂ f = f
+cᴿ (A , Δ₁) Δ₂ f = {!eᴿ · (A , ·) Δ₁ Δ₂ (cᴿ Δ₁ (A , Δ₂) lem₁)!}
+  where
+  lem₀ : λC⁻ _ ⊢[ _ ] A , (Δ₁ ++ Δ₁) ++ Δ₂
+  lem₀ rewrite      assoc Δ₁ Δ₁      Δ₂   = cᴿ₁ (eᴿ · (A , ·) (A , Δ₁) (Δ₁ ++ Δ₂) f)
+  lem₁ : λC⁻ _ ⊢[ _ ] Δ₁ ++ (Δ₁ ++ A , Δ₂)
+  lem₁ rewrite sym (assoc Δ₁ Δ₁ (A , Δ₂)) = eᴿ · (Δ₁ ++ Δ₁) (A , ·) Δ₂ lem₀
+
+cᴿ′ : ∀ {Γ} (Δ₁ Δ₂ : List Type)
+    → λC⁻ Γ ⊢      Δ₁ ++ Δ₁ ++ Δ₂
+    → λC⁻ Γ ⊢            Δ₁ ++ Δ₂
+cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) with contract Δ₁ Δ₂ α
+cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) | β , p rewrite p = ⇒ₑᵏ β (cᴿ Δ₁ Δ₂ f)
 
 
 -- Lemma: version of |ax| which is compatible with the |ax| in the

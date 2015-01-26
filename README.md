@@ -11,7 +11,7 @@ the values in our context.
 
 This last axiom (of exchange) can be further taken apart into
 *commutativity* and *associativity* of the context building
-operator---usually $(\cdot\;,\cdot)$.
+operator---usually `_,_`.
 
 Usually the axis is presented as follows:
 
