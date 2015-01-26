@@ -70,3 +70,27 @@ exchange xs ys zs ws i rewrite assoc xs zs (ys ++ ws)
                | sym (assoc xs (y ∷ []) ys)
                | assoc (xs ∷ʳ y) ys (zs ++ ws) = lem₂
 
+
+-- Given a list and an index which is guaranteed to be smaller than
+-- the length of that list, return an index which is guaranteed to
+-- return the same element (using |lookup|) from a list which has
+-- duplicates removed.
+contract : (xs ys : List A) (i : _) → Σ[ j ∈ _ ]
+           lookup (xs ++ xs ++ ys) i ≡ lookup (xs ++ ys) j
+contract      []  ys  i      = i , refl
+contract (x ∷ xs) ys  zero   = zero , refl
+contract (x ∷ xs) ys (suc i) with forward [] xs (xs ++ ys) i
+contract (x ∷ xs) ys (suc i) | zero  , p = zero , p
+contract (x ∷ xs) ys (suc i) | suc j , p with contract xs ys j
+contract (x ∷ xs) ys (suc i) | suc _ , p | j , q rewrite p | q = suc j , refl
+
+
+-- Given a list and an index which is guaranteed to be smaller than
+-- the length of that list, return an index which is guaranteed to
+-- return the same element (using |lookup|) from a list which has
+-- another list prepended.
+weaken : (xs ys : List A) (i : _) → Σ[ j ∈ _ ]
+         lookup ys i ≡ lookup (xs ++ ys) j
+weaken      []  ys i = i , refl
+weaken (x ∷ xs) ys i with weaken xs ys i
+weaken (x ∷ xs) ys i | j , p = suc j , p
