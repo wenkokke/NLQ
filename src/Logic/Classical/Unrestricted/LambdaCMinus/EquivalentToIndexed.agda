@@ -12,9 +12,9 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst
 module Logic.Classical.Unrestricted.LambdaCMinus.EquivalentToIndexed {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type                                             Univ  renaming (_⇛_ to _-_)
-open import Logic.Index                                       {ℓ} {Type} renaming (lookup to _‼_)
-open import Logic.Classical.Judgement                              Univ
+open import Logic.Type Univ  renaming (_⇛_ to _-_)
+open import Logic.Index renaming (lookup to _‼_)
+open import Logic.Classical.Judgement (List Type) Type (List Type)
 open import Logic.Classical.Unrestricted.LambdaCMinus.Base         Univ as E
 open import Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base Univ as I
 open Monoid (Data.List.monoid Type) using (identity; assoc)
@@ -23,13 +23,13 @@ open Monoid (Data.List.monoid Type) using (identity; assoc)
 from : ∀ {J} → E.λC⁻ J → I.λC⁻ J
 from (ax                 ) = I.ax    (# 0)
 from (⇒ᵢ              f  ) = I.⇒ᵢ    (from f)
-from (⇒ₑ  {Γ₁} {Γ₂}   f g) = I.⇒ₑ    (I.sᴸ Γ₁ Γ₂ (I.wᴸ Γ₂ (from f))) (I.wᴸ Γ₁ (from g))
+from (⇒ₑ  {Γ₁} {Γ₂}   f g) = I.⇒ₑ    (I.sᴸ Γ₁ (I.wᴸ Γ₂ (from f))) (I.wᴸ Γ₁ (from g))
 from (raa             f  ) = I.raa   (from f)
 from (⇒ₑᵏ             α f) = I.⇒ₑᵏ α (from f)
-from (-ᵢ  {Γ₁} {Γ₂}   f g) = I.-ᵢ    (I.sᴸ Γ₁ Γ₂ (I.wᴸ Γ₂ (from f))) (I.eᴸ′ · (_ , ·) Γ₁ Γ₂ (I.wᴸ′ Γ₁ (from g)))
-from (-ₑ  {Γ₁} {Γ₂}   f g) = I.-ₑ    (I.sᴸ Γ₁ Γ₂ (I.wᴸ Γ₂ (from f))) (I.eᴸ  · (_ , ·) Γ₁ Γ₂ (I.wᴸ  Γ₁ (from g)))
-from (⊗ᵢ  {Γ₁} {Γ₂}   f g) = I.⊗ᵢ    (I.sᴸ Γ₁ Γ₂ (I.wᴸ Γ₂ (from f))) (I.wᴸ  Γ₁ (from g))
-from (⊗ₑ  {Γ₁} {Γ₂}   f g) = I.⊗ₑ    (I.sᴸ Γ₁ Γ₂ (I.wᴸ Γ₂ (from f))) (I.eᴸ  · (_ , (_ , ·)) Γ₁ Γ₂ (I.wᴸ Γ₁ (from g)))
+from (-ᵢ  {Γ₁} {Γ₂}   f g) = I.-ᵢ    (I.sᴸ Γ₁ (I.wᴸ Γ₂ (from f))) (I.eᴸ′ · (_ , ·) Γ₁ Γ₂ (I.wᴸ′ Γ₁ (from g)))
+from (-ₑ  {Γ₁} {Γ₂}   f g) = I.-ₑ    (I.sᴸ Γ₁ (I.wᴸ Γ₂ (from f))) (I.eᴸ  · (_ , ·) Γ₁ Γ₂ (I.wᴸ  Γ₁ (from g)))
+from (⊗ᵢ  {Γ₁} {Γ₂}   f g) = I.⊗ᵢ    (I.sᴸ Γ₁ (I.wᴸ Γ₂ (from f))) (I.wᴸ  Γ₁ (from g))
+from (⊗ₑ  {Γ₁} {Γ₂}   f g) = I.⊗ₑ    (I.sᴸ Γ₁ (I.wᴸ Γ₂ (from f))) (I.eᴸ  · (_ , (_ , ·)) Γ₁ Γ₂ (I.wᴸ Γ₁ (from g)))
 from (eᴸ  Γ₁ Γ₂ Γ₃ Γ₄ f  ) = I.eᴸ    Γ₁ Γ₂ Γ₃ Γ₄ (from f)
 from (cᴸ₁             f  ) = I.cᴸ₁   (from f)
 from (wᴸ₁             f  ) = I.wᴸ₁   (from f)

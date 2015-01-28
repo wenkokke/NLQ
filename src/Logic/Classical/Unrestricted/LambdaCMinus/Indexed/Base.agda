@@ -1,7 +1,7 @@
 open import Algebra                               using (module Monoid)
 open import Function                              using (id; _∘_)
 open import Data.Fin                              using (Fin; suc; zero; #_)
-open import Data.List                             using (List; _++_) renaming ([] to ·; _∷_ to _,_)
+open import Data.List                             using (List; _++_) renaming ([] to ∅; _∷_ to _,_)
 open import Data.Product                          using (Σ; Σ-syntax; _×_; _,_; proj₁; proj₂; map)
 open import Data.Sum                              using (_⊎_; inj₁; inj₂)
 open import Relation.Nullary.Decidable            using (True; toWitness; fromWitness)
@@ -107,51 +107,51 @@ mutual
 eᴸ₁  : ∀ {Γ A B C Δ}
      → λC⁻ B , (A , Γ) ⊢[ C ] Δ
      → λC⁻ A , (B , Γ) ⊢[ C ] Δ
-eᴸ₁  = eᴸ · (_ , ·) (_ , ·) _
+eᴸ₁  = eᴸ ∅ (_ , ∅) (_ , ∅) _
 
 eᴸ₁′ : ∀ {Γ A B Δ}
      → λC⁻ B , (A , Γ) ⊢      Δ
      → λC⁻ A , (B , Γ) ⊢      Δ
-eᴸ₁′ = eᴸ′ · (_ , ·) (_ , ·) _
+eᴸ₁′ = eᴸ′ ∅ (_ , ∅) (_ , ∅) _
 
 eᴸ₂  : ∀ {Γ A B C D Δ}
      → λC⁻ C , (A , (B , Γ)) ⊢[ D ] Δ
      → λC⁻ A , (B , (C , Γ)) ⊢[ D ] Δ
-eᴸ₂  = eᴸ · (_ , (_ , ·)) (_ , ·) _
+eᴸ₂  = eᴸ ∅ (_ , (_ , ∅)) (_ , ∅) _
 
 eᴿ₁  : ∀ {Γ A B C Δ}
      → λC⁻ Γ ⊢[ A ] C , (B , Δ)
      → λC⁻ Γ ⊢[ A ] B , (C , Δ)
-eᴿ₁  = eᴿ · (_ , ·) (_ , ·) _
+eᴿ₁  = eᴿ ∅ (_ , ∅) (_ , ∅) _
 
 eᴿ₁′ : ∀ {Γ B C Δ}
      → λC⁻ Γ ⊢      C , (B , Δ)
      → λC⁻ Γ ⊢      B , (C , Δ)
-eᴿ₁′ = eᴿ′ · (_ , ·) (_ , ·) _
+eᴿ₁′ = eᴿ′ ∅ (_ , ∅) (_ , ∅) _
 
 
 -- Lemma: weaker version of eᴸ and eᴿ which only swap two contexts,
 -- without allowing them to be embedded in further contexts are often
 -- useful as well.
-sᴸ  : ∀ (Γ₁ Γ₂ : List Type) {A Δ} → λC⁻ Γ₂ ++ Γ₁ ⊢[ A ] Δ → λC⁻ Γ₁ ++ Γ₂ ⊢[ A ] Δ
-sᴸ  Γ₁ ·  = subst  (λ Γ       → λC⁻       Γ   ⊢[ _ ] _)                          (sym (proj₂ identity Γ₁))
-sᴸ  ·  Γ₂ = subst  (λ     Γ   → λC⁻ Γ         ⊢[ _ ] _)                                                    (proj₂ identity Γ₂)
-sᴸ  Γ₁ Γ₂ = subst₂ (λ Γ₁′ Γ₂′ → λC⁻ Γ₂ ++ Γ₁′ ⊢[ _ ] _ → λC⁻ Γ₁ ++ Γ₂′ ⊢[ _ ] _) (     proj₂ identity Γ₁ ) (proj₂ identity Γ₂) (eᴸ  · Γ₁ Γ₂ ·)
+sᴸ  : ∀ (Γ₁ : List Type) {Γ₂ : List Type} {A Δ} → λC⁻ Γ₂ ++ Γ₁ ⊢[ A ] Δ → λC⁻ Γ₁ ++ Γ₂ ⊢[ A ] Δ
+sᴸ  Γ₁ {∅ } = subst  (λ Γ       → λC⁻       Γ   ⊢[ _ ] _)                          (sym (proj₂ identity Γ₁))
+sᴸ  ∅  {Γ₂} = subst  (λ     Γ   → λC⁻ Γ         ⊢[ _ ] _)                                                    (proj₂ identity Γ₂)
+sᴸ  Γ₁ {Γ₂} = subst₂ (λ Γ₁′ Γ₂′ → λC⁻ Γ₂ ++ Γ₁′ ⊢[ _ ] _ → λC⁻ Γ₁ ++ Γ₂′ ⊢[ _ ] _) (     proj₂ identity Γ₁ ) (proj₂ identity Γ₂) (eᴸ  ∅ Γ₁ Γ₂ ∅)
 
-sᴸ′ : ∀ (Γ₁ Γ₂ : List Type) {Δ} → λC⁻ Γ₂ ++ Γ₁ ⊢ Δ → λC⁻ Γ₁ ++ Γ₂ ⊢ Δ
-sᴸ′ Γ₁ ·  = subst  (λ Γ       → λC⁻       Γ   ⊢      _)                          (sym (proj₂ identity Γ₁))
-sᴸ′ ·  Γ₂ = subst  (λ     Γ   → λC⁻ Γ         ⊢      _)                                                    (proj₂ identity Γ₂)
-sᴸ′ Γ₁ Γ₂ = subst₂ (λ Γ₁′ Γ₂′ → λC⁻ Γ₂ ++ Γ₁′ ⊢      _ → λC⁻ Γ₁ ++ Γ₂′ ⊢      _) (     proj₂ identity Γ₁ ) (proj₂ identity Γ₂) (eᴸ′ · Γ₁ Γ₂ ·)
+sᴸ′ : ∀ (Γ₁ : List Type) {Γ₂ : List Type} {Δ} → λC⁻ Γ₂ ++ Γ₁ ⊢ Δ → λC⁻ Γ₁ ++ Γ₂ ⊢ Δ
+sᴸ′ Γ₁ {∅ } = subst  (λ Γ       → λC⁻       Γ   ⊢      _)                          (sym (proj₂ identity Γ₁))
+sᴸ′ ∅  {Γ₂} = subst  (λ     Γ   → λC⁻ Γ         ⊢      _)                                                    (proj₂ identity Γ₂)
+sᴸ′ Γ₁ {Γ₂} = subst₂ (λ Γ₁′ Γ₂′ → λC⁻ Γ₂ ++ Γ₁′ ⊢      _ → λC⁻ Γ₁ ++ Γ₂′ ⊢      _) (     proj₂ identity Γ₁ ) (proj₂ identity Γ₂) (eᴸ′ ∅ Γ₁ Γ₂ ∅)
 
-sᴿ  : ∀ {Γ A} (Δ₁ Δ₂ : List Type) → λC⁻ Γ ⊢[ A ] Δ₂ ++ Δ₁ → λC⁻ Γ ⊢[ A ] Δ₁ ++ Δ₂
-sᴿ  Δ₁ ·  = subst  (λ Δ       → λC⁻ _ ⊢[ _ ]       Δ)                            (sym (proj₂ identity Δ₁))
-sᴿ  ·  Δ₂ = subst  (λ     Δ   → λC⁻ _ ⊢[ _ ] Δ      )                                                      (proj₂ identity Δ₂)
-sᴿ  Δ₁ Δ₂ = subst₂ (λ Δ₁′ Δ₂′ → λC⁻ _ ⊢[ _ ] Δ₂ ++ Δ₁′ → λC⁻ _ ⊢[ _ ] Δ₁ ++ Δ₂′) (     proj₂ identity Δ₁ ) (proj₂ identity Δ₂) (eᴿ  · Δ₁ Δ₂ ·)
+sᴿ  : ∀ {Γ A} (Δ₁ : List Type) {Δ₂ : List Type} → λC⁻ Γ ⊢[ A ] Δ₂ ++ Δ₁ → λC⁻ Γ ⊢[ A ] Δ₁ ++ Δ₂
+sᴿ  Δ₁ {∅ } = subst  (λ Δ       → λC⁻ _ ⊢[ _ ]       Δ)                            (sym (proj₂ identity Δ₁))
+sᴿ  ∅  {Δ₂} = subst  (λ     Δ   → λC⁻ _ ⊢[ _ ] Δ      )                                                      (proj₂ identity Δ₂)
+sᴿ  Δ₁ {Δ₂} = subst₂ (λ Δ₁′ Δ₂′ → λC⁻ _ ⊢[ _ ] Δ₂ ++ Δ₁′ → λC⁻ _ ⊢[ _ ] Δ₁ ++ Δ₂′) (     proj₂ identity Δ₁ ) (proj₂ identity Δ₂) (eᴿ  ∅ Δ₁ Δ₂ ∅)
 
-sᴿ′ : ∀ {Γ} (Δ₁ Δ₂ : List Type) → λC⁻ Γ ⊢ Δ₂ ++ Δ₁ → λC⁻ Γ ⊢ Δ₁ ++ Δ₂
-sᴿ′ Δ₁ ·  = subst  (λ Δ       → λC⁻ _ ⊢            Δ)                            (sym (proj₂ identity Δ₁))
-sᴿ′ ·  Δ₂ = subst  (λ     Δ   → λC⁻ _ ⊢      Δ      )                                                      (proj₂ identity Δ₂)
-sᴿ′ Δ₁ Δ₂ = subst₂ (λ Δ₁′ Δ₂′ → λC⁻ _ ⊢      Δ₂ ++ Δ₁′ → λC⁻ _ ⊢      Δ₁ ++ Δ₂′) (     proj₂ identity Δ₁ ) (proj₂ identity Δ₂) (eᴿ′ · Δ₁ Δ₂ ·)
+sᴿ′ : ∀ {Γ} (Δ₁ : List Type) {Δ₂ : List Type} → λC⁻ Γ ⊢ Δ₂ ++ Δ₁ → λC⁻ Γ ⊢ Δ₁ ++ Δ₂
+sᴿ′ Δ₁ {∅ } = subst  (λ Δ       → λC⁻ _ ⊢            Δ)                            (sym (proj₂ identity Δ₁))
+sᴿ′ ∅  {Δ₂} = subst  (λ     Δ   → λC⁻ _ ⊢      Δ      )                                                      (proj₂ identity Δ₂)
+sᴿ′ Δ₁ {Δ₂} = subst₂ (λ Δ₁′ Δ₂′ → λC⁻ _ ⊢      Δ₂ ++ Δ₁′ → λC⁻ _ ⊢      Δ₁ ++ Δ₂′) (     proj₂ identity Δ₁ ) (proj₂ identity Δ₂) (eᴿ′ ∅ Δ₁ Δ₂ ∅)
 
 
 -- Lemma: weaker versions of weakning for which simply allows for the
@@ -199,25 +199,25 @@ mutual
 wᴸ  : ∀ Γ₁ {Γ₂ A Δ}
     → λC⁻       Γ₂ ⊢[ A ] Δ
     → λC⁻ Γ₁ ++ Γ₂ ⊢[ A ] Δ
-wᴸ       ·   f = f
+wᴸ       ∅   f = f
 wᴸ  (A , Γ₁) f = wᴸ₁  (wᴸ  Γ₁ f)
 
 wᴸ′ : ∀ Γ₁ {Γ₂ Δ}
     → λC⁻       Γ₂ ⊢      Δ
     → λC⁻ Γ₁ ++ Γ₂ ⊢      Δ
-wᴸ′      ·   f = f
+wᴸ′      ∅   f = f
 wᴸ′ (A , Γ₁) f = wᴸ₁′ (wᴸ′ Γ₁ f) 
 
 wᴿ  : ∀ {Γ A} Δ₁ {Δ₂}
     → λC⁻ Γ ⊢[ A ]       Δ₂
     → λC⁻ Γ ⊢[ A ] Δ₁ ++ Δ₂
-wᴿ       ·   f = f
+wᴿ       ∅   f = f
 wᴿ  (A , Δ₁) f = wᴿ₁  (wᴿ  Δ₁ f)
 
 wᴿ′ : ∀ {Γ} Δ₁ {Δ₂}
     → λC⁻ Γ ⊢       Δ₂
     → λC⁻ Γ ⊢ Δ₁ ++ Δ₂
-wᴿ′      ·   f = f
+wᴿ′      ∅   f = f
 wᴿ′ (A , Δ₁) f = wᴿ₁′ (wᴿ′ Δ₁ f)
 
 
@@ -265,13 +265,13 @@ cᴿ₁′ f = ⇒ₑᵏ (# 0) (raa f)
 cᴸ  : ∀ (Γ₁ Γ₂ : List Type) {A Δ}
     → λC⁻ Γ₁ ++ Γ₁ ++ Γ₂ ⊢[ A ] Δ
     → λC⁻ Γ₁       ++ Γ₂ ⊢[ A ] Δ
-cᴸ       ·   Γ₂ f = f
-cᴸ  (A , Γ₁) Γ₂ f = eᴸ · (A , ·) Γ₁ Γ₂ (cᴸ Γ₁ (A , Γ₂) lem₁)
+cᴸ       ∅   Γ₂ f = f
+cᴸ  (A , Γ₁) Γ₂ f = eᴸ ∅ (A , ∅) Γ₁ Γ₂ (cᴸ Γ₁ (A , Γ₂) lem₁)
   where
   lem₀ : λC⁻ A , (Γ₁ ++ Γ₁) ++ Γ₂ ⊢[ _ ] _
-  lem₀ rewrite      assoc Γ₁ Γ₁      Γ₂   = cᴸ₁ (eᴸ · (A , ·) (A , Γ₁) (Γ₁ ++ Γ₂) f)
+  lem₀ rewrite      assoc Γ₁ Γ₁      Γ₂   = cᴸ₁ (eᴸ ∅ (A , ∅) (A , Γ₁) (Γ₁ ++ Γ₂) f)
   lem₁ : λC⁻ Γ₁ ++ (Γ₁ ++ A , Γ₂) ⊢[ _ ] _
-  lem₁ rewrite sym (assoc Γ₁ Γ₁ (A , Γ₂)) = eᴸ · (Γ₁ ++ Γ₁) (A , ·) Γ₂ lem₀
+  lem₁ rewrite sym (assoc Γ₁ Γ₁ (A , Γ₂)) = eᴸ ∅ (Γ₁ ++ Γ₁) (A , ∅) Γ₂ lem₀
 
 cᴸ′  : ∀ (Γ₁ Γ₂ : List Type) {Δ}
      → λC⁻ Γ₁ ++ Γ₁ ++ Γ₂ ⊢      Δ
@@ -281,13 +281,13 @@ cᴸ′ Γ₁ Γ₂ (⇒ₑᵏ α f) = ⇒ₑᵏ α (cᴸ Γ₁ Γ₂ f)
 cᴿ  : ∀ {Γ A} (Δ₁ Δ₂ : List Type)
     → λC⁻ Γ ⊢[ A ] Δ₁ ++ Δ₁ ++ Δ₂
     → λC⁻ Γ ⊢[ A ]       Δ₁ ++ Δ₂
-cᴿ      ·   Δ₂ f = f
-cᴿ (A , Δ₁) Δ₂ f = {!eᴿ · (A , ·) Δ₁ Δ₂ (cᴿ Δ₁ (A , Δ₂) lem₁)!}
+cᴿ      ∅   Δ₂ f = f
+cᴿ (A , Δ₁) Δ₂ f = eᴿ ∅ (A , ∅) Δ₁ Δ₂ (cᴿ Δ₁ (A , Δ₂) lem₁)
   where
   lem₀ : λC⁻ _ ⊢[ _ ] A , (Δ₁ ++ Δ₁) ++ Δ₂
-  lem₀ rewrite      assoc Δ₁ Δ₁      Δ₂   = cᴿ₁ (eᴿ · (A , ·) (A , Δ₁) (Δ₁ ++ Δ₂) f)
+  lem₀ rewrite      assoc Δ₁ Δ₁      Δ₂   = cᴿ₁ (eᴿ ∅ (A , ∅) (A , Δ₁) (Δ₁ ++ Δ₂) f)
   lem₁ : λC⁻ _ ⊢[ _ ] Δ₁ ++ (Δ₁ ++ A , Δ₂)
-  lem₁ rewrite sym (assoc Δ₁ Δ₁ (A , Δ₂)) = eᴿ · (Δ₁ ++ Δ₁) (A , ·) Δ₂ lem₀
+  lem₁ rewrite sym (assoc Δ₁ Δ₁ (A , Δ₂)) = eᴿ ∅ (Δ₁ ++ Δ₁) (A , ∅) Δ₂ lem₀
 
 cᴿ′ : ∀ {Γ} (Δ₁ Δ₂ : List Type)
     → λC⁻ Γ ⊢      Δ₁ ++ Δ₁ ++ Δ₂
