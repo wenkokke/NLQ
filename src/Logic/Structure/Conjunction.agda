@@ -22,13 +22,13 @@ data Conjunction : Set ℓ where
 
 data Context : Set ℓ where
 
-  □    : Context
+  []   : Context
   _⊗>_ : Conjunction → Context → Context
   _<⊗_ : Context → Conjunction → Context
 
 
 _[_] : Context → Conjunction → Conjunction
-□          [ Δ ] = Δ
+[]         [ Δ ] = Δ
 (Γ₁ ⊗> Γ₂) [ Δ ] =  Γ₁        ⊗ (Γ₂ [ Δ ])
 (Γ₁ <⊗ Γ₂) [ Δ ] = (Γ₁ [ Δ ]) ⊗  Γ₂
 

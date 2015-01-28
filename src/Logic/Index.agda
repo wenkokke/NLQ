@@ -6,16 +6,13 @@ open import Data.Product                          using (Σ; Σ-syntax; _,_; pro
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; subst; subst₂)
 
 
-module Logic.Index {a} {A : Set a} where
-
-
-open Monoid (Data.List.monoid A) using (identity; assoc)
+module Logic.Index where
 
 
 -- Given a list and an index which is guaranteed to be smaller than
 -- the length of that list, return the element at the indicated
 -- position in the list. 
-lookup : (xs : List A) (i : Fin (length xs)) → A
+lookup : ∀ {a} {A : Set a} (xs : List A) (i : Fin (length xs)) → A
 lookup      []  (     )
 lookup (x ∷ xs) (zero ) = x
 lookup (x ∷ xs) (suc i) = lookup xs i
@@ -25,14 +22,14 @@ lookup (x ∷ xs) (suc i) = lookup xs i
 -- the length of that list, return an index which is guaranteed to
 -- return the same element (using |lookup|) from a list where one
 -- element is moved forward.
-forward : {x : _} (xs ys zs : List A) (i : _) → Σ[ j ∈ _ ]
+forward : ∀ {a} {A : Set a} {x : _} (xs ys zs : List A) (i : _) → Σ[ j ∈ _ ]
           lookup (xs ++ ys ++ x ∷ zs) i ≡ lookup (xs ++ x ∷ ys ++ zs) j
 forward (x ∷ xs) ys zs (suc i) with forward xs ys zs i
 forward (x ∷ xs) ys zs (suc i) | j , p = suc j , p
 forward (x ∷ xs) ys zs (zero ) = zero , refl
 forward      []  ys zs (    i) = forward′ ys zs i
   where
-  forward′  : {x : _ } (xs ys : List A) (i : _) → Σ[ j ∈ _ ]
+  forward′  : ∀ {a} {A : Set a} {x : _ } (xs ys : List A) (i : _) → Σ[ j ∈ _ ]
               lookup (xs ++ x ∷ ys) i ≡ lookup (x ∷ xs ++ ys) j
   forward′      []  ys  i      =        i , refl
   forward′ (x ∷ xs) ys  zero   = suc zero , refl
@@ -45,37 +42,43 @@ forward      []  ys zs (    i) = forward′ ys zs i
 -- the length of that list, return an index which is guaranteed to
 -- return the same element (using |lookup|) from a list which is
 -- permuted.
-exchange : (xs ys zs ws : List A) (i : _) → Σ[ j ∈ _ ]
+exchange : ∀ {a} {A : Set a} (xs ys zs ws : List A) (i : _) → Σ[ j ∈ _ ]
            lookup ((xs ++ zs) ++ (ys ++ ws)) i ≡ lookup ((xs ++ ys) ++ (zs ++ ws)) j
-exchange xs ys zs ws i rewrite assoc xs zs (ys ++ ws)
-                             | assoc xs ys (zs ++ ws) = exchange′ xs ys zs ws i
+exchange {a} {A} = exchange′
   where
-  exchange′ : (xs ys zs ws : List A) (i : _) → Σ[ j ∈ _ ]
-              lookup (xs ++ zs ++ ys ++ ws) i ≡ lookup (xs ++ ys ++ zs ++ ws) j
-  exchange′ xs      []  zs ws i rewrite proj₂ identity xs | assoc xs zs ws = i , refl
-  exchange′ xs (y ∷ ys) zs ws i = lem₃
-    where
-    lem₁ : Σ[ j ∈ _ ] lookup (xs ++ zs ++ y ∷ ys ++ ws) i ≡ lookup ((xs ∷ʳ y) ++ zs ++ ys ++ ws) j
-    lem₁ rewrite sym (assoc (xs ∷ʳ y) zs (ys ++ ws))
-               | assoc  xs (y ∷ []) zs
-               | assoc  xs (y ∷ zs) (ys ++ ws) = forward xs zs (ys ++ ws) i
+  open Monoid (Data.List.monoid A) using (assoc; identity)
 
-    lem₂ : Σ[ j ∈ _ ] lookup (xs ++ zs ++ y ∷ ys ++ ws) i ≡ lookup ((xs ∷ʳ y) ++ ys ++ zs ++ ws) j
-    lem₂ with lem₁
-    lem₂ | j , p with exchange′ (xs ∷ʳ y) ys zs ws j
-    lem₂ | j , p | z , q = z , trans p q
-    
-    lem₃ : Σ[ j ∈ _ ] lookup (xs ++ zs ++ y ∷ ys ++ ws) i ≡ lookup (xs ++ y ∷ ys ++ zs ++ ws) j
-    lem₃ rewrite sym (assoc xs (y ∷ ys) (zs ++ ws))
-               | sym (assoc xs (y ∷ []) ys)
-               | assoc (xs ∷ʳ y) ys (zs ++ ws) = lem₂
+  exchange′ : (xs ys zs ws : List A) (i : _) → Σ[ j ∈ _ ]
+             lookup ((xs ++ zs) ++ (ys ++ ws)) i ≡ lookup ((xs ++ ys) ++ (zs ++ ws)) j
+  exchange′ xs ys zs ws i rewrite assoc xs zs (ys ++ ws)
+                                | assoc xs ys (zs ++ ws) = exchange″ xs ys zs ws i
+    where
+    exchange″ : (xs ys zs ws : List A) (i : _) → Σ[ j ∈ _ ]
+                lookup (xs ++ zs ++ ys ++ ws) i ≡ lookup (xs ++ ys ++ zs ++ ws) j
+    exchange″ xs      []  zs ws i rewrite proj₂ identity xs | assoc xs zs ws = i , refl
+    exchange″ xs (y ∷ ys) zs ws i = lem₃
+      where
+      lem₁ : Σ[ j ∈ _ ] lookup (xs ++ zs ++ y ∷ ys ++ ws) i ≡ lookup ((xs ∷ʳ y) ++ zs ++ ys ++ ws) j
+      lem₁ rewrite sym (assoc (xs ∷ʳ y) zs (ys ++ ws))
+                   | assoc  xs (y ∷ []) zs
+                   | assoc  xs (y ∷ zs) (ys ++ ws) = forward xs zs (ys ++ ws) i
+  
+      lem₂ : Σ[ j ∈ _ ] lookup (xs ++ zs ++ y ∷ ys ++ ws) i ≡ lookup ((xs ∷ʳ y) ++ ys ++ zs ++ ws) j
+      lem₂ with lem₁
+      lem₂ | j , p with exchange″ (xs ∷ʳ y) ys zs ws j
+      lem₂ | j , p | z , q = z , trans p q
+      
+      lem₃ : Σ[ j ∈ _ ] lookup (xs ++ zs ++ y ∷ ys ++ ws) i ≡ lookup (xs ++ y ∷ ys ++ zs ++ ws) j
+      lem₃ rewrite sym (assoc xs (y ∷ ys) (zs ++ ws))
+                   | sym (assoc xs (y ∷ []) ys)
+                   | assoc (xs ∷ʳ y) ys (zs ++ ws) = lem₂
 
 
 -- Given a list and an index which is guaranteed to be smaller than
 -- the length of that list, return an index which is guaranteed to
 -- return the same element (using |lookup|) from a list which has
 -- duplicates removed.
-contract : (xs ys : List A) (i : _) → Σ[ j ∈ _ ]
+contract : ∀ {a} {A : Set a} (xs ys : List A) (i : _) → Σ[ j ∈ _ ]
            lookup (xs ++ xs ++ ys) i ≡ lookup (xs ++ ys) j
 contract      []  ys  i      = i , refl
 contract (x ∷ xs) ys  zero   = zero , refl
@@ -89,8 +92,20 @@ contract (x ∷ xs) ys (suc i) | suc _ , p | j , q rewrite p | q = suc j , refl
 -- the length of that list, return an index which is guaranteed to
 -- return the same element (using |lookup|) from a list which has
 -- another list prepended.
-weaken : (xs ys : List A) (i : _) → Σ[ j ∈ _ ]
+weaken : ∀ {a} {A : Set a} (xs ys : List A) (i : _) → Σ[ j ∈ _ ]
          lookup ys i ≡ lookup (xs ++ ys) j
 weaken      []  ys i = i , refl
 weaken (x ∷ xs) ys i with weaken xs ys i
 weaken (x ∷ xs) ys i | j , p = suc j , p
+
+
+-- Given a list, an index which is guaranteed to be smaller than the
+-- length of that list, and a function, return an index which is
+-- guaranteed to return the result of applying the function to element
+-- (using |lookup|) from a list which has the function mapped over it.
+map-lookup : ∀ {a b} {A : Set a} {B : Set b} {f : A → B} (xs : List A) (i : _) → Σ[ j ∈ _ ]
+             (f (lookup xs i)) ≡ (lookup (map f xs) j)
+map-lookup [] ()
+map-lookup (x ∷ xs) zero = zero , refl
+map-lookup (x ∷ xs) (suc i) with map-lookup xs i
+map-lookup (x ∷ xs) (suc i) | j , p = suc j , p
