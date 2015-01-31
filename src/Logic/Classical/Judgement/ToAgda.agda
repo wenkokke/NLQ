@@ -10,15 +10,14 @@ module Logic.Classical.Judgement.ToAgda {ℓ₁ ℓ₂} (Univ : Set ℓ₁) (⟦
 
 open import Logic.Type Univ
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment
-open import Logic.Classical.Judgement Univ
+open import Logic.Classical.Judgement (List Type) Type (List Type)
 
 
 ¬_  : Set ℓ₂ → Set ℓ₂
 ¬ A = A → R
 
-
--- Lemma: justification for the types that are derived below.
 private
+  -- Lemma: justification for the types that are derived below.
   lemma-→ : ∀ {A B} (k : ¬ ¬ (A → B)) → (¬ B → ¬ A)
   lemma-→ ¬¬[A→B] ¬B A = ¬¬[A→B] (λ A→B → ¬B (A→B A))
 
@@ -29,23 +28,22 @@ private
   lemma-⊎ ¬¬[A+B] (¬A , ¬B) = ¬¬[A+B] [ ¬A , ¬B ]
 
 
-infix 1 λΠ_
-
-⟦_⟧ : Type → Set ℓ₂
-⟦ el A  ⟧ =        ⟦ A ⟧ᵁ
-⟦ A ⇒ B ⟧ =      ¬ ⟦ B ⟧ → ¬ ⟦ A ⟧
-⟦ A ⇚ B ⟧ =      ¬ ⟦ B ⟧ ×   ⟦ A ⟧
-⟦ A ⊗ B ⟧ = ¬ ¬ (  ⟦ A ⟧ ×   ⟦ B ⟧)
-⟦ B ⇐ A ⟧ =      ¬ ⟦ B ⟧ → ¬ ⟦ A ⟧
-⟦ B ⇛ A ⟧ =      ¬ ⟦ B ⟧ ×   ⟦ A ⟧
-⟦ A ⊕ B ⟧ = ¬   (¬ ⟦ A ⟧ × ¬ ⟦ B ⟧)
-
+-- Translation to Agda
+⟦_⟧ᵀ : Type → Set ℓ₂
+⟦ el A  ⟧ᵀ =        ⟦ A ⟧ᵁ
+⟦ A ⇒ B ⟧ᵀ =      ¬ ⟦ B ⟧ᵀ → ¬ ⟦ A ⟧ᵀ
+⟦ B ⇐ A ⟧ᵀ =      ¬ ⟦ B ⟧ᵀ → ¬ ⟦ A ⟧ᵀ
+⟦ A ⇚ B ⟧ᵀ =      ¬ ⟦ B ⟧ᵀ ×   ⟦ A ⟧ᵀ
+⟦ B ⇛ A ⟧ᵀ =      ¬ ⟦ B ⟧ᵀ ×   ⟦ A ⟧ᵀ
+⟦ A ⊗ B ⟧ᵀ = ¬ ¬ (  ⟦ A ⟧ᵀ ×   ⟦ B ⟧ᵀ)
+⟦ A ⊕ B ⟧ᵀ = ¬   (¬ ⟦ A ⟧ᵀ × ¬ ⟦ B ⟧ᵀ)
+  
 ⟦_⟧⁺ : List Type → List (Set ℓ₂) 
-⟦_⟧⁺ = map ⟦_⟧
-
+⟦_⟧⁺ = map ⟦_⟧ᵀ
+  
 ⟦_⟧⁻ : List Type → List (Set ℓ₂)
-⟦_⟧⁻ = map (¬_ ∘ ⟦_⟧)
-
-λΠ_ : Judgement → Set (suc ℓ₂)
-λΠ Γ ⊢      Δ = Env ⟦ Γ ⟧⁺ → Env ⟦     Δ ⟧⁻ → R
-λΠ Γ ⊢[ A ] Δ = Env ⟦ Γ ⟧⁺ → Env ⟦ A , Δ ⟧⁻ → R
+⟦_⟧⁻ = map (¬_ ∘ ⟦_⟧ᵀ)
+  
+⟦_⟧ᴶ : Judgement → Set (suc ℓ₂)
+⟦ Γ ⊢      Δ ⟧ᴶ = Env ⟦ Γ ⟧⁺ → Env ⟦     Δ ⟧⁻ → R
+⟦ Γ ⊢[ A ] Δ ⟧ᴶ = Env ⟦ Γ ⟧⁺ → Env ⟦ A , Δ ⟧⁻ → R

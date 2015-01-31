@@ -8,7 +8,7 @@ module Logic.Classical.Linear.LambdaCMinus.ToUnrestricted {ℓ} (Univ : Set ℓ)
 
 open import Logic.Type Univ renaming (_⇚_ to _-_)
 open import Logic.Index renaming (lookup to _‼_)
-open import Logic.Translation using (Translation)
+open import Logic.Translation Univ 
 open import Logic.Classical.Judgement (List Type) Type (List Type)
 open import Logic.Classical.Linear.LambdaCMinus.Base Univ as L
 open import Logic.Classical.Unrestricted.LambdaCMinus.Base Univ as U
@@ -28,5 +28,5 @@ private
   [ L.eᴸ  Γ₁ Γ₂ Γ₃ Γ₄ f   ] = U.eᴸ  Γ₁ Γ₂ Γ₃ Γ₄ [ f ]
 
 
-tr : Translation L.λC⁻_ U.λC⁻_
-tr = record { ⟦_⟧ = id ; [_] = [_] }
+Lin→Un : Translation Type L.λC⁻_ U.λC⁻_
+Lin→Un = record { ⟦_⟧ᵀ = id ; ⟦_⟧ᴶ = id ; [_] = [_] }

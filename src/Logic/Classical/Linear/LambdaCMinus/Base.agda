@@ -225,3 +225,10 @@ cᴿ′ : ∀ {Γ} (Δ₁ Δ₂ : List Type)
     → λC⁻ Γ ⊢            Δ₁ ++ Δ₂
 cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) with contract Δ₁ Δ₂ α
 cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) | β , p rewrite p = ⇒ₑᵏ β (cᴿ Δ₁ Δ₂ f)
+
+
+-- Lemma: introduction and elimination of right-handed empty context.
+∅ᵢ : ∀ {Γ A Δ} → λC⁻ Γ      ⊢[ A ] Δ → λC⁻ Γ ++ ∅ ⊢[ A ] Δ
+∅ᵢ {Γ} f rewrite proj₂ identity Γ = f
+∅ₑ : ∀ {Γ A Δ} → λC⁻ Γ ++ ∅ ⊢[ A ] Δ → λC⁻ Γ      ⊢[ A ] Δ
+∅ₑ {Γ} f rewrite proj₂ identity Γ = f

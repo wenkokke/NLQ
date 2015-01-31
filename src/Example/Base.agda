@@ -1,9 +1,8 @@
 open import Data.Bool                             using (Bool; true; false)
-open import Data.Nat                              using (suc; zero) renaming (ℕ to Entity)
 open import Relation.Nullary                      using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
-module Example.Base where
+module Example.Base (Entity : Set) where
 
 
 data Univ : Set where
@@ -29,3 +28,8 @@ S  ≟-Univ S  = yes refl
 ⟦ NP ⟧ᵁ = Entity
 ⟦ S  ⟧ᵁ = Bool
 
+
+_⊃_ : Bool → Bool → Bool
+true  ⊃ true  = true
+true  ⊃ false = false
+false ⊃ _     = true
