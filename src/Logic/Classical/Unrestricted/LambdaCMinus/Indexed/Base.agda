@@ -1,5 +1,5 @@
 open import Algebra                               using (module Monoid)
-open import Function                              using (id; _∘_)
+open import Function                              using (id; _∘_; _$_)
 open import Data.Fin                              using (Fin; suc; zero; #_)
 open import Data.List                             using (List; _++_) renaming ([] to ∅; _∷_ to _,_)
 open import Data.Product                          using (Σ; Σ-syntax; _×_; _,_; proj₁; proj₂; map)
@@ -294,3 +294,12 @@ cᴿ′ : ∀ {Γ} (Δ₁ Δ₂ : List Type)
     → λC⁻ Γ ⊢            Δ₁ ++ Δ₂
 cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) with contract Δ₁ Δ₂ α
 cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) | β , p rewrite p = ⇒ₑᵏ β (cᴿ Δ₁ Δ₂ f)
+
+
+-- Lemma: every function can be lifted to a function with the identity
+-- continuation.
+lift : ∀ {Γ A B C Δ} → λC⁻ A ⇒ B , Γ ⊢[ A - C ⇒ B - C ] Δ
+lift = ⇒ᵢ
+     $ -ₑ (ax (# 0))
+     $ -ᵢ (⇒ₑ (ax (# 2)) (ax (# 0))) -- apply the function
+          (⇒ₑᵏ    (# 0)  (ax (# 0))) -- pass the continuation

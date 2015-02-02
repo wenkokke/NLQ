@@ -1,5 +1,5 @@
 open import Algebra                               using (module Monoid)
-open import Function                              using (id; _∘_)
+open import Function                              using (id; _∘_; _$_)
 open import Data.Fin                              using (Fin; suc; zero; #_)
 open import Data.List                             using (List; _++_) renaming ([] to ∅; _∷_ to _,_; _∷ʳ_ to _,ʳ_)
 open import Data.Product                          using (Σ; Σ-syntax; _×_; _,_; proj₁; proj₂; map)
@@ -10,7 +10,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst
 module Logic.Classical.Ordered.LambdaCMinus.Base {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Index renaming (lookup to _‼_)
+open import Logic.Index
 open import Logic.Type Univ renaming (_⇚_ to _-_)
 open import Logic.Structure.Conjunction Univ
 open import Logic.Classical.Judgement Conjunction Type (List Type)
@@ -50,22 +50,30 @@ data λC⁻_ : Judgement → Set ℓ where
        → λC⁻         Γ               ⊢[ Δ ‼ α ]     Δ
        → λC⁻         Γ               ⊢              Δ
 
-  ⇚ᵢ   : ∀ {Γ₁ Γ₂ A B Δ}
+  -ᵢ₀  : ∀ {Γ A Δ} (α : Fin _)
+       → λC⁻         Γ               ⊢[ A         ] Δ
+       → λC⁻         Γ               ⊢[ A - Δ ‼ α ] Δ
+
+  -ᵢ₁  : ∀ {Γ₁ Γ₂ A B Δ}
        → λC⁻         Γ₁              ⊢[ A     ]     Δ
        → λC⁻ · B · ⊗      Γ₂         ⊢              Δ
        → λC⁻         Γ₁ ⊗ Γ₂         ⊢[ A - B ]     Δ
 
-  ⇛ᵢ   : ∀ {Γ₁ Γ₂ A B Δ}
+  -ᵢ₂  : ∀ {Γ₁ Γ₂ A B Δ}
        → λC⁻              Γ₂         ⊢[ A     ]     Δ
        → λC⁻         Γ₁      ⊗ · B · ⊢              Δ
        → λC⁻         Γ₁ ⊗ Γ₂         ⊢[ A - B ]     Δ
 
-  ⇚ₑ   : ∀ {Γ₁ Γ₂ A B C Δ}
+  -ₑ₀  : ∀ {Γ A Δ} (α : Fin _)
+       → λC⁻         Γ               ⊢[ A - Δ ‼ α ] Δ
+       → λC⁻         Γ               ⊢[ A         ] Δ
+
+  -ₑ₁  : ∀ {Γ₁ Γ₂ A B C Δ}
        → λC⁻         Γ₁              ⊢[ A - B ]     Δ
        → λC⁻ · A · ⊗      Γ₂         ⊢[ C     ] B , Δ
        → λC⁻         Γ₁ ⊗ Γ₂         ⊢[ C     ]     Δ
-
-  ⇛ₑ   : ∀ {Γ₁ Γ₂ A B C Δ}       
+       
+  -ₑ₂  : ∀ {Γ₁ Γ₂ A B C Δ}       
        → λC⁻         Γ₁      ⊗ · A · ⊢[ C     ] B , Δ
        → λC⁻              Γ₂         ⊢[ A - B ]     Δ
        → λC⁻         Γ₁ ⊗ Γ₂         ⊢[ C     ]     Δ
@@ -93,10 +101,14 @@ mutual
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⇐ᵢ              f  ) = ⇐ᵢ    (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f)
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⇐ₑ              f g) = ⇐ₑ    (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ g)
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (raa             f  ) = raa   (eᴿ′ (_ , Δ₁) Δ₂ Δ₃ Δ₄ f)
-  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⇚ᵢ              f g) = ⇚ᵢ    (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ′      Δ₁  Δ₂ Δ₃ Δ₄ g)
-  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⇛ᵢ              f g) = ⇛ᵢ    (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ′      Δ₁  Δ₂ Δ₃ Δ₄ g)
-  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⇚ₑ              f g) = ⇚ₑ    (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ  (_ , Δ₁) Δ₂ Δ₃ Δ₄ g)
-  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⇛ₑ              f g) = ⇛ₑ    (eᴿ  (_ , Δ₁) Δ₂ Δ₃ Δ₄ f) (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ g)
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ᵢ₀             α f) with (exchange Δ₁ Δ₂ Δ₃ Δ₄ α)
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ᵢ₀             α f) | β , p rewrite p = -ᵢ₀ β (eᴿ Δ₁ Δ₂ Δ₃ Δ₄ f)
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ₑ₀             α f) with (exchange Δ₁ Δ₂ Δ₃ Δ₄ α)
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ₑ₀             α f) | β , p rewrite p = -ₑ₀ β (eᴿ Δ₁ Δ₂ Δ₃ Δ₄ f)
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ᵢ₁             f g) = -ᵢ₁   (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ′      Δ₁  Δ₂ Δ₃ Δ₄ g)
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ᵢ₂             f g) = -ᵢ₂   (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ′      Δ₁  Δ₂ Δ₃ Δ₄ g)
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ₑ₁             f g) = -ₑ₁   (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ  (_ , Δ₁) Δ₂ Δ₃ Δ₄ g)
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ₑ₂             f g) = -ₑ₂   (eᴿ  (_ , Δ₁) Δ₂ Δ₃ Δ₄ f) (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ g)
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⊗ᵢ              f g) = ⊗ᵢ    (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ g)
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⊗ₑ  Γ           f g) = ⊗ₑ  Γ (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ g)
   
@@ -147,10 +159,12 @@ mutual
   wᴿ₁  (⇐ᵢ              f  ) = ⇐ᵢ    (wᴿ₁  f)
   wᴿ₁  (⇐ₑ              f g) = ⇐ₑ    (wᴿ₁  f) (wᴿ₁ g)
   wᴿ₁  (raa             f  ) = raa   (eᴿ₁′ (wᴿ₁′ f))
-  wᴿ₁  (⇚ᵢ              f g) = ⇚ᵢ    (wᴿ₁  f) (wᴿ₁′ g)
-  wᴿ₁  (⇛ᵢ              f g) = ⇛ᵢ    (wᴿ₁  f) (wᴿ₁′ g)
-  wᴿ₁  (⇚ₑ              f g) = ⇚ₑ    (wᴿ₁  f) (eᴿ₁ (wᴿ₁ g))
-  wᴿ₁  (⇛ₑ              f g) = ⇛ₑ    (eᴿ₁ (wᴿ₁ f)) (wᴿ₁  g)
+  wᴿ₁  (-ᵢ₀             α f) = -ᵢ₀   (suc  α) (wᴿ₁  f)
+  wᴿ₁  (-ₑ₀             α f) = -ₑ₀   (suc  α) (wᴿ₁  f)
+  wᴿ₁  (-ᵢ₁             f g) = -ᵢ₁   (wᴿ₁  f) (wᴿ₁′ g)
+  wᴿ₁  (-ᵢ₂             f g) = -ᵢ₂   (wᴿ₁  f) (wᴿ₁′ g)
+  wᴿ₁  (-ₑ₁             f g) = -ₑ₁   (wᴿ₁  f) (eᴿ₁ (wᴿ₁ g))
+  wᴿ₁  (-ₑ₂             f g) = -ₑ₂   (eᴿ₁ (wᴿ₁ f)) (wᴿ₁  g)
   wᴿ₁  (⊗ᵢ              f g) = ⊗ᵢ    (wᴿ₁  f) (wᴿ₁ g)
   wᴿ₁  (⊗ₑ  Γ           f g) = ⊗ₑ  Γ (wᴿ₁  f) (wᴿ₁ g) 
   
@@ -176,17 +190,17 @@ wᴿ′ (A , Δ₁) f = wᴿ₁′ (wᴿ′ Δ₁ f)
 
 
 -- There are two special versions for the right-hand sided lemmas,
--- |ėᴿ₁| and |ċᴿ₁|, which allow for exchange with and contraction into
+-- |e₁| and |c₁|, which allow for exchange with and contraction into
 -- focused expressions.
-ėᴿ₁ : ∀ {Γ A B Δ}
+e₁ : ∀ {Γ A B Δ}
      → λC⁻ Γ ⊢[ A ] B , Δ
      → λC⁻ Γ ⊢[ B ] A , Δ
-ėᴿ₁ f = raa (⇒ₑᵏ (# 1) (eᴿ₁ (wᴿ₁ f)))
+e₁ f = raa (⇒ₑᵏ (# 1) (eᴿ₁ (wᴿ₁ f)))
 
-ċᴿ₁  : ∀ {Γ A Δ}
+c₁  : ∀ {Γ A Δ}
      → λC⁻ Γ ⊢[ A ] A , Δ
      → λC⁻ Γ ⊢[ A ]     Δ
-ċᴿ₁  f = raa (⇒ₑᵏ (# 0) f)
+c₁  f = raa (⇒ₑᵏ (# 0) f)
 
 
 -- Lemma: weaker versions of contraction, which contract two (co-)values of
@@ -194,7 +208,7 @@ ċᴿ₁  f = raa (⇒ₑᵏ (# 0) f)
 cᴿ₁  : ∀ {Γ A B Δ}
      → λC⁻ Γ ⊢[ A ] B , (B , Δ)
      → λC⁻ Γ ⊢[ A ]      B , Δ
-cᴿ₁  f = ėᴿ₁ (ċᴿ₁ (eᴿ₁ (ėᴿ₁ f)))
+cᴿ₁  f = e₁ (c₁ (eᴿ₁ (e₁ f)))
 
 cᴿ₁′ : ∀ {Γ B Δ}
      → λC⁻ Γ ⊢      B , (B , Δ)
@@ -219,3 +233,26 @@ cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) with contract Δ₁ Δ₂ α
 cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) | β , p rewrite p = ⇒ₑᵏ β (cᴿ Δ₁ Δ₂ f)
 
 
+-ᵢᴸ₁  : ∀ {Γ A B C Δ}
+     → λC⁻ · A     · ⊗ Γ ⊢[ B ] C , Δ
+     → λC⁻ · A - C · ⊗ Γ ⊢[ B ] C , Δ
+-ᵢᴸ₁  f = -ₑ₁ ax (wᴿ₁ f)
+
+-ᵢᴸ₂ : ∀ {Γ A B C Δ}
+    → λC⁻ Γ ⊗ · A     · ⊢[ B ] C , Δ
+    → λC⁻ Γ ⊗ · A - C · ⊢[ B ] C , Δ
+-ᵢᴸ₂ f = -ₑ₂(wᴿ₁ f) ax
+
+-ₑᴸ₁  : ∀ {Γ A B C Δ}
+     → λC⁻ · A - C · ⊗ Γ ⊢[ B ] C , Δ
+     → λC⁻ · A     · ⊗ Γ ⊢[ B ] C , Δ     
+-ₑᴸ₁  f = ⇒ₑ (-ᵢ₀ (# 0) ax) (⇒ᵢ f)
+
+-ₑᴸ₂  : ∀ {Γ A B C Δ}
+     → λC⁻ Γ ⊗ · A - C · ⊢[ B ] C , Δ
+     → λC⁻ Γ ⊗ · A     · ⊢[ B ] C , Δ     
+-ₑᴸ₂  f = ⇐ₑ (⇐ᵢ f) (-ᵢ₀ (# 0) ax)
+
+⇛-lowerᴸ : ∀ {A B C Δ}
+         → λC⁻ · A - C ⇒ B - C · ⊢[ A ⇒ B ] C , Δ
+⇛-lowerᴸ = ⇒ᵢ (-ₑ₀ (# 0) (-ₑᴸ₁ (⇒ₑ ax ax)))

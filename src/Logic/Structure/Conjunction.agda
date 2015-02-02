@@ -32,11 +32,3 @@ _[_] : Context → Conjunction → Conjunction
 (Γ₁ ⊗> Γ₂) [ Δ ] =  Γ₁        ⊗ (Γ₂ [ Δ ])
 (Γ₁ <⊗ Γ₂) [ Δ ] = (Γ₁ [ Δ ]) ⊗  Γ₂
 
-
-⌊_⌋ : Conjunction → Type
-⌊ · A · ⌋ =       A
-⌊ Γ ⊗ Δ ⌋ = ⌊ Γ ⌋ ⊗ ⌊ Δ ⌋
-
-⌈_⌉ : Type → Conjunction
-⌈ A ⊗ B ⌉ = ⌈ A ⌉ ⊗ ⌈ B ⌉
-⌈   A   ⌉ =     · A ·
