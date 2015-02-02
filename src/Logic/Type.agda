@@ -6,8 +6,8 @@ module Logic.Type {ℓ} (Univ : Set ℓ) where
 
 infixr 20 _⇒_
 infixl 20 _⇐_
-infixl 20 _⇚_
-infixr 20 _⇛_
+infixl 25 _⇚_
+infixr 25 _⇛_
 infixr 30 _⊗_
 infixr 30 _⊕_
 
@@ -18,7 +18,7 @@ data Type : Set ℓ where
 
   _⇒_ : Type → Type → Type
   _⇐_ : Type → Type → Type
-
+  
   _⇚_ : Type → Type → Type
   _⇛_ : Type → Type → Type
 

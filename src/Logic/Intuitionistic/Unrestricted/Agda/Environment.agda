@@ -7,7 +7,7 @@ open import Data.Product using (_×_; _,_; uncurry′)
 module Logic.Intuitionistic.Unrestricted.Agda.Environment {ℓ} where
 
 
-open import Logic.Index renaming (lookup to _‼_) hiding (exchange)
+open import Logic.Index hiding (exchange)
 
 
 data Env : List (Set ℓ) → Set (lsuc ℓ) where

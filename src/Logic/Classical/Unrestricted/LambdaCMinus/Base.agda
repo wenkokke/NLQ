@@ -1,5 +1,5 @@
 open import Algebra                               using (module Monoid)
-open import Function                              using (id; _∘_)
+open import Function                              using (id; _∘_; _$_)
 open import Data.Fin                              using (Fin; suc; zero; #_)
 open import Data.List                             using (List; _++_) renaming ([] to ∅; _∷_ to _,_)
 open import Data.Product                          using (Σ; Σ-syntax; _×_; _,_; proj₁; proj₂; map)
@@ -11,7 +11,7 @@ module Logic.Classical.Unrestricted.LambdaCMinus.Base {ℓ} (Univ : Set ℓ) whe
 
 
 open import Logic.Type  Univ  renaming (_⇚_ to _-_)
-open import Logic.Index       renaming (lookup to _‼_)
+open import Logic.Index
 open import Logic.Classical.Judgement (List Type) Type (List Type)
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
@@ -282,3 +282,14 @@ axᵢ : ∀ {Γ Δ} (x : _) → λC⁻ Γ ⊢[ Γ ‼ x ] Δ
 axᵢ {Γ = ∅} ()
 axᵢ {Γ = A , Γ}  zero   = sᴸ (A , ∅) (wᴸ Γ ax)
 axᵢ {Γ = A , Γ} (suc x) = wᴸ₁ (axᵢ x)
+
+
+-- Lemma: every function can be lifted to a function with the identity
+-- continuation.
+lift : ∀ {Γ A B C Δ} → λC⁻ A ⇒ B , Γ ⊢[ A - C ⇒ B - C ] Δ
+lift {Γ} {A} {B} {C} {Δ}
+     = ⇒ᵢ
+     $ -ₑ {A - C , ∅} {A ⇒ B , Γ} ax
+     $ -ᵢ {A , (A ⇒ B , ∅)} {Γ}
+       (sᴸ  (A , ∅) (⇒ₑ ax ax))
+       (sᴸ′ (C , ∅) (wᴸ′ Γ (⇒ₑᵏ (# 0) ax)))

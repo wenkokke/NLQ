@@ -20,6 +20,16 @@ SOMEONE₁ = ((el NP ⇐ el N) ⊗ el N)
 someone₁ : ⟦ SOMEONE₁ ⟧ᵀ
 someone₁ = (λ k → k ((λ p₁ p₂ → existsₑ (λ x → p₂ x ∧ p₁ x)) , person))
 
+EVERYONE₂ : Type
+EVERYONE₂ = ((el NP - el S ⇐ el N - el S) ⊗ el N)
+everyone₂ : ⟦ EVERYONE₂ ⟧ᵀ
+everyone₂ = λ k₁ → k₁ ((λ k₂ → λ {(k₃ , p) → forallₑ (λ x → k₂ ((λ b → k₃ b ⊃ p x) , x))}) , person)
+
+SOMEONE₂ : Type
+SOMEONE₂ = ((el NP - el S ⇐ el N - el S) ⊗ el N)
+someone₂ : ⟦ SOMEONE₂ ⟧ᵀ
+someone₂ = λ k₁ → k₁ ((λ k₂ → λ {(k₃ , p) → existsₑ (λ x → k₂ ((λ b → k₃ b ∧ p x) , x))}) , person)
+
 JOHN_LOVES_MARY : λC⁻ · JOHN · ⊗ (· LOVES · ⊗ · MARY ·) ⊢[ el S ] ∅
 JOHN_LOVES_MARY = ⇒ₑ ax (⇐ₑ ax ax)
 john_loves_mary : Bool
@@ -42,13 +52,21 @@ everyone_loves_mary = [ EVERYONE_LOVES_MARY ] (everyone₁ , (loves , (mary , �
 -- reading.
 
 EVERYONE_LOVES_SOMEONE₁ : λC⁻ · EVERYONE₁ · ⊗ (· LOVES · ⊗ · SOMEONE₁ ·) ⊢[ el S ] ∅
-EVERYONE_LOVES_SOMEONE₁ = ⇒ₑ (⊗ₑ [] ax (⇐ₑ ax ax)) (⇐ₑ ax (⊗ₑ [] ax (⇐ₑ ax ax)))
+EVERYONE_LOVES_SOMEONE₁
+  = ⇒ₑ    (⊗ₑ [] ax (⇐ₑ ax ax))
+  $ ⇐ₑ ax (⊗ₑ [] ax (⇐ₑ ax ax))
 everyone_loves_someone₁ : Bool
 everyone_loves_someone₁ = [ EVERYONE_LOVES_SOMEONE₁ ] (everyone₁ , (loves , (someone₁ , ∅))) (id , ∅)
 
 -- Back to the drawing board!
 
-EVERYONE_LOVES_SOMEONE₂ : λC⁻ · EVERYONE₁ · ⊗ (· LOVES · ⊗ · SOMEONE₁ ·) ⊢[ el S ] ∅
-EVERYONE_LOVES_SOMEONE₂ = {!!}
+EVERYONE_LOVES_SOMEONE₂ : λC⁻ · EVERYONE₂ · ⊗ (· LOVES · ⊗ · SOMEONE₂ ·) ⊢[ el S ] ∅
+EVERYONE_LOVES_SOMEONE₂
+  = raa ∘ ⇒ₑᵏ (# 0)
+  $ ⇒ₑ {A = el NP}
+    (⊗ₑ [] ax (⇐ₑ (⇐ᵢ (-ₑ₀ (# 0) (-ₑᴸ₂ (⇐ₑ ax ax)))) ax))
+  $ ⇐ₑ {A = el NP} ax
+    (⊗ₑ [] ax (⇐ₑ (⇐ᵢ (-ₑ₀ (# 0) (-ₑᴸ₂ (⇐ₑ ax ax)))) ax)) 
 everyone_loves_someone₂ : Bool
-everyone_loves_someone₂ = [ EVERYONE_LOVES_SOMEONE₂ ] (everyone₁ , (loves , (someone₁ , ∅))) (id , ∅)
+everyone_loves_someone₂ = [ EVERYONE_LOVES_SOMEONE₂ ] (everyone₂ , (loves , (someone₂ , ∅))) (id , ∅)
+
