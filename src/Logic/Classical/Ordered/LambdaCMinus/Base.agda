@@ -13,7 +13,7 @@ module Logic.Classical.Ordered.LambdaCMinus.Base {ℓ} (Univ : Set ℓ) where
 open import Logic.Index
 open import Logic.Type Univ renaming (_⇚_ to _-_)
 open import Logic.Structure.Conjunction Univ
-open import Logic.Classical.Judgement Conjunction Type (List Type)
+open import Logic.Judgement Conjunction Type (List Type)
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 
@@ -74,8 +74,8 @@ data λC⁻_ : Judgement → Set ℓ where
        → λC⁻         Γ₁ ⊗ Γ₂         ⊢[ C     ]     Δ
        
   -ₑ₂  : ∀ {Γ₁ Γ₂ A B C Δ}       
-       → λC⁻         Γ₁      ⊗ · A · ⊢[ C     ] B , Δ
        → λC⁻              Γ₂         ⊢[ A - B ]     Δ
+       → λC⁻         Γ₁      ⊗ · A · ⊢[ C     ] B , Δ
        → λC⁻         Γ₁ ⊗ Γ₂         ⊢[ C     ]     Δ
 
   ⊗ᵢ   : ∀ {Γ₁ Γ₂ A B Δ}
@@ -108,7 +108,7 @@ mutual
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ᵢ₁             f g) = -ᵢ₁   (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ′      Δ₁  Δ₂ Δ₃ Δ₄ g)
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ᵢ₂             f g) = -ᵢ₂   (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ′      Δ₁  Δ₂ Δ₃ Δ₄ g)
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ₑ₁             f g) = -ₑ₁   (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ  (_ , Δ₁) Δ₂ Δ₃ Δ₄ g)
-  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ₑ₂             f g) = -ₑ₂   (eᴿ  (_ , Δ₁) Δ₂ Δ₃ Δ₄ f) (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ g)
+  eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ₑ₂             f g) = -ₑ₂   (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ  (_ , Δ₁) Δ₂ Δ₃ Δ₄ g)
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⊗ᵢ              f g) = ⊗ᵢ    (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ g)
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⊗ₑ  Γ           f g) = ⊗ₑ  Γ (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ g)
   
@@ -164,7 +164,7 @@ mutual
   wᴿ₁  (-ᵢ₁             f g) = -ᵢ₁   (wᴿ₁  f) (wᴿ₁′ g)
   wᴿ₁  (-ᵢ₂             f g) = -ᵢ₂   (wᴿ₁  f) (wᴿ₁′ g)
   wᴿ₁  (-ₑ₁             f g) = -ₑ₁   (wᴿ₁  f) (eᴿ₁ (wᴿ₁ g))
-  wᴿ₁  (-ₑ₂             f g) = -ₑ₂   (eᴿ₁ (wᴿ₁ f)) (wᴿ₁  g)
+  wᴿ₁  (-ₑ₂             f g) = -ₑ₂   (wᴿ₁  f) (eᴿ₁ (wᴿ₁ g))
   wᴿ₁  (⊗ᵢ              f g) = ⊗ᵢ    (wᴿ₁  f) (wᴿ₁ g)
   wᴿ₁  (⊗ₑ  Γ           f g) = ⊗ₑ  Γ (wᴿ₁  f) (wᴿ₁ g) 
   
@@ -233,26 +233,23 @@ cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) with contract Δ₁ Δ₂ α
 cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) | β , p rewrite p = ⇒ₑᵏ β (cᴿ Δ₁ Δ₂ f)
 
 
--ᵢᴸ₁  : ∀ {Γ A B C Δ}
-     → λC⁻ · A     · ⊗ Γ ⊢[ B ] C , Δ
-     → λC⁻ · A - C · ⊗ Γ ⊢[ B ] C , Δ
--ᵢᴸ₁  f = -ₑ₁ ax (wᴿ₁ f)
+-ᵢᴸ₁  : ∀ {Γ A B Δ} (α : Fin _)
+      → λC⁻ · A - Δ ‼ α · ⊗ Γ ⊢[ B ] Δ
+      → λC⁻ · A         · ⊗ Γ ⊢[ B ] Δ     
+-ᵢᴸ₁  α f = ⇒ₑ (-ᵢ₀ α ax) (⇒ᵢ f)
 
--ᵢᴸ₂ : ∀ {Γ A B C Δ}
-    → λC⁻ Γ ⊗ · A     · ⊢[ B ] C , Δ
-    → λC⁻ Γ ⊗ · A - C · ⊢[ B ] C , Δ
--ᵢᴸ₂ f = -ₑ₂(wᴿ₁ f) ax
+-ᵢᴸ₂  : ∀ {Γ A B Δ} (α : Fin _)
+      → λC⁻ Γ ⊗ · A - Δ ‼ α · ⊢[ B ] Δ
+      → λC⁻ Γ ⊗ · A         · ⊢[ B ] Δ     
+-ᵢᴸ₂  α f = ⇐ₑ (⇐ᵢ f) (-ᵢ₀ α ax)
 
--ₑᴸ₁  : ∀ {Γ A B C Δ}
-     → λC⁻ · A - C · ⊗ Γ ⊢[ B ] C , Δ
-     → λC⁻ · A     · ⊗ Γ ⊢[ B ] C , Δ     
--ₑᴸ₁  f = ⇒ₑ (-ᵢ₀ (# 0) ax) (⇒ᵢ f)
+-ₑᴸ₁  : ∀ {Γ A B Δ} (α : Fin _)
+      → λC⁻ · A         · ⊗ Γ ⊢[ B ] Δ
+      → λC⁻ · A - Δ ‼ α · ⊗ Γ ⊢[ B ] Δ
+-ₑᴸ₁  α f = ⇒ₑ (-ₑ₀ α ax) (⇒ᵢ f)
 
--ₑᴸ₂  : ∀ {Γ A B C Δ}
-     → λC⁻ Γ ⊗ · A - C · ⊢[ B ] C , Δ
-     → λC⁻ Γ ⊗ · A     · ⊢[ B ] C , Δ     
--ₑᴸ₂  f = ⇐ₑ (⇐ᵢ f) (-ᵢ₀ (# 0) ax)
+-ₑᴸ₂ : ∀ {Γ A B Δ} (α : Fin _)
+     → λC⁻ Γ ⊗ · A         · ⊢[ B ] Δ
+     → λC⁻ Γ ⊗ · A - Δ ‼ α · ⊢[ B ] Δ
+-ₑᴸ₂ α f = ⇐ₑ (⇐ᵢ f) (-ₑ₀ α ax)
 
-⇛-lowerᴸ : ∀ {A B C Δ}
-         → λC⁻ · A - C ⇒ B - C · ⊢[ A ⇒ B ] C , Δ
-⇛-lowerᴸ = ⇒ᵢ (-ₑ₀ (# 0) (-ₑᴸ₁ (⇒ₑ ax ax)))

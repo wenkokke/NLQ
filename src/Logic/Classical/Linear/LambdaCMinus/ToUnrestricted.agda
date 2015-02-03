@@ -9,7 +9,7 @@ module Logic.Classical.Linear.LambdaCMinus.ToUnrestricted {ℓ} (Univ : Set ℓ)
 open import Logic.Type Univ renaming (_⇚_ to _-_)
 open import Logic.Index
 open import Logic.Translation Univ 
-open import Logic.Classical.Judgement (List Type) Type (List Type)
+open import Logic.Judgement (List Type) Type (List Type)
 open import Logic.Classical.Linear.LambdaCMinus.Base Univ as L
 open import Logic.Classical.Unrestricted.LambdaCMinus.Base Univ as U
 

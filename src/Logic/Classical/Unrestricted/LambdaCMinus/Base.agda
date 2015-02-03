@@ -10,9 +10,9 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst
 module Logic.Classical.Unrestricted.LambdaCMinus.Base {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type  Univ  renaming (_⇚_ to _-_)
 open import Logic.Index
-open import Logic.Classical.Judgement (List Type) Type (List Type)
+open import Logic.Type Univ renaming (_⇚_ to _-_)
+open import Logic.Judgement (List Type) Type (List Type)
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 

@@ -17,7 +17,7 @@ open import Logic.Translation                                  Univ
 open import Logic.Type                                         Univ public renaming (_⇚_ to _-_)
 open import Logic.Structure.Conjunction                        Univ public
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment      public
-open import Logic.Classical.Judgement Conjunction Type (List Type)  public
+open import Logic.Judgement Conjunction Type (List Type)  public
 open import Logic.Classical.Ordered.LambdaCMinus.Base          Univ public    
 open import Logic.Classical.Ordered.LambdaCMinus.ToLinear      Univ     
 open import Logic.Classical.Linear.LambdaCMinus.ToUnrestricted Univ           
