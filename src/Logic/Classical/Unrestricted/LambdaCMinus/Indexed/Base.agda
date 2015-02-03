@@ -1,7 +1,7 @@
 open import Algebra                               using (module Monoid)
-open import Function                              using (id; _∘_; _$_)
+open import Function                              using (id; _∘_)
 open import Data.Fin                              using (Fin; suc; zero; #_)
-open import Data.List                             using (List; _++_) renaming ([] to ∅; _∷_ to _,_)
+open import Data.List                             using (List; length; _++_) renaming ([] to ∅; _∷_ to _,_)
 open import Data.Product                          using (Σ; Σ-syntax; _×_; _,_; proj₁; proj₂; map)
 open import Data.Sum                              using (_⊎_; inj₁; inj₂)
 open import Relation.Nullary.Decidable            using (True; toWitness; fromWitness)
@@ -11,7 +11,7 @@ module Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base {ℓ} (Univ : Set 
 
 
 open import Logic.Type  Univ  renaming (_⇚_ to _-_)
-open import Logic.Index       renaming (lookup to _‼_)
+open import Logic.Index
 open import Logic.Classical.Judgement (List Type) Type (List Type)
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
@@ -296,10 +296,41 @@ cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) with contract Δ₁ Δ₂ α
 cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) | β , p rewrite p = ⇒ₑᵏ β (cᴿ Δ₁ Δ₂ f)
 
 
--- Lemma: every function can be lifted to a function with the identity
--- continuation.
-lift : ∀ {Γ A B C Δ} → λC⁻ A ⇒ B , Γ ⊢[ A - C ⇒ B - C ] Δ
-lift = ⇒ᵢ
-     $ -ₑ (ax (# 0))
-     $ -ᵢ (⇒ₑ (ax (# 2)) (ax (# 0))) -- apply the function
-          (⇒ₑᵏ    (# 0)  (ax (# 0))) -- pass the continuation
+-- Proof: "dirty" versions of the axioms, which form a type and effect system.
+module TypeAndEffect where
+
+  var  : ∀ {Γ T Δ} (x : Fin _)
+       → λC⁻ Γ ⊢[ Γ ‼ x - T ] T , Δ
+  var  x = -ᵢ (ax x) (⇒ₑᵏ (# 0) (ax (# 0)))
+
+  λ[_] : ∀ {Γ A B U T S Δ}
+       → λC⁻ A , Γ ⊢[ B - U ] T , Δ
+       → λC⁻ Γ ⊢[ (A - T ⇒ B - U) - S ] S , Δ
+  λ[_] f = -ᵢ (⇒ᵢ (-ₑ (ax (# 0)) (eᴿ₁ (wᴿ₁ (eᴸ₁ (wᴸ₁ f)))))) (⇒ₑᵏ (# 0) (ax (# 0)))
+
+  _$_  : ∀ {Γ A B U₁ U₂ T₁ T₂ Δ}
+       → λC⁻ Γ ⊢[ (A - T₁ ⇒ B - U₂) - U₁ ] T₂ , Δ
+       → λC⁻ Γ ⊢[  A - T₁                ] U₁ , Δ
+       → λC⁻ Γ ⊢[           B - U₂       ] T₂ , Δ
+  _$_  f x = -ₑ f (⇒ₑ (ax (# 0)) (eᴿ₁ (wᴿ₁ (wᴸ₁ x)))) 
+
+
+  C⁻[_] : ∀ {Γ A U T Δ}
+        → λC⁻ Γ ⊢  A - U , (T , Δ)
+        → λC⁻ Γ ⊢[ A - U ]  T , Δ
+  C⁻[_] = raa 
+
+  K_ : ∀ {Γ A U T Δ}
+       → λC⁻ Γ ⊢[ A - U ] A - U , (T , Δ)
+       → λC⁻ Γ ⊢          A - U , (T , Δ)
+  K_ = ⇒ₑᵏ (# 0)
+
+  Cᵀ[_] : ∀ {Γ A T Δ}
+        → λC⁻ Γ ⊢  A     , (T , Δ)
+        → λC⁻ Γ ⊢[ A - T ] (T , Δ)
+  Cᵀ[_] f = -ᵢ (raa f) (⇒ₑᵏ (# 0) (ax (# 0)))
+
+  _$ᵀ_  : ∀ {Γ A Δ} (α : Fin (length Δ))
+        → λC⁻ Γ ⊢[ A - A ] Δ
+        → λC⁻ Γ ⊢          Δ
+  _$ᵀ_  α f = ⇒ₑᵏ α (-ₑ f (raa (⇒ₑᵏ (# 1) (ax (# 0)))))

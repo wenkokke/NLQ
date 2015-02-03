@@ -12,8 +12,8 @@ open import Logic.Type                                Univ
 open import Logic.Index
 open import Logic.Translation                         Univ 
 open import Logic.Structure.Conjunction               Univ renaming (_[_] to _⟨_⟩)
-open import Logic.Classical.Judgement Conjunction Type (List Type) as OJ using (Judgement)
-open import Logic.Classical.Judgement (List Type) Type (List Type) as LJ
+open import Logic.Judgement Conjunction Type (List Type) as OJ using (Judgement)
+open import Logic.Judgement (List Type) Type (List Type) as LJ
 open import Logic.Classical.Ordered.LambdaCMinus.Base Univ as O
 open import Logic.Classical.Linear.LambdaCMinus.Base  Univ as L
 open Monoid (Data.List.monoid Type) using (assoc; identity)
@@ -56,7 +56,7 @@ private
   [ O.-ᵢ₂ {Γ₁} {B = B}        f g ] = L.sᴸ ⟦ Γ₁ ⟧⁺ $ L.-ᵢ [ f ] $ L.sᴸ′ ⟦ · B · ⟧⁺ $ [ g ]
   [ O.-ᵢ₁                     f g ] = L.-ᵢ [ f ] [ g ]
   [ O.-ₑ₀ {Δ = Δ}             α f ] = ∅ₑ (L.-ₑ [ f ] ax)
-  [ O.-ₑ₂ {Γ₁} {A = A}        f g ] = L.sᴸ ⟦ Γ₁ ⟧⁺ $ L.-ₑ [ g ] $ L.sᴸ  ⟦ · A · ⟧⁺ $ [ f ]
+  [ O.-ₑ₂ {Γ₁} {A = A}        f g ] = L.sᴸ ⟦ Γ₁ ⟧⁺ $ L.-ₑ [ f ] $ L.sᴸ  ⟦ · A · ⟧⁺ $ [ g ]
   [ O.-ₑ₁                     f g ] = L.-ₑ [ f ] [ g ]
   [ O.⊗ᵢ                      f g ] = L.⊗ᵢ [ f ] [ g ]
   [ O.⊗ₑ  {Γ₁} Γ₂ {A} {B} {C} f g ] = ∅ₑ $ lem-⊗ₑ Γ₂ {C = C} [ f ] $ ∅ᵢ $ [ g ]

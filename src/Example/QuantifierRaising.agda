@@ -60,13 +60,11 @@ everyone_loves_someone₁ = [ EVERYONE_LOVES_SOMEONE₁ ] (everyone₁ , (loves 
 
 -- Back to the drawing board!
 
+smash : ∀ {Δ} → λC⁻ · (el NP - el S ⇐ el N - el S) ⊗ el N · ⊢[ el NP ] el S , Δ
+smash = ⊗ₑ [] ax (⇒ₑ (⇐ᵢ (-ᵢᴸ₂ (# 0) (-ₑ₀ (# 0) (⇐ₑ ax ax)))) (⇒ᵢ (⇐ₑ ax ax)))
+
 EVERYONE_LOVES_SOMEONE₂ : λC⁻ · EVERYONE₂ · ⊗ (· LOVES · ⊗ · SOMEONE₂ ·) ⊢[ el S ] ∅
-EVERYONE_LOVES_SOMEONE₂
-  = raa ∘ ⇒ₑᵏ (# 0)
-  $ ⇒ₑ {A = el NP}
-    (⊗ₑ [] ax (⇐ₑ (⇐ᵢ (-ₑ₀ (# 0) (-ₑᴸ₂ (⇐ₑ ax ax)))) ax))
-  $ ⇐ₑ {A = el NP} ax
-    (⊗ₑ [] ax (⇐ₑ (⇐ᵢ (-ₑ₀ (# 0) (-ₑᴸ₂ (⇐ₑ ax ax)))) ax)) 
+EVERYONE_LOVES_SOMEONE₂ = raa (⇒ₑᵏ (# 0) (⇒ₑ smash (⇐ₑ ax smash)))
+
 everyone_loves_someone₂ : Bool
 everyone_loves_someone₂ = [ EVERYONE_LOVES_SOMEONE₂ ] (everyone₂ , (loves , (someone₂ , ∅))) (id , ∅)
-

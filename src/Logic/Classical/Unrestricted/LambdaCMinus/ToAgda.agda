@@ -7,12 +7,14 @@ open import Data.Sum     using (_⊎_; [_,_])
 
 module Logic.Classical.Unrestricted.LambdaCMinus.ToAgda {ℓ₁ ℓ₂} (Univ : Set ℓ₁) (⟦_⟧ᵁ : Univ → Set ℓ₂) (R : Set ℓ₂) where
 
-open import Logic.Translation                              Univ
-open import Logic.Type                                     Univ renaming (_⇚_ to _-_)
-open import Logic.Intuitionistic.Unrestricted.Agda.Environment
-open import Logic.Classical.Judgement                      Univ
-open import Logic.Classical.Judgement.ToAgda               Univ ⟦_⟧ᵁ R
+
+open import Logic.Translation Univ
+open import Logic.Type Univ renaming (_⇚_ to _-_)
+open import Logic.Judgement (List Type) Type (List Type)
+open import Logic.Judgement.ToAgda Univ ⟦_⟧ᵁ R
 open import Logic.Classical.Unrestricted.LambdaCMinus.Base Univ
+open import Logic.Intuitionistic.Unrestricted.Agda.Environment
+open CPS
 
 
 private
