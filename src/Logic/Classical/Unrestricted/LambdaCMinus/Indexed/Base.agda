@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
 open import Algebra                               using (module Monoid)
 open import Function                              using (id; _∘_)
 open import Data.Fin                              using (Fin; suc; zero; #_)
@@ -10,9 +14,9 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst
 module Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type  Univ  renaming (_⇚_ to _-_)
 open import Logic.Index
-open import Logic.Classical.Judgement (List Type) Type (List Type)
+open import Logic.Type Univ renaming (_⇚_ to _-_)
+open import Logic.Judgement (List Type) Type (List Type)
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 
@@ -94,7 +98,7 @@ mutual
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (-ₑ  f g) = -ₑ  (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ  (_ , Δ₁) Δ₂ Δ₃ Δ₄ g)
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⊗ᵢ  f g) = ⊗ᵢ  (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ g)
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⊗ₑ  f g) = ⊗ₑ  (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ g)
-  
+
   eᴿ′  : ∀ {Γ} (Δ₁ Δ₂ Δ₃ Δ₄ : List Type)
        → λC⁻ Γ ⊢      (Δ₁ ++ Δ₃) ++ (Δ₂ ++ Δ₄)
        → λC⁻ Γ ⊢      (Δ₁ ++ Δ₂) ++ (Δ₃ ++ Δ₄)
@@ -187,7 +191,7 @@ mutual
   wᴿ₁  (-ₑ  f g) = -ₑ  (wᴿ₁  f) (eᴿ₁ (wᴿ₁ g))
   wᴿ₁  (⊗ᵢ  f g) = ⊗ᵢ  (wᴿ₁  f) (wᴿ₁ g)
   wᴿ₁  (⊗ₑ  f g) = ⊗ₑ  (wᴿ₁  f) (wᴿ₁ g)
-  
+
   wᴿ₁′ : ∀ {Γ A Δ}
        → λC⁻ Γ ⊢          Δ
        → λC⁻ Γ ⊢      A , Δ
@@ -206,7 +210,7 @@ wᴸ′ : ∀ Γ₁ {Γ₂ Δ}
     → λC⁻       Γ₂ ⊢      Δ
     → λC⁻ Γ₁ ++ Γ₂ ⊢      Δ
 wᴸ′      ∅   f = f
-wᴸ′ (A , Γ₁) f = wᴸ₁′ (wᴸ′ Γ₁ f) 
+wᴸ′ (A , Γ₁) f = wᴸ₁′ (wᴸ′ Γ₁ f)
 
 wᴿ  : ∀ {Γ A} Δ₁ {Δ₂}
     → λC⁻ Γ ⊢[ A ]       Δ₂
@@ -312,13 +316,13 @@ module TypeAndEffect where
        → λC⁻ Γ ⊢[ (A - T₁ ⇒ B - U₂) - U₁ ] T₂ , Δ
        → λC⁻ Γ ⊢[  A - T₁                ] U₁ , Δ
        → λC⁻ Γ ⊢[           B - U₂       ] T₂ , Δ
-  _$_  f x = -ₑ f (⇒ₑ (ax (# 0)) (eᴿ₁ (wᴿ₁ (wᴸ₁ x)))) 
+  _$_  f x = -ₑ f (⇒ₑ (ax (# 0)) (eᴿ₁ (wᴿ₁ (wᴸ₁ x))))
 
 
   C⁻[_] : ∀ {Γ A U T Δ}
         → λC⁻ Γ ⊢  A - U , (T , Δ)
         → λC⁻ Γ ⊢[ A - U ]  T , Δ
-  C⁻[_] = raa 
+  C⁻[_] = raa
 
   K_ : ∀ {Γ A U T Δ}
        → λC⁻ Γ ⊢[ A - U ] A - U , (T , Δ)

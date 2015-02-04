@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
 open import Algebra                               using (module Monoid)
 open import Data.Nat                              using (ℕ; suc; zero)
 open import Data.Fin                              using (Fin; suc; zero; #_)
@@ -14,7 +18,7 @@ infix 90 _‼_
 
 -- Given a list and an index which is guaranteed to be smaller than
 -- the length of that list, return the element at the indicated
--- position in the list. 
+-- position in the list.
 _‼_ : ∀ {a} {A : Set a} (xs : List A) (i : Fin (length xs)) → A
 (    []) ‼ (     )
 (x ∷ xs) ‼ (zero ) = x
@@ -38,7 +42,7 @@ forward      []  ys zs (    i) = forward′ ys zs i
   forward′ (x ∷ xs) ys  zero   = suc zero , refl
   forward′ (x ∷ xs) ys (suc i) with forward′ xs ys i
   forward′ (x ∷ xs) ys (suc i) | zero  , p = zero        , p
-  forward′ (x ∷ xs) ys (suc i) | suc j , p = suc (suc j) , p  
+  forward′ (x ∷ xs) ys (suc i) | suc j , p = suc (suc j) , p
 
 
 -- Given a list and an index which is guaranteed to be smaller than
@@ -65,12 +69,12 @@ exchange {a} {A} = exchange′
       lem₁ rewrite sym (assoc (xs ∷ʳ y) zs (ys ++ ws))
                    | assoc  xs (y ∷ []) zs
                    | assoc  xs (y ∷ zs) (ys ++ ws) = forward xs zs (ys ++ ws) i
-  
+
       lem₂ : Σ[ j ∈ _ ] (xs ++ zs ++ y ∷ ys ++ ws) ‼ i ≡ ((xs ∷ʳ y) ++ ys ++ zs ++ ws) ‼ j
       lem₂ with lem₁
       lem₂ | j , p with exchange″ (xs ∷ʳ y) ys zs ws j
       lem₂ | j , p | z , q = z , trans p q
-      
+
       lem₃ : Σ[ j ∈ _ ] (xs ++ zs ++ y ∷ ys ++ ws) ‼ i ≡ (xs ++ y ∷ ys ++ zs ++ ws) ‼ j
       lem₃ rewrite sym (assoc xs (y ∷ ys) (zs ++ ws))
                    | sym (assoc xs (y ∷ []) ys)

@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
 open import Function                                   using (_∘_)
 open import Data.Product                               using (_×_; _,_; proj₁; proj₂)
 open import Relation.Nullary                           using (Dec; yes; no)
@@ -21,14 +25,14 @@ data Type : Set ℓ where
 
   _⇒_ : Type → Type → Type
   _⇐_ : Type → Type → Type
-  
+
   _⇚_ : Type → Type → Type
   _⇛_ : Type → Type → Type
 
   _⊗_ : Type → Type → Type
   _⊕_ : Type → Type → Type
-    
-    
+
+
 
 -- Proofs which show that constructors of types (as all Agda
 -- data-constructors) respect equality.

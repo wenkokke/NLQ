@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
 open import Level        renaming (suc to lsuc)
 open import Data.Fin     using (Fin; suc; zero)
 open import Data.List    using (List; map; _++_) renaming ([] to ∅; _∷_ to _,_)
@@ -49,4 +53,3 @@ private
 
 
 open Internal public
-

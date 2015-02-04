@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
 open import Function
 open import Data.Bool                             using (true; false; _∧_) renaming (Bool to T)
 open import Data.Fin                              using (Fin; suc; zero; #_; toℕ)
@@ -13,14 +17,14 @@ module Example.Lexicon where
 E = Fin 3
 
 open import Example.Base E public
-open import Logic.Translation                                  Univ 
+open import Logic.Translation                                  Univ
 open import Logic.Type                                         Univ public renaming (_⇚_ to _-_)
 open import Logic.Structure.Conjunction                        Univ public
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment      public
 open import Logic.Judgement Conjunction Type (List Type)  public
-open import Logic.Classical.Ordered.LambdaCMinus.Base          Univ public    
-open import Logic.Classical.Ordered.LambdaCMinus.ToLinear      Univ     
-open import Logic.Classical.Linear.LambdaCMinus.ToUnrestricted Univ           
+open import Logic.Classical.Ordered.LambdaCMinus.Base          Univ public
+open import Logic.Classical.Ordered.LambdaCMinus.ToLinear      Univ
+open import Logic.Classical.Linear.LambdaCMinus.ToUnrestricted Univ
 open import Logic.Classical.Unrestricted.LambdaCMinus.ToAgda   Univ ⟦_⟧ᵁ T
 
 
@@ -64,4 +68,3 @@ abstract
 
 loves : (((T → T) → E → T) → T) → E → T
 loves = λ k x → k (λ k y → k (x lovedBy y))
-

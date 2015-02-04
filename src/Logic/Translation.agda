@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
 open import Level    using (suc; _⊔_)
 open import Function using (_∘_)
 
@@ -30,7 +34,7 @@ _◇_ : ∀ {j₁ j₂ j₃ t₁ t₂ t₃ ℓ₂}
         {Type₂ : Set ℓ₂}
         {Tm₁   : J₁ → Set t₁}
         {Tm₂   : J₂ → Set t₂}
-        {Tm₃   : J₃ → Set t₃}        
+        {Tm₃   : J₃ → Set t₃}
         → Translation Type₂ Tm₂ Tm₃
         → Translation Type₁ Tm₁ Tm₂
         → Translation Type₂ Tm₁ Tm₃
