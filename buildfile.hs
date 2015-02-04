@@ -1,62 +1,82 @@
 #!/usr/bin/env runhaskell
 
+{-# LANGUAGE PatternGuards #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 import           Control.Monad (when)
+import           Control.Applicative ((<$>))
 import           Data.Attoparsec.Text (Parser)
 import qualified Data.Attoparsec.Text as P
 import           Data.Char as C (isSpace)
 import           Data.Either (isRight)
 import qualified Data.List as L
 import qualified Data.List.Split as L (splitWhen)
-import           Data.Maybe (fromJust)
 import           Data.Text (Text)
 import qualified Data.Text as T
-import qualified Data.Text.IO as T
 import           Development.Shake
 import           Development.Shake.FilePath
-import           Prelude hiding (lines)
+import           System.IO (hPutStr,hSetEncoding,hGetContents,utf8,IOMode(..),openFile,withFile)
 
+
+srcDir :: FilePath
+srcDir = "src"
+
+
+-------------------------------------------------------------------------------
+-- Makefile
+-------------------------------------------------------------------------------
 
 main :: IO ()
 main = shakeArgs shakeOptions $ do
 
-  -- Generating the files for the Unrestricted calculus
-  want (map fst filesForUnrestricted)
+  want ["src/Everything.agda"]
+  "src/Everything.agda" %> \out -> do
 
-  "src/Logic/Classical/Unrestricted//*.agda" *> \target -> do
-    let src = fromJust (lookup target filesForUnrestricted)
-    liftIO $
-      T.writeFile target
-        .   restrictSource replacementListForUnrestricted blacklistForUnrestricted
-        =<< T.readFile src
+    liftIO $ removeFiles "src" ["Everything.agda"]
 
-
--------------------------------------------------------------------------------
--- Generate: Linear Lambda C Minus
--------------------------------------------------------------------------------
-
-files :: [(FilePath, FilePath)]
-files =
-  [ "src/Logic/Classical/Unrestricted/LambdaCMinus/Base.agda"   ==> "src/Logic/Classical/Linear/LambdaCMinus/Base.agda"
-  , "src/Logic/Classical/Unrestricted/LambdaCMinus/ToAgda.agda" ==> "src/Logic/Classical/Linear/LambdaCMinus/ToAgda.agda"
-  ]
-
-replace :: [(Text, Text)]
-replace =
-  [ "Unrestricted" ==> "Linear"
-  ]
-
-remove :: [Text]
-remove =
-  [ "cᴸ"
-  , "wᴸ"
-  ]
+    modules <- L.sort . fmap (srcDir </>) . filter (not . (=="Everything.agda"))
+            <$> getDirectoryFiles srcDir ["//*.agda","//*.lagda"]
+    need ("Header" : modules)
+    header  <- readFile' "Header"
+    headers <- mapM (liftIO . extractHeader) modules
+    writeFile' out $
+      header ++ format (zip modules headers)
 
 
 -------------------------------------------------------------------------------
--- Utility function which restricts an Agda source file to somewhat
--- intelligently remove lines which refer to blacklisted symbols.
+-- Generate: src/Everything.hs
+-------------------------------------------------------------------------------
+
+extractHeader :: FilePath -> IO [String]
+extractHeader file = fmap (extract . lines) $ readFileUTF8 file
+  where
+    isDelimiter = all (== '-')
+    strip       = reverse. dropWhile isDelimiter . reverse . dropWhile isDelimiter
+
+    extract (d1 : "-- The Lambek Calculus in Agda" : ss)
+      | isDelimiter d1
+      , (info, d2 : _) <- span ((==2) . length . takeWhile (=='-')) ss
+      , isDelimiter d2
+      = strip info
+    extract _ = error $ file ++ " is malformed."
+
+
+-- | Formats the extracted module information.
+format :: [(FilePath, [String])]
+          -- ^ Pairs of module names and headers. All lines in the
+          -- headers are already prefixed with \"-- \".
+       -> String
+format = unlines . concatMap fmt
+  where
+    fmt (file, header) = sep : header ++ ["import " ++ fileToMod file]
+      where
+        sep | '.' `elem` file = ""
+            | otherwise       = "\n"
+
+
+-------------------------------------------------------------------------------
+-- Utility: generate files from other files by restricting the allowed symbols
+--          and renaming symbols
 -------------------------------------------------------------------------------
 
 -- |Parse a file and remove all groups which contain illegal symbols.
@@ -152,3 +172,30 @@ restrictSource replacements blacklist input = let
 
 (==>) :: a -> b -> (a , b)
 (==>) = (,)
+
+
+-------------------------------------------------------------------------------
+-- Utility: functions for working with Agda files
+-------------------------------------------------------------------------------
+
+-- | Translates a file name to the corresponding module name. It is
+-- assumed that the file name corresponds to an Agda module under
+-- 'srcDir'.
+fileToMod :: FilePath -> String
+fileToMod = map slashToDot . dropExtension . makeRelative srcDir
+  where
+  slashToDot c | isPathSeparator c = '.'
+               | otherwise         = c
+
+-- | A variant of 'readFile' which uses the 'utf8' encoding.
+readFileUTF8 :: FilePath -> IO String
+readFileUTF8 f = do
+  h <- openFile f ReadMode
+  hSetEncoding h utf8
+  hGetContents h
+
+-- | A variant of 'writeFile' which uses the 'utf8' encoding.
+writeFileUTF8 :: FilePath -> String -> IO ()
+writeFileUTF8 f s = withFile f WriteMode $ \h -> do
+  hSetEncoding h utf8
+  hPutStr h s

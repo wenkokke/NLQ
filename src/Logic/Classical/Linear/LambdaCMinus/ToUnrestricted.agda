@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
 open import Level     using (Level; suc; _⊔_)
 open import Function  using (id)
 open import Data.List using (List; _++_) renaming ([] to ·; _∷_ to _,_)
@@ -8,7 +12,7 @@ module Logic.Classical.Linear.LambdaCMinus.ToUnrestricted {ℓ} (Univ : Set ℓ)
 
 open import Logic.Type Univ renaming (_⇚_ to _-_)
 open import Logic.Index
-open import Logic.Translation Univ 
+open import Logic.Translation Univ
 open import Logic.Judgement (List Type) Type (List Type)
 open import Logic.Classical.Linear.LambdaCMinus.Base Univ as L
 open import Logic.Classical.Unrestricted.LambdaCMinus.Base Univ as U

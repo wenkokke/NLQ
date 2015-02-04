@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
 open import Data.Nat                              using (ℕ; suc; zero; _+_)
 open import Data.Fin                              using (Fin; suc; zero)
 open import Data.List                             using (List; _∷_; []; _++_; length)
@@ -31,4 +35,3 @@ _[_] : Context → Conjunction → Conjunction
 []         [ Δ ] = Δ
 (Γ₁ ⊗> Γ₂) [ Δ ] =  Γ₁        ⊗ (Γ₂ [ Δ ])
 (Γ₁ <⊗ Γ₂) [ Δ ] = (Γ₁ [ Δ ]) ⊗  Γ₂
-

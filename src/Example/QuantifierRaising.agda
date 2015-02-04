@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
 open import Function
 open import Data.Bool                             using (Bool; true; false; _∧_)
 open import Data.Fin                              using (Fin; suc; zero; #_; toℕ)

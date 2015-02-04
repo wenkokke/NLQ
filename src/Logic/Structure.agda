@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
 open import Data.Nat                              using (ℕ; suc; zero; _+_)
 open import Data.Fin                              using (Fin; suc; zero)
 open import Data.List                             using (List; _∷_; []; _++_; length)
@@ -17,7 +21,7 @@ open import Logic.Type Univ
 data Structure : Set ℓ where
 
   ·_· : Type → Structure
-  
+
   _⇒_ : Structure → Structure → Structure
   _⇐_ : Structure → Structure → Structure
 

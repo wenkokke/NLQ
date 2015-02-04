@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
 open import Algebra                               using (module Monoid)
 open import Function                              using (id; _∘_)
 open import Data.Fin                              using (Fin; suc; zero; #_)
@@ -22,7 +26,7 @@ data λC⁻_ : Judgement → Set ℓ where
 
   ax   : ∀ {A Δ}
        → λC⁻ A , ∅        ⊢[ A     ]     Δ
- 
+
   ⇒ᵢ   : ∀ {Γ A B Δ}
        → λC⁻ A , Γ        ⊢[     B ]     Δ
        → λC⁻     Γ        ⊢[ A ⇒ B ]     Δ
@@ -85,7 +89,7 @@ mutual
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⊗ᵢ              f g) = ⊗ᵢ  (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ g)
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (⊗ₑ              f g) = ⊗ₑ  (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f) (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ g)
   eᴿ   Δ₁ Δ₂ Δ₃ Δ₄ (eᴸ  Γ₁ Γ₂ Γ₃ Γ₄ f  ) = eᴸ            Γ₁  Γ₂ Γ₃ Γ₄    (eᴿ       Δ₁  Δ₂ Δ₃ Δ₄ f)
-  
+
   eᴿ′  : ∀ {Γ} (Δ₁ Δ₂ Δ₃ Δ₄ : List Type)
        → λC⁻ Γ ⊢      (Δ₁ ++ Δ₃) ++ (Δ₂ ++ Δ₄)
        → λC⁻ Γ ⊢      (Δ₁ ++ Δ₂) ++ (Δ₃ ++ Δ₄)
@@ -119,7 +123,7 @@ eᴿ₁′ : ∀ {Γ B C Δ}
      → λC⁻ Γ ⊢      C , (B , Δ)
      → λC⁻ Γ ⊢      B , (C , Δ)
 eᴿ₁′ = eᴿ′ ∅ (_ , ∅) (_ , ∅) _
-  
+
 
 -- Lemma: weaker version of eᴸ and eᴿ which only swap two contexts,
 -- without allowing them to be embedded in further contexts are often
@@ -161,7 +165,7 @@ mutual
   wᴿ₁  (⊗ᵢ              f g) = ⊗ᵢ  (wᴿ₁  f) (wᴿ₁ g)
   wᴿ₁  (⊗ₑ              f g) = ⊗ₑ  (wᴿ₁  f) (wᴿ₁ g)
   wᴿ₁  (eᴸ  Γ₁ Γ₂ Γ₃ Γ₄ f  ) = eᴸ  Γ₁ Γ₂ Γ₃ Γ₄ (wᴿ₁ f)
-  
+
   wᴿ₁′ : ∀ {Γ A Δ}
        → λC⁻ Γ ⊢          Δ
        → λC⁻ Γ ⊢      A , Δ

@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
 open import Algebra                               using (module Monoid)
 open import Function                              using (_$_)
 open import Data.List                             using (List; map; _++_) renaming ([] to ∅; _∷_ to _,_)
@@ -10,7 +14,7 @@ module Logic.Classical.Ordered.LambdaCMinus.ToLinear {ℓ} (Univ : Set ℓ) wher
 
 open import Logic.Type                                Univ
 open import Logic.Index
-open import Logic.Translation                         Univ 
+open import Logic.Translation                         Univ
 open import Logic.Structure.Conjunction               Univ renaming (_[_] to _⟨_⟩)
 open import Logic.Judgement Conjunction Type (List Type) as OJ using (Judgement)
 open import Logic.Judgement (List Type) Type (List Type) as LJ
@@ -23,12 +27,12 @@ open Monoid (Data.List.monoid Type) using (assoc; identity)
 private
   ⟦_⟧ᵀ : Type → Type
   ⟦_⟧ᵀ (el  A) = el A
-  ⟦_⟧ᵀ (A ⇒ B) = ⟦ A ⟧ᵀ ⇒ ⟦ B ⟧ᵀ 
-  ⟦_⟧ᵀ (B ⇐ A) = ⟦ A ⟧ᵀ ⇒ ⟦ B ⟧ᵀ 
-  ⟦_⟧ᵀ (B ⇚ A) = ⟦ B ⟧ᵀ ⇚ ⟦ A ⟧ᵀ   
-  ⟦_⟧ᵀ (A ⇛ B) = ⟦ B ⟧ᵀ ⇚ ⟦ A ⟧ᵀ   
-  ⟦_⟧ᵀ (A ⊗ B) = ⟦ A ⟧ᵀ ⊗ ⟦ B ⟧ᵀ 
-  ⟦_⟧ᵀ (A ⊕ B) = ⟦ A ⟧ᵀ ⊕ ⟦ B ⟧ᵀ 
+  ⟦_⟧ᵀ (A ⇒ B) = ⟦ A ⟧ᵀ ⇒ ⟦ B ⟧ᵀ
+  ⟦_⟧ᵀ (B ⇐ A) = ⟦ A ⟧ᵀ ⇒ ⟦ B ⟧ᵀ
+  ⟦_⟧ᵀ (B ⇚ A) = ⟦ B ⟧ᵀ ⇚ ⟦ A ⟧ᵀ
+  ⟦_⟧ᵀ (A ⇛ B) = ⟦ B ⟧ᵀ ⇚ ⟦ A ⟧ᵀ
+  ⟦_⟧ᵀ (A ⊗ B) = ⟦ A ⟧ᵀ ⊗ ⟦ B ⟧ᵀ
+  ⟦_⟧ᵀ (A ⊕ B) = ⟦ A ⟧ᵀ ⊕ ⟦ B ⟧ᵀ
 
   ⟦_⟧⁺ : Conjunction → List Type
   ⟦_⟧⁺ (· A ·) = ⟦ A ⟧ᵀ , ∅
@@ -72,7 +76,7 @@ private
                   = L.eᴸ ∅ (⟦ Γ₂ ⟧⁺) (⟦ Γ₃ ⟨ Γ₁ ⟩ ⟧⁺) Γ₄
                   $ lem-⊗ₑ {Γ₁} Γ₃ {⟦ Γ₂ ⟧⁺ ++ Γ₄} {A} {B} {C} {Δ} f
                   $ L.eᴸ ∅ (⟦ Γ₃ ⟨ · A · ⊗ · B · ⟩ ⟧⁺) (⟦ Γ₂ ⟧⁺) Γ₄
-                  $ g             
+                  $ g
     lem-⊗ₑ {Γ₁} (Γ₂ <⊗ Γ₃) {Γ₄} {A} {B} {C} {Δ} f g
             rewrite assoc (⟦ Γ₂ ⟨       Γ₁      ⟩ ⟧⁺) (⟦ Γ₃ ⟧⁺) Γ₄
                   | assoc (⟦ Γ₂ ⟨ · A · ⊗ · B · ⟩ ⟧⁺) (⟦ Γ₃ ⟧⁺) Γ₄
