@@ -33,6 +33,17 @@ data Type : Set ℓ where
   _⊕_ : Type → Type → Type
 
 
+-- TODO: implement CBV and CBN
+--
+-- ⌊_⌋ : Type → Type
+-- ⌊ el A  ⌋ = {!!}
+-- ⌊ A ⇒ B ⌋ = {!!}
+-- ⌊ A ⇐ B ⌋ = {!!}
+-- ⌊ A ⇚ B ⌋ = {!!}
+-- ⌊ A ⇛ B ⌋ = {!!}
+-- ⌊ A ⊗ B ⌋ = {!!}
+-- ⌊ A ⊕ B ⌋ = {!!}
+
 
 -- Proofs which show that constructors of types (as all Agda
 -- data-constructors) respect equality.

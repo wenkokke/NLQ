@@ -17,7 +17,8 @@ module Logic.Classical.Unrestricted.LambdaCMinus.EquivalentToIndexed {ℓ} (Univ
 
 
 open import Logic.Index
-open import Logic.Type Univ  renaming (_⇛_ to _-_)
+open import Logic.Translation                                      Univ
+open import Logic.Type                                             Univ renaming (_⇛_ to _-_)
 open import Logic.Judgement (List Type) Type (List Type)
 open import Logic.Classical.Unrestricted.LambdaCMinus.Base         Univ as E
 open import Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base Univ as I
@@ -58,3 +59,10 @@ to (I.⊗ₑ  f g ) = lem-cᴸ-· (E.⊗ₑ (to f) (to g))
 
 eq : ∀ {J} → (E.λC⁻ J) ⇔ (I.λC⁻ J)
 eq = equivalence from to
+
+
+Un→Ix : Translation Type E.λC⁻_ I.λC⁻_
+Un→Ix = record { ⟦_⟧ᵀ = id ; ⟦_⟧ᴶ = id ; [_] = from }
+
+Ix→Un : Translation Type I.λC⁻_ E.λC⁻_
+Ix→Un = record { ⟦_⟧ᵀ = id ; ⟦_⟧ᴶ = id ; [_] = to }

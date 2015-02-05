@@ -49,7 +49,6 @@ EVERYONE_LOVES_MARY = ⊗ₑ ([] <⊗ _) ax (⇒ₑ (⇐ₑ ax ax) (⇐ₑ ax ax
 everyone_loves_mary : Bool
 everyone_loves_mary = [ EVERYONE_LOVES_MARY ] (everyone₁ , (loves , (mary , ∅))) (id , ∅)
 
-
 -- The order of application of what is the only rule that allows us
 -- some leeway in when it should be applied (the product elimination)
 -- does not seem to matter; whatever we do, we get the inverse scope
@@ -72,3 +71,5 @@ EVERYONE_LOVES_SOMEONE₂ = raa (⇒ₑᵏ (# 0) (⇒ₑ smash (⇐ₑ ax smash)
 
 everyone_loves_someone₂ : Bool
 everyone_loves_someone₂ = [ EVERYONE_LOVES_SOMEONE₂ ] (everyone₂ , (loves , (someone₂ , ∅))) (id , ∅)
+
+s = {!show [ EVERYONE_LOVES_SOMEONE₁ ]ˣ!}
