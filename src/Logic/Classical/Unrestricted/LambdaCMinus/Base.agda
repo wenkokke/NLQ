@@ -297,3 +297,10 @@ lift {Γ} {A} {B} {C} {Δ}
      $ -ᵢ {A , (A ⇒ B , ∅)} {Γ}
        (sᴸ  (A , ∅) (⇒ₑ ax ax))
        (sᴸ′ (C , ∅) (wᴸ′ Γ (⇒ₑᵏ (# 0) ax)))
+
+
+-- Lemma: introduction and elimination of right-handed empty context.
+∅ᵢ : ∀ {Γ A Δ} → λC⁻ Γ      ⊢[ A ] Δ → λC⁻ Γ ++ ∅ ⊢[ A ] Δ
+∅ᵢ {Γ} f rewrite proj₂ identity Γ = f
+∅ₑ : ∀ {Γ A Δ} → λC⁻ Γ ++ ∅ ⊢[ A ] Δ → λC⁻ Γ      ⊢[ A ] Δ
+∅ₑ {Γ} f rewrite proj₂ identity Γ = f
