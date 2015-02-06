@@ -8,7 +8,7 @@ open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Binary                            using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
-module Logic.Type {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Type {ℓ} (Univ : Set ℓ) where
 
 
 infixr 20 _⇒_

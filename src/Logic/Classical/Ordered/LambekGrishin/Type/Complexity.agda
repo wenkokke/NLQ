@@ -10,10 +10,10 @@ open import Relation.Binary using (module StrictTotalOrder)
 open import Relation.Binary.PropositionalEquality using (_≡_; _≢_; refl; cong)
 
 
-module Logic.Type.Complexity {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Type.Complexity {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type Univ
 open StrictTotalOrder NatProps.strictTotalOrder using (irrefl)
 
 

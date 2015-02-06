@@ -12,9 +12,9 @@ open import Data.Sum     using (_⊎_; [_,_])
 module Logic.Classical.Unrestricted.LambdaCMinus.ToAgda {ℓ₁ ℓ₂} (Univ : Set ℓ₁) (⟦_⟧ᵁ : Univ → Set ℓ₂) (R : Set ℓ₂) where
 
 
-open import Logic.Translation Univ
-open import Logic.Type Univ renaming (_⇚_ to _-_)
-open import Logic.Judgement (List Type) Type (List Type)
+open import Logic.Translation
+open import Logic.Classical.Linear.LambdaCMinus.Type       Univ
+open import Logic.Classical.Linear.LambdaCMinus.Judgement  Univ
 open import Logic.Classical.Unrestricted.LambdaCMinus.Base Univ
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment
 
@@ -41,7 +41,6 @@ private
   ⟦ A ⇒ B ⟧ᵀ =      ¬ ⟦ B ⟧ᵀ → ¬ ⟦ A ⟧ᵀ
   ⟦ B ⇐ A ⟧ᵀ =      ¬ ⟦ B ⟧ᵀ → ¬ ⟦ A ⟧ᵀ
   ⟦ A - B ⟧ᵀ =      ¬ ⟦ B ⟧ᵀ ×   ⟦ A ⟧ᵀ
-  ⟦ B ⇛ A ⟧ᵀ =      ¬ ⟦ B ⟧ᵀ ×   ⟦ A ⟧ᵀ
   ⟦ A ⊗ B ⟧ᵀ = ¬ ¬ (  ⟦ A ⟧ᵀ ×   ⟦ B ⟧ᵀ)
   ⟦ A ⊕ B ⟧ᵀ = ¬   (¬ ⟦ A ⟧ᵀ × ¬ ⟦ B ⟧ᵀ)
 
@@ -74,5 +73,5 @@ private
   [ wᴸ₁              f   ] (x , e) (k , r) = [ f ]           e   (k , r)
 
 
-Un→Agda : Translation (Set ℓ₂) λC⁻_ λΠ_
+Un→Agda : Translation Type (Set ℓ₂) λC⁻_ λΠ_
 Un→Agda = record { ⟦_⟧ᵀ = ⟦_⟧ᵀ ; ⟦_⟧ᴶ = ⟦_⟧ᴶ ; [_] = [_] }

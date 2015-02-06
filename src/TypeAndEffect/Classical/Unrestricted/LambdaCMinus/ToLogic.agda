@@ -11,12 +11,12 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst
 module TypeAndEffect.Classical.Unrestricted.LambdaCMinus.ToLogic {ℓ} (Univ : Set ℓ) where
 
 
+open import Logic.Translation
 open import TypeAndEffect.Type                                     Univ as TET
 open import TypeAndEffect.Judgement                                Univ as TEJ
 open import TypeAndEffect.Classical.Unrestricted.LambdaCMinus.Base Univ as TEB
-open import Logic.Translation                                      Univ
-open import Logic.Type                                             Univ as LOT renaming (_⇚_ to _-_)
-open import Logic.Judgement (List LOT.Type) LOT.Type (List LOT.Type)    as LOJ
+open import Logic.Classical.Linear.LambdaCMinus.Type Univ as LOT
+open import Logic.Classical.Linear.LambdaCMinus.Judgement Univ as LOJ
 open import Logic.Classical.Unrestricted.LambdaCMinus.Base         Univ as LOB
 
 

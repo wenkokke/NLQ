@@ -71,5 +71,3 @@ EVERYONE_LOVES_SOMEONE₂ = raa (⇒ₑᵏ (# 0) (⇒ₑ smash (⇐ₑ ax smash)
 
 everyone_loves_someone₂ : Bool
 everyone_loves_someone₂ = [ EVERYONE_LOVES_SOMEONE₂ ] (everyone₂ , (loves , (someone₂ , ∅))) (id , ∅)
-
-s = {!show [ EVERYONE_LOVES_SOMEONE₁ ]ˣ!}

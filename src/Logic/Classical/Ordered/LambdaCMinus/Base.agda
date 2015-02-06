@@ -15,13 +15,13 @@ module Logic.Classical.Ordered.LambdaCMinus.Base {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Index
-open import Logic.Type Univ renaming (_⇚_ to _-_)
-open import Logic.Structure.Conjunction Univ
-open import Logic.Judgement Conjunction Type (List Type)
+open import Logic.Classical.Ordered.LambdaCMinus.Type      Univ
+open import Logic.Classical.Ordered.LambdaCMinus.Structure Univ
+open import Logic.Classical.Ordered.LambdaCMinus.Judgement Univ
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 
-infix  1 λC⁻_
+infix 1 λC⁻_
 
 data λC⁻_ : Judgement → Set ℓ where
 

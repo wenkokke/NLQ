@@ -14,12 +14,12 @@ open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Judgement.Context {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Judgement.Context {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type         Univ as T
-open import Logic.Type.Context Univ as TC hiding (module Simple; module Context; Context)
-open import Logic.Judgement    Type ⊥ Type
+open import Logic.Classical.Ordered.LambekGrishin.Type         Univ as T
+open import Logic.Classical.Ordered.LambekGrishin.Type.Context Univ as TC hiding (module Simple; module Context; Context)
+open import Logic.Classical.Ordered.LambekGrishin.Judgement    Univ
 
 
 infix 3 _<⊢_ _⊢>_
@@ -52,4 +52,3 @@ module Simple where
   _<_> : Context → TC.Context → Context
   _<_> (A <⊢ B) C = A < C >′ <⊢ B
   _<_> (A ⊢> B) C = A ⊢> B < C >′
-

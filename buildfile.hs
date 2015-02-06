@@ -6,11 +6,10 @@ import           Control.Applicative ((<$>))
 import           Control.Monad (when)
 import           Data.Attoparsec.Text (Parser)
 import qualified Data.Attoparsec.Text as P
-import           Data.Char as C (isSpace)
+import           Data.Char (isSpace)
 import           Data.Either (isRight)
 import qualified Data.List as L
-import qualified Data.List.Split as L (splitWhen)
-import           Data.Maybe (fromJust)
+import           Data.List.Split (splitWhen)
 import           Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
@@ -40,10 +39,11 @@ data Mapping =
 main :: IO ()
 main = shakeArgs shakeOptions $ do
 
+  run makeLambek
+  run makeOrderedLambdaCMinus
+  run makeLinearLambdaCMinus
 
-  runMapping lg2nl
-
-
+  -- Generate: Everything
   want ["src/Everything.agda"]
   "src/Everything.agda" %> \out -> do
 
@@ -61,8 +61,12 @@ main = shakeArgs shakeOptions $ do
   phony "clobber" $ do
     putNormal "Removing Everything.agda"
     liftIO $ removeFiles "src" ["Everything.agda"]
-    putNormal "Removing generated files for Lambek calculus"
-    liftIO $ removeFiles "." (map snd $ fileMapping lg2nl)
+    putNormal "Removing generated files for Lambek Calculus"
+    clobber makeLambek
+    putNormal "Removing generated files for Ordered Lambda-C-Minus Calculus"
+    clobber makeOrderedLambdaCMinus
+    putNormal "Removing generated files for Linear Lambda-C-Minus Calculus"
+    clobber makeLinearLambdaCMinus
 
 
 
@@ -85,10 +89,7 @@ extractHeader file = fmap (extract . lines) $ readFileUTF8 file
 
 
 -- | Formats the extracted module information.
-format :: [(FilePath, [String])]
-          -- ^ Pairs of module names and headers. All lines in the
-          -- headers are already prefixed with \"-- \".
-       -> String
+format :: [(FilePath, [String])] -> String
 format = unlines . concatMap fmt
   where
     fmt (file, header) = sep : header ++ ["import " ++ fileToMod file]
@@ -97,27 +98,108 @@ format = unlines . concatMap fmt
             | otherwise       = "\n"
 
 
+--------------------------------------------------------------------------------
+-- Mapping: Ordered LambdaCMinus to Linear LambdaCMinus
+--------------------------------------------------------------------------------
+
+makeLinearLambdaCMinus :: Mapping
+makeLinearLambdaCMinus = Mapping
+  { blacklist   = [ "open import Logic.Classical.Ordered.LambdaCMinus.Structure Univ"
+                  , "cᴸ₁" , "cᴸ" , "cᴸ′"
+                  , "wᴸ₁" , "wᴸ" , "wᴸ′"
+                  , "axᵢ"
+                  ]
+  , textMapping = [ "Unrestricted" ==> "Linear"
+                  , "Ordered"      ==> "Linear"
+                  , "Structure"    ==> "List Type"
+                  ]
+  , fileMapping = [ srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Type.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Type.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Type/Complexity.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Type/Complexity.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Type/Context.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Type/Context.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Type/Context/Polarised.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Type/Context/Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Type/Polarised.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Type/Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Judgement.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Judgement.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus" </> "Base.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Base.agda"
+                  ]
+  }
+
+
+--------------------------------------------------------------------------------
+-- Mapping: Lambek-Grishin Calculus to Ordered LambdaCMinus
+--------------------------------------------------------------------------------
+
+-- TODO: edit such that LambdaCMinus's 'Structure' is generated from
+--       a more general 'Structure' (such as from LambekGrishin/Polarised)
+
+makeOrderedLambdaCMinus :: Mapping
+makeOrderedLambdaCMinus = Mapping
+  { blacklist   = [ "⇛" ]
+  , textMapping = [ "LambekGrishin" ==> "LambdaCMinus"
+                  , "LG"            ==> "λC⁻"
+                  , "⇚-injective"   ==> "-_injective"
+                  , "⇚"             ==> "-"
+                  ]
+  , fileMapping = [ srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Type.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambdaCMinus"  </> "Type.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Type/Complexity.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambdaCMinus"  </> "Type/Complexity.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Type/Context.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambdaCMinus"  </> "Type/Context.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Type/Context/Polarised.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambdaCMinus"  </> "Type/Context/Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Type/Polarised.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambdaCMinus"  </> "Type/Polarised.agda"
+                  ]
+  }
 
 --------------------------------------------------------------------------------
 -- Mapping: Lambek-Grishin Calculus to Lambek Calculus
 --------------------------------------------------------------------------------
 
-lg2nl :: Mapping
-lg2nl = Mapping
-      { blacklist   = [ "⊕" , "⇛" , "⇚", "grish₁" , "grish₂" , "grish₃" , "grish₄" ]
-      , textMapping = [ "LambekGrishin" ==> "Lambek"
-                      , "LG"            ==> "NL"
-                      ]
-      , fileMapping = [ srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Base.agda"
-                    ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Base.agda"
-                      , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Derivation.agda"
-                    ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Derivation.agda"
-                      , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Origin.agda"
-                    ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Origin.agda"
-                      , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Trans.agda"
-                    ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Trans.agda"
-                      ]
-      }
+makeLambek :: Mapping
+makeLambek = Mapping
+  { blacklist   = [ "⊕"      , "⇛"      , "⇚"
+                  , "grish₁" , "grish₂" , "grish₃" , "grish₄"
+                  ]
+  , textMapping = [ "LambekGrishin" ==> "Lambek"
+                  , "LG"            ==> "NL"
+                  , "Classical"     ==> "Intuitionistic"
+                  ]
+  , fileMapping = [ srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type/Complexity.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type/Complexity.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type/Context.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type/Context.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type/Context/Polarised.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type/Context/Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type/Polarised.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type/Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Judgement.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Judgement.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Judgement/Context.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Judgement/Context.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Judgement/Context/Polarised.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Judgement/Context/Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Base.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Base.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Derivation.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Derivation.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Origin.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Origin.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Trans.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Trans.agda"
+                  ]
+  }
 
 
 -------------------------------------------------------------------------------
@@ -126,19 +208,24 @@ lg2nl = Mapping
 -------------------------------------------------------------------------------
 
 
-runMapping :: Mapping -> Rules ()
-runMapping Mapping{..} = do
+clobber :: Mapping -> Action ()
+clobber Mapping{..} = liftIO (removeFiles "." (map snd fileMapping))
+
+run :: Mapping -> Rules ()
+run Mapping{..} = do
 
   let wanted = map snd fileMapping
   let prefix = joinPath (foldl1 commonPrefix (map splitPath wanted))
 
   want wanted
 
-  prefix <//> "*.agda" *> \out -> do
-    let src = fromJust (lookup out (map swap fileMapping))
-    need [src]
-    liftIO $
-      T.writeFile out . restrictSource textMapping blacklist =<< T.readFile src
+  prefix <//> "*.agda" *> \out ->
+    case lookup out (map swap fileMapping) of
+      Nothing  -> putLoud $ "Error: invalid mapping for " ++ out
+      Just src -> do
+        need [src]
+        liftIO $
+          T.writeFile out . restrictSource textMapping blacklist =<< T.readFile src
 
 
 -- |Parse a file and remove all groups which contain illegal symbols.
@@ -149,7 +236,7 @@ restrictSource replacements blacklist input = let
   -- First we divide the text up by lines, and group the lines that
   -- are separated by one or more blank lines.
   lines   = T.lines input
-  groups  = L.splitWhen isBlank lines
+  groups  = splitWhen isBlank lines
   groups' = map (filter (not . isBlank)) groups
 
   -- Then we scan over all the groups, and remove those which have a
