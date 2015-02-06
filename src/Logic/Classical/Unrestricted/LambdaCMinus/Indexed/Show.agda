@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
 open import Function             using (_$_)
 open import Coinduction          using (♭)
 open import Category.Monad.State using (State; StateMonadState; module RawMonadState; RawMonadState)
@@ -25,69 +29,8 @@ private
 
   genˣ : State Generator String
   genˣ = get >>= (λ {((x ∷ xs) , ks) → put (♭ xs , ks) >> return x})
-
   genᵏ : State Generator String
   genᵏ = get >>= (λ {(xs , (k ∷ ks)) → put (xs , ♭ ks) >> return k})
-
-
-  infixr 5 _∙_
-
-  _∙_ : String → String → String
-  xs ∙ ys = xs ++ " " ++ ys
-
-  parens : String → String
-  parens str = "(" ++ str ++ ")"
-
-
-  mutual
-    genShow : ∀ {Γ A Δ}
-            → (namesˣ : Vec String (length Γ))
-            → (namesᵏ : Vec String (length Δ))
-            → λC⁻ Γ ⊢[ A ] Δ
-            → State Generator String
-    genShow nˣ nᵏ (ax  x  ) = return $ lookup x nˣ
-    genShow nˣ nᵏ (⇒ᵢ  f  ) = genˣ >>= λ x
-                            → genShow (x ∷ nˣ) nᵏ f >>= λ f
-                            → return
-                            $ parens ("λ" ∙ x ∙ "→" ∙ f)
-    genShow nˣ nᵏ (⇒ₑ  f g) = genShow nˣ nᵏ f >>= λ f
-                            → genShow nˣ nᵏ g >>= λ g
-                            → return
-                            $ parens (f ∙ g)
-    genShow nˣ nᵏ (raa f  ) = genᵏ >>= λ α
-                            → genShow′ nˣ (α ∷ nᵏ) f >>= λ f
-                            → return
-                            $ "C⁻" ++ (parens ("λ" ∙ α ∙ "→" ∙ f))
-    genShow nˣ nᵏ (-ᵢ  f g) = genShow         nˣ  nᵏ f >>= λ f
-                            → genShow′ ("□" ∷ nˣ) nᵏ g >>= λ g
-                            → return
-                            $ parens (f ∙ "," ∙ g)
-    genShow nˣ nᵏ (-ₑ  f g) = genˣ >>= λ x
-                            → genᵏ >>= λ α
-                            → genShow      nˣ       nᵏ  f >>= λ f
-                            → genShow (x ∷ nˣ) (α ∷ nᵏ) g >>= λ g
-                            → return
-                            $ parens ("let" ∙ (parens (x ∙ "," ∙ α)) ∙ "=" ∙ f ∙ "in" ∙ g)
-    genShow nˣ nᵏ (⊗ᵢ  f g) = genShow nˣ nᵏ f >>= λ f
-                            → genShow nˣ nᵏ g >>= λ g
-                            → return
-                            $ parens (f ∙ "," ∙ g)
-    genShow nˣ nᵏ (⊗ₑ  f g) = genˣ >>= λ x
-                            → genˣ >>= λ y
-                            → genShow          nˣ  nᵏ f >>= λ f
-                            → genShow (x ∷ y ∷ nˣ) nᵏ g >>= λ g
-                            → return
-                            $ parens ("case" ∙ f ∙ "of" ∙ (parens (x ∙ "," ∙ y)) ∙ "→" ∙ g)
-
-
-    genShow′ : ∀ {Γ Δ}
-             → (namesˣ : Vec String (length Γ))
-             → (namesᵏ : Vec String (length Δ))
-             → λC⁻ Γ ⊢ Δ
-             → State Generator String
-    genShow′ nˣ nᵏ (⇒ₑᵏ α f) = genShow nˣ nᵏ f >>= λ f
-                             → return $ lookup α nᵏ ∙ f
-
 
   namesˣ : Stream String
   namesˣ = map (λ n → "x" ++ showℕ n) (iterate suc 0)
@@ -95,10 +38,55 @@ private
   namesᵏ = map (λ n → "k" ++ showℕ n) (iterate suc 0)
 
 
-show : ∀ {J} → λC⁻ J → String
-show {Γ ⊢      Δ} f = proj₁ $
-  genShow′ (take (length Γ) namesˣ)   (take (length Δ) namesᵏ) f
-          ((drop (length Γ) namesˣ) , (drop (length Δ) namesᵏ))
-show {Γ ⊢[ _ ] Δ} f = proj₁ $
-  genShow  (take (length Γ) namesˣ)   (take (length Δ) namesᵏ) f
-          ((drop (length Γ) namesˣ) , (drop (length Δ) namesᵏ))
+  infixr 5 _∙_
+  _∙_ : String → String → String
+  xs ∙ ys = xs ++ " " ++ ys
+
+  parens : String → String
+  parens str = "(" ++ str ++ ")"
+
+
+  showTerm′ : ∀ {J} (namesˣ : Vec String (length (anta J)))
+                    (namesᵏ : Vec String (length (succ J)))
+            → λC⁻ J → State Generator String
+  showTerm′ nˣ nᵏ (ax  x  ) = return $ lookup x nˣ
+  showTerm′ nˣ nᵏ (⇒ᵢ  f  ) = genˣ >>= λ x
+                            → showTerm′ (x ∷ nˣ) nᵏ f >>= λ f
+                            → return
+                            $ parens ("λ" ∙ x ∙ "→" ∙ f)
+  showTerm′ nˣ nᵏ (⇒ₑ  f g) = showTerm′ nˣ nᵏ f >>= λ f
+                            → showTerm′ nˣ nᵏ g >>= λ g
+                            → return
+                            $ parens (f ∙ g)
+  showTerm′ nˣ nᵏ (raa f  ) = genᵏ >>= λ α
+                            → showTerm′ nˣ (α ∷ nᵏ) f >>= λ f
+                            → return
+                            $ "C⁻" ++ (parens ("λ" ∙ α ∙ "→" ∙ f))
+  showTerm′ nˣ nᵏ (⇒ₑᵏ α f) = showTerm′ nˣ nᵏ f >>= λ f
+                            → return $ lookup α nᵏ ∙ f
+  showTerm′ nˣ nᵏ (-ᵢ  f g) = showTerm′         nˣ  nᵏ f >>= λ f
+                            → showTerm′ ("□" ∷ nˣ) nᵏ g >>= λ g
+                            → return
+                            $ parens (f ∙ "," ∙ g)
+  showTerm′ nˣ nᵏ (-ₑ  f g) = genˣ >>= λ x
+                            → genᵏ >>= λ α
+                            → showTerm′      nˣ       nᵏ  f >>= λ f
+                            → showTerm′ (x ∷ nˣ) (α ∷ nᵏ) g >>= λ g
+                            → return
+                            $ parens ("let" ∙ (parens (x ∙ "," ∙ α)) ∙ "=" ∙ f ∙ "in" ∙ g)
+  showTerm′ nˣ nᵏ (⊗ᵢ  f g) = showTerm′ nˣ nᵏ f >>= λ f
+                            → showTerm′ nˣ nᵏ g >>= λ g
+                            → return
+                            $ parens (f ∙ "," ∙ g)
+  showTerm′ nˣ nᵏ (⊗ₑ  f g) = genˣ >>= λ x
+                            → genˣ >>= λ y
+                            → showTerm′          nˣ  nᵏ f >>= λ f
+                            → showTerm′ (x ∷ y ∷ nˣ) nᵏ g >>= λ g
+                            → return
+                            $ parens ("case" ∙ f ∙ "of" ∙ (parens (x ∙ "," ∙ y)) ∙ "→" ∙ g)
+
+
+showTerm : ∀ {J} → λC⁻ J → String
+showTerm {J} f = proj₁
+               $ showTerm′ (take _ namesˣ) (take _ namesᵏ) f
+               $ drop (length (anta J)) namesˣ , drop (length (anta J)) namesᵏ
