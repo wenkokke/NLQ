@@ -1,18 +1,20 @@
 #!/usr/bin/env runhaskell
 
-{-# LANGUAGE PatternGuards #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PatternGuards, OverloadedStrings, RecordWildCards #-}
 
-import           Control.Monad (when)
 import           Control.Applicative ((<$>))
+import           Control.Monad (when)
 import           Data.Attoparsec.Text (Parser)
 import qualified Data.Attoparsec.Text as P
 import           Data.Char as C (isSpace)
 import           Data.Either (isRight)
 import qualified Data.List as L
 import qualified Data.List.Split as L (splitWhen)
+import           Data.Maybe (fromJust)
 import           Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Text.IO as T
+import           Data.Tuple (swap)
 import           Development.Shake
 import           Development.Shake.FilePath
 import           System.IO (hPutStr,hSetEncoding,hGetContents,utf8,IOMode(..),openFile,withFile)
@@ -21,6 +23,15 @@ import           System.IO (hPutStr,hSetEncoding,hGetContents,utf8,IOMode(..),op
 srcDir :: FilePath
 srcDir = "src"
 
+-------------------------------------------------------------------------------
+-- Mapping: A data structure which holds file mappings
+-------------------------------------------------------------------------------
+
+data Mapping =
+     Mapping { blacklist   :: [Text]
+             , textMapping :: [(Text, Text)]
+             , fileMapping :: [(FilePath, FilePath)]
+             }
 
 -------------------------------------------------------------------------------
 -- Makefile
@@ -29,10 +40,14 @@ srcDir = "src"
 main :: IO ()
 main = shakeArgs shakeOptions $ do
 
+
+  runMapping lg2nl
+
+
   want ["src/Everything.agda"]
   "src/Everything.agda" %> \out -> do
 
-    liftIO $ removeFiles "src" ["Everything.agda"]
+    liftIO (removeFiles "src" ["Everything.agda"])
 
     modules <- L.sort . fmap (srcDir </>) . filter (not . (=="Everything.agda"))
             <$> getDirectoryFiles srcDir ["//*.agda","//*.lagda"]
@@ -41,6 +56,14 @@ main = shakeArgs shakeOptions $ do
     headers <- mapM (liftIO . extractHeader) modules
     writeFile' out $
       header ++ format (zip modules headers)
+
+
+  phony "clobber" $ do
+    putNormal "Removing Everything.agda"
+    liftIO $ removeFiles "src" ["Everything.agda"]
+    putNormal "Removing generated files for Lambek calculus"
+    liftIO $ removeFiles "." (map snd $ fileMapping lg2nl)
+
 
 
 -------------------------------------------------------------------------------
@@ -74,10 +97,49 @@ format = unlines . concatMap fmt
             | otherwise       = "\n"
 
 
+
+--------------------------------------------------------------------------------
+-- Mapping: Lambek-Grishin Calculus to Lambek Calculus
+--------------------------------------------------------------------------------
+
+lg2nl :: Mapping
+lg2nl = Mapping
+      { blacklist   = [ "⊕" , "⇛" , "⇚", "grish₁" , "grish₂" , "grish₃" , "grish₄" ]
+      , textMapping = [ "LambekGrishin" ==> "Lambek"
+                      , "LG"            ==> "NL"
+                      ]
+      , fileMapping = [ srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Base.agda"
+                    ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Base.agda"
+                      , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Derivation.agda"
+                    ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Derivation.agda"
+                      , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Origin.agda"
+                    ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Origin.agda"
+                      , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Trans.agda"
+                    ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Trans.agda"
+                      ]
+      }
+
+
 -------------------------------------------------------------------------------
 -- Utility: generate files from other files by restricting the allowed symbols
 --          and renaming symbols
 -------------------------------------------------------------------------------
+
+
+runMapping :: Mapping -> Rules ()
+runMapping Mapping{..} = do
+
+  let wanted = map snd fileMapping
+  let prefix = joinPath (foldl1 commonPrefix (map splitPath wanted))
+
+  want wanted
+
+  prefix <//> "*.agda" *> \out -> do
+    let src = fromJust (lookup out (map swap fileMapping))
+    need [src]
+    liftIO $
+      T.writeFile out . restrictSource textMapping blacklist =<< T.readFile src
+
 
 -- |Parse a file and remove all groups which contain illegal symbols.
 restrictSource :: [(Text, Text)] -> [Text] -> Text -> Text
@@ -170,6 +232,8 @@ restrictSource replacements blacklist input = let
   isBlank = T.all isSpace
 
 
+infix 4 ==>
+
 (==>) :: a -> b -> (a , b)
 (==>) = (,)
 
@@ -199,3 +263,10 @@ writeFileUTF8 :: FilePath -> String -> IO ()
 writeFileUTF8 f s = withFile f WriteMode $ \h -> do
   hSetEncoding h utf8
   hPutStr h s
+
+commonPrefix :: (Eq e) => [e] -> [e] -> [e]
+commonPrefix _ [] = []
+commonPrefix [] _ = []
+commonPrefix (x:xs) (y:ys)
+  | x == y    = x : commonPrefix xs ys
+  | otherwise = []
