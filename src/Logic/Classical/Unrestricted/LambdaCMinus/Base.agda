@@ -15,8 +15,8 @@ module Logic.Classical.Unrestricted.LambdaCMinus.Base {ℓ} (Univ : Set ℓ) whe
 
 
 open import Logic.Index
-open import Logic.Type Univ renaming (_⇚_ to _-_)
-open import Logic.Judgement (List Type) Type (List Type)
+open import Logic.Classical.Linear.LambdaCMinus.Type      Univ
+open import Logic.Classical.Linear.LambdaCMinus.Judgement Univ
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 
@@ -290,13 +290,13 @@ axᵢ {Γ = A , Γ} (suc x) = wᴸ₁ (axᵢ x)
 
 -- Lemma: every function can be lifted to a function with the identity
 -- continuation.
-lift : ∀ {Γ A B C Δ} → λC⁻ A ⇒ B , Γ ⊢[ A - C ⇒ B - C ] Δ
-lift {Γ} {A} {B} {C} {Δ}
-     = ⇒ᵢ
-     $ -ₑ {A - C , ∅} {A ⇒ B , Γ} ax
-     $ -ᵢ {A , (A ⇒ B , ∅)} {Γ}
-       (sᴸ  (A , ∅) (⇒ₑ ax ax))
-       (sᴸ′ (C , ∅) (wᴸ′ Γ (⇒ₑᵏ (# 0) ax)))
+--lift : ∀ {Γ A B C Δ} → λC⁻ A ⇒ B , Γ ⊢[ A - C ⇒ B - C ] Δ
+--lift {Γ} {A} {B} {C} {Δ}
+--     = ⇒ᵢ
+--     $ -ₑ {A - C , ∅} {A ⇒ B , Γ} ax
+--     $ -ᵢ {A , (A ⇒ B , ∅)} {Γ}
+--       (sᴸ  (A , ∅) (⇒ₑ ax ax))
+--       (sᴸ′ (C , ∅) (wᴸ′ Γ (⇒ₑᵏ (# 0) ax)))
 
 
 -- Lemma: introduction and elimination of right-handed empty context.

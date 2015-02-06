@@ -19,7 +19,6 @@
 ------------------------------------------------------------------------
 
 
-open import Data.Empty                                 using (⊥)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; cong)
 
 
@@ -27,14 +26,14 @@ module Logic.Classical.Ordered.LambekGrishin.Origin {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Type                                       Univ as T
-open import Logic.Type.Context                               Univ as TC
-open import Logic.Type.Context.Polarised                     Univ as TCP hiding (Polarised)
-open import Logic.Judgement                           Type ⊥ Type as J
-open import Logic.Judgement.Context                          Univ as JC
-open import Logic.Judgement.Context.Polarised                Univ as JCP
-open import Logic.Classical.Ordered.LambekGrishin.Base       Univ as LGB
-open import Logic.Classical.Ordered.LambekGrishin.Derivation Univ as LGD
+open import Logic.Classical.Ordered.LambekGrishin.Type                        Univ as T
+open import Logic.Classical.Ordered.LambekGrishin.Type.Context                Univ as TC
+open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised      Univ as TCP hiding (Polarised)
+open import Logic.Classical.Ordered.LambekGrishin.Judgement                   Univ
+open import Logic.Classical.Ordered.LambekGrishin.Judgement.Context           Univ as JC
+open import Logic.Classical.Ordered.LambekGrishin.Judgement.Context.Polarised Univ as JCP
+open import Logic.Classical.Ordered.LambekGrishin.Base                        Univ as LGB
+open import Logic.Classical.Ordered.LambekGrishin.Derivation                  Univ as LGD
 
 
 open  JC.Simple renaming (_[_] to _[_]ᴶ)

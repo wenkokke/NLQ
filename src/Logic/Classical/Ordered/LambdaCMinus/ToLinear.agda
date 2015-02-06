@@ -12,33 +12,34 @@ open import Relation.Binary.PropositionalEquality using (sym; subst)
 module Logic.Classical.Ordered.LambdaCMinus.ToLinear {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type                                Univ
-open import Logic.Index
-open import Logic.Translation                         Univ
-open import Logic.Structure.Conjunction               Univ renaming (_[_] to _⟨_⟩)
-open import Logic.Judgement Conjunction Type (List Type) as OJ using (Judgement)
-open import Logic.Judgement (List Type) Type (List Type) as LJ
-open import Logic.Classical.Ordered.LambdaCMinus.Base Univ as O
-open import Logic.Classical.Linear.LambdaCMinus.Base  Univ as L
-open Monoid (Data.List.monoid Type) using (assoc; identity)
+open import Logic.Classical.Linear.LambdaCMinus.Type       Univ as LT
+open import Logic.Classical.Linear.LambdaCMinus.Judgement  Univ as LJ
+open import Logic.Classical.Linear.LambdaCMinus.Base       Univ as L
 
+open import Logic.Classical.Ordered.LambdaCMinus.Type      Univ as OT
+open import Logic.Classical.Ordered.LambdaCMinus.Structure Univ as OS renaming (_[_] to _⟨_⟩)
+open import Logic.Classical.Ordered.LambdaCMinus.Judgement Univ as OJ
+open import Logic.Classical.Ordered.LambdaCMinus.Base      Univ as O
+
+open import Logic.Index
+open import Logic.Translation
+open Monoid (Data.List.monoid LT.Type) using (assoc; identity)
 
 
 private
-  ⟦_⟧ᵀ : Type → Type
+  ⟦_⟧ᵀ : OT.Type → LT.Type
   ⟦_⟧ᵀ (el  A) = el A
   ⟦_⟧ᵀ (A ⇒ B) = ⟦ A ⟧ᵀ ⇒ ⟦ B ⟧ᵀ
   ⟦_⟧ᵀ (B ⇐ A) = ⟦ A ⟧ᵀ ⇒ ⟦ B ⟧ᵀ
-  ⟦_⟧ᵀ (B ⇚ A) = ⟦ B ⟧ᵀ ⇚ ⟦ A ⟧ᵀ
-  ⟦_⟧ᵀ (A ⇛ B) = ⟦ B ⟧ᵀ ⇚ ⟦ A ⟧ᵀ
+  ⟦_⟧ᵀ (B - A) = ⟦ B ⟧ᵀ - ⟦ A ⟧ᵀ
   ⟦_⟧ᵀ (A ⊗ B) = ⟦ A ⟧ᵀ ⊗ ⟦ B ⟧ᵀ
   ⟦_⟧ᵀ (A ⊕ B) = ⟦ A ⟧ᵀ ⊕ ⟦ B ⟧ᵀ
 
-  ⟦_⟧⁺ : Conjunction → List Type
+  ⟦_⟧⁺ : Structure → List LT.Type
   ⟦_⟧⁺ (· A ·) = ⟦ A ⟧ᵀ , ∅
   ⟦_⟧⁺ (Γ ⊗ Δ) = ⟦ Γ ⟧⁺ ++ ⟦ Δ ⟧⁺
 
-  ⟦_⟧⁻ : List Type → List Type
+  ⟦_⟧⁻ : List OT.Type → List LT.Type
   ⟦_⟧⁻ = map ⟦_⟧ᵀ
 
   ⟦_⟧ᴶ : OJ.Judgement → LJ.Judgement
@@ -65,7 +66,7 @@ private
   [ O.⊗ᵢ                      f g ] = L.⊗ᵢ [ f ] [ g ]
   [ O.⊗ₑ  {Γ₁} Γ₂ {A} {B} {C} f g ] = ∅ₑ $ lem-⊗ₑ Γ₂ {C = C} [ f ] $ ∅ᵢ $ [ g ]
     where
-    lem-⊗ₑ : ∀ {Γ₁ : Conjunction} (Γ₂ : Context) {Γ₃ : List Type} {A B C Δ}
+    lem-⊗ₑ : ∀ {Γ₁ : Structure} (Γ₂ : Context) {Γ₃ : List LT.Type} {A B C Δ}
            → L.λC⁻ (⟦ Γ₁ ⟧⁺)                           ⊢[ ⟦ A ⊗ B ⟧ᵀ ] (⟦ Δ ⟧⁻)
            → L.λC⁻ (⟦ (Γ₂ ⟨ · A · ⊗ · B · ⟩) ⟧⁺) ++ Γ₃ ⊢[ ⟦ C     ⟧ᵀ ] (⟦ Δ ⟧⁻)
            → L.λC⁻ (⟦ (Γ₂ ⟨ Γ₁ ⟩) ⟧⁺)            ++ Γ₃ ⊢[ ⟦ C     ⟧ᵀ ] (⟦ Δ ⟧⁻)
@@ -83,5 +84,5 @@ private
                   = lem-⊗ₑ {Γ₁} Γ₂ {⟦ Γ₃ ⟧⁺ ++ Γ₄} {A} {B} {C} {Δ} f g
 
 
-Ord→Lin : Translation Type O.λC⁻_ L.λC⁻_
+Ord→Lin : Translation OT.Type LT.Type O.λC⁻_ L.λC⁻_
 Ord→Lin = record { ⟦_⟧ᵀ = ⟦_⟧ᵀ ; ⟦_⟧ᴶ = ⟦_⟧ᴶ ; [_] = [_] }

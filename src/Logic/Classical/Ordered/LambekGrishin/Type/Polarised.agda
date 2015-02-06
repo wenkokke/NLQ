@@ -9,10 +9,10 @@ open import Data.Product                               using (Σ; _,_)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Type.Polarised {ℓ} (Univ : Polarity → Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Type.Polarised {ℓ} (Univ : Polarity → Set ℓ) where
 
 
-open import Logic.Type (Σ Polarity Univ)
+open import Logic.Classical.Ordered.LambekGrishin.Type (Σ Polarity Univ)
 
 
 data Polarised : Polarity → Type → Set ℓ where

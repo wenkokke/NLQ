@@ -8,7 +8,7 @@ open import Data.String renaming (String to Name)
 module Logic.Classical.Unrestricted.LambdaCMinus.Named.Base {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type Univ renaming (_⇛_ to _-_)
+open import Logic.Classical.Linear.LambdaCMinus.Type Univ
 
 
 infixr 9 _$_ _$ᴷ_

@@ -17,9 +17,9 @@ module Logic.Classical.Unrestricted.LambdaCMinus.EquivalentToIndexed {ℓ} (Univ
 
 
 open import Logic.Index
-open import Logic.Translation                                      Univ
-open import Logic.Type                                             Univ renaming (_⇛_ to _-_)
-open import Logic.Judgement (List Type) Type (List Type)
+open import Logic.Translation
+open import Logic.Classical.Linear.LambdaCMinus.Type               Univ
+open import Logic.Classical.Linear.LambdaCMinus.Judgement          Univ
 open import Logic.Classical.Unrestricted.LambdaCMinus.Base         Univ as E
 open import Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base Univ as I
 open Monoid (Data.List.monoid Type) using (identity; assoc)
@@ -61,8 +61,8 @@ eq : ∀ {J} → (E.λC⁻ J) ⇔ (I.λC⁻ J)
 eq = equivalence from to
 
 
-Un→Ix : Translation Type E.λC⁻_ I.λC⁻_
+Un→Ix : Translation Type Type E.λC⁻_ I.λC⁻_
 Un→Ix = record { ⟦_⟧ᵀ = id ; ⟦_⟧ᴶ = id ; [_] = from }
 
-Ix→Un : Translation Type I.λC⁻_ E.λC⁻_
+Ix→Un : Translation Type Type I.λC⁻_ E.λC⁻_
 Ix→Un = record { ⟦_⟧ᵀ = id ; ⟦_⟧ᴶ = id ; [_] = to }

@@ -20,11 +20,11 @@ open import Relation.Binary                            using (DecSetoid; module 
 open import Relation.Binary.PropositionalEquality as P using (_≡_; _≢_; refl; cong)
 
 
-module Logic.Type.Context {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Type.Context {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type            Univ renaming (module DecEq to TypeDecEq)
-open import Logic.Type.Complexity Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type            Univ renaming (module DecEq to TypeDecEq)
+open import Logic.Classical.Ordered.LambekGrishin.Type.Complexity Univ
 
 
 infixr 30 _⊗>_ _<⊗_

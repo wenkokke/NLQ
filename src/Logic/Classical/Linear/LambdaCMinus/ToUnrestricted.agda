@@ -2,19 +2,18 @@
 -- The Lambek Calculus in Agda
 ------------------------------------------------------------------------
 
-open import Level     using (Level; suc; _⊔_)
 open import Function  using (id)
-open import Data.List using (List; _++_) renaming ([] to ·; _∷_ to _,_)
+open import Data.List using (List; map; _++_) renaming ([] to ∅; _∷_ to _,_)
 
 
 module Logic.Classical.Linear.LambdaCMinus.ToUnrestricted {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type Univ renaming (_⇚_ to _-_)
 open import Logic.Index
-open import Logic.Translation Univ
-open import Logic.Judgement (List Type) Type (List Type)
-open import Logic.Classical.Linear.LambdaCMinus.Base Univ as L
+open import Logic.Translation
+open import Logic.Classical.Linear.LambdaCMinus.Type       Univ
+open import Logic.Classical.Linear.LambdaCMinus.Judgement  Univ
+open import Logic.Classical.Linear.LambdaCMinus.Base       Univ as L
 open import Logic.Classical.Unrestricted.LambdaCMinus.Base Univ as U
 
 
@@ -32,5 +31,5 @@ private
   [ L.eᴸ  Γ₁ Γ₂ Γ₃ Γ₄ f   ] = U.eᴸ  Γ₁ Γ₂ Γ₃ Γ₄ [ f ]
 
 
-Lin→Un : Translation Type L.λC⁻_ U.λC⁻_
+Lin→Un : Translation Type Type L.λC⁻_ U.λC⁻_
 Lin→Un = record { ⟦_⟧ᵀ = id ; ⟦_⟧ᴶ = id ; [_] = [_] }

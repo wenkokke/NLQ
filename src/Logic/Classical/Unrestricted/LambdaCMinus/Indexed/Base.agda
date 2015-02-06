@@ -15,8 +15,8 @@ module Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base {ℓ} (Univ : Set 
 
 
 open import Logic.Index
-open import Logic.Type Univ renaming (_⇚_ to _-_)
-open import Logic.Judgement (List Type) Type (List Type)
+open import Logic.Classical.Linear.LambdaCMinus.Type      Univ
+open import Logic.Classical.Linear.LambdaCMinus.Judgement Univ
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 

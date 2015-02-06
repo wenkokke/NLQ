@@ -12,26 +12,26 @@ open import Relation.Nullary                      using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym)
 
 
-module Logic.Structure.Conjunction {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambdaCMinus.Structure {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type Univ
+open import Logic.Classical.Ordered.LambdaCMinus.Type Univ
 
 
-data Conjunction : Set ℓ where
+data Structure : Set ℓ where
 
-  ·_· : Type → Conjunction
-  _⊗_ : Conjunction → Conjunction → Conjunction
+  ·_· : Type → Structure
+  _⊗_ : Structure → Structure → Structure
 
 
 data Context : Set ℓ where
 
   []   : Context
-  _⊗>_ : Conjunction → Context → Context
-  _<⊗_ : Context → Conjunction → Context
+  _⊗>_ : Structure → Context → Context
+  _<⊗_ : Context → Structure → Context
 
 
-_[_] : Context → Conjunction → Conjunction
+_[_] : Context → Structure → Structure
 []         [ Δ ] = Δ
 (Γ₁ ⊗> Γ₂) [ Δ ] =  Γ₁        ⊗ (Γ₂ [ Δ ])
 (Γ₁ <⊗ Γ₂) [ Δ ] = (Γ₁ [ Δ ]) ⊗  Γ₂

@@ -17,8 +17,8 @@ open import Data.Vec             using (Vec; _∷_; []; lookup; tail)
 module Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Show {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type Univ
-open import Logic.Judgement (List Type) Type (List Type)
+open import Logic.Classical.Linear.LambdaCMinus.Type               Univ
+open import Logic.Classical.Linear.LambdaCMinus.Judgement          Univ
 open import Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base Univ
 
 private

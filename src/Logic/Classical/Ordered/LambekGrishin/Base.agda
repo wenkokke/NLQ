@@ -15,8 +15,8 @@ open import Relation.Binary.HeterogeneousEquality as H using (_≅_)
 module Logic.Classical.Ordered.LambekGrishin.Base {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Type Univ
-open import Logic.Judgement Type ⊥ Type
+open import Logic.Classical.Ordered.LambekGrishin.Type      Univ
+open import Logic.Classical.Ordered.LambekGrishin.Judgement Univ
 
 
 infix 1 LG_
