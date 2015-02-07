@@ -117,12 +117,6 @@ makeLinearLambdaCMinus = Mapping
                 ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Type.agda"
                   , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Type/Complexity.agda"
                 ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Type/Complexity.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Type/Context.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Type/Context.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Type/Context/Polarised.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Type/Context/Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Type/Polarised.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Type/Polarised.agda"
                   , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Judgement.agda"
                 ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Judgement.agda"
                   , srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus" </> "Base.agda"
@@ -150,12 +144,6 @@ makeOrderedLambdaCMinus = Mapping
                 ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambdaCMinus"  </> "Type.agda"
                   , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Type/Complexity.agda"
                 ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambdaCMinus"  </> "Type/Complexity.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Type/Context.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambdaCMinus"  </> "Type/Context.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Type/Context/Polarised.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambdaCMinus"  </> "Type/Context/Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Type/Polarised.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambdaCMinus"  </> "Type/Polarised.agda"
                   ]
   }
 
