@@ -60,13 +60,15 @@ main = shakeArgs shakeOptions $ do
 
   phony "clobber" $ do
     putNormal "Removing Everything.agda"
-    liftIO $ removeFiles "src" ["Everything.agda"]
+    liftIO $ removeFiles srcDir ["Everything.agda"]
     putNormal "Removing generated files for Lambek Calculus"
     clobber makeLambek
     putNormal "Removing generated files for Ordered Lambda-C-Minus Calculus"
     clobber makeOrderedLambdaCMinus
     putNormal "Removing generated files for Linear Lambda-C-Minus Calculus"
     clobber makeLinearLambdaCMinus
+    putNormal "Removing generated Agda interface files"
+    liftIO $ removeFiles srcDir ["//*.agdai"]
 
 
 
