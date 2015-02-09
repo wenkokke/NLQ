@@ -3,7 +3,7 @@
 ------------------------------------------------------------------------
 
 open import Function                                   using (_∘_)
-open import Data.Product                               using (_×_; _,_; proj₁; proj₂)
+open import Data.Product                               using (∃; _×_; _,_; proj₁; proj₂)
 open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Binary                            using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
@@ -33,18 +33,6 @@ data Type : Set ℓ where
   _⊕_ : Type → Type → Type
 
 
--- TODO: implement CBV and CBN
---
--- ⌊_⌋ : Type → Type
--- ⌊ el A  ⌋ = {!!}
--- ⌊ A ⇒ B ⌋ = {!!}
--- ⌊ A ⇐ B ⌋ = {!!}
--- ⌊ A ⇚ B ⌋ = {!!}
--- ⌊ A ⇛ B ⌋ = {!!}
--- ⌊ A ⊗ B ⌋ = {!!}
--- ⌊ A ⊕ B ⌋ = {!!}
-
-
 -- Proofs which show that constructors of types (as all Agda
 -- data-constructors) respect equality.
 
@@ -68,6 +56,18 @@ el-injective refl = refl
 
 ⊕-injective : ∀ {A B C D} → A ⊕ C ≡ B ⊕ D → A ≡ B × C ≡ D
 ⊕-injective refl = refl , refl
+
+
+-- Selective case matching
+case-el : (A : Type) → Dec (∃ (λ U → A ≡ el U))
+case-el (el  U) = yes (U , refl)
+case-el (_ ⇒ _) = no (λ {(_ , ())})
+case-el (_ ⇐ _) = no (λ {(_ , ())})
+case-el (_ ⇚ _) = no (λ {(_ , ())})
+case-el (_ ⇛ _) = no (λ {(_ , ())})
+case-el (_ ⊗ _) = no (λ {(_ , ())})
+case-el (_ ⊕ _) = no (λ {(_ , ())})
+
 
 
 -- Proof that if the given universe has decidable equality, then so do types.

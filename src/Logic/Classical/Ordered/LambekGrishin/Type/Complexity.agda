@@ -17,44 +17,31 @@ open import Logic.Classical.Ordered.LambekGrishin.Type Univ
 open StrictTotalOrder NatProps.strictTotalOrder using (irrefl)
 
 
-infix 10 ∣_∣
+infix 10 ⌈_⌉ ⌊_⌋
 
 -- Compute the complexity of a type, measured in the number of
 -- connectives and atomic formulas in the type.
-∣_∣ : Type → ℕ
-∣ el A ∣  = suc zero
-∣ A ⊗ B ∣ = suc (∣ A ∣ + ∣ B ∣)
-∣ A ⇚ B ∣ = suc (∣ A ∣ + ∣ B ∣)
-∣ A ⇛ B ∣ = suc (∣ A ∣ + ∣ B ∣)
-∣ A ⊕ B ∣ = suc (∣ A ∣ + ∣ B ∣)
-∣ A ⇐ B ∣ = suc (∣ A ∣ + ∣ B ∣)
-∣ A ⇒ B ∣ = suc (∣ A ∣ + ∣ B ∣)
+mutual
+  ⌈_⌉ : Type → ℕ
+  ⌈ A ⌉ = suc ⌊ A ⌋
 
-
--- Lemma which shows that any type has a complexity of at least one.
-∣A∣≥1 : ∀ A → ∣ A ∣ ≥ 1
-∣A∣≥1 (el _)  = s≤s z≤n
-∣A∣≥1 (_ ⊗ _) = s≤s z≤n
-∣A∣≥1 (_ ⇚ _) = s≤s z≤n
-∣A∣≥1 (_ ⇛ _) = s≤s z≤n
-∣A∣≥1 (_ ⊕ _) = s≤s z≤n
-∣A∣≥1 (_ ⇐ _) = s≤s z≤n
-∣A∣≥1 (_ ⇒ _) = s≤s z≤n
+  ⌊_⌋ : Type → ℕ
+  ⌊ el  A ⌋ = zero
+  ⌊ A ⊗ B ⌋ = ⌈ A ⌉ + ⌈ B ⌉
+  ⌊ A ⇚ B ⌋ = ⌈ A ⌉ + ⌈ B ⌉
+  ⌊ A ⇛ B ⌋ = ⌈ A ⌉ + ⌈ B ⌉
+  ⌊ A ⊕ B ⌋ = ⌈ A ⌉ + ⌈ B ⌉
+  ⌊ A ⇐ B ⌋ = ⌈ A ⌉ + ⌈ B ⌉
+  ⌊ A ⇒ B ⌋ = ⌈ A ⌉ + ⌈ B ⌉
 
 
 -- Lemma which shows that no type has strictly lower complexity than
 -- elementary types.
-∣A∣≮∣elB∣ : ∀ A B → ∣ A ∣ ≮ ∣ el B ∣
-∣A∣≮∣elB∣ (el A)    B (s≤s ())
-∣A∣≮∣elB∣ (A₁ ⊗ A₂) B (s≤s ())
-∣A∣≮∣elB∣ (A₁ ⇛ A₂) B (s≤s ())
-∣A∣≮∣elB∣ (A₁ ⇚ A₂) B (s≤s ())
-∣A∣≮∣elB∣ (A₁ ⊕ A₂) B (s≤s ())
-∣A∣≮∣elB∣ (A₁ ⇒ A₂) B (s≤s ())
-∣A∣≮∣elB∣ (A₁ ⇐ A₂) B (s≤s ())
+⌈A⌉≮⌈elB⌉ : ∀ A B → ⌈ A ⌉ ≮ ⌈ el B ⌉
+⌈A⌉≮⌈elB⌉ A B (s≤s ())
 
 
 -- Lemma which shows that if types are not of the same complexity,
 -- then they cannot be equal.
-∣A∣<∣B∣→A≠B : ∀ A B → ∣ A ∣ < ∣ B ∣ → A ≢ B
-∣A∣<∣B∣→A≠B A B ∣A∣<∣B∣ A=B = irrefl (cong ∣_∣ A=B) ∣A∣<∣B∣
+⌈A⌉<⌈B⌉→A≠B : ∀ A B → ⌈ A ⌉ < ⌈ B ⌉ → A ≢ B
+⌈A⌉<⌈B⌉→A≠B A B ⌈A⌉<⌈B⌉ A=B = irrefl (cong ⌈_⌉ A=B) ⌈A⌉<⌈B⌉
