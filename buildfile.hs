@@ -188,6 +188,8 @@ makeLambek = Mapping
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type/Context/Polarised.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type/Polarised.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type/Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type/Subtype.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type/Subtype.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Judgement.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Judgement.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Judgement/Context.agda"
