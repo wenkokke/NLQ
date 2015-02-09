@@ -9,11 +9,13 @@
 -- an equivalence relation, and a complete instance of the poset class.
 ------------------------------------------------------------------------
 
+
 open import Function using (flip)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; swap; zip)
 open import Relation.Nullary using (Dec; yes; no; ¬_)
 open import Relation.Binary using (Rel; IsPreorder; Preorder; IsPartialOrder; Poset; IsEquivalence)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym; cong)
+
 
 module Relation.Binary.PartialOrderToEquivalence
        {a ℓ} {A : Set a}

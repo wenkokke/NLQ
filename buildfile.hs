@@ -19,8 +19,11 @@ import           Development.Shake.FilePath
 import           System.IO (hPutStr,hSetEncoding,hGetContents,utf8,IOMode(..),openFile,withFile)
 
 
-srcDir :: FilePath
+srcDir, stdlib, catlib :: FilePath
 srcDir = "src"
+stdlib = "/Users/pepijn/Projects/agda-stdlib/src"
+catlib = "/Users/pepijn/Projects/Categories"
+
 
 -------------------------------------------------------------------------------
 -- Mapping: A data structure which holds file mappings
@@ -44,10 +47,10 @@ main = shakeArgs shakeOptions $ do
   run makeLinearLambdaCMinus
 
   -- Generate: Everything
-  want ["src/Everything.agda"]
-  "src/Everything.agda" %> \out -> do
+  want [srcDir </> "Everything.agda"]
+  srcDir </> "Everything.agda" %> \out -> do
 
-    liftIO (removeFiles "src" ["Everything.agda"])
+    liftIO (removeFiles srcDir ["Everything.agda"])
 
     modules <- L.sort . fmap (srcDir </>) . filter (not . (=="Everything.agda"))
             <$> getDirectoryFiles srcDir ["//*.agda","//*.lagda"]
@@ -57,7 +60,18 @@ main = shakeArgs shakeOptions $ do
     writeFile' out $
       header ++ format (zip modules headers)
 
+  -- Generate: Listings
+  phony "listings" $ do
+    need [srcDir </> "Everything.agda"]
+    cmd ("agda" :: String)
+        ["--include-path=" ++ srcDir
+        ,"--include-path=" ++ stdlib
+        ,"--include-path=" ++ catlib
+        ,"--html"
+        ,"src/Everything.agda"
+        ,"-v0"]
 
+  -- Clobber: Clean up after various tasks
   phony "clobber" $ do
     putNormal "Removing Everything.agda"
     liftIO $ removeFiles srcDir ["Everything.agda"]
