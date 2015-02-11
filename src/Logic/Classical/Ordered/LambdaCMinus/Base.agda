@@ -3,7 +3,7 @@
 ------------------------------------------------------------------------
 
 open import Algebra                               using (module Monoid)
-open import Function                              using (id; _∘_; _$_)
+open import Function                              using (id; _∘_; _$_; flip)
 open import Data.Fin                              using (Fin; suc; zero; #_)
 open import Data.List                             using (List; _++_) renaming ([] to ∅; _∷_ to _,_; _∷ʳ_ to _,ʳ_)
 open import Data.Product                          using (Σ; Σ-syntax; _×_; _,_; proj₁; proj₂; map)
@@ -236,7 +236,6 @@ cᴿ′ : ∀ {Γ} (Δ₁ Δ₂ : List Type)
 cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) with contract Δ₁ Δ₂ α
 cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) | β , p rewrite p = ⇒ₑᵏ β (cᴿ Δ₁ Δ₂ f)
 
-
 -ᵢᴸ₁  : ∀ {Γ A B Δ} (α : Fin _)
       → λC⁻ · A - Δ ‼ α · ⊗ Γ ⊢[ B ] Δ
       → λC⁻ · A         · ⊗ Γ ⊢[ B ] Δ
@@ -256,3 +255,51 @@ cᴿ′ Δ₁ Δ₂ (⇒ₑᵏ α f) | β , p rewrite p = ⇒ₑᵏ β (cᴿ Δ�
      → λC⁻ Γ ⊗ · A         · ⊢[ B ] Δ
      → λC⁻ Γ ⊗ · A - Δ ‼ α · ⊢[ B ] Δ
 -ₑᴸ₂ α f = ⇐ₑ (⇐ᵢ f) (-ₑ₀ α ax)
+
+
+A⇒B⟶A-U⇒B-U
+  : ∀ {Γ A B U Δ}
+  → λC⁻ Γ ⊢[ A     ⇒ B     ] Δ
+  → λC⁻ Γ ⊢[ A - U ⇒ B - U ] Δ
+A⇒B⟶A-U⇒B-U
+  = ⇒ᵢ ∘ -ₑ₁ ax ∘ -ᵢ₀ (# 0) ∘ wᴿ₁ ∘ ⇒ₑ ax
+
+B⇐A⟶B-U⇐A-U
+  : ∀ {Γ A B U Δ}
+  → λC⁻ Γ ⊢[ B     ⇐ A     ] Δ
+  → λC⁻ Γ ⊢[ B - U ⇐ A - U ] Δ
+B⇐A⟶B-U⇐A-U
+  = ⇐ᵢ ∘ -ₑ₂ ax ∘ -ᵢ₀ (# 0) ∘ wᴿ₁ ∘ flip ⇐ₑ ax
+
+A⇒B⇒C⟶A-U⇒B-U⇒C-U₁
+  : ∀ {Γ A B C U Δ}
+  → λC⁻ Γ ⊢[ A     ⇒ B     ⇒ C     ] Δ
+  → λC⁻ Γ ⊢[ A - U ⇒ B - U ⇒ C - U ] Δ
+A⇒B⇒C⟶A-U⇒B-U⇒C-U₁
+  = ⇒ᵢ ∘ -ₑ₁ ax ∘ ⇒ᵢ ∘ -ₑ₁ ax ∘ -ᵢ₀ (# 0) ∘ ⇒ₑ ax ∘ ⇒ₑ ax ∘ wᴿ₁ ∘ wᴿ₁
+
+A⇒B⇒C⟶A-U⇒B-U⇒C-U₂
+  : ∀ {Γ A B C U Δ}
+  → λC⁻ Γ ⊢[ A     ⇒ B     ⇒ C     ] Δ
+  → λC⁻ Γ ⊢[ A - U ⇒ B - U ⇒ C - U ] Δ
+A⇒B⇒C⟶A-U⇒B-U⇒C-U₂
+  = ⇒ᵢ ∘ -ₑ₁ ax ∘ ⇒ᵢ ∘ -ₑ₁ ax ∘ -ᵢ₀ (# 1) ∘ ⇒ₑ ax ∘ ⇒ₑ ax ∘ wᴿ₁ ∘ wᴿ₁
+
+A⇒C⇐B⟶A-U⇒C-U⇐B-U₁
+  : ∀ {Γ A B C U Δ}
+  → λC⁻ Γ ⊢[ A     ⇒ (C     ⇐ B    ) ] Δ
+  → λC⁻ Γ ⊢[ A - U ⇒ (C - U ⇐ B - U) ] Δ
+A⇒C⇐B⟶A-U⇒C-U⇐B-U₁
+  = ⇒ᵢ ∘ -ₑ₁ ax ∘ ⇐ᵢ ∘ -ₑ₂ ax ∘ -ᵢ₀ (# 0) ∘ flip ⇐ₑ ax ∘ ⇒ₑ ax ∘ wᴿ₁ ∘ wᴿ₁
+
+A⇒C⇐B⟶A-U⇒C-U⇐B-U₂
+  : ∀ {Γ A B C U Δ}
+  → λC⁻ Γ ⊢[ A     ⇒ (C     ⇐ B    ) ] Δ
+  → λC⁻ Γ ⊢[ A - U ⇒ (C - U ⇐ B - U) ] Δ
+A⇒C⇐B⟶A-U⇒C-U⇐B-U₂
+  = ⇒ᵢ ∘ -ₑ₁ ax ∘ ⇐ᵢ ∘ -ₑ₂ ax ∘ -ᵢ₀ (# 1) ∘ flip ⇐ₑ ax ∘ ⇒ₑ ax ∘ wᴿ₁ ∘ wᴿ₁
+
+A-Aᵢ : ∀ {Γ A Δ}
+       → λC⁻ Γ ⊢[ A ] A - A , Δ
+       → λC⁻ Γ ⊢[ A ]         Δ
+A-Aᵢ = raa ∘ ⇒ₑᵏ (# 0) ∘ -ₑ₀ (# 0) ∘ raa ∘ ⇒ₑᵏ (# 1) ∘ eᴿ₁ ∘ wᴿ₁

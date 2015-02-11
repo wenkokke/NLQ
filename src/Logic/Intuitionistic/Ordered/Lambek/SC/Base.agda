@@ -19,7 +19,6 @@ open import Logic.Intuitionistic.Ordered.Lambek.Type         Univ as T
 open import Logic.Intuitionistic.Ordered.Lambek.Type.Context Univ as TC
 open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement Univ as SCJ
 open TC.Simple using (_[_]; _<_>; <>-assoc; <>-def)
-open TC.Empty  using (is-[]?)
 
 
 infix 3 NL_

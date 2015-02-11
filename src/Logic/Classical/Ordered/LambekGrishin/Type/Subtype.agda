@@ -1,3 +1,9 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+--
+------------------------------------------------------------------------
+
+
 open import Function                                   using (id; _∘_)
 open import Data.Empty                                 using (⊥; ⊥-elim)
 open import Data.Fin                                   using (Fin; suc; zero; inject+; raise)

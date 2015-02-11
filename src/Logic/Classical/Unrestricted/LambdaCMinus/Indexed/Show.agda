@@ -86,7 +86,20 @@ private
                             $ parens ("case" ∙ f ∙ "of" ∙ (parens (x ∙ "," ∙ y)) ∙ "→" ∙ g)
 
 
+
+-- Version of |showTerm| which allows the user to submit a vector of
+-- top-level names.
+showTermWith : ∀ {J}
+             → (namesˣ : Vec String (length (anta J)))
+             → (namesᵏ : Vec String (length (succ J)))
+             → λC⁻ J → String
+showTermWith nˣ nᵏ f = proj₁ (showTerm′ nˣ nᵏ f (namesˣ , namesᵏ))
+
+-- Version of |showTerm| which automatically names the top-level constructs.
 showTerm : ∀ {J} → λC⁻ J → String
-showTerm {J} f = proj₁
-               $ showTerm′ (take _ namesˣ) (take _ namesᵏ) f
-               $ drop (length (anta J)) namesˣ , drop (length (anta J)) namesᵏ
+showTerm {J} f = proj₁ (showTerm′ nˣ nᵏ f (drop |Γ| namesˣ , drop |Δ| namesᵏ))
+  where
+    |Γ| = length (anta J)
+    |Δ| = length (succ J)
+    nˣ  = take |Γ| namesˣ
+    nᵏ  = take |Δ| namesᵏ
