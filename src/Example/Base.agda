@@ -37,3 +37,23 @@ _⊃_ : Bool → Bool → Bool
 true  ⊃ true  = true
 true  ⊃ false = false
 false ⊃ _     = true
+
+
+
+module UsingLambdaCMinus where
+
+  open import Logic.Translation
+  open import Logic.Classical.Ordered.LambdaCMinus                          Univ public
+  open import Logic.Classical.Linear.LambdaCMinus.ToUnrestricted            Univ           using (Lin→Un)
+  open import Logic.Classical.Unrestricted.LambdaCMinus.ToAgda              Univ ⟦_⟧ᵁ Bool using (Un→Agda)
+  open import Logic.Classical.Unrestricted.LambdaCMinus.EquivalentToIndexed Univ           using (Un→Ix)
+  open import Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Show        Univ public    using (showTerm; showTermWith)
+  open import Logic.Intuitionistic.Unrestricted.Agda.Environment                 public
+
+  open Translation (Un→Agda ◇ Lin→Un ◇ Ord→Lin) public
+  open Translation (Un→Ix   ◇ Lin→Un ◇ Ord→Lin) public using () renaming ([_] to [_]ᴵ)
+
+
+module UsingLambekGrishin where
+
+  open import Logic.Classical.Ordered.LambekGrishin Univ public
