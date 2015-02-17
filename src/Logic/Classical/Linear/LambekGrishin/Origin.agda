@@ -22,18 +22,18 @@
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; cong)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Origin {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Linear.LambekGrishin.Origin {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Classical.Ordered.LambekGrishin.Type                        Univ as T
-open import Logic.Classical.Ordered.LambekGrishin.Type.Context                Univ as TC
-open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised      Univ as TCP hiding (Polarised)
-open import Logic.Classical.Ordered.LambekGrishin.Judgement                   Univ
-open import Logic.Classical.Ordered.LambekGrishin.Judgement.Context           Univ as JC
-open import Logic.Classical.Ordered.LambekGrishin.Judgement.Context.Polarised Univ as JCP
-open import Logic.Classical.Ordered.LambekGrishin.Base                        Univ as LGB
-open import Logic.Classical.Ordered.LambekGrishin.Derivation                  Univ as LGD
+open import Logic.Classical.Linear.LambekGrishin.Type                        Univ as T
+open import Logic.Classical.Linear.LambekGrishin.Type.Context                Univ as TC
+open import Logic.Classical.Linear.LambekGrishin.Type.Context.Polarised      Univ as TCP hiding (Polarised)
+open import Logic.Classical.Linear.LambekGrishin.Judgement                   Univ
+open import Logic.Classical.Linear.LambekGrishin.Judgement.Context           Univ as JC
+open import Logic.Classical.Linear.LambekGrishin.Judgement.Context.Polarised Univ as JCP
+open import Logic.Classical.Linear.LambekGrishin.Base                        Univ as LGB
+open import Logic.Classical.Linear.LambekGrishin.Derivation                  Univ as LGD
 
 
 open  JC.Simple renaming (_[_] to _[_]ᴶ)
@@ -44,12 +44,82 @@ module el where
 
   data Origin {J B} (J⁺ : Polarised + J) (f : LG J [ el B ]ᴶ) : Set ℓ where
        origin : (f′ : ∀ {G} → LG G ⊢ el B ⋯ J [ G ]ᴶ)
-              → (pr : f ≡ f′ [ ax ]ᴰ)
+              → (pr : f ≡ f′ [ id ]ᴰ)
               → Origin J⁺ f
 
   mutual
     viewOrigin : ∀ {J B} (J⁺ : Polarised + J) (f : LG J [ el B ]ᴶ) → Origin J⁺ f
-    viewOrigin ([] <⊢ ._)       ax             = origin [] refl
+    viewOrigin ([] <⊢ ._)       id             = origin [] refl
+    viewOrigin ([] <⊢ ._)       (res-⊗⇒ f)     = go ((_ ⊗> []) <⊢ _)          f  (res-⊗⇒ [])
+    viewOrigin ([] <⊢ ._)       (res-⊗⇐ f)     = go (([] <⊗ _) <⊢ _)          f  (res-⊗⇐ [])
+    viewOrigin ([] <⊢ ._)       (res-⇛⊕ f)     = go ((_ ⇛> []) <⊢ _)          f  (res-⇛⊕ [])
+    viewOrigin ([] <⊢ ._)       (res-⇚⊕ f)     = go (([] <⇚ _) <⊢ _)          f  (res-⇚⊕ [])
+    viewOrigin ([] <⊢ ._)       (assᴸ-⊕ f)     = go ([] <⊢ _ ⊕ (_ ⊕ _))       f  (assᴸ-⊕ [])
+    viewOrigin ([] <⊢ ._)       (assᴿ-⊕ f)     = go ([] <⊢ (_ ⊕ _) ⊕ _)       f  (assᴿ-⊕ [])
+    viewOrigin ([] <⊢ ._)       (comm-⊕ f)     = go ([] <⊢ _ ⊕ _)             f  (comm-⊕ [])
+    viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A ⇛> B)) <⊢ _)    f  (res-⊗⇒ [])
+    viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇐ f)     = go (((A ⇛> B) <⊗ _) <⊢ _)    f  (res-⊗⇐ [])
+    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)                  f₂ (mon-⇛ᴿ f₁ [])
+    viewOrigin ((A ⇛> B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A ⇛> B)) <⊢ _)    f  (res-⇛⊕ [])
+    viewOrigin ((A ⇛> B) <⊢ ._) (res-⊕⇛ f)     = go (B <⊢ _)                  f  (res-⊕⇛ [])
+    viewOrigin ((A ⇛> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⇛> B) <⇚ _) <⊢ _)    f  (res-⇚⊕ [])
+    viewOrigin ((A ⇛> B) <⊢ ._) (grish₁ f)     = go ((B <⊗ _) <⊢ _)           f  (grish₁ [])
+    viewOrigin ((A ⇛> B) <⊢ ._) (grish₂ f)     = go ((_ ⊗> B) <⊢ _)           f  (grish₂ [])
+    viewOrigin ((A ⇚> B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A ⇚> B)) <⊢ _)    f  (res-⊗⇒ [])
+    viewOrigin ((A ⇚> B) <⊢ ._) (res-⊗⇐ f)     = go (((A ⇚> B) <⊗ _) <⊢ _)    f  (res-⊗⇐ [])
+    viewOrigin ((A ⇚> B) <⊢ ._) (mon-⇚  f₁ f₂) = go (_ ⊢> B)                  f₂ (mon-⇚ᴿ f₁ [])
+    viewOrigin ((A ⇚> B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A ⇚> B)) <⊢ _)    f  (res-⇛⊕ [])
+    viewOrigin ((A ⇚> B) <⊢ ._) (res-⊕⇚ f)     = go (_ ⊢> (_ ⊕> B))           f  (res-⊕⇚ [])
+    viewOrigin ((A ⇚> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⇚> B) <⇚ _) <⊢ _)    f  (res-⇚⊕ [])
+    viewOrigin ((A ⇚> B) <⊢ ._) (grish₃ f)     = go (_ ⊢> (_ ⊕> B))           f  (grish₃ [])
+    viewOrigin ((A ⇚> B) <⊢ ._) (grish₄ f)     = go (_ ⊢> (_ ⊕> B))           f  (grish₄ [])
+    viewOrigin ((A ⇛> B) <⊢ ._) (assᴸ-⊕ f)     = go ((A ⇛> B) <⊢ _ ⊕ (_ ⊕ _)) f  (assᴸ-⊕ [])
+    viewOrigin ((A ⇛> B) <⊢ ._) (assᴿ-⊕ f)     = go ((A ⇛> B) <⊢ (_ ⊕ _) ⊕ _) f  (assᴿ-⊕ [])
+    viewOrigin ((A ⇛> B) <⊢ ._) (comm-⊕ f)     = go ((A ⇛> B) <⊢ _ ⊕ _)       f  (comm-⊕ [])
+    viewOrigin ((A ⇚> B) <⊢ ._) (assᴸ-⊕ f)     = go ((A ⇚> B) <⊢ _ ⊕ (_ ⊕ _)) f  (assᴸ-⊕ [])
+    viewOrigin ((A ⇚> B) <⊢ ._) (assᴿ-⊕ f)     = go ((A ⇚> B) <⊢ (_ ⊕ _) ⊕ _) f  (assᴿ-⊕ [])
+    viewOrigin ((A ⇚> B) <⊢ ._) (comm-⊕ f)     = go ((A ⇚> B) <⊢ _ ⊕ _)       f  (comm-⊕ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A <⇛ B)) <⊢ _)    f  (res-⊗⇒ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (res-⊗⇐ f)     = go (((A <⇛ B) <⊗ _) <⊢ _)    f  (res-⊗⇐ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (mon-⇛  f₁ f₂) = go (_ ⊢> A)                  f₁ (mon-⇛ᴸ [] f₂)
+    viewOrigin ((A <⇛ B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A <⇛ B)) <⊢ _)    f  (res-⇛⊕ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (res-⊕⇛ f)     = go (_ ⊢> (A <⊕ _))           f  (res-⊕⇛ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⇛ B) <⇚ _) <⊢ _)    f  (res-⇚⊕ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (grish₁ f)     = go (_ ⊢> (A <⊕ _))           f  (grish₁ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (grish₂ f)     = go (_ ⊢> (A <⊕ _))           f  (grish₂ [])
+    viewOrigin ((A <⇚ B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A <⇚ B)) <⊢ _)    f  (res-⊗⇒ [])
+    viewOrigin ((A <⇚ B) <⊢ ._) (res-⊗⇐ f)     = go (((A <⇚ B) <⊗ _) <⊢ _)    f  (res-⊗⇐ [])
+    viewOrigin ((A <⇚ B) <⊢ ._) (mon-⇚  f₁ f₂) = go (A <⊢ _)                  f₁ (mon-⇚ᴸ [] f₂)
+    viewOrigin ((A <⇚ B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A <⇚ B)) <⊢ _)    f  (res-⇛⊕ [])
+    viewOrigin ((A <⇚ B) <⊢ ._) (res-⊕⇚ f)     = go (A <⊢ _)                  f  (res-⊕⇚ [])
+    viewOrigin ((A <⇚ B) <⊢ ._) (res-⇚⊕ f)     = go (((A <⇚ B) <⇚ _) <⊢ _)    f  (res-⇚⊕ [])
+    viewOrigin ((A <⇚ B) <⊢ ._) (grish₃ f)     = go ((_ ⊗> A) <⊢ _)           f  (grish₃ [])
+    viewOrigin ((A <⇚ B) <⊢ ._) (grish₄ f)     = go ((A <⊗ _) <⊢ _)           f  (grish₄ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (assᴸ-⊕ f)     = go ((A <⇛ B) <⊢ _ ⊕ (_ ⊕ _)) f  (assᴸ-⊕ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (assᴿ-⊕ f)     = go ((A <⇛ B) <⊢ (_ ⊕ _) ⊕ _) f  (assᴿ-⊕ [])
+    viewOrigin ((A <⇛ B) <⊢ ._) (comm-⊕ f)     = go ((A <⇛ B) <⊢ _ ⊕ _)       f  (comm-⊕ [])
+    viewOrigin ((A <⇚ B) <⊢ ._) (assᴸ-⊕ f)     = go ((A <⇚ B) <⊢ _ ⊕ (_ ⊕ _)) f  (assᴸ-⊕ [])
+    viewOrigin ((A <⇚ B) <⊢ ._) (assᴿ-⊕ f)     = go ((A <⇚ B) <⊢ (_ ⊕ _) ⊕ _) f  (assᴿ-⊕ [])
+    viewOrigin ((A <⇚ B) <⊢ ._) (comm-⊕ f)     = go ((A <⇚ B) <⊢ _ ⊕ _)       f  (comm-⊕ [])
+    viewOrigin ((A ⊗> B) <⊢ _) f = {!!}
+    viewOrigin ((A <⊗ B) <⊢ _) f = {!!}
+    viewOrigin (A ⊢> B) f = {!!}
+
+
+    private
+      go : ∀ {I J B}
+         → (I⁺ : Polarised + I) (f : LG I [ el B ]ᴶ)
+         → {J⁺ : Polarised + J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
+         → Origin J⁺ (g [ f ]ᴰ)
+      go I⁺ f {J⁺} g with viewOrigin I⁺ f
+      ... | origin f′ pr = origin (g < f′ >ᴰ) pr′
+        where
+          pr′ : g [ f ]ᴰ ≡ (g < f′ >ᴰ) [ id ]ᴰ
+          pr′ rewrite <>ᴰ-def f′ g id = cong (_[_]ᴰ g) pr
+
+
+{-
+    viewOrigin ([] <⊢ ._)       id             = origin [] refl
     viewOrigin ([] <⊢ ._)       (res-⊗⇒ f)     = go ((_ ⊗> []) <⊢ _)       f  (res-⊗⇒ [])
     viewOrigin ([] <⊢ ._)       (res-⊗⇐ f)     = go (([] <⊗ _) <⊢ _)       f  (res-⊗⇐ [])
     viewOrigin ([] <⊢ ._)       (res-⇛⊕ f)     = go ((_ ⇛> []) <⊢ _)       f  (res-⇛⊕ [])
@@ -61,22 +131,7 @@ module el where
     viewOrigin ((A ⊗> B) <⊢ ._) (res-⊗⇐ f)     = go (((A ⊗> B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
     viewOrigin ((A ⊗> B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A ⊗> B)) <⊢ _) f  (res-⇛⊕ [])
     viewOrigin ((A ⊗> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⊗> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A ⇛> B)) <⊢ _) f  (res-⊗⇒ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (res-⊗⇐ f)     = go (((A ⇛> B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (mon-⇛  f₁ f₂) = go (B <⊢ _)               f₂ (mon-⇛ᴿ f₁ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A ⇛> B)) <⊢ _) f  (res-⇛⊕ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (res-⊕⇛ f)     = go (B <⊢ _)               f  (res-⊕⇛ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⇛> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (grish₁ f)     = go ((B <⊗ _) <⊢ _)        f  (grish₁ [])
-    viewOrigin ((A ⇛> B) <⊢ ._) (grish₂ f)     = go ((_ ⊗> B) <⊢ _)        f  (grish₂ [])
-    viewOrigin ((A ⇚> B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A ⇚> B)) <⊢ _) f  (res-⊗⇒ [])
-    viewOrigin ((A ⇚> B) <⊢ ._) (res-⊗⇐ f)     = go (((A ⇚> B) <⊗ _) <⊢ _) f  (res-⊗⇐ [])
-    viewOrigin ((A ⇚> B) <⊢ ._) (mon-⇚  f₁ f₂) = go (_ ⊢> B)               f₂ (mon-⇚ᴿ f₁ [])
-    viewOrigin ((A ⇚> B) <⊢ ._) (res-⇛⊕ f)     = go ((_ ⇛> (A ⇚> B)) <⊢ _) f  (res-⇛⊕ [])
-    viewOrigin ((A ⇚> B) <⊢ ._) (res-⊕⇚ f)     = go (_ ⊢> (_ ⊕> B))        f  (res-⊕⇚ [])
-    viewOrigin ((A ⇚> B) <⊢ ._) (res-⇚⊕ f)     = go (((A ⇚> B) <⇚ _) <⊢ _) f  (res-⇚⊕ [])
-    viewOrigin ((A ⇚> B) <⊢ ._) (grish₃ f)     = go (_ ⊢> (_ ⊕> B))        f  (grish₃ [])
-    viewOrigin ((A ⇚> B) <⊢ ._) (grish₄ f)     = go (_ ⊢> (_ ⊕> B))        f  (grish₄ [])
+
     viewOrigin ((A <⊗ B) <⊢ ._) (mon-⊗  f₁ f₂) = go (A <⊢ _)               f₁ (mon-⊗ᴸ [] f₂)
     viewOrigin ((A <⊗ B) <⊢ ._) (res-⇒⊗ f)     = go (_ ⊢> (A <⇒ _))        f  (res-⇒⊗ [])
     viewOrigin ((A <⊗ B) <⊢ ._) (res-⊗⇒ f)     = go ((_ ⊗> (A <⊗ B)) <⊢ _) f  (res-⊗⇒ [])
@@ -146,17 +201,6 @@ module el where
     viewOrigin (._ ⊢> (A <⇐ B)) (res-⊕⇚ f)     = go (_ ⊢> ((A <⇐ B) <⊕ _)) f  (res-⊕⇚ [])
     viewOrigin (._ ⊢> (A <⇐ B)) (grish₁ f)     = go (_ ⊢> (_ ⊕> A))        f  (grish₁ [])
     viewOrigin (._ ⊢> (A <⇐ B)) (grish₄ f)     = go (_ ⊢> (A <⊕ _))        f  (grish₄ [])
-
-    private
-      go : ∀ {I J B}
-                     → (I⁺ : Polarised + I) (f : LG I [ el B ]ᴶ)
-                     → {J⁺ : Polarised + J} (g : ∀ {G} → LG I [ G ]ᴶ ⋯ J [ G ]ᴶ)
-                     → Origin J⁺ (g [ f ]ᴰ)
-      go I⁺ f {J⁺} g with viewOrigin I⁺ f
-      ... | origin f′ pr = origin (g < f′ >ᴰ) pr′
-        where
-          pr′ : g [ f ]ᴰ ≡ (g < f′ >ᴰ) [ ax ]ᴰ
-          pr′ rewrite <>ᴰ-def f′ g ax = cong (_[_]ᴰ g) pr
 
 
 
@@ -896,3 +940,4 @@ module ⇒ where
         where
           pr′ : g [ f ]ᴰ ≡ (g < f′ >ᴰ) [ mon-⇒ h₁ h₂ ]ᴰ
           pr′ rewrite <>ᴰ-def f′ g (mon-⇒ h₁ h₂) = cong (_[_]ᴰ g) pr
+-}

@@ -14,18 +14,17 @@ open import Data.Unit                                  using (⊤; tt)
 open import Data.Nat                                   using (decTotalOrder; z≤n; s≤s)
 open import Data.Nat.Properties as NatProps            using (strictTotalOrder; ≤-step; n≤m+n; m≤m+n; _+-mono_)
 open import Data.Empty                                 using (⊥; ⊥-elim)
-open import Data.Product                               using (∃₂; _×_; _,_; proj₁; proj₂; uncurry)
-open import Data.Sum                                   using (_⊎_; inj₁; inj₂)
+open import Data.Product                               using (_×_; _,_; proj₁; proj₂; uncurry)
 open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Binary                            using (DecSetoid; module DecTotalOrder; module StrictTotalOrder)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; _≢_; refl; cong)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Type.Context {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Linear.LambekGrishin.Type.Context {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type            Univ renaming (module DecEq to TypeDecEq)
-open import Logic.Classical.Ordered.LambekGrishin.Type.Complexity Univ
+open import Logic.Classical.Linear.LambekGrishin.Type            Univ renaming (module DecEq to TypeDecEq)
+open import Logic.Classical.Linear.LambekGrishin.Type.Complexity Univ
 open DecTotalOrder decTotalOrder using (_≤_) renaming (refl to ≤-refl; trans to ≤-trans)
 open StrictTotalOrder strictTotalOrder using (_<_) renaming (irrefl to <-irrefl; trans to <-trans)
 
@@ -204,121 +203,6 @@ module Simple where
 
 
 open Simple
-
--- Contexts can be unfolded if something is known about the type their
--- application results in
-⊗-unfold : ∀ {Χ A C D}
-         → Χ ≢ []
-         → Χ [ A ] ≡ C ⊗ D
-         → ∃₂ (λ Χ′ B → Χ ≡ B ⊗> Χ′ ⊎ Χ ≡ Χ′ <⊗ B)
-⊗-unfold {[]}     Χ≠[] _ = ⊥-elim (Χ≠[] refl)
-⊗-unfold {B ⊗> Χ} _ _ = Χ , B , inj₁ refl
-⊗-unfold {Χ <⊗ B} _ _ = Χ , B , inj₂ refl
-⊗-unfold {B ⇚> Χ} _ ()
-⊗-unfold {Χ <⇚ B} _ ()
-⊗-unfold {B ⇛> Χ} _ ()
-⊗-unfold {Χ <⇛ B} _ ()
-⊗-unfold {B ⊕> Χ} _ ()
-⊗-unfold {Χ <⊕ B} _ ()
-⊗-unfold {B ⇒> Χ} _ ()
-⊗-unfold {Χ <⇒ B} _ ()
-⊗-unfold {B ⇐> Χ} _ ()
-⊗-unfold {Χ <⇐ B} _ ()
-
-⇚-unfold : ∀ {Χ A C D}
-         → Χ ≢ []
-         → Χ [ A ] ≡ C ⇚ D
-         → ∃₂ (λ Χ′ B → Χ ≡ B ⇚> Χ′ ⊎ Χ ≡ Χ′ <⇚ B)
-⇚-unfold {[]}     Χ≠[] _ = ⊥-elim (Χ≠[] refl)
-⇚-unfold {B ⊗> Χ} _ ()
-⇚-unfold {Χ <⊗ B} _ ()
-⇚-unfold {B ⇚> Χ} _ _ = Χ , B , inj₁ refl
-⇚-unfold {Χ <⇚ B} _ _ = Χ , B , inj₂ refl
-⇚-unfold {B ⇛> Χ} _ ()
-⇚-unfold {Χ <⇛ B} _ ()
-⇚-unfold {B ⊕> Χ} _ ()
-⇚-unfold {Χ <⊕ B} _ ()
-⇚-unfold {B ⇒> Χ} _ ()
-⇚-unfold {Χ <⇒ B} _ ()
-⇚-unfold {B ⇐> Χ} _ ()
-⇚-unfold {Χ <⇐ B} _ ()
-
-
-⇛-unfold : ∀ {Χ A C D}
-         → Χ ≢ []
-         → Χ [ A ] ≡ C ⇛ D
-         → ∃₂ (λ Χ′ B → Χ ≡ B ⇛> Χ′ ⊎ Χ ≡ Χ′ <⇛ B)
-⇛-unfold {[]}     Χ≠[] _ = ⊥-elim (Χ≠[] refl)
-⇛-unfold {B ⊗> Χ} _ ()
-⇛-unfold {Χ <⊗ B} _ ()
-⇛-unfold {B ⇚> Χ} _ ()
-⇛-unfold {Χ <⇚ B} _ ()
-⇛-unfold {B ⇛> Χ} _ _ = Χ , B , inj₁ refl
-⇛-unfold {Χ <⇛ B} _ _ = Χ , B , inj₂ refl
-⇛-unfold {B ⊕> Χ} _ ()
-⇛-unfold {Χ <⊕ B} _ ()
-⇛-unfold {B ⇒> Χ} _ ()
-⇛-unfold {Χ <⇒ B} _ ()
-⇛-unfold {B ⇐> Χ} _ ()
-⇛-unfold {Χ <⇐ B} _ ()
-
-
-⊕-unfold : ∀ {Χ A C D}
-         → Χ ≢ []
-         → Χ [ A ] ≡ C ⊕ D
-         → ∃₂ (λ Χ′ B → Χ ≡ B ⊕> Χ′ ⊎ Χ ≡ Χ′ <⊕ B)
-⊕-unfold {[]}     Χ≠[] _ = ⊥-elim (Χ≠[] refl)
-⊕-unfold {B ⊗> Χ} _ ()
-⊕-unfold {Χ <⊗ B} _ ()
-⊕-unfold {B ⇚> Χ} _ ()
-⊕-unfold {Χ <⇚ B} _ ()
-⊕-unfold {B ⇛> Χ} _ ()
-⊕-unfold {Χ <⇛ B} _ ()
-⊕-unfold {B ⊕> Χ} _ _ = Χ , B , inj₁ refl
-⊕-unfold {Χ <⊕ B} _ _ = Χ , B , inj₂ refl
-⊕-unfold {B ⇒> Χ} _ ()
-⊕-unfold {Χ <⇒ B} _ ()
-⊕-unfold {B ⇐> Χ} _ ()
-⊕-unfold {Χ <⇐ B} _ ()
-
-
-⇒-unfold : ∀ {Χ A C D}
-         → Χ ≢ []
-         → Χ [ A ] ≡ C ⇒ D
-         → ∃₂ (λ Χ′ B → Χ ≡ B ⇒> Χ′ ⊎ Χ ≡ Χ′ <⇒ B)
-⇒-unfold {[]}     Χ≠[] _ = ⊥-elim (Χ≠[] refl)
-⇒-unfold {B ⊗> Χ} _ ()
-⇒-unfold {Χ <⊗ B} _ ()
-⇒-unfold {B ⇚> Χ} _ ()
-⇒-unfold {Χ <⇚ B} _ ()
-⇒-unfold {B ⇛> Χ} _ ()
-⇒-unfold {Χ <⇛ B} _ ()
-⇒-unfold {B ⊕> Χ} _ ()
-⇒-unfold {Χ <⊕ B} _ ()
-⇒-unfold {B ⇒> Χ} _ _ = Χ , B , inj₁ refl
-⇒-unfold {Χ <⇒ B} _ _ = Χ , B , inj₂ refl
-⇒-unfold {B ⇐> Χ} _ ()
-⇒-unfold {Χ <⇐ B} _ ()
-
-
-⇐-unfold : ∀ {Χ A C D}
-         → Χ ≢ []
-         → Χ [ A ] ≡ C ⇐ D
-         → ∃₂ (λ Χ′ B → Χ ≡ B ⇐> Χ′ ⊎ Χ ≡ Χ′ <⇐ B)
-⇐-unfold {[]}     Χ≠[] _ = ⊥-elim (Χ≠[] refl)
-⇐-unfold {B ⊗> Χ} _ ()
-⇐-unfold {Χ <⊗ B} _ ()
-⇐-unfold {B ⇚> Χ} _ ()
-⇐-unfold {Χ <⇚ B} _ ()
-⇐-unfold {B ⇛> Χ} _ ()
-⇐-unfold {Χ <⇛ B} _ ()
-⇐-unfold {B ⊕> Χ} _ ()
-⇐-unfold {Χ <⊕ B} _ ()
-⇐-unfold {B ⇒> Χ} _ ()
-⇐-unfold {Χ <⇒ B} _ ()
-⇐-unfold {B ⇐> Χ} _ _ = Χ , B , inj₁ refl
-⇐-unfold {Χ <⇐ B} _ _ = Χ , B , inj₂ refl
-
 
 
 -- Simple decision procedure which checks if a context is the empty

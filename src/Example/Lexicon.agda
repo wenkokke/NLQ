@@ -14,7 +14,9 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
 module Example.Lexicon where
 
+
 Entity = Fin 3
+
 
 open import Example.Base Entity as Base public
      hiding (module UsingLambdaCMinus; module UsingLambekGrishin)
@@ -36,8 +38,8 @@ abstract
 
   john mary bill : Entity
   john = # 0
-  mary = # 1
-  bill = # 2
+  bill = # 1
+  mary = # 2
 
   _lovedBy_ : Entity → Entity → Bool
   zero     lovedBy suc zero       = true
@@ -52,11 +54,11 @@ abstract
 
 module UsingLambdaCMinus where
 
-  open Base.UsingLambdaCMinus
+  open Base.UsingLambdaCMinus public
 
   JOHN   = el NP
-  MARY   = el NP
   BILL   = el NP
+  MARY   = el NP
   LOVES  = (el NP ⇒ el S) ⇐ el NP
   PERSON = el N
 
@@ -66,10 +68,10 @@ module UsingLambdaCMinus where
 
 module UsingLambekGrishin where
 
-  open Base.UsingLambekGrishin
+  open Base.UsingLambekGrishin public
 
   JOHN   = el NP
-  MARY   = el NP
   BILL   = el NP
+  MARY   = el NP
   LOVES  = (el NP ⇒ el S) ⇐ el NP
   PERSON = el N

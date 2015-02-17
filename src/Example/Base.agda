@@ -33,13 +33,6 @@ S  ≟-Univ S  = yes refl
 ⟦ S  ⟧ᵁ = Bool
 
 
-_⊃_ : Bool → Bool → Bool
-true  ⊃ true  = true
-true  ⊃ false = false
-false ⊃ _     = true
-
-
-
 module UsingLambdaCMinus where
 
   open import Logic.Translation
