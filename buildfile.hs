@@ -42,9 +42,13 @@ data Mapping =
 main :: IO ()
 main = shakeArgs shakeOptions $ do
 
+
+  run makeLambda
+  run makeLinearLambda
   run makeLambek
-  run makeOrderedLambdaCMinus
   run makeLinearLambdaCMinus
+  run makeOrderedLambdaCMinus
+
 
   -- Generate: Everything
   want [srcDir </> "Everything.agda"]
@@ -115,7 +119,7 @@ format = unlines . concatMap fmt
 
 
 --------------------------------------------------------------------------------
--- Mapping: Ordered LambdaCMinus to Linear LambdaCMinus
+-- Make: Linear Lambda C-Minus
 --------------------------------------------------------------------------------
 
 makeLinearLambdaCMinus :: Mapping
@@ -142,7 +146,7 @@ makeLinearLambdaCMinus = Mapping
 
 
 --------------------------------------------------------------------------------
--- Mapping: Lambek-Grishin Calculus to Ordered LambdaCMinus
+-- Make: Ordered Lambda C-Minus
 --------------------------------------------------------------------------------
 
 -- TODO: edit such that LambdaCMinus's 'Structure' is generated from
@@ -164,7 +168,7 @@ makeOrderedLambdaCMinus = Mapping
   }
 
 --------------------------------------------------------------------------------
--- Mapping: Lambek-Grishin Calculus to Lambek Calculus
+-- Make: Lambek Calculus
 --------------------------------------------------------------------------------
 
 makeLambek :: Mapping
@@ -204,6 +208,56 @@ makeLambek = Mapping
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Origin.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Trans.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Trans.agda"
+                  ]
+  }
+
+
+--------------------------------------------------------------------------------
+-- Mapping: Lambda Calculus
+--------------------------------------------------------------------------------
+
+
+makeLambda :: Mapping
+makeLambda = Mapping
+  { blacklist   = [ "⊕"      , "⇛"      , "⇚"      , "⇐"
+                  ]
+  , textMapping = [ "LG"            ==> "Λ"
+                  , "Classical"     ==> "Intuitionistic"
+                  , "Ordered"       ==> "Unrestricted"
+                  , "LambekGrishin" ==> "Lambda"
+                  ]
+  , fileMapping = [ srcDir </> "Logic" </> "Classical"      </> "Ordered"      </> "LambekGrishin" </> "Type.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda"        </> "Type.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered"      </> "LambekGrishin" </> "Type/Complexity.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda"        </> "Type/Complexity.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered"      </> "LambekGrishin" </> "Type/Context.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda"        </> "Type/Context.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered"      </> "LambekGrishin" </> "Type/Context/Polarised.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda"        </> "Type/Context/Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered"      </> "LambekGrishin" </> "Type/Polarised.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda"        </> "Type/Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered"      </> "LambekGrishin" </> "Type/Subtype.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda"        </> "Type/Subtype.agda"
+                  ]
+  }
+
+
+--------------------------------------------------------------------------------
+-- Mapping: Linear Lambda Calculus
+--------------------------------------------------------------------------------
+
+
+makeLinearLambda :: Mapping
+makeLinearLambda = Mapping
+  { blacklist   = [ "wᴸ₁" , "wᴸ"
+                  , "cᴸ₁" , "cᴸ"
+                  ]
+  , textMapping = [ "Unrestricted" ==> "Linear"
+                  ]
+  , fileMapping = [ srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda" </> "Base.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Linear"       </> "Lambda" </> "Base.agda"
+                  , srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda" </> "Permute.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Linear"       </> "Lambda" </> "Permute.agda"
                   ]
   }
 

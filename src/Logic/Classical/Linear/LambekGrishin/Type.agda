@@ -3,12 +3,12 @@
 ------------------------------------------------------------------------
 
 open import Function                                   using (_∘_)
-open import Data.Product                               using (∃; ∃₂; _×_; _,_; proj₁; proj₂)
+open import Data.Product                               using (∃; _×_; _,_; proj₁; proj₂)
 open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Binary                            using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
-module Logic.Classical.Ordered.LambekGrishin.Type {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Linear.LambekGrishin.Type {ℓ} (Univ : Set ℓ) where
 
 
 infixr 20 _⇒_
@@ -68,59 +68,6 @@ case-el (_ ⇛ _) = no (λ {(_ , ())})
 case-el (_ ⊗ _) = no (λ {(_ , ())})
 case-el (_ ⊕ _) = no (λ {(_ , ())})
 
-case-⇒ : (A : Type) → Dec (∃₂ (λ B C → A ≡ B ⇒ C))
-case-⇒ (el  _) = no (λ {(_ , _ , ())})
-case-⇒ (_ ⇒ _) = yes (_ , _ , refl)
-case-⇒ (_ ⇐ _) = no (λ {(_ , _ , ())})
-case-⇒ (_ ⇚ _) = no (λ {(_ , _ , ())})
-case-⇒ (_ ⇛ _) = no (λ {(_ , _ , ())})
-case-⇒ (_ ⊗ _) = no (λ {(_ , _ , ())})
-case-⇒ (_ ⊕ _) = no (λ {(_ , _ , ())})
-
-case-⇐ : (A : Type) → Dec (∃₂ (λ B C → A ≡ B ⇐ C))
-case-⇐ (el  _) = no (λ {(_ , _ , ())})
-case-⇐ (_ ⇒ _) = no (λ {(_ , _ , ())})
-case-⇐ (_ ⇐ _) = yes (_ , _ , refl)
-case-⇐ (_ ⇚ _) = no (λ {(_ , _ , ())})
-case-⇐ (_ ⇛ _) = no (λ {(_ , _ , ())})
-case-⇐ (_ ⊗ _) = no (λ {(_ , _ , ())})
-case-⇐ (_ ⊕ _) = no (λ {(_ , _ , ())})
-
-case-⇛ : (A : Type) → Dec (∃₂ (λ B C → A ≡ B ⇛ C))
-case-⇛ (el  _) = no (λ {(_ , _ , ())})
-case-⇛ (_ ⇒ _) = no (λ {(_ , _ , ())})
-case-⇛ (_ ⇐ _) = no (λ {(_ , _ , ())})
-case-⇛ (_ ⇚ _) = no (λ {(_ , _ , ())})
-case-⇛ (_ ⇛ _) = yes (_ , _ , refl)
-case-⇛ (_ ⊗ _) = no (λ {(_ , _ , ())})
-case-⇛ (_ ⊕ _) = no (λ {(_ , _ , ())})
-
-case-⇚ : (A : Type) → Dec (∃₂ (λ B C → A ≡ B ⇚ C))
-case-⇚ (el  _) = no (λ {(_ , _ , ())})
-case-⇚ (_ ⇒ _) = no (λ {(_ , _ , ())})
-case-⇚ (_ ⇐ _) = no (λ {(_ , _ , ())})
-case-⇚ (_ ⇚ _) = yes (_ , _ , refl)
-case-⇚ (_ ⇛ _) = no (λ {(_ , _ , ())})
-case-⇚ (_ ⊗ _) = no (λ {(_ , _ , ())})
-case-⇚ (_ ⊕ _) = no (λ {(_ , _ , ())})
-
-case-⊗ : (A : Type) → Dec (∃₂ (λ B C → A ≡ B ⊗ C))
-case-⊗ (el  _) = no (λ {(_ , _ , ())})
-case-⊗ (_ ⇒ _) = no (λ {(_ , _ , ())})
-case-⊗ (_ ⇐ _) = no (λ {(_ , _ , ())})
-case-⊗ (_ ⇚ _) = no (λ {(_ , _ , ())})
-case-⊗ (_ ⇛ _) = no (λ {(_ , _ , ())})
-case-⊗ (_ ⊗ _) = yes (_ , _ , refl)
-case-⊗ (_ ⊕ _) = no (λ {(_ , _ , ())})
-
-case-⊕ : (A : Type) → Dec (∃₂ (λ B C → A ≡ B ⊕ C))
-case-⊕ (el  _) = no (λ {(_ , _ , ())})
-case-⊕ (_ ⇒ _) = no (λ {(_ , _ , ())})
-case-⊕ (_ ⇐ _) = no (λ {(_ , _ , ())})
-case-⊕ (_ ⇚ _) = no (λ {(_ , _ , ())})
-case-⊕ (_ ⇛ _) = no (λ {(_ , _ , ())})
-case-⊕ (_ ⊗ _) = no (λ {(_ , _ , ())})
-case-⊕ (_ ⊕ _) = yes (_ , _ , refl)
 
 
 -- Proof that if the given universe has decidable equality, then so do types.

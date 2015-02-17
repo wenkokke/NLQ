@@ -6,7 +6,7 @@
 
 
 open import Data.Product using (proj₁; proj₂)
-open import Relation.Nullary using (Dec; yes; no)
+open import Relation.Nullary using (Dec; yes; no; ¬_)
 open import Relation.Nullary.Decidable using (False; fromWitnessFalse; toWitnessFalse)
 open import Relation.Binary using (module DecSetoid; DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; _≢_; refl; sym)
@@ -16,9 +16,9 @@ module Logic.Intuitionistic.Ordered.Lambek.SC.Base {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Intuitionistic.Ordered.Lambek.Type         Univ as T
-open import Logic.Intuitionistic.Ordered.Lambek.Type.Context Univ as TC
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement Univ as SCJ
-open TC.Simple using (_[_]; _<_>; <>-assoc; <>-def)
+open import Logic.Intuitionistic.Ordered.Lambek.Type.Context Univ as C
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement Univ as J
+open C.Simple using (_[_]; _<_>; <>-assoc; <>-def)
 
 
 infix 3 NL_
@@ -278,3 +278,24 @@ res-⊗⇐′ (contᴾ (contᴺ {._} {C} {D} f (neg-⊗⇐ {Γ} {Δ} {A} {B} g y
              | <>-def Γ (Δ <⇐ B) C
              = contᴺ′ (mon-⇐ (contᴺ′ (contᴾ′ f x) z) g) y
 res-⊗⇐′ (contᴾ (contᴾ f y p₁ p₂ p₃) x p₄ () p₆)
+
+
+
+
+⊬ᴾA⊗>Δ : ∀ {A Δ} → ¬ (NL ⊢ᴾ A ⊗> Δ)
+⊬ᴾA⊗>Δ ()
+
+⊬ᴾΔ<⊗A : ∀ {A Δ} → ¬ (NL ⊢ᴾ Δ <⊗ A)
+⊬ᴾΔ<⊗A ()
+
+⊬ᴺA⇒>Γ : ∀ {A Γ} → ¬ (NL ⊢ᴺ A ⇒> Γ)
+⊬ᴺA⇒>Γ ()
+
+⊬ᴺA⇐>Γ : ∀ {A Γ} → ¬ (NL ⊢ᴺ A ⇐> Γ)
+⊬ᴺA⇐>Γ ()
+
+⊬ᴺΓ<⇒A : ∀ {A Γ} → ¬ (NL ⊢ᴺ Γ <⇒ A)
+⊬ᴺΓ<⇒A ()
+
+⊬ᴺΓ<⇐A : ∀ {A Γ} → ¬ (NL ⊢ᴺ Γ <⇐ A)
+⊬ᴺΓ<⇐A ()
