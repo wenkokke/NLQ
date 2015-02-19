@@ -5,24 +5,73 @@
 
 
 open import Logic.Polarity
-open import Data.Product                               using (Σ; _,_)
+open import Data.Product                               using (_×_; _,_)
+open import Data.Sum                                   using (_⊎_; inj₁; inj₂)
+open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Type.Polarised {ℓ} (Univ : Polarity → Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Type.Polarised {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type (Σ Polarity Univ)
+open import Logic.Classical.Ordered.LambekGrishin.Type (Polarity × Univ)
 
 
 data Polarised : Polarity → Type → Set ℓ where
-  el   : ∀ {p} (A : Univ p) → Polarised p (el (p , A))
+  el   : ∀ {p}   (A  : Univ)                               → Polarised p (el (p , A))
   _⊗_  : ∀ {A B} (A⁺ : Polarised + A) (B⁺ : Polarised + B) → Polarised + (A ⊗ B)
   _⇚_  : ∀ {A B} (A⁺ : Polarised + A) (B⁻ : Polarised - B) → Polarised + (A ⇚ B)
   _⇛_  : ∀ {A B} (A⁻ : Polarised - A) (B⁺ : Polarised + B) → Polarised + (A ⇛ B)
   _⊕_  : ∀ {A B} (A⁻ : Polarised - A) (B⁻ : Polarised - B) → Polarised - (A ⊕ B)
-  _⇐_  : ∀ {A B} (A⁻ : Polarised - A) (B⁺ : Polarised + B) → Polarised - (A ⇐ B)
   _⇒_  : ∀ {A B} (A⁺ : Polarised + A) (B⁻ : Polarised - B) → Polarised - (A ⇒ B)
+  _⇐_  : ∀ {A B} (A⁻ : Polarised - A) (B⁺ : Polarised + B) → Polarised - (A ⇐ B)
+
+
+data Negative : Type → Set ℓ where
+  el  : (A   : Univ) → Negative (el (- , A))
+  _⊕_ : (A B : Type) → Negative (A ⊕ B)
+  _⇒_ : (A B : Type) → Negative (A ⇒ B)
+  _⇐_ : (A B : Type) → Negative (A ⇐ B)
+
+
+Negative? : (A : Type) → Dec (Negative A)
+Negative? (el (+ , A)) = no (λ ())
+Negative? (el (- , A)) = yes (el A)
+Negative?     (A ⇒ B)  = yes (A ⇒ B)
+Negative?     (A ⇐ B)  = yes (A ⇐ B)
+Negative?     (A ⇚ B)  = no (λ ())
+Negative?     (A ⇛ B)  = no (λ ())
+Negative?     (A ⊗ B)  = no (λ ())
+Negative?     (A ⊕ B)  = yes (A ⊕ B)
+
+
+data Positive : Type → Set ℓ where
+  el  : (A   : Univ) → Positive (el (+ , A))
+  _⊗_ : (A B : Type) → Positive (A ⊗ B)
+  _⇚_ : (A B : Type) → Positive (A ⇚ B)
+  _⇛_ : (A B : Type) → Positive (A ⇛ B)
+
+
+Positive? : (A : Type) → Dec (Positive A)
+Positive? (el (+ , A)) = yes (el A)
+Positive? (el (- , A)) = no (λ ())
+Positive?     (A ⇒ B)  = no (λ ())
+Positive?     (A ⇐ B)  = no (λ ())
+Positive?     (A ⇚ B)  = yes (A ⇚ B)
+Positive?     (A ⇛ B)  = yes (A ⇛ B)
+Positive?     (A ⊗ B)  = yes (A ⊗ B)
+Positive?     (A ⊕ B)  = no (λ ())
+
+
+Polarity? : (A : Type) → Positive A ⊎ Negative A
+Polarity? (el (+ , A)) = inj₁ (el A)
+Polarity? (el (- , A)) = inj₂ (el A)
+Polarity?     (A ⇒ B)  = inj₂ (A ⇒ B)
+Polarity?     (A ⇐ B)  = inj₂ (A ⇐ B)
+Polarity?     (A ⇚ B)  = inj₁ (A ⇚ B)
+Polarity?     (A ⇛ B)  = inj₁ (A ⇛ B)
+Polarity?     (A ⊗ B)  = inj₁ (A ⊗ B)
+Polarity?     (A ⊕ B)  = inj₂ (A ⊕ B)
 
 
 module Correct where
@@ -40,16 +89,16 @@ module Correct where
   -- constructors to `Context` constructors... *snore*
 
   forget : ∀ {p A} (Aᴾ : Polarised p A) → Type
-  forget (el A)  = el (_ , A)
-  forget (A ⊗ B) = forget A ⊗ forget B
-  forget (A ⇚ B) = forget A ⇚ forget B
-  forget (A ⇛ B) = forget A ⇛ forget B
-  forget (A ⊕ B) = forget A ⊕ forget B
-  forget (A ⇐ B) = forget A ⇐ forget B
-  forget (A ⇒ B) = forget A ⇒ forget B
+  forget {p} (el  A) = el (p , A)
+  forget     (A ⊗ B) = forget A ⊗ forget B
+  forget     (A ⇚ B) = forget A ⇚ forget B
+  forget     (A ⇛ B) = forget A ⇛ forget B
+  forget     (A ⊕ B) = forget A ⊕ forget B
+  forget     (A ⇐ B) = forget A ⇐ forget B
+  forget     (A ⇒ B) = forget A ⇒ forget B
 
   forget-correct : ∀ {p A} (Aᴾ : Polarised p A) → forget Aᴾ ≡ A
-  forget-correct (el A)  = refl
+  forget-correct (el  A) = refl
   forget-correct (A ⊗ B) rewrite forget-correct A | forget-correct B = refl
   forget-correct (A ⇚ B) rewrite forget-correct A | forget-correct B = refl
   forget-correct (A ⇛ B) rewrite forget-correct A | forget-correct B = refl

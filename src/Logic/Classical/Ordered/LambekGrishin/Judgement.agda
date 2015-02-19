@@ -13,33 +13,25 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 module Logic.Classical.Ordered.LambekGrishin.Judgement {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type Univ as T hiding (module DecEq)
+open import Logic.Polarity
+open import Logic.Classical.Ordered.LambekGrishin.Type                Univ
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Univ
 
 
-infix 3 _⊢_
+infix 3 _⊢_ [_]⊢_ _⊢[_]
 
 
 data Judgement : Set ℓ where
-  _⊢_ : Type → Type → Judgement
+  _⊢_   : Structure + → Structure - → Judgement
+  [_]⊢_ : Type        → Structure - → Judgement
+  _⊢[_] : Structure + → Type        → Judgement
 
 
-⊢-injective : ∀ {A B C D} → (A ⊢ B) ≡ (C ⊢ D) → A ≡ C × B ≡ D
+⊢-injective : ∀ {Γ₁ Γ₂ Γ₃ Γ₄} → (Γ₁ ⊢ Γ₂) ≡ (Γ₃ ⊢ Γ₄) → Γ₁ ≡ Γ₃ × Γ₂ ≡ Γ₄
 ⊢-injective refl = refl , refl
 
+[]⊢-injective : ∀ {A B Γ₁ Γ₂} → ([ A ]⊢ Γ₁) ≡ ([ B ]⊢ Γ₂) → A ≡ B × Γ₁ ≡ Γ₂
+[]⊢-injective refl = refl , refl
 
-module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
-
-
-  module TEQ = T.DecEq _≟-Univ_
-  open DecSetoid TEQ.decSetoid
-
-
-  _≟-Judgement_ : (I J : Judgement) → Dec (I ≡ J)
-  (A ⊢ B) ≟-Judgement (C ⊢ D) with A ≟ C | B ≟ D
-  ...| yes A=C | yes B=D = yes (P.cong₂ _⊢_ A=C B=D)
-  ...| no  A≠C | _       = no (A≠C ∘ proj₁ ∘ ⊢-injective)
-  ...| _       | no  B≠D = no (B≠D ∘ proj₂ ∘ ⊢-injective)
-
-
-  decSetoid : DecSetoid _ _
-  decSetoid = P.decSetoid _≟-Judgement_
+⊢[]-injective : ∀ {A B Γ₁ Γ₂} → (Γ₁ ⊢[ A ]) ≡ (Γ₂ ⊢[ B ]) → Γ₁ ≡ Γ₂ × A ≡ B
+⊢[]-injective refl = refl , refl

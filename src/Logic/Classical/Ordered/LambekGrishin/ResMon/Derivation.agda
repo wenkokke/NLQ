@@ -26,12 +26,12 @@ open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Derivation {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.ResMon.Derivation {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type      Univ
-open import Logic.Classical.Ordered.LambekGrishin.Judgement Univ
-open import Logic.Classical.Ordered.LambekGrishin.Base      Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type             Univ
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement Univ
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base      Univ
 
 
 infix 1 LG_⋯_

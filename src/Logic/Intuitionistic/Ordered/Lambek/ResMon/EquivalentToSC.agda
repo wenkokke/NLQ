@@ -11,15 +11,15 @@ open import Relation.Nullary                           using (Dec; yes; no; ¬_)
 open import Relation.Binary.PropositionalEquality as P using (_≡_)
 
 
-module Logic.Intuitionistic.Ordered.Lambek.EquivalentToSC {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.Lambek.ResMon.EquivalentToSC {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Ordered.Lambek.Type         Univ as NLT
-open import Logic.Intuitionistic.Ordered.Lambek.Type.Context Univ as NLTC hiding (module Simple)
-open import Logic.Intuitionistic.Ordered.Lambek.Judgement    Univ as NLJ
-open import Logic.Intuitionistic.Ordered.Lambek.Base         Univ as NL
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement Univ as SCJ
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Base      Univ as SCB hiding (contᴺ′; contᴾ′) renaming (NL_ to SC_)
+open import Logic.Intuitionistic.Ordered.Lambek.Type             Univ as NLT
+open import Logic.Intuitionistic.Ordered.Lambek.Type.Context     Univ as NLTC hiding (module Simple)
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Judgement Univ as NLJ
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Base      Univ as NL
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement     Univ as SCJ
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Base          Univ as SCB hiding (contᴺ′; contᴾ′) renaming (NL_ to SC_)
 
 
 module Simple where
@@ -28,7 +28,7 @@ module Simple where
 
   mutual
     from : ∀ {A B} → SC A ⊢ B → NL A ⊢ B
-    from id = id
+    from ax = ax
     from (mon-⊗ f g) = mon-⊗ (from f) (from g)
     from (mon-⇒ f g) = mon-⇒ (from f) (from g)
     from (mon-⇐ f g) = mon-⇐ (from f) (from g)
@@ -67,7 +67,7 @@ module Simple where
 
 
   to : ∀ {A B} → NL A ⊢ B → SC A ⊢ B
-  to id = id
+  to ax = ax
   to (mon-⊗ f g) = mon-⊗ (to f) (to g)
   to (mon-⇒ f g) = mon-⇒ (to f) (to g)
   to (mon-⇐ f g) = mon-⇐ (to f) (to g)
