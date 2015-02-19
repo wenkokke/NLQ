@@ -14,12 +14,12 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym; 
 module Logic.Intuitionistic.Ordered.Lambek.SC.Trans {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Ordered.Lambek.Type           Univ
-open import Logic.Intuitionistic.Ordered.Lambek.Type.Context   Univ
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement   Univ as SCJ
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Base        Univ as SCB
-open import Logic.Intuitionistic.Ordered.Lambek.EquivalentToSC Univ as SCE
-open import Logic.Intuitionistic.Ordered.Lambek.Trans          Univ as NLT hiding (trans′)
+open import Logic.Intuitionistic.Ordered.Lambek.Type                  Univ
+open import Logic.Intuitionistic.Ordered.Lambek.Type.Context          Univ
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement          Univ as SCJ
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Base               Univ as SCB
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.EquivalentToSC Univ as SCE
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Trans          Univ as NLT hiding (trans′)
 
 
 trans′ : ∀ {A B C} → NL A ⊢ B → NL B ⊢ C → NL A ⊢ C

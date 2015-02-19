@@ -26,7 +26,7 @@ infix 3 NL_
 mutual
   data NL_ : Judgement → Set ℓ where
 
-    id     : ∀ {A}       → NL el A ⊢ el A
+    ax     : ∀ {A}       → NL el A ⊢ el A
     mon-⊗  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL A ⊗ C ⊢ B ⊗ D
     mon-⇒  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL B ⇒ C ⊢ A ⇒ D
     mon-⇐  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL A ⇐ D ⊢ B ⇐ C
@@ -54,7 +54,7 @@ mutual
           → Contᴺ (contᴺ f x p₁ p₂ p₃)
 
   Contᴺ? : ∀ {A B} (f : NL A ⊢ B) → Dec (Contᴺ f)
-  Contᴺ? id = no (λ ())
+  Contᴺ? ax = no (λ ())
   Contᴺ? (mon-⊗ _ _) = no (λ ())
   Contᴺ? (mon-⇒ _ _) = no (λ ())
   Contᴺ? (mon-⇐ _ _) = no (λ ())
@@ -68,7 +68,7 @@ mutual
           → Contᴾ (contᴾ f x p₁ p₂ p₃)
 
   Contᴾ? : ∀ {A B} (f : NL A ⊢ B) → Dec (Contᴾ f)
-  Contᴾ? id = no (λ ())
+  Contᴾ? ax = no (λ ())
   Contᴾ? (mon-⊗ _ _) = no (λ ())
   Contᴾ? (mon-⇒ _ _) = no (λ ())
   Contᴾ? (mon-⇐ _ _) = no (λ ())
@@ -76,11 +76,11 @@ mutual
   Contᴾ? (contᴾ f x p₁ p₂ p₃) = yes (contᴾ f x p₁ p₂ p₃)
 
 
-id′ : ∀ {A} → NL A ⊢ A
-id′ {el A}  = id
-id′ {A ⊗ B} = mon-⊗ id′ id′
-id′ {A ⇒ B} = mon-⇒ id′ id′
-id′ {A ⇐ B} = mon-⇐ id′ id′
+ax′ : ∀ {A} → NL A ⊢ A
+ax′ {el A}  = ax
+ax′ {A ⊗ B} = mon-⊗ ax′ ax′
+ax′ {A ⇒ B} = mon-⇒ ax′ ax′
+ax′ {A ⇐ B} = mon-⇐ ax′ ax′
 
 
 transᴺ′ : ∀ {Γ Δ} → NL ⊢ᴺ Γ → NL ⊢ᴺ Δ → NL ⊢ᴺ Γ < Δ >

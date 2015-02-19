@@ -12,14 +12,14 @@ open import Relation.Binary                            using (Rel)
 open import Relation.Binary.PropositionalEquality as P using (_≡_)
 
 
-module Logic.Intuitionistic.Ordered.Lambek.Complete {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.Lambek.ResMon.Complete {ℓ} (Univ : Set ℓ) where
 
 
 open import Algebra.ResiduatedAlgebra
-open import Logic.Intuitionistic.Ordered.Lambek.Type      Univ
-open import Logic.Intuitionistic.Ordered.Lambek.Judgement Univ
-open import Logic.Intuitionistic.Ordered.Lambek.Base      Univ
-open import Logic.Intuitionistic.Ordered.Lambek.Trans     Univ
+open import Logic.Intuitionistic.Ordered.Lambek.Type             Univ
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Judgement Univ
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Base      Univ
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Trans     Univ
 
 
 private
@@ -27,7 +27,7 @@ private
   A ≤ B = NL A ⊢ B
 
 
-open import Relation.Binary.PartialOrderToEquivalence _≤_ id′ trans′
+open import Relation.Binary.PartialOrderToEquivalence _≤_ ax′ trans′
 
 -- The proof is simple: show that we can implement the structure of
 -- residuated algebras using proofs in the residuation-monotonicity

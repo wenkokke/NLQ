@@ -6,17 +6,17 @@
 open import Data.Empty using (⊥)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Trans {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.ResMon.Trans {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Classical.Ordered.LambekGrishin.Type                        Univ as T
-open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised      Univ as TCP using ([])
-open import Logic.Classical.Ordered.LambekGrishin.Judgement                   Univ
-open import Logic.Classical.Ordered.LambekGrishin.Judgement.Context.Polarised Univ as JCP
-open import Logic.Classical.Ordered.LambekGrishin.Base                        Univ as LGB
-open import Logic.Classical.Ordered.LambekGrishin.Derivation                  Univ as LGD
-open import Logic.Classical.Ordered.LambekGrishin.Origin                      Univ as LGO
+open import Logic.Classical.Ordered.LambekGrishin.Type                               Univ as T
+open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised             Univ as TCP using ([])
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement                   Univ
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.Context.Polarised Univ as JCP
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base                        Univ as LGB
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Derivation                  Univ as LGD
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Origin                      Univ as LGO
 
 
 open LGD.Simple using (_[_])
