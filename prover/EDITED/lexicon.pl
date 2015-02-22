@@ -1,0 +1,12 @@
+lex(every,over(np,n),lambda(Q,lambda(P,appl('$\\forall$',lambda(X,appl(appl('$\\Rightarrow$',appl(P,X)),appl(Q,X))))))).
+lex(some,over(np,n),lambda(Q,lambda(P,appl('$\\exists$',lambda(X,appl(appl('$\\wedge$',appl(P,X)),appl(Q,X))))))).
+lex(someone,ldneg(rdneg(np)),'$\\exists$').
+lex(unicorn,n,unicorn).
+lex(teacher,n,teacher).
+lex(molly,np,molly).
+lex(alice,np,alice).
+lex(left,under(np,s),lambda(C,lambda(X,appl(C,appl(left,X))))).
+lex(teases,over(under(np,s),np),lambda(VP,lambda(Y,appl(VP,lambda(C,lambda(X,appl(C,appl(appl(teases,Y),X)))))))).
+lex(thinks,over(under(np,s),lneg(rneg(s))),lambda(VP,lambda(Y,appl(VP,lambda(C,lambda(X,appl(C,appl(appl(thinks,Y),X)))))))).
+lex(claims,over(under(np,s),lneg(rneg(s))),lambda(VP,lambda(QS,appl(VP,lambda(C,lambda(X,appl(C,appl(appl(claims,QS),X)))))))).
+lex(pictureof,over(n,ldneg(rdneg(np))),lambda(Q1,lambda(Q2,appl(Q1,lambda(X,appl(Q2,lambda(Y,appl(appl(pic,Y),X)))))))).

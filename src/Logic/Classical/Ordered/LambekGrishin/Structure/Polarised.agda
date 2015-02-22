@@ -13,7 +13,8 @@ module Logic.Classical.Ordered.LambekGrishin.Structure.Polarised {ℓ} (Univ : S
 
 open import Logic.Polarity
 open import Logic.Classical.Ordered.LambekGrishin.Type      Univ
-open import Logic.Classical.Ordered.LambekGrishin.Structure Univ as Unpolarised hiding (module Structure; Structure)
+open import Logic.Classical.Ordered.LambekGrishin.Structure Univ
+            as Unpolarised hiding (module Structure; Structure)
 
 
 infix  10 ·_·

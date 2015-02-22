@@ -1,0 +1,41 @@
+alice :: np.
+bob :: np.
+walks :: np \ s.
+left :: np \ s.
+thinks :: (np \ s) / s.
+sees :: (np \ s) / np.
+everybody :: s / (np \ s).
+teases :: (np \ s) / np.
+teased :: (i / np) (/) ((np \ s) (\) i).
+%someone :: (s (/) s) (\) np.
+someone :: 1((np)1).
+spotted :: ((np \ s) / pp) / np.
+in :: pp / np.
+% every :: (s / (np \ s)) / n.
+an :: ((s (/) s) (\) np) / n.
+a :: (1((np)1)) / n.
+% every :: (1((np)1)) / n.
+every :: np / n.
+
+pictureof :: n / 0((np)0).
+some :: np / n.
+% with :: pp / np.
+unicorn :: n.
+error :: n.
+exam :: n.
+teacher :: n.
+seeks :: (np \ s) / 0((np)0).
+claims :: (np \ s) / 0((s)0).
+
+% Ambiguity test
+su :: 1((np)1).
+tv :: (np\s)/np.
+do :: 1((np)1).
+
+% Mix
+% a :: a(\)(s/s).
+a' :: a(\)s.
+b :: (s/s) (/) (s (\) (a (\) (s (/) c))).
+b' :: s (/) (s (\) (a (\) (s (/) c))).
+c :: (s/s)(/)c.
+c' :: s(/)c.

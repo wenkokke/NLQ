@@ -27,8 +27,8 @@ data Λ_ : Judgement → Set ℓ where
       → Λ A , ∅ ⊢ A
 
   ⇒ᵢ  : ∀ {Γ₁ A B}
-      → Λ Γ₁ ⊢ B
-      → Λ Γ₁ ⊢ A ⇒ B
+      → Λ A , Γ₁ ⊢ B
+      → Λ     Γ₁ ⊢ A ⇒ B
 
   ⇒ₑ  : ∀ {Γ₁ Γ₂ A B}
       → Λ Γ₁       ⊢ A ⇒ B
