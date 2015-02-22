@@ -64,17 +64,6 @@ XA→AX {X} {A} {B} t = lem2
     lem2 rewrite sym (proj₂ identity (A , X)) = lem1
 
 
-YX→XY : ∀ {A} X Y → Λ Y ++ X ⊢ A → Λ X ++ Y ⊢ A
-YX→XY {A} X Y t = lem₃
-  where
-    lem₁ : Λ Y ++ X ++ ∅ ⊢ A
-    lem₁ rewrite proj₂ identity X = t
-    lem₂ : Λ X ++ Y ++ ∅ ⊢ A
-    lem₂ = eᴸ ∅ X Y ∅ lem₁
-    lem₃ : Λ X ++ Y ⊢ A
-    lem₃ = PropEq.subst (λ Y → Λ X ++ Y ⊢ A) (proj₂ identity Y) lem₂
-
-
 Y[XZ]→X[YZ] : ∀ {A} X Y Z → Λ Y ++ (X ++ Z) ⊢ A → Λ X ++ (Y ++ Z) ⊢ A
 Y[XZ]→X[YZ] {A} X Y Z t = eᴸ ∅ X Y Z t
 
@@ -156,15 +145,15 @@ XYZW→ZYXW {A} X Y Z W t = lem₃
     lem₃ = [YX]Z→[XY]Z Z Y (X ++ W) lem₂
 
 
-ABX→A⊗BX : ∀ {X A B C} → Λ A , B , X ⊢ C → Λ A ⊗ B , X ⊢ C
-ABX→A⊗BX t = ⊗ₑ ax t
+⊗ₑᴸ₁ : ∀ {X A B C} → Λ A , B , X ⊢ C → Λ A ⊗ B , X ⊢ C
+⊗ₑᴸ₁ t = ⊗ₑ ax t
 
 
-XAB→XA⊗B : ∀ {X A B C} → Λ X ++ (A , B , ∅) ⊢ C → Λ X ,′ A ⊗ B ⊢ C
-XAB→XA⊗B {X} {A} {B} {C} = lem₃
+⊗ₑᴸ₂ : ∀ X {A B C} → Λ X ++ (A , B , ∅) ⊢ C → Λ X ,′ A ⊗ B ⊢ C
+⊗ₑᴸ₂ X {A} {B} {C} = lem₃
   where
     lem₁ : Λ X ,′ A ,′ B ⊢ C → Λ X ,′ A ⊗ B ⊢ C
-    lem₁ t = AX→XA (ABX→A⊗BX (XA→AX {B , X} {A} (XA→AX {X ,′ A} {B} t)))
+    lem₁ t = AX→XA (⊗ₑᴸ₁ (XA→AX {B , X} {A} (XA→AX {X ,′ A} {B} t)))
     lem₂ : ∀ {a} {A : Set a} xs (y z : A) → xs ,′ y ,′ z  ≡ xs ++ (y , z , ∅)
     lem₂ ∅ y z = refl
     lem₂ (x , xs) y z = cong (_,_ x) (lem₂ xs y z)

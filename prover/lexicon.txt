@@ -1,0 +1,22 @@
+unicorn    : n.
+teacher    : n.
+
+nice       : (n / n).
+old        : (n / n).
+
+molly      : np.
+alice      : np.
+
+smiles     : (np \ s).
+left       : (np \ s).
+cheats     : (np \ s).
+
+teases     : ((np \ s) / np).
+loves      : ((np \ s) / np).
+
+thinks     : ((np \ s) / s).
+
+every      : ((np (/) (s (\) s)) / n).
+some       : ((np (/) (s (\) s)) / n).
+everyone   : (np (/) (s (\) s)).
+someone    : (np (/) (s (\) s)).

@@ -41,16 +41,22 @@ abstract
   bill = # 1
   mary = # 2
 
-  _lovedBy_ : Entity → Entity → Bool
-  zero     lovedBy suc zero       = true
-  suc zero lovedBy zero           = true
-  suc zero lovedBy suc zero       = true
-  suc zero lovedBy suc (suc zero) = true
-  _        lovedBy _              = false
+  _loves_ : Entity → Entity → Bool
+  zero     loves suc zero       = true
+  suc zero loves zero           = true
+  suc zero loves suc zero       = true
+  suc zero loves suc (suc zero) = true
+  _        loves _              = false
+
+  _left : Entity → Bool
+  zero  left = true
+  suc _ left = false
 
   person : Entity → Bool
   person _ = true
 
+  postulate
+    _thinks_ : Entity → Bool → Bool
 
 module UsingLambdaCMinus where
 
@@ -62,16 +68,31 @@ module UsingLambdaCMinus where
   LOVES  = (el NP ⇒ el S) ⇐ el NP
   PERSON = el N
 
-  loves : ⟦ LOVES ⟧ᵀ
-  loves = λ k x → k (λ k y → k (x lovedBy y))
+  loves′ : ⟦ LOVES ⟧ᵀ
+  loves′ = λ k x → k (λ k y → k (x loves y))
 
 
 module UsingLambekGrishin where
 
   open Base.UsingLambekGrishin public
 
-  JOHN   = el NP
-  BILL   = el NP
-  MARY   = el NP
-  LOVES  = (el NP ⇒ el S) ⇐ el NP
-  PERSON = el N
+  NP⁺ N⁺ S⁻ : Type
+  NP⁺ = el (+ , NP)
+  N⁺  = el (+ , N)
+  S⁻  = el (- , S)
+
+  JOHN BILL MARY LOVES THINKS LEFT PERSON : Type
+  JOHN   = NP⁺
+  BILL   = NP⁺
+  MARY   = NP⁺
+  LOVES  = (NP⁺ ⇒ S⁻) ⇐ NP⁺
+  THINKS = (NP⁺ ⇒ S⁻) ⇐ S⁻
+  LEFT   = NP⁺ ⇒ S⁻
+  PERSON = N⁺
+
+  loves′  : ⟦ LOVES ⟧ᵀ
+  loves′  ((x , k) , y) = k (x loves y)
+  left′   : ⟦ LEFT ⟧ᵀ
+  left′    (x , k)      = k (x left)
+  thinks′ : ⟦ THINKS ⟧ᵀ
+  thinks′ ((x , k) , y) = k (x thinks (y id))

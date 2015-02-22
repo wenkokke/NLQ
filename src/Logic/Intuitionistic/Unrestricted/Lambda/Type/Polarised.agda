@@ -18,29 +18,29 @@ open import Logic.Intuitionistic.Unrestricted.Lambda.Type (Polarity × Univ)
 
 
 data Polarised : Polarity → Type → Set ℓ where
-  el   : ∀ {p}   (A  : Univ) → Polarised p (el (p , A))
+  el   : ∀ {p}   (A  : Univ)                               → Polarised p (el (p , A))
   _⊗_  : ∀ {A B} (A⁺ : Polarised + A) (B⁺ : Polarised + B) → Polarised + (A ⊗ B)
   _⇒_  : ∀ {A B} (A⁺ : Polarised + A) (B⁻ : Polarised - B) → Polarised - (A ⇒ B)
-data Positive : Type → Set ℓ where
-  el  : (A   : Univ) → Positive (el (+ , A))
-  _⊗_ : (A B : Type) → Positive (A ⊗ B)
-  _⇒_ : (A B : Type) → Positive (A ⇒ B)
-Positive? : (A : Type) → Dec (Positive A)
-Positive? (el (+ , A)) = yes (el A)
-Positive? (el (- , A)) = no (λ ())
-Positive?     (A ⇒ B)  = yes (A ⇒ B)
-Positive?     (A ⊗ B)  = yes (A ⊗ B)
 data Negative : Type → Set ℓ where
   el  : (A   : Univ) → Negative (el (- , A))
+  _⇒_ : (A B : Type) → Negative (A ⇒ B)
 Negative? : (A : Type) → Dec (Negative A)
 Negative? (el (+ , A)) = no (λ ())
 Negative? (el (- , A)) = yes (el A)
-Negative?     (A ⇒ B)  = no (λ ())
+Negative?     (A ⇒ B)  = yes (A ⇒ B)
 Negative?     (A ⊗ B)  = no (λ ())
+data Positive : Type → Set ℓ where
+  el  : (A   : Univ) → Positive (el (+ , A))
+  _⊗_ : (A B : Type) → Positive (A ⊗ B)
+Positive? : (A : Type) → Dec (Positive A)
+Positive? (el (+ , A)) = yes (el A)
+Positive? (el (- , A)) = no (λ ())
+Positive?     (A ⇒ B)  = no (λ ())
+Positive?     (A ⊗ B)  = yes (A ⊗ B)
 Polarity? : (A : Type) → Positive A ⊎ Negative A
 Polarity? (el (+ , A)) = inj₁ (el A)
 Polarity? (el (- , A)) = inj₂ (el A)
-Polarity?     (A ⇒ B)  = inj₁ (A ⇒ B)
+Polarity?     (A ⇒ B)  = inj₂ (A ⇒ B)
 Polarity?     (A ⊗ B)  = inj₁ (A ⊗ B)
 module Correct where
   -- We can attempt to prove correctness in the following manner:

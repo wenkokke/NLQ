@@ -22,9 +22,9 @@ PolarisedUniv : Set ℓ
 PolarisedUniv = (Polarity × Univ)
 
 open import Logic.Classical.Ordered.LambekGrishin.Type                PolarisedUniv
-open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ
 open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised PolarisedUniv
 open import Logic.Classical.Ordered.LambekGrishin.Judgement           PolarisedUniv
+open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ
 
 
 
@@ -32,127 +32,133 @@ infix 1 LG_
 
 data LG_ : Judgement → Set ℓ where
 
-  ax⁺   : ∀ {A}
-        → LG · A · ⊢[ A ]
+  -- axioms
+  ax⁺ : ∀ {A}
+      → LG · A · ⊢[ A ]
 
-  abs-μ : ∀ {X A} {p : True (Negative? A)}
-        → LG X ⊢ · A ·
-        → LG X ⊢[  A  ]
+  ax⁻ : ∀ {A}
+      → LG [ A ]⊢ · A ·
 
-  ⊗ᴿ    : ∀ {X Y A B}
-        → LG X     ⊢[ A     ]
-        → LG     Y ⊢[     B ]
-        → LG X ⊗ Y ⊢[ A ⊗ B ]
+  -- focus right and left
+  ⇁   : ∀ {X A} {p : True (Negative? A)}
+      → LG X ⊢ · A ·
+      → LG X ⊢[  A  ]
 
-  ⇚ᴿ    : ∀ {X Y A B}
-        → LG   X  ⊢[ A ]
-        → LG [ B ]⊢ Y
-        → LG X ⇚ Y ⊢[ A ⇚ B ]
+  ↽   : ∀ {X A} {p : True (Positive? A)}
+      → LG · A · ⊢ X
+      → LG [ A ]⊢ X
 
-  ⇛ᴿ    : ∀ {X Y A B}
-        → LG [ A ]⊢  X
-        → LG   Y  ⊢[ B ]
-        → LG X ⇛ Y ⊢[ A ⇛ B ]
+  -- defocus right and left
+  ⇀   : ∀ {X A} {p : True (Positive? A)}
+      → LG X ⊢[  A  ]
+      → LG X ⊢ · A ·
 
-  ax⁻   : ∀ {A}
-        → LG [ A ]⊢ · A ·
+  ↼   : ∀ {X A} {p : True (Negative? A)}
+      → LG [  A  ]⊢ X
+      → LG  · A · ⊢ X
 
-  abs-̃μ : ∀ {X A} {p : True (Positive? A)}
-        → LG · A · ⊢ X
-        → LG [ A ]⊢ X
+  ⊗ᴿ  : ∀ {X Y A B}
+      → LG X     ⊢[ A     ]
+      → LG     Y ⊢[     B ]
+      → LG X ⊗ Y ⊢[ A ⊗ B ]
 
-  ⊕ᴸ    : ∀ {X Y A B}
-        → LG [ A     ]⊢     Y
-        → LG [     B ]⊢ X
-        → LG [ A ⊕ B ]⊢ X ⊕ Y
+  ⇚ᴿ  : ∀ {X Y A B}
+      → LG   X  ⊢[ A ]
+      → LG [ B ]⊢ Y
+      → LG X ⇚ Y ⊢[ A ⇚ B ]
 
-  ⇒ᴸ    : ∀ {X Y A B}
-        → LG   X  ⊢[ A ]
-        → LG [ B ]⊢  Y
-        → LG [ A ⇒ B ]⊢ X ⇒ Y
+  ⇛ᴿ  : ∀ {X Y A B}
+      → LG [ A ]⊢  X
+      → LG   Y  ⊢[ B ]
+      → LG X ⇛ Y ⊢[ A ⇛ B ]
 
-  ⇐ᴸ     : ∀ {X Y A B}
-         → LG [ A ]⊢  Y
-         → LG   X  ⊢[ B ]
-         → LG [ A ⇐ B ]⊢ Y ⇐ X
+  ⊕ᴸ  : ∀ {X Y A B}
+      → LG [ A     ]⊢     Y
+      → LG [     B ]⊢ X
+      → LG [ A ⊕ B ]⊢ X ⊕ Y
+
+  ⇒ᴸ  : ∀ {X Y A B}
+      → LG   X  ⊢[ A ]
+      → LG [ B ]⊢  Y
+      → LG [ A ⇒ B ]⊢ X ⇒ Y
+
+  ⇐ᴸ  : ∀ {X Y A B}
+      → LG [ A ]⊢  Y
+      → LG   X  ⊢[ B ]
+      → LG [ A ⇐ B ]⊢ Y ⇐ X
+
+  ⊗ᴸ  : ∀ {X A B}
+      → LG · A · ⊗ · B · ⊢ X
+      → LG · A ⊗ B · ⊢ X
+
+  ⇚ᴸ  : ∀ {X A B}
+      → LG · A · ⇚ · B · ⊢ X
+      → LG · A ⇚ B · ⊢ X
+
+  ⇛ᴸ  : ∀ {X A B}
+      → LG · A · ⇛ · B · ⊢ X
+      → LG · A ⇛ B · ⊢ X
+
+  ⊕ᴿ  : ∀ {X A B}
+      → LG X ⊢ · A · ⊕ · B ·
+      → LG X ⊢ · A ⊕ B ·
+
+  ⇒ᴿ  : ∀ {X A B}
+      → LG X ⊢ · A · ⇒ · B ·
+      → LG X ⊢ · A ⇒ B ·
+
+  ⇐ᴿ  : ∀ {X A B}
+      → LG X ⊢ · A · ⇐ · B ·
+      → LG X ⊢ · A ⇐ B ·
 
 
-  app-μ  : ∀ {X A} {p : True (Positive? A)}
-         → LG X ⊢[  A  ]
-         → LG X ⊢ · A ·
+  -- residuation rules for (⇐ , ⊗ , ⇒)
+  r⇒⊗ : ∀ {X Y Z}
+      → LG Y ⊢ X ⇒ Z
+      → LG X ⊗ Y ⊢ Z
 
-  app-̃μ  : ∀ {X A} {p : True (Negative? A)}
-         → LG [  A  ]⊢ X
-         → LG  · A · ⊢ X
+  r⊗⇒ : ∀ {X Y Z}
+      → LG X ⊗ Y ⊢ Z
+      → LG Y ⊢ X ⇒ Z
 
-  ⊗ᴸ     : ∀ {X A B}
-         → LG · A · ⊗ · B · ⊢ X
-         → LG · A ⊗ B · ⊢ X
+  r⇐⊗ : ∀ {X Y Z}
+      → LG X ⊢ Z ⇐ Y
+      → LG X ⊗ Y ⊢ Z
 
-  ⇚ᴸ     : ∀ {X A B}
-         → LG · A · ⇚ · B · ⊢ X
-         → LG · A ⇚ B · ⊢ X
+  r⊗⇐ : ∀ {X Y Z}
+      → LG X ⊗ Y ⊢ Z
+      → LG X ⊢ Z ⇐ Y
 
-  ⇛ᴸ     : ∀ {X A B}
-         → LG · A · ⇛ · B · ⊢ X
-         → LG · A ⇛ B · ⊢ X
+  -- residuation rules for (⇚ , ⊕ , ⇛)
+  r⇚⊕ : ∀ {X Y Z}
+      → LG Z ⇚ X ⊢ Y
+      → LG Z ⊢ Y ⊕ X
 
-  ⊕ᴿ     : ∀ {X A B}
-         → LG X ⊢ · A · ⊕ · B ·
-         → LG X ⊢ · A ⊕ B ·
+  r⊕⇚ : ∀ {X Y Z}
+      → LG Z ⊢ Y ⊕ X
+      → LG Z ⇚ X ⊢ Y
 
-  ⇒ᴿ     : ∀ {X A B}
-         → LG X ⊢ · A · ⇒ · B ·
-         → LG X ⊢ · A ⇒ B ·
+  r⇛⊕ : ∀ {X Y Z}
+      → LG Y ⇛ Z ⊢ X
+      → LG Z ⊢ Y ⊕ X
 
-  ⇐ᴿ     : ∀ {X A B}
-         → LG X ⊢ · A · ⇐ · B ·
-         → LG X ⊢ · A ⇐ B ·
+  r⊕⇛ : ∀ {X Y Z}
+      → LG Z ⊢ Y ⊕ X
+      → LG Y ⇛ Z ⊢ X
 
-  res-⇒⊗ : ∀ {X Y Z}
-         → LG Y ⊢ X ⇒ Z
-         → LG X ⊗ Y ⊢ Z
+  -- grishin interaction principes
+  d⇛⇐ : ∀ {X Y Z W}
+      → LG X ⊗ Y ⊢ Z ⊕ W
+      → LG Z ⇛ X ⊢ W ⇐ Y
 
-  res-⊗⇒ : ∀ {X Y Z}
-         → LG X ⊗ Y ⊢ Z
-         → LG Y ⊢ X ⇒ Z
+  d⇛⇒ : ∀ {X Y Z W}
+      → LG X ⊗ Y ⊢ Z ⊕ W
+      → LG Z ⇛ Y ⊢ X ⇒ W
 
-  res-⇐⊗ : ∀ {X Y Z}
-         → LG X ⊢ Z ⇐ Y
-         → LG X ⊗ Y ⊢ Z
+  d⇚⇒ : ∀ {X Y Z W}
+      → LG X ⊗ Y ⊢ Z ⊕ W
+      → LG Y ⇚ W ⊢ X ⇒ Z
 
-  res-⊗⇐ : ∀ {X Y Z}
-         → LG X ⊗ Y ⊢ Z
-         → LG X ⊢ Z ⇐ Y
-
-  res-⇚⊕ : ∀ {X Y Z}
-         → LG Z ⇚ X ⊢ Y
-         → LG Z ⊢ Y ⊕ X
-
-  res-⊕⇚ : ∀ {X Y Z}
-         → LG Z ⊢ Y ⊕ X
-         → LG Z ⇚ X ⊢ Y
-
-  res-⇛⊕ : ∀ {X Y Z}
-         → LG Y ⇛ Z ⊢ X
-         → LG Z ⊢ Y ⊕ X
-
-  res-⊕⇛ : ∀ {X Y Z}
-         → LG Z ⊢ Y ⊕ X
-         → LG Y ⇛ Z ⊢ X
-
-  grish₁ : ∀ {X Y Z W}
-         → LG X ⊗ Y ⊢ Z ⊕ W
-         → LG Z ⇛ X ⊢ W ⇐ Y
-
-  grish₂ : ∀ {X Y Z W}
-         → LG X ⊗ Y ⊢ Z ⊕ W
-         → LG Z ⇛ Y ⊢ X ⇒ W
-
-  grish₃ : ∀ {X Y Z W}
-         → LG X ⊗ Y ⊢ Z ⊕ W
-         → LG Y ⇚ W ⊢ X ⇒ Z
-
-  grish₄ : ∀ {X Y Z W}
-         → LG X ⊗ Y ⊢ Z ⊕ W
-         → LG X ⇚ W ⊢ Z ⇐ Y
+  d⇚⇐ : ∀ {X Y Z W}
+      → LG X ⊗ Y ⊢ Z ⊕ W
+      → LG X ⇚ W ⊢ Z ⇐ Y

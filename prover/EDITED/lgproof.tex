@@ -1,0 +1,508 @@
+\documentclass[a4paper]{article}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage{proof}
+\usepackage{stmaryrd}
+\usepackage{amssymb}
+\newcommand{\leftleftharpoons}{\mathbin{\ooalign{\hfil\raisebox{1pt}{$\leftharpoonup$}\hfil\cr\hfil\raisebox{-1pt}{$\leftharpoondown$}\hfil\crcr}}}
+\newcommand{\rightrightharpoons}{\mathbin{\ooalign{\hfil\raisebox{1pt}{$\rightharpoonup$}\hfil\cr\hfil\raisebox{-1pt}{$\rightharpoondown$}\hfil\crcr}}}
+\newcommand{\lneg}[1]{{}^{\mathbf{0}}#1}
+\newcommand{\rneg}[1]{#1^{\mathbf{0}}}
+\newcommand{\ldneg}[1]{{}^{\mathbf{1}}#1}
+\newcommand{\rdneg}[1]{#1^{\mathbf{1}}}
+\newcommand{\lNeg}[1]{{}^{0 \cdot}#1}
+\newcommand{\rNeg}[1]{#1^{\cdot 0}}
+\newcommand{\ldNeg}[1]{{}^{1 \cdot}#1}
+\newcommand{\rdNeg}[1]{#1^{\cdot 1}}
+\RequirePackage[pdftex,pdfview=Fit,pdfstartview=Fit]{hyperref}
+\pagestyle{empty}
+\newlength{\wdtotal}
+\newlength{\httotal}
+\setlength{\wdtotal}{1cm}
+\setlength{\httotal}{1cm}
+\newsavebox{\proofboxa}
+\sbox{\proofboxa}{
+\infer[\rightharpoondown]{
+np\cdot \otimes \cdot (((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)))\vdash s
+}{
+\infer[r]{
+np\cdot \otimes \cdot (((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)))\vdash \cdot s\cdot 
+}{
+\infer[r]{
+((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s))\vdash np\cdot \backslash \cdot s
+}{
+\infer[\leftharpoonup]{
+\cdot ((np\backslash s)\slash s)\cdot \vdash (np\cdot \backslash \cdot s)\cdot \slash \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s))
+}{
+\infer[\slash L]{
+(np\backslash s)\slash s\vdash (np\cdot \backslash \cdot s)\cdot \slash \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s))
+}{
+\infer[\rightharpoondown]{
+((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)\vdash s
+}{
+\infer[r]{
+((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)\vdash \cdot s\cdot 
+}{
+\infer[r]{
+(np\slash n)\cdot \otimes \cdot n\vdash s\cdot \slash \cdot (np\backslash s)
+}{
+\infer[\leftharpoonup]{
+\cdot (np\slash n)\cdot \vdash (s\cdot \slash \cdot (np\backslash s))\cdot \slash \cdot n
+}{
+\infer[\slash L]{
+np\slash n\vdash (s\cdot \slash \cdot (np\backslash s))\cdot \slash \cdot n
+}{
+\infer[]{
+\cdot n\cdot \vdash n
+}{
+}
+&
+\infer[\leftharpoondown]{
+np\vdash s\cdot \slash \cdot (np\backslash s)
+}{
+\infer[r]{
+\cdot np\cdot \vdash s\cdot \slash \cdot (np\backslash s)
+}{
+\infer[r]{
+np\cdot \otimes \cdot (np\backslash s)\vdash \cdot s\cdot 
+}{
+\infer[\leftharpoonup]{
+\cdot (np\backslash s)\cdot \vdash np\cdot \backslash \cdot s
+}{
+\infer[\backslash L]{
+np\backslash s\vdash np\cdot \backslash \cdot s
+}{
+\infer[]{
+\cdot np\cdot \vdash np
+}{
+}
+&
+\infer[]{
+s\vdash \cdot s\cdot 
+}{
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+&
+\infer[\backslash L]{
+np\backslash s\vdash np\cdot \backslash \cdot s
+}{
+\infer[]{
+\cdot np\cdot \vdash np
+}{
+}
+&
+\infer[]{
+s\vdash \cdot s\cdot 
+}{
+}
+}
+}
+}
+}
+}
+}}
+\ifthenelse{\wd\proofboxa > \wdtotal}{\setlength{\wdtotal}{\wd\proofboxa}}{}
+\ifthenelse{\ht\proofboxa > \httotal}{\setlength{\httotal}{\ht\proofboxa}}{}
+\newsavebox{\proofboxb}
+\sbox{\proofboxb}{
+\infer[\rightharpoondown]{
+np\cdot \otimes \cdot (((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)))\vdash s
+}{
+\infer[r]{
+np\cdot \otimes \cdot (((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)))\vdash \cdot s\cdot 
+}{
+\infer[r]{
+((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s))\vdash np\cdot \backslash \cdot s
+}{
+\infer[\leftharpoonup]{
+\cdot ((np\backslash s)\slash s)\cdot \vdash (np\cdot \backslash \cdot s)\cdot \slash \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s))
+}{
+\infer[\slash L]{
+(np\backslash s)\slash s\vdash (np\cdot \backslash \cdot s)\cdot \slash \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s))
+}{
+\infer[\rightharpoondown]{
+((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)\vdash s
+}{
+\infer[r]{
+((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)\vdash \cdot s\cdot 
+}{
+\infer[\leftharpoonup]{
+\cdot (np\backslash s)\cdot \vdash ((np\slash n)\cdot \otimes \cdot n)\cdot \backslash \cdot s
+}{
+\infer[\backslash L]{
+np\backslash s\vdash ((np\slash n)\cdot \otimes \cdot n)\cdot \backslash \cdot s
+}{
+\infer[\rightharpoondown]{
+(np\slash n)\cdot \otimes \cdot n\vdash np
+}{
+\infer[r]{
+(np\slash n)\cdot \otimes \cdot n\vdash \cdot np\cdot 
+}{
+\infer[\leftharpoonup]{
+\cdot (np\slash n)\cdot \vdash np\cdot \slash \cdot n
+}{
+\infer[\slash L]{
+np\slash n\vdash np\cdot \slash \cdot n
+}{
+\infer[]{
+\cdot n\cdot \vdash n
+}{
+}
+&
+\infer[]{
+np\vdash \cdot np\cdot 
+}{
+}
+}
+}
+}
+}
+&
+\infer[]{
+s\vdash \cdot s\cdot 
+}{
+}
+}
+}
+}
+}
+&
+\infer[\backslash L]{
+np\backslash s\vdash np\cdot \backslash \cdot s
+}{
+\infer[]{
+\cdot np\cdot \vdash np
+}{
+}
+&
+\infer[]{
+s\vdash \cdot s\cdot 
+}{
+}
+}
+}
+}
+}
+}
+}}
+\ifthenelse{\wd\proofboxb > \wdtotal}{\setlength{\wdtotal}{\wd\proofboxb}}{}
+\ifthenelse{\ht\proofboxb > \httotal}{\setlength{\httotal}{\ht\proofboxb}}{}
+\newsavebox{\proofboxc}
+\sbox{\proofboxc}{
+\infer[\rightharpoondown]{
+np\cdot \otimes \cdot (((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)))\vdash s
+}{
+\infer[r]{
+np\cdot \otimes \cdot (((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)))\vdash \cdot s\cdot 
+}{
+\infer[r]{
+((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s))\vdash np\cdot \backslash \cdot s
+}{
+\infer[r]{
+((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)\vdash ((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s)
+}{
+\infer[r]{
+(np\slash n)\cdot \otimes \cdot n\vdash (((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))\cdot \slash \cdot (np\backslash s)
+}{
+\infer[\leftharpoonup]{
+\cdot (np\slash n)\cdot \vdash ((((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))\cdot \slash \cdot (np\backslash s))\cdot \slash \cdot n
+}{
+\infer[\slash L]{
+np\slash n\vdash ((((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))\cdot \slash \cdot (np\backslash s))\cdot \slash \cdot n
+}{
+\infer[]{
+\cdot n\cdot \vdash n
+}{
+}
+&
+\infer[\leftharpoondown]{
+np\vdash (((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))\cdot \slash \cdot (np\backslash s)
+}{
+\infer[r]{
+\cdot np\cdot \vdash (((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))\cdot \slash \cdot (np\backslash s)
+}{
+\infer[r]{
+np\cdot \otimes \cdot (np\backslash s)\vdash ((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s)
+}{
+\infer[\leftharpoonup]{
+\cdot (np\backslash s)\cdot \vdash np\cdot \backslash \cdot (((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))
+}{
+\infer[\backslash L]{
+np\backslash s\vdash np\cdot \backslash \cdot (((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))
+}{
+\infer[]{
+\cdot np\cdot \vdash np
+}{
+}
+&
+\infer[\leftharpoondown]{
+s\vdash ((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s)
+}{
+\infer[r]{
+\cdot s\cdot \vdash ((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s)
+}{
+\infer[r]{
+((np\backslash s)\slash s)\cdot \otimes \cdot s\vdash np\cdot \backslash \cdot s
+}{
+\infer[\leftharpoonup]{
+\cdot ((np\backslash s)\slash s)\cdot \vdash (np\cdot \backslash \cdot s)\cdot \slash \cdot s
+}{
+\infer[\slash L]{
+(np\backslash s)\slash s\vdash (np\cdot \backslash \cdot s)\cdot \slash \cdot s
+}{
+\infer[]{
+\cdot s\cdot \vdash s
+}{
+}
+&
+\infer[\backslash L]{
+np\backslash s\vdash np\cdot \backslash \cdot s
+}{
+\infer[]{
+\cdot np\cdot \vdash np
+}{
+}
+&
+\infer[]{
+s\vdash \cdot s\cdot 
+}{
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}}
+\ifthenelse{\wd\proofboxc > \wdtotal}{\setlength{\wdtotal}{\wd\proofboxc}}{}
+\ifthenelse{\ht\proofboxc > \httotal}{\setlength{\httotal}{\ht\proofboxc}}{}
+\newsavebox{\proofboxd}
+\sbox{\proofboxd}{
+\infer[\rightharpoondown]{
+np\cdot \otimes \cdot (((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)))\vdash s
+}{
+\infer[r]{
+np\cdot \otimes \cdot (((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)))\vdash \cdot s\cdot 
+}{
+\infer[r]{
+((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s))\vdash np\cdot \backslash \cdot s
+}{
+\infer[r]{
+((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)\vdash ((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s)
+}{
+\infer[r]{
+(np\slash n)\cdot \otimes \cdot n\vdash (((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))\cdot \slash \cdot (np\backslash s)
+}{
+\infer[\leftharpoonup]{
+\cdot (np\slash n)\cdot \vdash ((((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))\cdot \slash \cdot (np\backslash s))\cdot \slash \cdot n
+}{
+\infer[\slash L]{
+np\slash n\vdash ((((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))\cdot \slash \cdot (np\backslash s))\cdot \slash \cdot n
+}{
+\infer[]{
+\cdot n\cdot \vdash n
+}{
+}
+&
+\infer[\leftharpoondown]{
+np\vdash (((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))\cdot \slash \cdot (np\backslash s)
+}{
+\infer[r]{
+\cdot np\cdot \vdash (((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))\cdot \slash \cdot (np\backslash s)
+}{
+\infer[r]{
+np\cdot \otimes \cdot (np\backslash s)\vdash ((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s)
+}{
+\infer[r]{
+((np\backslash s)\slash s)\cdot \otimes \cdot (np\cdot \otimes \cdot (np\backslash s))\vdash np\cdot \backslash \cdot s
+}{
+\infer[\leftharpoonup]{
+\cdot ((np\backslash s)\slash s)\cdot \vdash (np\cdot \backslash \cdot s)\cdot \slash \cdot (np\cdot \otimes \cdot (np\backslash s))
+}{
+\infer[\slash L]{
+(np\backslash s)\slash s\vdash (np\cdot \backslash \cdot s)\cdot \slash \cdot (np\cdot \otimes \cdot (np\backslash s))
+}{
+\infer[\rightharpoondown]{
+np\cdot \otimes \cdot (np\backslash s)\vdash s
+}{
+\infer[r]{
+np\cdot \otimes \cdot (np\backslash s)\vdash \cdot s\cdot 
+}{
+\infer[\leftharpoonup]{
+\cdot (np\backslash s)\cdot \vdash np\cdot \backslash \cdot s
+}{
+\infer[\backslash L]{
+np\backslash s\vdash np\cdot \backslash \cdot s
+}{
+\infer[]{
+\cdot np\cdot \vdash np
+}{
+}
+&
+\infer[]{
+s\vdash \cdot s\cdot 
+}{
+}
+}
+}
+}
+}
+&
+\infer[\backslash L]{
+np\backslash s\vdash np\cdot \backslash \cdot s
+}{
+\infer[]{
+\cdot np\cdot \vdash np
+}{
+}
+&
+\infer[]{
+s\vdash \cdot s\cdot 
+}{
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}}
+\ifthenelse{\wd\proofboxd > \wdtotal}{\setlength{\wdtotal}{\wd\proofboxd}}{}
+\ifthenelse{\ht\proofboxd > \httotal}{\setlength{\httotal}{\ht\proofboxd}}{}
+\newsavebox{\proofboxe}
+\sbox{\proofboxe}{
+\infer[\rightharpoondown]{
+np\cdot \otimes \cdot (((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)))\vdash s
+}{
+\infer[r]{
+np\cdot \otimes \cdot (((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)))\vdash \cdot s\cdot 
+}{
+\infer[r]{
+((np\backslash s)\slash s)\cdot \otimes \cdot (((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s))\vdash np\cdot \backslash \cdot s
+}{
+\infer[r]{
+((np\slash n)\cdot \otimes \cdot n)\cdot \otimes \cdot (np\backslash s)\vdash ((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s)
+}{
+\infer[\leftharpoonup]{
+\cdot (np\backslash s)\cdot \vdash ((np\slash n)\cdot \otimes \cdot n)\cdot \backslash \cdot (((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))
+}{
+\infer[\backslash L]{
+np\backslash s\vdash ((np\slash n)\cdot \otimes \cdot n)\cdot \backslash \cdot (((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s))
+}{
+\infer[\rightharpoondown]{
+(np\slash n)\cdot \otimes \cdot n\vdash np
+}{
+\infer[r]{
+(np\slash n)\cdot \otimes \cdot n\vdash \cdot np\cdot 
+}{
+\infer[\leftharpoonup]{
+\cdot (np\slash n)\cdot \vdash np\cdot \slash \cdot n
+}{
+\infer[\slash L]{
+np\slash n\vdash np\cdot \slash \cdot n
+}{
+\infer[]{
+\cdot n\cdot \vdash n
+}{
+}
+&
+\infer[]{
+np\vdash \cdot np\cdot 
+}{
+}
+}
+}
+}
+}
+&
+\infer[\leftharpoondown]{
+s\vdash ((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s)
+}{
+\infer[r]{
+\cdot s\cdot \vdash ((np\backslash s)\slash s)\cdot \backslash \cdot (np\cdot \backslash \cdot s)
+}{
+\infer[r]{
+((np\backslash s)\slash s)\cdot \otimes \cdot s\vdash np\cdot \backslash \cdot s
+}{
+\infer[\leftharpoonup]{
+\cdot ((np\backslash s)\slash s)\cdot \vdash (np\cdot \backslash \cdot s)\cdot \slash \cdot s
+}{
+\infer[\slash L]{
+(np\backslash s)\slash s\vdash (np\cdot \backslash \cdot s)\cdot \slash \cdot s
+}{
+\infer[]{
+\cdot s\cdot \vdash s
+}{
+}
+&
+\infer[\backslash L]{
+np\backslash s\vdash np\cdot \backslash \cdot s
+}{
+\infer[]{
+\cdot np\cdot \vdash np
+}{
+}
+&
+\infer[]{
+s\vdash \cdot s\cdot 
+}{
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}}
+\ifthenelse{\wd\proofboxe > \wdtotal}{\setlength{\wdtotal}{\wd\proofboxe}}{}
+\ifthenelse{\ht\proofboxe > \httotal}{\setlength{\httotal}{\ht\proofboxe}}{}
+\setlength{\paperwidth}{2in+\wdtotal}
+\setlength{\paperheight}{2in+\httotal}
+\textwidth = \wdtotal
+\textheight = \httotal
+\oddsidemargin = 0.0 in
+\evensidemargin = 0.0 in
+\topmargin = 0.0 in
+\headheight = 0.0 in
+\headsep = 0.0 in
+\parskip = 0.2in
+\parindent = 0.0in
+\begin{document}
+\usebox{\proofboxa}
+\newpage\usebox{\proofboxb}
+\newpage\usebox{\proofboxc}
+\newpage\usebox{\proofboxd}
+\newpage\usebox{\proofboxe}
+\end{document}

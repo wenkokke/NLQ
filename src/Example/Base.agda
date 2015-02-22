@@ -3,6 +3,7 @@
 ------------------------------------------------------------------------
 
 open import Data.Bool                             using (Bool; true; false)
+open import Data.Product                          using (_×_; _,_)
 open import Relation.Nullary                      using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
@@ -49,4 +50,19 @@ module UsingLambdaCMinus where
 
 module UsingLambekGrishin where
 
-  open import Logic.Classical.Ordered.LambekGrishin Univ public
+  open import Logic.Polarity public
+
+  PolarisedUniv : Set
+  PolarisedUniv = Polarity × Univ
+
+  open import Logic.Translation
+  open import Logic.Classical.Ordered.LambekGrishin.Type                PolarisedUniv public
+  open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised PolarisedUniv public
+  open import Logic.Classical.Ordered.LambekGrishin.Judgement           PolarisedUniv public
+  open import Logic.Classical.Ordered.LambekGrishin.Base                Univ          public hiding (PolarisedUniv)
+  open import Logic.Classical.Ordered.LambekGrishin.ToLinear            Univ S
+  open import Logic.Intuitionistic.Linear.Lambda.ToUnrestricted         Univ
+  open import Logic.Intuitionistic.Unrestricted.Lambda.ToAgda           Univ ⟦_⟧ᵁ
+  open import Logic.Intuitionistic.Unrestricted.Agda.Environment                 public
+
+  open Translation (Un→Agda ◇ Lin→Un ◇ Ord→Lin) public
