@@ -29,6 +29,9 @@ data Polarised (p : Polarity) : Polarity → Context → Set ℓ where
 
   []   : Polarised p p []
 
+  ◇>_  : {A : Context} (A⁺ : Polarised p + A) → Polarised p + (◇> A)
+  □>_  : {A : Context} (A⁻ : Polarised p - A) → Polarised p - (□> A)
+
   _⊗>_ : (A : Type) {B : Context} (B⁺ : Polarised p + B) → Polarised p + (A ⊗> B)
   _⇛>_ : (A : Type) {B : Context} (B⁺ : Polarised p + B) → Polarised p + (A ⇛> B)
   _⇚>_ : (A : Type) {B : Context} (B⁻ : Polarised p - B) → Polarised p + (A ⇚> B)
@@ -61,6 +64,8 @@ module Simple where
   -- Apply a context to a type by plugging the type into the context.
   _[_] : ∀ {p₁ p₂ A} → Polarised p₁ p₂ A → Type → Type
   []       [ A ] = A
+  (□> B)   [ A ] = □ (B [ A ])
+  (◇> B)   [ A ] = ◇ (B [ A ])
   (B ⊗> C) [ A ] = B ⊗ (C [ A ])
   (B ⇒> C) [ A ] = B ⇒ (C [ A ])
   (B ⇐> C) [ A ] = B ⇐ (C [ A ])
@@ -78,6 +83,8 @@ module Simple where
   _<_> : ∀ {p₁ p₂ p₃ A B}
        → Polarised p₂ p₃ A → Polarised p₁ p₂ B → Polarised p₁ p₃ (A < B >′)
   []       < A > = A
+  (□> B)   < A > = □> (B < A >)
+  (◇> B)   < A > = ◇> (B < A >)
   (B ⊗> C) < A > = B ⊗> (C < A >)
   (B ⇒> C) < A > = B ⇒> (C < A >)
   (B ⇐> C) < A > = B ⇐> (C < A >)
@@ -108,6 +115,8 @@ private
 
   forget : ∀ {p₁ p₂ A} → Polarised p₁ p₂ A → Context
   forget []       = []
+  forget (□> A)   = □> forget A
+  forget (◇> A)   = ◇> forget A
   forget (A ⊗> B) = A ⊗> forget B
   forget (A ⇛> B) = A ⇛> forget B
   forget (A ⇚> B) = A ⇚> forget B
@@ -123,6 +132,8 @@ private
 
   forget-correct : ∀ {p₁ p₂ A} (Aᴾ : Polarised p₁ p₂ A) → forget Aᴾ ≡ A
   forget-correct []       = refl
+  forget-correct (□> A)   rewrite forget-correct A = refl
+  forget-correct (◇> A)   rewrite forget-correct A = refl
   forget-correct (A ⊗> B) rewrite forget-correct B = refl
   forget-correct (A ⇛> B) rewrite forget-correct B = refl
   forget-correct (A ⇚> B) rewrite forget-correct B = refl

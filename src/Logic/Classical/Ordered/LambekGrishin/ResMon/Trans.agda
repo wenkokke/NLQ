@@ -25,6 +25,10 @@ open LGD.Simple using (_[_])
 trans′ : ∀ {A B C} (f : LG A ⊢ B) (g : LG B ⊢ C) → LG A ⊢ C
 trans′ {B = el B}    f g with el.viewOrigin ([] <⊢ _) g
 ... | el.origin      g′ _ = g′ [ f ]
+trans′ {B = □ B}     f g with □.viewOrigin ([] <⊢ _) g
+... | □.origin h     g′ _ = g′ [ res-◇□ (trans′ (res-□◇ f) h) ]
+trans′ {B = ◇ B}     f g with ◇.viewOrigin (_ ⊢> []) f
+... | ◇.origin h     f′ _ = f′ [ res-□◇ (trans′ h (res-◇□ g)) ]
 trans′ {B = B₁ ⊗ B₂} f g with ⊗.viewOrigin (_ ⊢> []) f
 ... | ⊗.origin h₁ h₂ f′ _ = f′ [ res-⇐⊗ (trans′ h₁ (res-⊗⇐ (res-⇒⊗ (trans′ h₂ (res-⊗⇒ g))))) ]
 trans′ {B = B₁ ⇚ B₂} f g with ⇚.viewOrigin (_ ⊢> []) f

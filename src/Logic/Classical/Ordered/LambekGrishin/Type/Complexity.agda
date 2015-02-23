@@ -27,7 +27,7 @@ mutual
 
   ⌊_⌋ : Type → ℕ
   ⌊ el  A ⌋ = zero
-  ⌊ ◽   A ⌋ = ⌈ A ⌉
+  ⌊ □   A ⌋ = ⌈ A ⌉
   ⌊ ◇   A ⌋ = ⌈ A ⌉
   ⌊ A ⊗ B ⌋ = ⌈ A ⌉ + ⌈ B ⌉
   ⌊ A ⇚ B ⌋ = ⌈ A ⌉ + ⌈ B ⌉
