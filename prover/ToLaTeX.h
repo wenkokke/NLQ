@@ -30,8 +30,8 @@ map<BINARY_CONNECTIVE,char*> binaryToLaTeX = createBinaryToLaTeX();
 
 /* Print unary connectives to LaTeX */
 void toLaTeXUnary(FILE *fout, UNARY_CONNECTIVE connective, bool prefix, bool structural) {
-    if(connective == ONE || connective == ZERO)
-        fprintf(fout, "\\%c%s%ceg", prefix ? 'l' : 'r', connective == ONE ? "d" : "", structural ? 'N' : 'n');
+    if(connective == BOX || connective == DIAMOND)
+        fprintf(fout, "\\%c%s%ceg", prefix ? 'l' : 'r', connective == BOX ? "d" : "", structural ? 'N' : 'n');
 }
 
 /* Print LaTeX representation of formula to fout */

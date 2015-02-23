@@ -25,8 +25,8 @@ enum BINARY_CONNECTIVE {
 
 /* The unary connectives */
 enum UNARY_CONNECTIVE {
-    ZERO       , /* 0 */
-    ONE          /* 1 */
+    BOX,         /* [] */
+    DIAMOND      /* <> */
 };
 
 /* The different types of formulas and structures */

@@ -22,7 +22,7 @@ using namespace std;
 map<string,Formula*> lexicon;
 
 /* All possible tokens (order in parsing order) */
-char* possibleTokens[] = {":", "⊗", "⇚", "⇛", "⊕", ".", "⇐", "¹", "⁰", "⇒", "(", ")"};
+char* possibleTokens[] = {":", "⊗", "⇚", "⇛", "⊕", ".", "⇐", "□", "◇", "⇒", "(", ")"};
 int numPossibleTokens = 12;
 
 /* Utility function, check if str[idx] matches the string token */
