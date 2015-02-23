@@ -18,15 +18,24 @@ using namespace std;
 map<BINARY_CONNECTIVE,char*> createBinaryToLaTeX()
 {
     map<BINARY_CONNECTIVE,char*> m;
-    m[BACKSLASH]  = "\\Rightarrow";
-    m[SLASH]      = "\\Leftarrow";
+    m[BACKSLASH]  = "\\Rightarrow ";
+    m[SLASH]      = "\\Leftarrow ";
     m[OTIMES]     = "\\otimes ";
-    m[OSLASH]     = "\\Lleftarrow";
-    m[OBACKSLASH] = "\\Rrightarrow";
+    m[OSLASH]     = "\\Lleftarrow ";
+    m[OBACKSLASH] = "\\Rrightarrow ";
     m[OPLUS]      = "\\oplus ";
     return m;
 }
 map<BINARY_CONNECTIVE,char*> binaryToLaTeX = createBinaryToLaTeX();
+
+map<UNARY_CONNECTIVE,char*> createUnaryToLaTeX()
+{
+    map<UNARY_CONNECTIVE,char*> m;
+    m[BOX]     = "\\Box ";
+    m[DIAMOND] = "\\Diamond ";
+    return m;
+}
+map<UNARY_CONNECTIVE,char*> unaryToLaTeX = createUnaryToLaTeX();
 
 /* Print unary connectives to LaTeX */
 void toLaTeXUnary(FILE *fout, UNARY_CONNECTIVE connective, bool prefix, bool structural) {
@@ -57,10 +66,8 @@ void toLaTeXFormula(FILE *fout, Formula *formula, bool top) {
         case UNARY:
             if(!top)
                 fprintf(fout, "(");
-            toLaTeXUnary(fout, formula->unary_connective, formula->prefix, false);
-            fprintf(fout, "{");
+            fprintf(fout, unaryToLaTeX[formula->unary_connective]);
             toLaTeXFormula(fout, formula->inner, false);
-            fprintf(fout, "}");
             if(!top)
                 fprintf(fout, ")");
             break;
@@ -177,6 +184,9 @@ void toLaTeXDerivation(FILE *fout, Derivation *derivation, int proofBoxNum, int 
 /* Print LaTeX header to fout */
 void toLaTeXHeader(FILE *fout) {
     fprintf(fout, "\\documentclass[a4paper]{article}\n");
+    fprintf(fout, "\\usepackage[utf8]{inputenc}\n");
+    fprintf(fout, "\\DeclareUnicodeCharacter{207A}{^+}\n");
+    fprintf(fout, "\\DeclareUnicodeCharacter{207B}{^-}\n");
     fprintf(fout, "\\usepackage{calc}\n");
     fprintf(fout, "\\usepackage{ifthen}\n");
     fprintf(fout, "\\usepackage{proof}\n");
