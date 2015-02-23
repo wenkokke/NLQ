@@ -43,6 +43,8 @@ mutual
   ⟦_⟧⁺ : LGT.Type → ΛT.Type
   ⟦ el (+ , A) ⟧⁺ = el A
   ⟦ el (- , A) ⟧⁺ = ¬ (¬ el A)
+  ⟦     □   A  ⟧⁺ = ¬  ⟦ A ⟧⁻
+  ⟦     ◇   A  ⟧⁺ =    ⟦ A ⟧⁺
   ⟦     A ⊗ B  ⟧⁺ =    ⟦ A ⟧⁺ ⊗ ⟦ B ⟧⁺
   ⟦     A ⇚ B  ⟧⁺ =    ⟦ A ⟧⁺ ⊗ ⟦ B ⟧⁻
   ⟦     A ⇛ B  ⟧⁺ =    ⟦ A ⟧⁻ ⊗ ⟦ B ⟧⁺
@@ -53,6 +55,8 @@ mutual
   ⟦_⟧⁻ : LGT.Type → ΛT.Type
   ⟦ el (+ , A) ⟧⁻ = ¬ el A
   ⟦ el (- , A) ⟧⁻ = ¬ el A
+  ⟦     □   A  ⟧⁻ =    ⟦ A ⟧⁻
+  ⟦     ◇   A  ⟧⁻ = ¬  ⟦ A ⟧⁺
   ⟦     A ⊗ B  ⟧⁻ = ¬ (⟦ A ⟧⁺ ⊗ ⟦ B ⟧⁺)
   ⟦     A ⇚ B  ⟧⁻ = ¬ (⟦ A ⟧⁺ ⊗ ⟦ B ⟧⁻)
   ⟦     A ⇛ B  ⟧⁻ = ¬ (⟦ A ⟧⁻ ⊗ ⟦ B ⟧⁺)
@@ -63,12 +67,14 @@ mutual
 
 Positive-≡ : ∀ {A} → Positive A → ⟦ A ⟧⁻ ≡ ¬ ⟦ A ⟧⁺
 Positive-≡ (el  A) = refl
+Positive-≡ (◇   A) = refl
 Positive-≡ (A ⊗ B) = refl
 Positive-≡ (A ⇚ B) = refl
 Positive-≡ (A ⇛ B) = refl
 
 Negative-≡ : ∀ {A} → Negative A → ⟦ A ⟧⁺ ≡ ¬ ⟦ A ⟧⁻
 Negative-≡ (el  A) = refl
+Negative-≡ (□   A) = refl
 Negative-≡ (A ⊕ B) = refl
 Negative-≡ (A ⇒ B) = refl
 Negative-≡ (A ⇐ B) = refl
