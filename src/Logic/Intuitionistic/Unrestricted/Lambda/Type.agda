@@ -34,7 +34,7 @@ el-injective refl = refl
 
 -- Selective case matching
 case-el : (A : Type) → Dec (∃ (λ U → A ≡ el U))
-case-el (el  U) = yes (U , refl)
+case-el (el  _) = yes (_ , refl)
 case-el (_ ⇒ _) = no (λ {(_ , ())})
 case-el (_ ⊗ _) = no (λ {(_ , ())})
 case-⇒ : (A : Type) → Dec (∃₂ (λ B C → A ≡ B ⇒ C))
@@ -58,13 +58,15 @@ module DecEq
   ... | no  A≢C = no (A≢C ∘ el-injective)
   el A  ≟-Type C ⊗ D = no (λ ())
   el A  ≟-Type C ⇒ D = no (λ ())
+
   A ⊗ B ≟-Type el C  = no (λ ())
-  A ⇒ B ≟-Type el C  = no (λ ())
   A ⊗ B ≟-Type C ⊗ D with (A ≟-Type C) | (B ≟-Type D)
-  ... | yes A≡C | yes B≡D rewrite A≡C | B≡D = yes refl     -- doink
-  ... | no  A≢C | _       = no (A≢C ∘ proj₁ ∘ ⊗-injective) -- doink
-  ... | _       | no  B≢D = no (B≢D ∘ proj₂ ∘ ⊗-injective) -- doink
+  ... | yes A≡C | yes B≡D rewrite A≡C | B≡D = yes refl
+  ... | no  A≢C | _       = no (A≢C ∘ proj₁ ∘ ⊗-injective)
+  ... | _       | no  B≢D = no (B≢D ∘ proj₂ ∘ ⊗-injective)
   A ⊗ B ≟-Type C ⇒ D = no (λ ())
+
+  A ⇒ B ≟-Type el C  = no (λ ())
   A ⇒ B ≟-Type C ⊗ D = no (λ ())
   A ⇒ B ≟-Type C ⇒ D with (A ≟-Type C) | (B ≟-Type D)
   ... | yes A≡C | yes B≡D rewrite A≡C | B≡D = yes refl

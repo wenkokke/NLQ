@@ -65,3 +65,10 @@ module Correct where
   forget-correct (el  A) = refl
   forget-correct (A ⊗ B) rewrite forget-correct A | forget-correct B = refl
   forget-correct (A ⇒ B) rewrite forget-correct A | forget-correct B = refl
+
+  Positive-correct : ∀ {A} (A⁺ : Polarised + A) → Positive A
+  Positive-correct (el  _) = el  _
+  Positive-correct (_ ⊗ _) = _ ⊗ _
+  Negative-correct : ∀ {A} (A⁻ : Polarised - A) → Negative A
+  Negative-correct (el  _) = el  _
+  Negative-correct (_ ⇒ _) = _ ⇒ _
