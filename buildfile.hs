@@ -154,7 +154,7 @@ makeLinearLambdaCMinus = Mapping
 
 makeOrderedLambdaCMinus :: Mapping
 makeOrderedLambdaCMinus = Mapping
-  { blacklist   = [ "⇛" ]
+  { blacklist   = [ "⇛" , "□" , "◇" ]
   , textMapping = [ "LambekGrishin" ==> "LambdaCMinus"
                   , "LG"            ==> "λC⁻"
                   , "⇚-injective"   ==> "-_injective"

@@ -27,9 +27,9 @@ mutual
   data NL_ : Judgement → Set ℓ where
 
     ax     : ∀ {A}       → NL el A ⊢ el A
-    mon-⊗  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL A ⊗ C ⊢ B ⊗ D
-    mon-⇒  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL B ⇒ C ⊢ A ⇒ D
-    mon-⇐  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL A ⇐ D ⊢ B ⇐ C
+    m⊗  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL A ⊗ C ⊢ B ⊗ D
+    m⇒  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL B ⇒ C ⊢ A ⇒ D
+    m⇐  : ∀ {A B C D} → NL A ⊢ B → NL C ⊢ D → NL A ⇐ D ⊢ B ⇐ C
     contᴺ  : ∀ {Γ A B A′} (f : NL A ⊢ B) (x : NL ⊢ᴺ Γ)
              (p₁  : A′ ≡ Γ [ A ]) (p₂ : False (Contᴺ? f)) (p₃ : False (is-[]? Γ))
              → NL A′ ⊢ B
@@ -55,9 +55,9 @@ mutual
 
   Contᴺ? : ∀ {A B} (f : NL A ⊢ B) → Dec (Contᴺ f)
   Contᴺ? ax = no (λ ())
-  Contᴺ? (mon-⊗ _ _) = no (λ ())
-  Contᴺ? (mon-⇒ _ _) = no (λ ())
-  Contᴺ? (mon-⇐ _ _) = no (λ ())
+  Contᴺ? (m⊗ _ _) = no (λ ())
+  Contᴺ? (m⇒ _ _) = no (λ ())
+  Contᴺ? (m⇐ _ _) = no (λ ())
   Contᴺ? (contᴺ f x p₁ p₂ p₃) = yes (contᴺ f x p₁ p₂ p₃)
   Contᴺ? (contᴾ _ _ _  _  _ ) = no (λ ())
 
@@ -69,18 +69,18 @@ mutual
 
   Contᴾ? : ∀ {A B} (f : NL A ⊢ B) → Dec (Contᴾ f)
   Contᴾ? ax = no (λ ())
-  Contᴾ? (mon-⊗ _ _) = no (λ ())
-  Contᴾ? (mon-⇒ _ _) = no (λ ())
-  Contᴾ? (mon-⇐ _ _) = no (λ ())
+  Contᴾ? (m⊗ _ _) = no (λ ())
+  Contᴾ? (m⇒ _ _) = no (λ ())
+  Contᴾ? (m⇐ _ _) = no (λ ())
   Contᴾ? (contᴺ _ _ _  _  _ ) = no (λ ())
   Contᴾ? (contᴾ f x p₁ p₂ p₃) = yes (contᴾ f x p₁ p₂ p₃)
 
 
 ax′ : ∀ {A} → NL A ⊢ A
 ax′ {el A}  = ax
-ax′ {A ⊗ B} = mon-⊗ ax′ ax′
-ax′ {A ⇒ B} = mon-⇒ ax′ ax′
-ax′ {A ⇐ B} = mon-⇐ ax′ ax′
+ax′ {A ⊗ B} = m⊗ ax′ ax′
+ax′ {A ⇒ B} = m⇒ ax′ ax′
+ax′ {A ⇐ B} = m⇐ ax′ ax′
 
 
 transᴺ′ : ∀ {Γ Δ} → NL ⊢ᴺ Γ → NL ⊢ᴺ Δ → NL ⊢ᴺ Γ < Δ >
@@ -143,34 +143,34 @@ contᴾ′ {Δ} ._ x | no ¬p₃   | yes (contᴾ f y p₁ p₂ p₃) =
 
 
 -- Admissible ⇒⊗ residuation rule (referred to as `e2` by de Grootte).
-res-⇒⊗′ : ∀ {A B C} → NL B ⊢ A ⇒ C → NL A ⊗ B ⊢ C
-res-⇒⊗′ (mon-⇒ f g) = contᴺ′ g (neg-⊗⇒ f neg-[] neg-[])
-res-⇒⊗′ (contᴾ f pos-[] p₁ p₂ ())
-res-⇒⊗′ (contᴾ {._} {C} {D} f (pos-⇒⊗ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
+r⇒⊗′ : ∀ {A B C} → NL B ⊢ A ⇒ C → NL A ⊗ B ⊢ C
+r⇒⊗′ (m⇒ f g) = contᴺ′ g (neg-⊗⇒ f neg-[] neg-[])
+r⇒⊗′ (contᴾ f pos-[] p₁ p₂ ())
+r⇒⊗′ (contᴾ {._} {C} {D} f (pos-⇒⊗ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
   rewrite proj₁ (⇒-injective p₁)
         | proj₂ (⇒-injective p₁)
         | <>-def Γ (B ⊗> Δ) D
-        = contᴾ′ (mon-⊗ g (contᴾ′ f y)) x
-res-⇒⊗′ (contᴾ f (pos-⇐⊗ g x y) () p₂ p₃)
-res-⇒⊗′ (contᴾ f (pos-⇐⇒ g x y) () p₂ p₃)
-res-⇒⊗′ (contᴾ {._} {._} {C} f (pos-⇒⇐ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
+        = contᴾ′ (m⊗ g (contᴾ′ f y)) x
+r⇒⊗′ (contᴾ f (pos-⇐⊗ g x y) () p₂ p₃)
+r⇒⊗′ (contᴾ f (pos-⇐⇒ g x y) () p₂ p₃)
+r⇒⊗′ (contᴾ {._} {._} {C} f (pos-⇒⇐ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
   rewrite proj₁ (⇒-injective p₁)
         | proj₂ (⇒-injective p₁)
         | <>-def Γ (A ⇐> Δ) C
         | sym (<>-def Γ ([] <⇐ Δ [ C ]) A)
         = contᴺ′ g (neg-⊗⇐ (contᴾ′ f y) x neg-[])
-res-⇒⊗′ (contᴺ {Γ} (mon-⇒ {A} {B} {C} {D} f g) x p₁ p₂ p₃)
+r⇒⊗′ (contᴺ {Γ} (m⇒ {A} {B} {C} {D} f g) x p₁ p₂ p₃)
   rewrite p₁ | sym (<>-def Γ (B ⇒> []) C)
         = contᴺ′ g (neg-⊗⇒ f x neg-[])
-res-⇒⊗′ (contᴺ (contᴺ f x p₁ p₂ p₃) x₁ p₄ () p₆)
-res-⇒⊗′ (contᴺ (contᴾ f pos-[] p₁ p₂ ()) x₁ p₄ p₅ p₆)
-res-⇒⊗′ (contᴺ (contᴾ {._} {C} {D} f (pos-⇒⊗ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
+r⇒⊗′ (contᴺ (contᴺ f x p₁ p₂ p₃) x₁ p₄ () p₆)
+r⇒⊗′ (contᴺ (contᴾ f pos-[] p₁ p₂ ()) x₁ p₄ p₅ p₆)
+r⇒⊗′ (contᴺ (contᴾ {._} {C} {D} f (pos-⇒⊗ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
   rewrite p₄ | proj₁ (⇒-injective p₁) | proj₂ (⇒-injective p₁)
         | <>-def Γ (B ⊗> Δ) D
-        = contᴾ′ (mon-⊗ g (contᴾ′ (contᴺ′ f x) z)) y
-res-⇒⊗′ (contᴺ (contᴾ f (pos-⇐⊗ f₁ x x₁) () p₂ p₃) x₂ p₄ p₅ p₆)
-res-⇒⊗′ (contᴺ (contᴾ f (pos-⇐⇒ f₁ x x₁) () p₂ p₃) x₂ p₄ p₅ p₆)
-res-⇒⊗′ (contᴺ (contᴾ {._} {._} {C} f (pos-⇒⇐ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
+        = contᴾ′ (m⊗ g (contᴾ′ (contᴺ′ f x) z)) y
+r⇒⊗′ (contᴺ (contᴾ f (pos-⇐⊗ f₁ x x₁) () p₂ p₃) x₂ p₄ p₅ p₆)
+r⇒⊗′ (contᴺ (contᴾ f (pos-⇐⇒ f₁ x x₁) () p₂ p₃) x₂ p₄ p₅ p₆)
+r⇒⊗′ (contᴺ (contᴾ {._} {._} {C} f (pos-⇒⇐ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
   rewrite p₄ | proj₁ (⇒-injective p₁) | proj₂ (⇒-injective p₁)
         | <>-def Γ (A ⇐> Δ) C
         | sym (<>-def Γ ([] <⇐ Δ [ C ]) A)
@@ -178,106 +178,106 @@ res-⇒⊗′ (contᴺ (contᴾ {._} {._} {C} f (pos-⇒⇐ {Γ} {Δ} {A} {B} g 
 
 
 -- Admissible ⇐⊗ residuation rule (referred to as `f2` by de Grootte).
-res-⇐⊗′ : ∀ {A B C} → NL A ⊢ C ⇐ B → NL A ⊗ B ⊢ C
-res-⇐⊗′ (mon-⇐ f g) = contᴺ′ f (neg-⊗⇐ g neg-[] neg-[])
-res-⇐⊗′ (contᴾ f pos-[] p₁ p₂ ())
-res-⇐⊗′ (contᴾ f (pos-⇒⊗ g x y) () p₂ p₃)
-res-⇐⊗′ (contᴾ {._} {._} {C} f (pos-⇐⊗ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
+r⇐⊗′ : ∀ {A B C} → NL A ⊢ C ⇐ B → NL A ⊗ B ⊢ C
+r⇐⊗′ (m⇐ f g) = contᴺ′ f (neg-⊗⇐ g neg-[] neg-[])
+r⇐⊗′ (contᴾ f pos-[] p₁ p₂ ())
+r⇐⊗′ (contᴾ f (pos-⇒⊗ g x y) () p₂ p₃)
+r⇐⊗′ (contᴾ {._} {._} {C} f (pos-⇐⊗ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
   rewrite proj₁ (⇐-injective p₁)
         | proj₂ (⇐-injective p₁)
         | <>-def Γ (Δ <⊗ B) C
-        = contᴾ′ (mon-⊗ (contᴾ′ f y) g) x
-res-⇐⊗′ (contᴾ {._} {._} {C} f (pos-⇐⇒ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
+        = contᴾ′ (m⊗ (contᴾ′ f y) g) x
+r⇐⊗′ (contᴾ {._} {._} {C} f (pos-⇐⇒ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
   rewrite proj₁ (⇐-injective p₁)
         | proj₂ (⇐-injective p₁)
         | <>-def Γ (Δ <⇒ A) C
         | sym (<>-def Γ (Δ [ C ] ⇒> []) A)
         = contᴺ′ g (neg-⊗⇒ (contᴾ′ f y) x neg-[])
-res-⇐⊗′ (contᴾ f (pos-⇒⇐ g x y) () p₂ p₃)
-res-⇐⊗′ (contᴺ {Γ} (mon-⇐ {A} {B} {C} {D} f g) x p₁ p₂ p₃)
+r⇐⊗′ (contᴾ f (pos-⇒⇐ g x y) () p₂ p₃)
+r⇐⊗′ (contᴺ {Γ} (m⇐ {A} {B} {C} {D} f g) x p₁ p₂ p₃)
   rewrite p₁ | sym (<>-def Γ ([] <⇐ D) A)
         = contᴺ′ f (neg-⊗⇐ g x neg-[])
-res-⇐⊗′ (contᴺ (contᴺ f x p₁ p₂ p₃) x₁ p₄ () p₆)
-res-⇐⊗′ (contᴺ (contᴾ f pos-[] p₁ p₂ ()) x p₄ p₅ p₆)
-res-⇐⊗′ (contᴺ (contᴾ f (pos-⇒⊗ g y z) () p₂ p₃) x p₄ p₅ p₆)
-res-⇐⊗′ (contᴺ (contᴾ {._} {._} {C} f (pos-⇐⊗ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
+r⇐⊗′ (contᴺ (contᴺ f x p₁ p₂ p₃) x₁ p₄ () p₆)
+r⇐⊗′ (contᴺ (contᴾ f pos-[] p₁ p₂ ()) x p₄ p₅ p₆)
+r⇐⊗′ (contᴺ (contᴾ f (pos-⇒⊗ g y z) () p₂ p₃) x p₄ p₅ p₆)
+r⇐⊗′ (contᴺ (contᴾ {._} {._} {C} f (pos-⇐⊗ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
   rewrite p₄ | proj₁ (⇐-injective p₁)
              | proj₂ (⇐-injective p₁)
              | <>-def Γ (Δ <⊗ B) C
-             = contᴾ′ (mon-⊗ (contᴾ′ (contᴺ′ f x) z) g) y
-res-⇐⊗′ (contᴺ (contᴾ {._} {._} {C} f (pos-⇐⇒ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
+             = contᴾ′ (m⊗ (contᴾ′ (contᴺ′ f x) z) g) y
+r⇐⊗′ (contᴺ (contᴾ {._} {._} {C} f (pos-⇐⇒ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
   rewrite p₄ | proj₁ (⇐-injective p₁)
              | proj₂ (⇐-injective p₁)
              | <>-def Γ (Δ <⇒ A) C
              | sym (<>-def Γ (Δ [ C ] ⇒> []) A)
              = contᴺ′ g (neg-⊗⇒ (contᴾ′ (contᴺ′ f x) z) y neg-[])
-res-⇐⊗′ (contᴺ (contᴾ f (pos-⇒⇐ g y z) () p₂ p₃) x p₄ p₅ p₆)
+r⇐⊗′ (contᴺ (contᴾ f (pos-⇒⇐ g y z) () p₂ p₃) x p₄ p₅ p₆)
 
 
 -- Admissible ⊗⇒ residuation rule (referred to as `e1` by de Grootte).
-res-⊗⇒′ : ∀ {A B C} → NL A ⊗ B ⊢ C → NL B ⊢ A ⇒ C
-res-⊗⇒′ (mon-⊗ f g) = contᴾ′ g (pos-⇒⊗ f pos-[] pos-[])
-res-⊗⇒′ (contᴺ f neg-[] p₁ p₂ ())
-res-⊗⇒′ (contᴺ {._} {C} {D} f (neg-⊗⇒ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
+r⊗⇒′ : ∀ {A B C} → NL A ⊗ B ⊢ C → NL B ⊢ A ⇒ C
+r⊗⇒′ (m⊗ f g) = contᴾ′ g (pos-⇒⊗ f pos-[] pos-[])
+r⊗⇒′ (contᴺ f neg-[] p₁ p₂ ())
+r⊗⇒′ (contᴺ {._} {C} {D} f (neg-⊗⇒ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
   rewrite proj₁ (⊗-injective p₁)
         | proj₂ (⊗-injective p₁)
         | <>-def Γ (B ⇒> Δ) C
-        = contᴺ′ (mon-⇒ g (contᴺ′ f y)) x
-res-⊗⇒′ (contᴺ {._} {C} {D} f (neg-⊗⇐ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
+        = contᴺ′ (m⇒ g (contᴺ′ f y)) x
+r⊗⇒′ (contᴺ {._} {C} {D} f (neg-⊗⇐ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
   rewrite proj₁ (⊗-injective p₁)
         | proj₂ (⊗-injective p₁)
         | <>-def Γ (Δ <⇐ B) C
         | sym (<>-def Γ (Δ [ C ] ⇐> []) B)
         = contᴾ′ g (pos-⇒⇐ (contᴺ′ f y) x pos-[])
-res-⊗⇒′ (contᴾ {Δ} (mon-⊗ {A} {B} {C} {D} f g) x p₁ p₂ p₃)
+r⊗⇒′ (contᴾ {Δ} (m⊗ {A} {B} {C} {D} f g) x p₁ p₂ p₃)
   rewrite p₁ | sym (<>-def Δ (B ⊗> []) D)
         = contᴾ′ g (pos-⇒⊗ f x pos-[])
-res-⊗⇒′ (contᴾ (contᴺ f neg-[] p₁ p₂ ()) x p₄ p₅ p₆)
-res-⊗⇒′ (contᴾ (contᴺ {._} {C} {D} f (neg-⊗⇒ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
+r⊗⇒′ (contᴾ (contᴺ f neg-[] p₁ p₂ ()) x p₄ p₅ p₆)
+r⊗⇒′ (contᴾ (contᴺ {._} {C} {D} f (neg-⊗⇒ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
   rewrite p₄ | proj₁ (⊗-injective p₁)
              | proj₂ (⊗-injective p₁)
              | <>-def Γ (B ⇒> Δ) C
-             = contᴺ′ (mon-⇒ g (contᴺ′ (contᴾ′ f x) z)) y
-res-⊗⇒′ (contᴾ (contᴺ {._} {C} {D} f (neg-⊗⇐ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
+             = contᴺ′ (m⇒ g (contᴺ′ (contᴾ′ f x) z)) y
+r⊗⇒′ (contᴾ (contᴺ {._} {C} {D} f (neg-⊗⇐ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
   rewrite p₄ | proj₁ (⊗-injective p₁)
              | proj₂ (⊗-injective p₁)
              | <>-def Γ (Δ <⇐ B) C
              | sym (<>-def Γ (Δ [ C ] ⇐> []) B)
              = contᴾ′ g (pos-⇒⇐ (contᴺ′ (contᴾ′ f x) z) y pos-[])
-res-⊗⇒′ (contᴾ (contᴾ f y p₁ p₂ p₃) x p₄ () p₆)
+r⊗⇒′ (contᴾ (contᴾ f y p₁ p₂ p₃) x p₄ () p₆)
 
 
 -- Admissible ⊗⇐ residuation rule (referred to as `f1` by de Grootte).
-res-⊗⇐′ : ∀ {A B C} → NL A ⊗ B ⊢ C → NL A ⊢ C ⇐ B
-res-⊗⇐′ (mon-⊗ f g) = contᴾ′ f (pos-⇐⊗ g pos-[] pos-[])
-res-⊗⇐′ (contᴺ f neg-[] p₁ p₂ ())
-res-⊗⇐′ (contᴺ {._} {C} {D} f (neg-⊗⇒ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
+r⊗⇐′ : ∀ {A B C} → NL A ⊗ B ⊢ C → NL A ⊢ C ⇐ B
+r⊗⇐′ (m⊗ f g) = contᴾ′ f (pos-⇐⊗ g pos-[] pos-[])
+r⊗⇐′ (contᴺ f neg-[] p₁ p₂ ())
+r⊗⇐′ (contᴺ {._} {C} {D} f (neg-⊗⇒ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
   rewrite proj₁ (⊗-injective p₁)
         | proj₂ (⊗-injective p₁)
         | <>-def Γ (B ⇒> Δ) C
         | sym (<>-def Γ ([] <⇒ Δ [ C ]) B)
         = contᴾ′ g (pos-⇐⇒ (contᴺ′ f y) x pos-[])
-res-⊗⇐′ (contᴺ {._} {C} {D} f (neg-⊗⇐ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
+r⊗⇐′ (contᴺ {._} {C} {D} f (neg-⊗⇐ {Γ} {Δ} {A} {B} g x y) p₁ p₂ p₃)
   rewrite proj₁ (⊗-injective p₁)
         | proj₂ (⊗-injective p₁)
         | <>-def Γ (Δ <⇐ B) C
-        = contᴺ′ (mon-⇐ (contᴺ′ f y) g) x
-res-⊗⇐′ {A} {B} (contᴾ {Δ} (mon-⊗ {._} {C} {._} {D} f g) x p₁ p₂ p₃)
+        = contᴺ′ (m⇐ (contᴺ′ f y) g) x
+r⊗⇐′ {A} {B} (contᴾ {Δ} (m⊗ {._} {C} {._} {D} f g) x p₁ p₂ p₃)
   rewrite p₁ | sym (<>-def Δ ([] <⊗ D) C)
         = contᴾ′ f (pos-⇐⊗ g x pos-[])
-res-⊗⇐′ (contᴾ (contᴺ f neg-[] refl p₂ ()) x p₄ p₅ p₆)
-res-⊗⇐′ (contᴾ (contᴺ {._} {C} {D} f (neg-⊗⇒ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
+r⊗⇐′ (contᴾ (contᴺ f neg-[] refl p₂ ()) x p₄ p₅ p₆)
+r⊗⇐′ (contᴾ (contᴺ {._} {C} {D} f (neg-⊗⇒ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
   rewrite p₄ | proj₁ (⊗-injective p₁)
              | proj₂ (⊗-injective p₁)
              | <>-def Γ (B ⇒> Δ) C
              | sym (<>-def Γ ([] <⇒ Δ [ C ]) B)
              = contᴾ′ g (pos-⇐⇒ (contᴺ′ (contᴾ′ f x) z) y pos-[])
-res-⊗⇐′ (contᴾ (contᴺ {._} {C} {D} f (neg-⊗⇐ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
+r⊗⇐′ (contᴾ (contᴺ {._} {C} {D} f (neg-⊗⇐ {Γ} {Δ} {A} {B} g y z) p₁ p₂ p₃) x p₄ p₅ p₆)
   rewrite p₄ | proj₁ (⊗-injective p₁)
              | proj₂ (⊗-injective p₁)
              | <>-def Γ (Δ <⇐ B) C
-             = contᴺ′ (mon-⇐ (contᴺ′ (contᴾ′ f x) z) g) y
-res-⊗⇐′ (contᴾ (contᴾ f y p₁ p₂ p₃) x p₄ () p₆)
+             = contᴺ′ (m⇐ (contᴺ′ (contᴾ′ f x) z) g) y
+r⊗⇐′ (contᴾ (contᴾ f y p₁ p₂ p₃) x p₄ () p₆)
 
 
 

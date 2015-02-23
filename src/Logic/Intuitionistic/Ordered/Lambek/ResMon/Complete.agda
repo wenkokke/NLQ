@@ -38,9 +38,9 @@ open import Relation.Binary.PartialOrderToEquivalence _≤_ ax′ trans′
 isResiduatedAlgebra : IsResiduatedAlgebra _≈_ _≤_ _⊗_ _⇒_ _⇐_
 isResiduatedAlgebra = record
   { isPartialOrder = isPartialOrder
-  ; residual-⇒     = equivalence res-⇒⊗ res-⊗⇒
-  ; residual-⇐     = equivalence res-⊗⇐ res-⇐⊗
-  ; ∙-resp-≤       = mon-⊗
+  ; residual-⇒     = equivalence r⇒⊗ r⊗⇒
+  ; residual-⇐     = equivalence r⊗⇐ r⇐⊗
+  ; ∙-resp-≤       = m⊗
   }
 
 

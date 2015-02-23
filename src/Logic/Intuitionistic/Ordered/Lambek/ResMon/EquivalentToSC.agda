@@ -29,9 +29,9 @@ module Simple where
   mutual
     from : ∀ {A B} → SC A ⊢ B → NL A ⊢ B
     from ax = ax
-    from (mon-⊗ f g) = mon-⊗ (from f) (from g)
-    from (mon-⇒ f g) = mon-⇒ (from f) (from g)
-    from (mon-⇐ f g) = mon-⇐ (from f) (from g)
+    from (m⊗ f g) = m⊗ (from f) (from g)
+    from (m⇒ f g) = m⇒ (from f) (from g)
+    from (m⇐ f g) = m⇐ (from f) (from g)
     from (contᴺ f x p _ _) rewrite p = contᴺ′ (from f) x
     from (contᴾ f x p _ _) rewrite p = contᴾ′ (from f) x
 
@@ -42,10 +42,10 @@ module Simple where
     contᴺ′ f neg-[] = f
     contᴺ′ {._} {C} {D} f (neg-⊗⇒ {Γ} {Δ} {A} {B} g x y)
       rewrite <>-def Γ (B ⇒> Δ) C
-              = res-⇒⊗ (contᴺ′ (mon-⇒ (from g) (contᴺ′ f y)) x)
+              = r⇒⊗ (contᴺ′ (m⇒ (from g) (contᴺ′ f y)) x)
     contᴺ′ {._} {C} {D} f (neg-⊗⇐ {Γ} {Δ} {A} {B} g x y)
       rewrite <>-def Γ (Δ <⇐ B) C
-              = res-⇐⊗ (contᴺ′ (mon-⇐ (contᴺ′ f y) (from g)) x)
+              = r⇐⊗ (contᴺ′ (m⇐ (contᴺ′ f y) (from g)) x)
 
     -- Derived version of positive context application for the
     -- residuation-monotonicity calculus (which uses the context
@@ -54,27 +54,27 @@ module Simple where
     contᴾ′ f pos-[] = f
     contᴾ′ {._} {C} {D} f (pos-⇒⊗ {Γ} {Δ} {A} {B} g x y)
       rewrite <>-def Γ (B ⊗> Δ) D
-              = res-⊗⇒ (contᴾ′ (mon-⊗ (from g) (contᴾ′ f y)) x)
+              = r⊗⇒ (contᴾ′ (m⊗ (from g) (contᴾ′ f y)) x)
     contᴾ′ {._} {C} {D} f (pos-⇐⊗ {Γ} {Δ} {A} {B} g x y)
       rewrite <>-def Γ (Δ <⊗ B) D
-              = res-⊗⇐ (contᴾ′ (mon-⊗ (contᴾ′ f y) (from g)) x)
+              = r⊗⇐ (contᴾ′ (m⊗ (contᴾ′ f y) (from g)) x)
     contᴾ′ {._} {C} {D} f (pos-⇐⇒ {Γ} {Δ} {B} {A} g x y)
       rewrite <>-def Γ (Δ <⇒ B) D
-              = res-⊗⇐ (res-⇒⊗ (contᴺ′ (mon-⇒ (contᴾ′ f y) (from g)) x))
+              = r⊗⇐ (r⇒⊗ (contᴺ′ (m⇒ (contᴾ′ f y) (from g)) x))
     contᴾ′ {._} {C} {D} f (pos-⇒⇐ {Γ} {Δ} {B} {A} g x y)
       rewrite <>-def Γ (B ⇐> Δ) D
-              = res-⊗⇒ (res-⇐⊗ (contᴺ′ (mon-⇐ (from g) (contᴾ′ f y)) x))
+              = r⊗⇒ (r⇐⊗ (contᴺ′ (m⇐ (from g) (contᴾ′ f y)) x))
 
 
   to : ∀ {A B} → NL A ⊢ B → SC A ⊢ B
   to ax = ax
-  to (mon-⊗ f g) = mon-⊗ (to f) (to g)
-  to (mon-⇒ f g) = mon-⇒ (to f) (to g)
-  to (mon-⇐ f g) = mon-⇐ (to f) (to g)
-  to (res-⇒⊗ f) = res-⇒⊗′ (to f)
-  to (res-⊗⇒ f) = res-⊗⇒′ (to f)
-  to (res-⇐⊗ f) = res-⇐⊗′ (to f)
-  to (res-⊗⇐ f) = res-⊗⇐′ (to f)
+  to (m⊗ f g) = m⊗ (to f) (to g)
+  to (m⇒ f g) = m⇒ (to f) (to g)
+  to (m⇐ f g) = m⇐ (to f) (to g)
+  to (r⇒⊗ f) = r⇒⊗′ (to f)
+  to (r⊗⇒ f) = r⊗⇒′ (to f)
+  to (r⇐⊗ f) = r⇐⊗′ (to f)
+  to (r⊗⇐ f) = r⊗⇐′ (to f)
 
 
 eq : ∀ {A B} → (NL A ⊢ B) ⇔ (SC A ⊢ B)
