@@ -173,16 +173,12 @@ makeOrderedLambdaCMinus = Mapping
 
 makeLambek :: Mapping
 makeLambek = Mapping
-  { blacklist   = [ "⊕"      , "⇛"      , "⇚"
-                  , "grish₁" , "grish₂" , "grish₃" , "grish₄"
-                  ]
+  { blacklist   = [ "⊕" , "⇛" , "⇚" , "□" , "◇" ]
   , textMapping = [ "LambekGrishin" ==> "Lambek"
                   , "LG"            ==> "NL"
                   , "Classical"     ==> "Intuitionistic"
                   ]
-  , fileMapping = [ srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type.agda"
+  , fileMapping = [ srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type/Complexity.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type/Complexity.agda"
@@ -194,6 +190,8 @@ makeLambek = Mapping
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type/Polarised.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type/Subtype.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type/Subtype.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Judgement.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon" </> "Judgement.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Judgement/Context.agda"
@@ -219,8 +217,7 @@ makeLambek = Mapping
 
 makeLambda :: Mapping
 makeLambda = Mapping
-  { blacklist   = [ "⊕"      , "⇛"      , "⇚"      , "⇐"
-                  ]
+  { blacklist   = [ "⊕" , "⇛" , "⇚" , "⇐" , "□" , "◇" ]
   , textMapping = [ "LG"            ==> "Λ"
                   , "Classical"     ==> "Intuitionistic"
                   , "Ordered"       ==> "Unrestricted"

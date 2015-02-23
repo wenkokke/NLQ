@@ -44,6 +44,7 @@ data Context : Set ℓ where
 -- Proofs which show that constructors of contexts (as all Agda
 -- data-constructors) respect equality.
 
+
 ⊗>-injective : ∀ {A B C D} → A ⊗> B ≡ C ⊗> D → A ≡ C × B ≡ D
 ⊗>-injective refl = refl , refl
 
@@ -62,6 +63,7 @@ module Simple where
   infix 50 _[_] _<_>
 
   -- Apply a context to a type by plugging the type into the context.
+
   _[_] : Context → Type → Type
   []       [ A ] = A
   (B ⊗> C) [ A ] = B ⊗ (C [ A ])
@@ -83,7 +85,7 @@ module Simple where
   -- Lemma which shows how context composition `_<_>` and context
   -- application `_[_]` interact.
   <>-def : ∀ A B C → A < B > [ C ] ≡ A [ B [ C ] ]
-  <>-def [] B C = refl
+  <>-def []       B C = refl
   <>-def (_ ⊗> A) B C rewrite <>-def A B C = refl
   <>-def (_ ⇒> A) B C rewrite <>-def A B C = refl
   <>-def (A <⊗ _) B C rewrite <>-def A B C = refl
