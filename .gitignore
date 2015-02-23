@@ -36,3 +36,4 @@ src/Logic/Intuitionistic/Ordered/Lambek/ResMon/Judgement/Context/Polarised.agda
 src/Logic/Intuitionistic/Ordered/Lambek/ResMon/Origin.agda
 src/Logic/Intuitionistic/Ordered/Lambek/ResMon/Trans.agda
 prover/LGprover
+src/Logic/Intuitionistic/Ordered/Lambek/ResMon.agda
