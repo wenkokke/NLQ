@@ -57,6 +57,23 @@ data LG_ : Judgement → Set ℓ where
       → LG [  A  ]⊢ X
       → LG  · A · ⊢ X
 
+  -- structural rules
+  ◇ᴸ  : ∀ {Y A}
+      → LG ⟨ ·   A · ⟩ ⊢ Y
+      → LG   · ◇ A ·   ⊢ Y
+
+  ◇ᴿ  : ∀ {X B}
+      → LG   X   ⊢[   B ]
+      → LG ⟨ X ⟩ ⊢[ ◇ B ]
+
+  □ᴸ  : ∀ {A Y}
+      → LG [   A ]⊢   Y
+      → LG [ □ A ]⊢ [ Y ]
+
+  □ᴿ  : ∀ {X A}
+      → LG X ⊢ [ ·   A · ]
+      → LG X ⊢   · □ A ·
+
   ⊗ᴿ  : ∀ {X Y A B}
       → LG X ⊢[ A ]
       → LG Y ⊢[ B ]
@@ -111,6 +128,14 @@ data LG_ : Judgement → Set ℓ where
       → LG X ⊢ · B · ⇐ · A ·
       → LG X ⊢ · B   ⇐   A ·
 
+  -- residuation rules for (□ , ◇)
+  r□◇ : ∀ {X Y}
+      → LG   X   ⊢ [ Y ]
+      → LG ⟨ X ⟩ ⊢   Y
+
+  r◇□ : ∀ {X Y}
+      → LG ⟨ X ⟩ ⊢   Y
+      → LG   X   ⊢ [ Y ]
 
   -- residuation rules for (⇐ , ⊗ , ⇒)
   r⇒⊗ : ∀ {X Y Z}
