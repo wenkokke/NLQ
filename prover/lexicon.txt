@@ -1,22 +1,26 @@
-unicorn    : n.
-teacher    : n.
+unicorn    : N⁺.
+teacher    : N⁺.
 
-nice       : (n / n).
-old        : (n / n).
+nice       : (N⁺ ⇐ N⁺).
+old        : (N⁺ ⇐ N⁺).
 
-molly      : np.
-alice      : np.
+john       : NP⁺.
+mary       : NP⁺.
+bill       : NP⁺.
 
-smiles     : (np \ s).
-left       : (np \ s).
-cheats     : (np \ s).
+smiles     : (NP⁺ ⇒ S⁻).
+left       : (NP⁺ ⇒ S⁻).
+cheats     : (NP⁺ ⇒ S⁻).
 
-teases     : ((np \ s) / np).
-loves      : ((np \ s) / np).
+teases     : ((NP⁺ ⇒ S⁻) ⇐ NP⁺).
+loves      : ((NP⁺ ⇒ S⁻) ⇐ NP⁺).
 
-thinks     : ((np \ s) / s).
+thinks     : ((NP⁺ ⇒ S⁻) ⇐ S⁻).
 
-every      : ((np (/) (s (\) s)) / n).
-some       : ((np (/) (s (\) s)) / n).
-everyone   : (np (/) (s (\) s)).
-someone    : (np (/) (s (\) s)).
+everyone  : (((NP⁻ ⇚ (NP⁺ ⇛ NP⁻)) ⇐ N⁺) ⊗ N⁺).
+someone   : (((NP⁻ ⇚ (NP⁺ ⇛ NP⁻)) ⇐ N⁺) ⊗ N⁺).
+
+
+% old definitions for everyone
+everyone1  : (((NP⁺ ⇚ (S⁻ ⇛ S⁻)) ⇐ N⁺) ⊗ N⁺).
+someone1   : (((NP⁺ ⇚ (S⁻ ⇛ S⁻)) ⇐ N⁺) ⊗ N⁺).

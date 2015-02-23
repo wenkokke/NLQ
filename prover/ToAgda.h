@@ -9,6 +9,7 @@
 #define TOAGDA_H
 
 #include "Representation.h"
+#include "ToString.h"
 #include <map>
 #include <vector>
 
@@ -51,6 +52,9 @@ void toAgdaDerivation(FILE *fout, Derivation *derivation) {
 /* Print Term representation of derivation to fout */
 void toAgdaDerivation(FILE *fout, Derivation *derivation, int proofboxNum, int numConnectives) {
     char *boxName = toAgdaProofboxame(proofboxNum);
+    fprintf(fout, "%s : LG ", boxName);
+    toStringSequent(fout, derivation->conclusion);
+    fprintf(fout, "\n");
     fprintf(fout, "%s = ", boxName);
     toAgdaDerivation(fout, derivation);
     fprintf(fout, "\n");
@@ -74,9 +78,6 @@ void toAgdaShowDerivation(Derivation *derivation, int numConnectives) {
     toAgdaDerivation(fout, derivation, 1, numConnectives);
     toAgdaFooter(fout, 1);
     fclose(fout);
-
-    /* Call pdfTerm to parse and show */
-    system("more lgterm.agda");
 }
 
 /* Show this derivation as Term */
@@ -88,9 +89,6 @@ void toAgdaShowDerivations(vector<Derivation *> derivations, int numConnectives)
         toAgdaDerivation(fout, derivations[i], i, numConnectives);
     toAgdaFooter(fout, derivations.size());
     fclose(fout);
-
-    /* Call pdfTerm to parse and show */
-    system("more lgterm.agda");
 }
 
 #endif

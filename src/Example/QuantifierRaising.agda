@@ -12,10 +12,7 @@ open import Data.String                           using (String)
 open import Data.Vec                              using (Vec; _∷_; [])
 open import Relation.Nullary                      using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
-
-
-open import Example.Lexicon as Lexicon
-     hiding (module UsingLambdaCMinus; module UsingLambekGrishin)
+open import Example.Lexicon
 
 
 module Example.QuantifierRaising where
@@ -26,86 +23,172 @@ true  ⊃ true  = true
 true  ⊃ false = false
 false ⊃ _     = true
 
+------------------------------------------------------------------------
+-- These quantifier interpretations below are simply *beautiful*, they
+-- are exactly what we want. Therefore, I would *love* to be able to
+-- find a solution which uses *exactly* these types.
+------------------------------------------------------------------------
 
-module UsingLambekGrishin where
+EVERY : Type
+EVERY = (NP⁻ ⇚ (NP⁺ ⇛ NP⁻)) ⇐ N⁺
+every : ⟦ EVERY ⟧ᵀ
+every = λ {(k , p₁) → k (forallₑ , (λ {(p₂ , k) → k (λ x → p₁ x ⊃ p₂ x)}))}
 
-  open Lexicon.UsingLambekGrishin public
+SOME : Type
+SOME = (NP⁻ ⇚ (NP⁺ ⇛ NP⁻)) ⇐ N⁺
+some : ⟦ SOME ⟧ᵀ
+some = λ {(k , p₁) → k (existsₑ , (λ {(p₂ , k) → k (λ x → p₁ x ∧ p₂ x)}))}
 
-  EVERY : Type
-  EVERY    = (NP⁺ ⇚ (S⁻ ⇛ S⁻)) ⇐ N⁺
-  every    : ⟦ EVERY ⟧ᵀ
-  every    = λ {(k , p) → forallₑ (λ x → k (x , (λ {(f , k) → k (λ b → p x ⊃ f b)})))}
+EVERYONE : Type
+EVERYONE = EVERY ⊗ PERSON
+everyone : ⟦ EVERYONE ⟧ᵀ
+everyone = every , person
 
-  SOME : Type
-  SOME     = (NP⁺ ⇚ (S⁻ ⇛ S⁻)) ⇐ N⁺
-  some     : ⟦ SOME ⟧ᵀ
-  some     = λ {(k , p) → existsₑ (λ x → k (x , (λ {(f , k) → k (λ b → p x ∧ f b)})))}
+SOMEONE : Type
+SOMEONE  = SOME ⊗ PERSON
+someone  : ⟦ SOMEONE ⟧ᵀ
+someone  = some , person
 
-  EVERYONE : Type
-  EVERYONE = EVERY ⊗ PERSON
-  everyone : ⟦ EVERYONE ⟧ᵀ
-  everyone = every , person
-
-  SOMEONE : Type
-  SOMEONE  = SOME  ⊗ PERSON
-  someone  : ⟦ SOMEONE ⟧ᵀ
-  someone  = some , person
+JOHN_LOVES_BILL : LG · JOHN · ⊗ · LOVES · ⊗ · BILL · ⊢[ S⁻ ]
+JOHN_LOVES_BILL = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))
+john_loves_bill : Bool
+john_loves_bill = [ JOHN_LOVES_BILL ] (john , loves′ , bill , ∅) id
+--> john loves bill
 
 
-  JOHN_LOVES_BILL : LG · JOHN · ⊗ · LOVES · ⊗ · BILL · ⊢[ S⁻ ]
-  JOHN_LOVES_BILL = (⇁(r⇒⊗(r⇐⊗(↼(⇐ᴸ(⇒ᴸ(ax⁺) (ax⁻)) (ax⁺))))))
 
-  john_loves_bill : Bool
-  john_loves_bill = [ JOHN_LOVES_BILL ] (john , loves′ , bill , ∅) id
-  --> john loves bill
+JOHN_LOVES_EVERYONE : LG · JOHN · ⊗ · LOVES · ⊗ · EVERYONE · ⊢[ S⁻ ]
+JOHN_LOVES_EVERYONE
+  = ⇁ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻))))))))))))))))))
+john_loves_everyone : Bool
+john_loves_everyone = [ JOHN_LOVES_EVERYONE ] (john , loves′ , everyone , ∅) id
+--> forallₑ (λ x → person x ⊃ (john loves x))
 
-  JOHN_LOVES_EVERYONE : LG · JOHN · ⊗ · LOVES · ⊗ · EVERYONE · ⊢[ S⁻ ]
-  JOHN_LOVES_EVERYONE
-    = ⇁ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (flip ⇐ᴸ ax⁺ (↽ (⇚ᴸ (d⇚⇒ (r⇚⊕ (d⇚⇒ (r⇛⊕ (⇀ (⇛ᴿ ax⁻
-    ( JOHN_LOVES_BILL
-      )))))))))))))))
+EVERYONE_LOVES_BILL : LG · EVERYONE · ⊗ · LOVES · ⊗ · BILL · ⊢[ S⁻ ]
+EVERYONE_LOVES_BILL
+  = ⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻))))))))))))))))))
+everyone_loves_bill : Bool
+everyone_loves_bill = [ EVERYONE_LOVES_BILL ] (everyone , loves′ , bill , ∅) id
+--> forallₑ (λ x → person x ⊃ (x loves bill))
 
-  john_loves_everyone : Bool
-  john_loves_everyone = [ JOHN_LOVES_EVERYONE ] (john , loves′ , everyone , ∅) id
-  --> forallₑ (λ x → person x ⊃ (john loves x))
 
-  EVERYONE_LOVES_BILL : LG · EVERYONE · ⊗ · LOVES · ⊗ · BILL · ⊢[ S⁻ ]
-  EVERYONE_LOVES_BILL
-    = ⇁ (r⇐⊗ (    (⊗ᴸ (r⇐⊗ (↼ (flip ⇐ᴸ ax⁺ (↽ (⇚ᴸ (d⇚⇐ (    (    (r⇛⊕ (⇀ (⇛ᴿ ax⁻
-    ( JOHN_LOVES_BILL
-      )))))))))))))))
+EVERYONE_LOVES_SOMEONE₁ : LG · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ NP⁺ · ⊗ · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ) ⊢[ S⁻ ]
+EVERYONE_LOVES_SOMEONE₁
+  = ⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))))))))))))))
+everyone_loves_someone₁ : Bool
+everyone_loves_someone₁ = [ EVERYONE_LOVES_SOMEONE₁ ] (everyone , loves′ , someone , ∅) id
+--> forallₑ (λ x → person x ⊃ existsₑ (λ y → person y ∧ x loves y))
 
-  everyone_loves_bill : Bool
-  everyone_loves_bill = [ EVERYONE_LOVES_BILL ] (everyone , loves′ , bill , ∅) id
-  --> forallₑ (λ x → person x ⊃ (x loves bill))
+EVERYONE_LOVES_SOMEONE₂ : LG · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ NP⁺ · ⊗ · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ) ⊢[ S⁻ ]
+EVERYONE_LOVES_SOMEONE₂
+  = ⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))))))))))))
+everyone_loves_someone₂ : Bool
+everyone_loves_someone₂ = [ EVERYONE_LOVES_SOMEONE₂ ] (everyone , loves′ , someone , ∅) id
+--> existsₑ (λ y → person y ∧ forallₑ (λ x → person x ⊃ (x loves y)))
 
-  EVERYONE_LOVES_SOMEONEˢ : LG · EVERYONE · ⊗ · LOVES · ⊗ · SOMEONE · ⊢[ S⁻ ]
-  EVERYONE_LOVES_SOMEONEˢ
-    = ⇁ (r⇐⊗ (    (⊗ᴸ (r⇐⊗ (↼ (flip ⇐ᴸ ax⁺ (↽ (⇚ᴸ (d⇚⇐ (r⇛⊕ (    (    (⇀ (⇛ᴿ ax⁻
-    ( ⇁ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (flip ⇐ᴸ ax⁺ (↽ (⇚ᴸ (d⇚⇒ (r⇚⊕ (d⇚⇒ (r⇛⊕ (⇀ (⇛ᴿ ax⁻
-    ( JOHN_LOVES_BILL
-      )))))))))))))))
-      )))))))))))))))
+EVERYONE_LOVES_SOMEONE₃ : LG · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ NP⁺ · ⊗ · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ) ⊢[ S⁻ ]
+EVERYONE_LOVES_SOMEONE₃
+  = ⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))))))))
+everyone_loves_someone₃ : Bool
+everyone_loves_someone₃ = [ EVERYONE_LOVES_SOMEONE₃ ] (everyone , loves′ , someone , ∅) id
+--> forallₑ (λ x → person x ⊃ existsₑ (λ y → person y ∧ x loves y))
 
-  everyone_loves_someoneˢ : Bool
-  everyone_loves_someoneˢ = [ EVERYONE_LOVES_SOMEONEˢ ] (everyone , loves′ , someone , ∅) id
-  --> forallₑ (λ x → existsₑ (λ y → person y ∧ (person x ⊃ (y lovedBy x))))
+EVERYONE_LOVES_SOMEONE₄ : LG · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ NP⁺ · ⊗ · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ) ⊢[ S⁻ ]
+EVERYONE_LOVES_SOMEONE₄
+  = ⇁ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))))))))))))))))
+everyone_loves_someone₄ : Bool
+everyone_loves_someone₄ = [ EVERYONE_LOVES_SOMEONE₄ ] (everyone , loves′ , someone , ∅) id
+--> existsₑ (λ y → person y ∧ forallₑ (λ x → person x ⊃ (x loves y)))
 
-  EVERYONE_LOVES_SOMEONEⁱ : LG · EVERYONE · ⊗ · LOVES · ⊗ · SOMEONE · ⊢[ S⁻ ]
-  EVERYONE_LOVES_SOMEONEⁱ
-    = ⇁ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (flip ⇐ᴸ ax⁺ (↽ (⇚ᴸ (d⇚⇒ (r⇚⊕ (d⇚⇒ (r⇛⊕ (⇀ (⇛ᴿ ax⁻
-    ( ⇁ (r⇐⊗ (    (⊗ᴸ (r⇐⊗ (↼ (flip ⇐ᴸ ax⁺ (↽ (⇚ᴸ (d⇚⇐ (    (    (r⇛⊕ (⇀ (⇛ᴿ ax⁻
-    ( JOHN_LOVES_BILL
-      )))))))))))))))
-      )))))))))))))))
+EVERYONE_LOVES_SOMEONE₅ : LG · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ NP⁺ · ⊗ · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ) ⊢[ S⁻ ]
+EVERYONE_LOVES_SOMEONE₅
+  = ⇁ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))))))))))))
+everyone_loves_someone₅ : Bool
+everyone_loves_someone₅ = [ EVERYONE_LOVES_SOMEONE₅ ] (everyone , loves′ , someone , ∅) id
+--> forallₑ (λ x → person x ⊃ existsₑ (λ y → person y ∧ x loves y))
 
-  everyone_loves_someoneⁱ : Bool
-  everyone_loves_someoneⁱ = [ EVERYONE_LOVES_SOMEONEⁱ ] (everyone , loves′ , someone , ∅) id
-  --> existsₑ (λ x → forallₑ (λ y → person y ⊃ (person x ∧ (x lovedBy y))))
+EVERYONE_LOVES_SOMEONE₆ : LG · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ NP⁺ · ⊗ · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ) ⊢[ S⁻ ]
+EVERYONE_LOVES_SOMEONE₆
+  = ⇁ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))))))))))
+everyone_loves_someone₆ : Bool
+everyone_loves_someone₆ = [ EVERYONE_LOVES_SOMEONE₆ ] (everyone , loves′ , someone , ∅) id
+--> existsₑ (λ y → person y ∧ forallₑ (λ x → person x ⊃ (x loves y)))
 
-  MARY_THINKS_SOMEONE_LEFT : LG · MARY · ⊗ · THINKS · ⊗ · SOMEONE · ⊗ · LEFT · ⊢[ S⁻ ]
-  MARY_THINKS_SOMEONE_LEFT
-    = {!!}
 
-  mary_thinks_someone_left : Bool
-  mary_thinks_someone_left = [ MARY_THINKS_SOMEONE_LEFT ] (mary , (thinks′ , {!!})) {!!}
+
+MARY_THINKS_SOMEONE_LEFT₁ : LG · MARY · ⊗ · THINKS · ⊗ · SOMEONE · ⊗ · LEFT · ⊢[ S⁻ ]
+MARY_THINKS_SOMEONE_LEFT₁
+  = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ
+  ( ⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻))))))))))))))))) (⇒ᴸ ax⁺ ax⁻)))))
+mary_thinks_someone_left₁ : Bool
+mary_thinks_someone_left₁ = [ MARY_THINKS_SOMEONE_LEFT₁ ] (mary , thinks′ , someone , left′ , ∅) id
+--> mary thinks existsₑ (λ x → person x ∧ x left)
+
+MARY_THINKS_SOMEONE_LEFT₂ : LG · MARY · ⊗ · THINKS · ⊗ · SOMEONE · ⊗ · LEFT · ⊢[ S⁻ ]
+MARY_THINKS_SOMEONE_LEFT₂
+  = ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (r⊗⇐ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ
+  ( ⇁ (r⇐⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))))))))))) (⇒ᴸ ax⁺ ax⁻))))))))))))))
+mary_thinks_someone_left₂ : Bool
+mary_thinks_someone_left₂ = [ MARY_THINKS_SOMEONE_LEFT₂ ] (mary , thinks′ , someone , left′ , ∅) id
+--> mary thinks existsₑ (λ x → person x ∧ x left)
+
+------------------------------------------------------------------------
+-- TODO:
+--
+--   This case is problematic, and should be barred using unary
+--   residuated operators (i.e. □ and ◇ with their structural forms
+--   [_] and ⟨_⟩).
+--
+--   However, it seems that when using the trick of subtracting
+--   negatively polarised NPs, we do not need the Grishin interaction
+--   principles to derive the desired proofs.
+--
+--   So, we are left with the following problem: we want a type that
+--   can be restricted using unary residuation (i.e. by using the
+--   Grishin interaction principles, though I suppose that proof #3
+--   would also be blocked by other operators) but which can still
+--   create a continuation which holds the *entire* quantifier.
+--
+------------------------------------------------------------------------
+
+MARY_THINKS_SOMEONE_LEFT₃ : LG · MARY · ⊗ · THINKS · ⊗ · SOMEONE · ⊗ · LEFT · ⊢[ S⁻ ]
+MARY_THINKS_SOMEONE_LEFT₃
+  = ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ
+  ( ⇁ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))) (⇒ᴸ ax⁺ ax⁻))))))))))))))))))))
+mary_thinks_someone_left₃ : Bool
+mary_thinks_someone_left₃ = [ MARY_THINKS_SOMEONE_LEFT₃ ] (mary , thinks′ , someone , left′ , ∅) id
+--> existsₑ (λ x → person x ∧ mary thinks (x left))

@@ -41,9 +41,8 @@ int main(int argc, char **argv) {
     vector<Derivation *> der = deriveSequent(seq, &numConnectives);
     if(der.size() > 0) {
         printf("Found %d derivations!\n", der.size());
-        toLatexShowDerivations(der, numConnectives);
-        toPrologShowDerivations(der, numConnectives);
         toAgdaShowDerivations(der, numConnectives);
+        //toLatexShowDerivations(der, numConnectives);
     } else {
         printf("No derivations found.\n");
     }

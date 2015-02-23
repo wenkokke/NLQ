@@ -102,10 +102,10 @@ private
     [ ↼ {p = p} f ] rewrite Negative-≡ (toWitness p) = ⇒ₑ ax [ f ]
     [ ⊗ᴿ      f g ] = ⊗ᵢ [ f ] [ g ]
     [ ⇚ᴿ      f g ] = ⊗ᵢ [ f ] [ g ]
-    [ ⇛ᴿ      f g ] = ⊗ᵢ [ f ] [ g ]
-    [ ⊕ᴸ  {X} f g ] = sᴸ ⟦ X ⟧ˢ (⊗ᵢ [ f ] [ g ])
+    [ ⇛ᴿ      g f ] = ⊗ᵢ [ f ] [ g ]
+    [ ⊕ᴸ      f g ] = ⊗ᵢ [ f ] [ g ]
     [ ⇒ᴸ      f g ] = ⊗ᵢ [ f ] [ g ]
-    [ ⇐ᴸ      f g ] = ⊗ᵢ [ f ] [ g ]
+    [ ⇐ᴸ      g f ] = ⊗ᵢ [ f ] [ g ]
     [ ⊗ᴸ      f   ] = ⊗ₑᴸ₁ [ f ]
     [ ⇚ᴸ      f   ] = ⊗ₑᴸ₁ [ f ]
     [ ⇛ᴸ      f   ] = ⊗ₑᴸ₁ [ f ]

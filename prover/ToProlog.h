@@ -196,9 +196,6 @@ void toPrologShowDerivation(Derivation *derivation, int numConnectives) {
     toPrologDerivation(fout, derivation, 0, numConnectives);
     toPrologFooter(fout, 1);
     fclose(fout);
-
-    /* Call pdfTerm to parse and show */
-    system("more lgterm.pl");
 }
 
 /* Show this derivation as Term */
@@ -210,9 +207,6 @@ void toPrologShowDerivations(vector<Derivation *> derivations, int numConnective
         toPrologDerivation(fout, derivations[i], i, numConnectives);
     toPrologFooter(fout, derivations.size());
     fclose(fout);
-
-    /* Call pdfTerm to parse and show */
-    system("more lgterm.pl");
 }
 
 #endif

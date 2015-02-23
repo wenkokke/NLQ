@@ -18,11 +18,11 @@ using namespace std;
 map<BINARY_CONNECTIVE,char*> createBinaryToLaTeX()
 {
     map<BINARY_CONNECTIVE,char*> m;
-    m[BACKSLASH]  = "\\backslash ";
-    m[SLASH]      = "\\slash ";
+    m[BACKSLASH]  = "\\Rightarrow";
+    m[SLASH]      = "\\Leftarrow";
     m[OTIMES]     = "\\otimes ";
-    m[OSLASH]     = "\\oslash ";
-    m[OBACKSLASH] = "\\obslash ";
+    m[OSLASH]     = "\\Lleftarrow";
+    m[OBACKSLASH] = "\\Rrightarrow";
     m[OPLUS]      = "\\oplus ";
     return m;
 }

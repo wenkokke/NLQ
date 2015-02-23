@@ -14,13 +14,9 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
 module Example.Lexicon where
 
-
 Entity = Fin 3
 
-
-open import Example.Base Entity as Base public
-     hiding (module UsingLambdaCMinus; module UsingLambekGrishin)
-
+open import Example.Base Entity public
 
 abstract
   domainₑ : List Entity
@@ -58,41 +54,22 @@ abstract
   postulate
     _thinks_ : Entity → Bool → Bool
 
-module UsingLambdaCMinus where
-
-  open Base.UsingLambdaCMinus public
-
-  JOHN   = el NP
-  BILL   = el NP
-  MARY   = el NP
-  LOVES  = (el NP ⇒ el S) ⇐ el NP
-  PERSON = el N
-
-  loves′ : ⟦ LOVES ⟧ᵀ
-  loves′ = λ k x → k (λ k y → k (x loves y))
 
 
-module UsingLambekGrishin where
+-- specific to lambek-grishin
 
-  open Base.UsingLambekGrishin public
+JOHN BILL MARY LOVES THINKS LEFT PERSON : Type
+JOHN   = NP⁺
+BILL   = NP⁺
+MARY   = NP⁺
+LOVES  = (NP⁺ ⇒ S⁻) ⇐ NP⁺
+THINKS = (NP⁺ ⇒ S⁻) ⇐ S⁻
+LEFT   = NP⁺ ⇒ S⁻
+PERSON = N⁺
 
-  NP⁺ N⁺ S⁻ : Type
-  NP⁺ = el (+ , NP)
-  N⁺  = el (+ , N)
-  S⁻  = el (- , S)
-
-  JOHN BILL MARY LOVES THINKS LEFT PERSON : Type
-  JOHN   = NP⁺
-  BILL   = NP⁺
-  MARY   = NP⁺
-  LOVES  = (NP⁺ ⇒ S⁻) ⇐ NP⁺
-  THINKS = (NP⁺ ⇒ S⁻) ⇐ S⁻
-  LEFT   = NP⁺ ⇒ S⁻
-  PERSON = N⁺
-
-  loves′  : ⟦ LOVES ⟧ᵀ
-  loves′  ((x , k) , y) = k (x loves y)
-  left′   : ⟦ LEFT ⟧ᵀ
-  left′    (x , k)      = k (x left)
-  thinks′ : ⟦ THINKS ⟧ᵀ
-  thinks′ ((x , k) , y) = k (x thinks (y id))
+loves′  : ⟦ LOVES ⟧ᵀ
+loves′  ((x , k) , y) = k (x loves y)
+left′   : ⟦ LEFT ⟧ᵀ
+left′    (x , k)      = k (x left)
+thinks′ : ⟦ THINKS ⟧ᵀ
+thinks′ ((x , k) , y) = k (x thinks (y id))
