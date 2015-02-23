@@ -28,3 +28,4 @@ src/Logic/Intuitionistic/Ordered/Lambek/Type/Context/Polarised.agda
 src/Logic/Intuitionistic/Ordered/Lambek/Type/Context.agda
 src/Logic/Intuitionistic/Ordered/Lambek/Type/Polarised.agda
 src/Logic/Intuitionistic/Ordered/Lambek/Type/Subtype.agda
+prover/LGprover

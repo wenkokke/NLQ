@@ -58,58 +58,58 @@ data LG_ : Judgement → Set ℓ where
       → LG  · A · ⊢ X
 
   ⊗ᴿ  : ∀ {X Y A B}
-      → LG X     ⊢[ A     ]
-      → LG     Y ⊢[     B ]
+      → LG X ⊢[ A ]
+      → LG Y ⊢[ B ]
       → LG X ⊗ Y ⊢[ A ⊗ B ]
 
   ⇚ᴿ  : ∀ {X Y A B}
-      → LG   X  ⊢[ A ]
+      → LG X ⊢[ A ]
       → LG [ B ]⊢ Y
       → LG X ⇚ Y ⊢[ A ⇚ B ]
 
   ⇛ᴿ  : ∀ {X Y A B}
-      → LG [ A ]⊢  X
-      → LG   Y  ⊢[ B ]
-      → LG X ⇛ Y ⊢[ A ⇛ B ]
+      → LG X ⊢[ A ]
+      → LG [ B ]⊢ Y
+      → LG Y ⇛ X ⊢[ B ⇛ A ]
 
   ⊕ᴸ  : ∀ {X Y A B}
-      → LG [ A     ]⊢     Y
-      → LG [     B ]⊢ X
-      → LG [ A ⊕ B ]⊢ X ⊕ Y
+      → LG [ B ]⊢ Y
+      → LG [ A ]⊢ X
+      → LG [ B ⊕ A ]⊢ Y ⊕ X
 
   ⇒ᴸ  : ∀ {X Y A B}
-      → LG   X  ⊢[ A ]
-      → LG [ B ]⊢  Y
+      → LG X ⊢[ A ]
+      → LG [ B ]⊢ Y
       → LG [ A ⇒ B ]⊢ X ⇒ Y
 
   ⇐ᴸ  : ∀ {X Y A B}
-      → LG [ A ]⊢  Y
-      → LG   X  ⊢[ B ]
-      → LG [ A ⇐ B ]⊢ Y ⇐ X
+      → LG X ⊢[ A ]
+      → LG [ B ]⊢ Y
+      → LG [ B ⇐ A ]⊢ Y ⇐ X
 
-  ⊗ᴸ  : ∀ {X A B}
-      → LG · A · ⊗ · B · ⊢ X
-      → LG · A ⊗ B · ⊢ X
+  ⊗ᴸ  : ∀ {Y A B}
+      → LG · A · ⊗ · B · ⊢ Y
+      → LG · A   ⊗   B · ⊢ Y
 
   ⇚ᴸ  : ∀ {X A B}
       → LG · A · ⇚ · B · ⊢ X
-      → LG · A ⇚ B · ⊢ X
+      → LG · A   ⇚   B · ⊢ X
 
   ⇛ᴸ  : ∀ {X A B}
-      → LG · A · ⇛ · B · ⊢ X
-      → LG · A ⇛ B · ⊢ X
+      → LG · B · ⇛ · A · ⊢ X
+      → LG · B   ⇛   A · ⊢ X
 
   ⊕ᴿ  : ∀ {X A B}
-      → LG X ⊢ · A · ⊕ · B ·
-      → LG X ⊢ · A ⊕ B ·
+      → LG X ⊢ · B · ⊕ · A ·
+      → LG X ⊢ · B   ⊕   A ·
 
   ⇒ᴿ  : ∀ {X A B}
       → LG X ⊢ · A · ⇒ · B ·
-      → LG X ⊢ · A ⇒ B ·
+      → LG X ⊢ · A   ⇒   B ·
 
   ⇐ᴿ  : ∀ {X A B}
-      → LG X ⊢ · A · ⇐ · B ·
-      → LG X ⊢ · A ⇐ B ·
+      → LG X ⊢ · B · ⇐ · A ·
+      → LG X ⊢ · B   ⇐   A ·
 
 
   -- residuation rules for (⇐ , ⊗ , ⇒)

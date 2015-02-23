@@ -15,32 +15,32 @@ using namespace std;
 
 /* The binary connectives */
 enum BINARY_CONNECTIVE {
-    OTIMES,      /* (*) */
-    OBACKSLASH,  /* (\) */
-    OSLASH,      /* (/) */
-    OPLUS,       /* (+) */
-    BACKSLASH,   /*  \  */
+    OTIMES     , /* (*) */
+    OBACKSLASH , /* (\) */
+    OSLASH     , /* (/) */
+    OPLUS      , /* (+) */
+    BACKSLASH  , /*  \  */
     SLASH        /*  /  */
 };
 
 /* The unary connectives */
 enum UNARY_CONNECTIVE {
-    ZERO,        /* 0 */
+    ZERO       , /* 0 */
     ONE          /* 1 */
 };
 
 /* The different types of formulas and structures */
 enum FORMULA_STRUCTURE_TYPE {
-    PRIMITIVE,
-    BINARY,
-    UNARY,
-    MATCH /* For creation of generic style rules */
+    PRIMITIVE  ,
+    BINARY     ,
+    UNARY      ,
+    MATCH
 };
 
 /* The different types of sequents */
 enum SEQUENT_TYPE {
-    FORMULA_LEFT,
-    FORMULA_RIGHT,
+    FORMULA_LEFT  ,
+    FORMULA_RIGHT ,
     STRUCTURAL
 };
 

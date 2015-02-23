@@ -22,7 +22,7 @@ using namespace std;
 map<string,Formula*> lexicon;
 
 /* All possible tokens (order in parsing order) */
-char* possibleTokens[] = {":", "(*)", "(/)", "(\\)", "(+)", ".", "/", "1", "0", "\\", "(", ")"};
+char* possibleTokens[] = {":", "⊗", "⇚", "⇛", "⊕", ".", "⇐", "¹", "⁰", "⇒", "(", ")"};
 int numPossibleTokens = 12;
 
 /* Utility function, check if str[idx] matches the string token */
@@ -38,7 +38,7 @@ bool strMatch(string str, int idx, string token) {
 
 /* Check if this character can be part of a literal name */
 bool isLiteralChar(char c) {
-    return isalnum(c) || c == '_' || c == '\'';
+    return !isspace(c) && c != '(' && c != ')' && c != '.';
 }
 
 /* Tokenize a string */
@@ -67,10 +67,12 @@ vector<string> tokenize(string str) {
 
         /* Otherwise match the longest possible literal string */
         int start = idx;
-        while(str[idx] && isLiteralChar(str[idx]))
+        while (str[idx] && isLiteralChar(str[idx])) {
             idx++;
-        if(idx == start)
+        }
+        if(idx == start) {
             break;
+        }
         ret.push_back(str.substr(start, idx - start));
     }
     return ret;
@@ -113,7 +115,8 @@ Formula *parseFormula(vector<string>::iterator &it, vector<string>::iterator end
         if(inner == NULL)
             return NULL;
         first = new Formula(unary_connective, inner);
-    } else { /* Literal */
+    } else {
+        /* Literal */
         /* Allocate memory for new literal */
         char *name = (char *)malloc((*it).size()+1);
         (*it).copy(name, (*it).size());
@@ -177,7 +180,7 @@ bool parseLine(char *line) {
 
     /* Parse the formula */
     vector<string>::iterator it = tokens.begin();
-    it += 2; /* skip word and :: */
+    it += 2; /* skip word and : */
     Formula *formula = parseFormula(it, tokens.end());
     if(formula == NULL || it == tokens.end() || (*it) != ".") {
         printf("Could not parse line:\n%s",line);
