@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
     if(der.size() > 0) {
         printf("Found %d derivations!\n", der.size());
         toAgdaShowDerivations(der, numConnectives);
-        //toLatexShowDerivations(der, numConnectives);
+        toLatexShowDerivations(der, numConnectives);
     } else {
         printf("No derivations found.\n");
     }

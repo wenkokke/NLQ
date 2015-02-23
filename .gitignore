@@ -38,3 +38,8 @@ src/Logic/Intuitionistic/Ordered/Lambek/ResMon/Trans.agda
 prover/LGprover
 src/Logic/Intuitionistic/Ordered/Lambek/ResMon.agda
 prover/lgterm.agda
+prover/lgproof.aux
+prover/lgproof.log
+prover/lgproof.out
+prover/lgproof.pdf
+prover/lgproof.tex

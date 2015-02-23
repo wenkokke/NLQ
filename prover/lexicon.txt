@@ -9,13 +9,13 @@ mary       : NP⁺.
 bill       : NP⁺.
 
 smiles     : (NP⁺ ⇒ S⁻).
-left       : (NP⁺ ⇒ S⁻).
+left       : (NP⁺ ⇒ □ S⁻).
 cheats     : (NP⁺ ⇒ S⁻).
 
 teases     : ((NP⁺ ⇒ S⁻) ⇐ NP⁺).
 loves      : ((NP⁺ ⇒ S⁻) ⇐ NP⁺).
 
-thinks     : ((NP⁺ ⇒ S⁻) ⇐ S⁻).
+thinks     : ((NP⁺ ⇒ S⁻) ⇐ □ S⁻).
 
 everyone  : (((NP⁻ ⇚ (NP⁺ ⇛ NP⁻)) ⇐ N⁺) ⊗ N⁺).
 someone   : (((NP⁻ ⇚ (NP⁺ ⇛ NP⁻)) ⇐ N⁺) ⊗ N⁺).

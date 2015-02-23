@@ -192,3 +192,57 @@ MARY_THINKS_SOMEONE_LEFT₃
 mary_thinks_someone_left₃ : Bool
 mary_thinks_someone_left₃ = toAgda MARY_THINKS_SOMEONE_LEFT₃ (mary , thinks′ , someone , left′ , ∅) id
 --> existsₑ (λ x → person x ∧ mary thinks (x left))
+
+
+MARY_THINKS_JOHN_LEFT : LG · MARY · ⊗ · ( NP⁺ ⇒ S⁻ ) ⇐ ( □ S⁻ ) · ⊗ · JOHN · ⊗ · NP⁺ ⇒ ( □ S⁻ ) · ⊢[ S⁻ ]
+MARY_THINKS_JOHN_LEFT
+  = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ
+  ( ⇁ (□ᴿ (r⇒⊗ (↼ (⇒ᴸ ax⁺ (□ᴸ ax⁻)))))) (⇒ᴸ ax⁺ ax⁻)))))
+
+
+------------------------------------------------------------------------
+-- TODO:
+--
+--   It isn't this simple. We have to construct a type A which, on the
+--   input side of the sequent will be forced to ⟨A⟩ or [A].
+--
+--   Perhaps if we force all applications of □ to be axioms?! No, the
+--   problem isn't that it's eliminated *not* as an axiom (since it
+--   already is, so restricting the rule in this respect doesn't
+--   matter), but that eliminating these S⁻'s together doesn't force
+--   the continuation to land here.
+--
+------------------------------------------------------------------------
+
+MARY_THINKS_SOMEONE_LEFT₄ : LG · NP⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ ( □ S⁻ ) · ⊗ ( · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ · NP⁺ ⇒ ( □ S⁻ ) · ) ) ⊢[ S⁻ ]
+MARY_THINKS_SOMEONE_LEFT₄
+  = ⇁ (r⇒⊗ (r⇐⊗      (↼ (flip ⇐ᴸ (⇒ᴸ ax⁺ ax⁻)
+  ( ⇁ (r⇐⊗ (⊗ᴸ  (r⇐⊗ (↼ (     ⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ  (r⊕⇚ (r⇛⊕ (⇀ (     ⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (□ᴿ  (r⇒⊗ (↼ (     ⇒ᴸ ax⁺ (□ᴸ ax⁻)
+    ))))))))))))))))))))))
+mary_thinks_someone_left₄ : Bool
+mary_thinks_someone_left₄ = toAgda MARY_THINKS_SOMEONE_LEFT₄ (mary , thinks′ , someone , left′ , ∅) id
+--> mary thinks existsₑ (λ x → person x ∧ x left)
+
+MARY_THINKS_SOMEONE_LEFT₅ : LG · NP⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ ( □ S⁻ ) · ⊗ ( · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ · NP⁺ ⇒ ( □ S⁻ ) · ) ) ⊢[ S⁻ ]
+MARY_THINKS_SOMEONE_LEFT₅
+  = ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (     ⇐ᴸ ax⁺
+  ( ↽ (r⊗⇐ (r⊗⇒ (r⇐⊗          (↼ (flip ⇐ᴸ (⇒ᴸ ax⁺ ax⁻)
+  ( ⇁ (r⇐⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕      (⇀ (     ⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (□ᴿ (r⇒⊗           (↼ (     ⇒ᴸ ax⁺ (□ᴸ ax⁻)
+    ))))))))))))))))))))))))))
+mary_thinks_someone_left₅ : Bool
+mary_thinks_someone_left₅ = toAgda MARY_THINKS_SOMEONE_LEFT₅ (mary , thinks′ , someone , left′ , ∅) id
+--> mary thinks existsₑ (λ x → person x ∧ x left)
+
+MARY_THINKS_SOMEONE_LEFT₆ : LG · NP⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ ( □ S⁻ ) · ⊗ ( · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ · NP⁺ ⇒ ( □ S⁻ ) · ) ) ⊢[ S⁻ ]
+MARY_THINKS_SOMEONE_LEFT₆
+  = ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (     ⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ  (r⊕⇚ (r⇛⊕          (⇀ (     ⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r⊗⇒ (r⇐⊗          (↼ (flip ⇐ᴸ (⇒ᴸ ax⁺ ax⁻)
+  ( ⇁ (□ᴿ  (((r⇒⊗             (↼ (     ⇒ᴸ ax⁺ (□ᴸ ax⁻)
+    ))))))))))))))))))))))))))
+mary_thinks_someone_left₆ : Bool
+mary_thinks_someone_left₆ = toAgda MARY_THINKS_SOMEONE_LEFT₆ (mary , thinks′ , someone , left′ , ∅) id
+--> existsₑ (λ x → person x ∧ mary thinks (x left))
