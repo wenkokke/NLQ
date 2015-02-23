@@ -28,4 +28,11 @@ src/Logic/Intuitionistic/Ordered/Lambek/Type/Context/Polarised.agda
 src/Logic/Intuitionistic/Ordered/Lambek/Type/Context.agda
 src/Logic/Intuitionistic/Ordered/Lambek/Type/Polarised.agda
 src/Logic/Intuitionistic/Ordered/Lambek/Type/Subtype.agda
+src/Logic/Intuitionistic/Ordered/Lambek/ResMon/Base.agda
+src/Logic/Intuitionistic/Ordered/Lambek/ResMon/Derivation.agda
+src/Logic/Intuitionistic/Ordered/Lambek/ResMon/Judgement.agda
+src/Logic/Intuitionistic/Ordered/Lambek/ResMon/Judgement/Context.agda
+src/Logic/Intuitionistic/Ordered/Lambek/ResMon/Judgement/Context/Polarised.agda
+src/Logic/Intuitionistic/Ordered/Lambek/ResMon/Origin.agda
+src/Logic/Intuitionistic/Ordered/Lambek/ResMon/Trans.agda
 prover/LGprover
