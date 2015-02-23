@@ -85,6 +85,8 @@ private
     ⟦_⟧ˢ : ∀ {p} → LGS.Structure p → List ΛT.Type
     ⟦ ·_· { + } A ⟧ˢ = ⟦ A ⟧⁺ , ∅
     ⟦ ·_· { - } A ⟧ˢ = ⟦ A ⟧⁻ , ∅
+    ⟦     [ Γ ]   ⟧ˢ = ⟦ Γ ⟧ˢ
+    ⟦     ⟨ Γ ⟩   ⟧ˢ = ⟦ Γ ⟧ˢ
     ⟦     Γ ⊗ Δ   ⟧ˢ = ⟦ Γ ⟧ˢ ++ ⟦ Δ ⟧ˢ
     ⟦     Γ ⇚ Δ   ⟧ˢ = ⟦ Γ ⟧ˢ ++ ⟦ Δ ⟧ˢ
     ⟦     Γ ⇛ Δ   ⟧ˢ = ⟦ Γ ⟧ˢ ++ ⟦ Δ ⟧ˢ
@@ -99,38 +101,44 @@ private
     ⟦   X  ⊢[ B ] ⟧ᴶ = ⟦ X ⟧ˢ          ⊢ ⟦ B ⟧⁺
 
 
-    [_] : ∀ {J} → LG J → Λ ⟦ J ⟧ᴶ
-    [ ax⁺         ] = ax
-    [ ax⁻         ] = ax
-    [ ⇁ {p = p} f ] rewrite Negative-≡ (toWitness p) = ⇒ᵢ (XA→AX [ f ])
-    [ ↽ {p = p} f ] rewrite Positive-≡ (toWitness p) = ⇒ᵢ [ f ]
-    [ ⇀ {p = p} f ] rewrite Positive-≡ (toWitness p) = AX→XA (⇒ₑ ax [ f ])
-    [ ↼ {p = p} f ] rewrite Negative-≡ (toWitness p) = ⇒ₑ ax [ f ]
-    [ ⊗ᴿ      f g ] = ⊗ᵢ [ f ] [ g ]
-    [ ⇚ᴿ      f g ] = ⊗ᵢ [ f ] [ g ]
-    [ ⇛ᴿ      g f ] = ⊗ᵢ [ f ] [ g ]
-    [ ⊕ᴸ      f g ] = ⊗ᵢ [ f ] [ g ]
-    [ ⇒ᴸ      f g ] = ⊗ᵢ [ f ] [ g ]
-    [ ⇐ᴸ      g f ] = ⊗ᵢ [ f ] [ g ]
-    [ ⊗ᴸ      f   ] = ⊗ₑᴸ₁ [ f ]
-    [ ⇚ᴸ      f   ] = ⊗ₑᴸ₁ [ f ]
-    [ ⇛ᴸ      f   ] = ⊗ₑᴸ₁ [ f ]
-    [ ⊕ᴿ  {X} f   ] = ⊗ₑᴸ₂ ⟦ X ⟧ˢ [ f ]
-    [ ⇒ᴿ  {X} f   ] = ⊗ₑᴸ₂ ⟦ X ⟧ˢ [ f ]
-    [ ⇐ᴿ  {X} f   ] = ⊗ₑᴸ₂ ⟦ X ⟧ˢ [ f ]
-    [ r⇒⊗ {X} {Y} {Z} f ] rewrite      assoc ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ  = Y[XZ]→X[YZ] ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ [ f ]
-    [ r⊗⇒ {X} {Y} {Z} f ] rewrite sym (assoc ⟦ Y ⟧ˢ ⟦ X ⟧ˢ ⟦ Z ⟧ˢ) = [YX]Z→[XY]Z ⟦ Y ⟧ˢ ⟦ X ⟧ˢ ⟦ Z ⟧ˢ [ f ]
-    [ r⇐⊗ {X} {Y} {Z} f ] rewrite      assoc ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ  = X[ZY]→X[YZ] ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ [ f ]
-    [ r⊗⇐ {X} {Y} {Z} f ] rewrite sym (assoc ⟦ X ⟧ˢ ⟦ Z ⟧ˢ ⟦ Y ⟧ˢ) = [XZ]Y→[XY]Z ⟦ X ⟧ˢ ⟦ Z ⟧ˢ ⟦ Y ⟧ˢ [ f ]
-    [ r⇚⊕ {X} {Y} {Z} f ] rewrite sym (assoc ⟦ Z ⟧ˢ ⟦ Y ⟧ˢ ⟦ X ⟧ˢ) = [XZ]Y→[XY]Z ⟦ Z ⟧ˢ ⟦ Y ⟧ˢ ⟦ X ⟧ˢ [ f ]
-    [ r⊕⇚ {X} {Y} {Z} f ] rewrite      assoc ⟦ Z ⟧ˢ ⟦ X ⟧ˢ ⟦ Y ⟧ˢ  = X[ZY]→X[YZ] ⟦ Z ⟧ˢ ⟦ X ⟧ˢ ⟦ Y ⟧ˢ [ f ]
-    [ r⇛⊕ {X} {Y} {Z} f ] rewrite sym (assoc ⟦ Z ⟧ˢ ⟦ Y ⟧ˢ ⟦ X ⟧ˢ) = [YX]Z→[XY]Z ⟦ Z ⟧ˢ ⟦ Y ⟧ˢ ⟦ X ⟧ˢ [ f ]
-    [ r⊕⇛ {X} {Y} {Z} f ] rewrite      assoc ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ ⟦ X ⟧ˢ  = Y[XZ]→X[YZ] ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ ⟦ X ⟧ˢ [ f ]
-    [ d⇛⇐ {X} {Y} {Z} {W} f ] = XYZW→ZXWY ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ ⟦ W ⟧ˢ [ f ]
-    [ d⇛⇒ {X} {Y} {Z} {W} f ] = XYZW→ZYXW ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ ⟦ W ⟧ˢ [ f ]
-    [ d⇚⇒ {X} {Y} {Z} {W} f ] = XYZW→YWXZ ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ ⟦ W ⟧ˢ [ f ]
-    [ d⇚⇐ {X} {Y} {Z} {W} f ] = XYZW→XWZY ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ ⟦ W ⟧ˢ [ f ]
+    [_]ᵀ : ∀ {J} → LG J → Λ ⟦ J ⟧ᴶ
+    [ ax⁺         ]ᵀ = ax
+    [ ax⁻         ]ᵀ = ax
+    [ ⇁ {p = p} f ]ᵀ rewrite Negative-≡ (toWitness p) = ⇒ᵢ (XA→AX [ f ]ᵀ)
+    [ ↽ {p = p} f ]ᵀ rewrite Positive-≡ (toWitness p) = ⇒ᵢ [ f ]ᵀ
+    [ ⇀ {p = p} f ]ᵀ rewrite Positive-≡ (toWitness p) = AX→XA (⇒ₑ ax [ f ]ᵀ)
+    [ ↼ {p = p} f ]ᵀ rewrite Negative-≡ (toWitness p) = ⇒ₑ ax [ f ]ᵀ
+    [ □ᴸ      f   ]ᵀ = [ f ]ᵀ
+    [ □ᴿ      f   ]ᵀ = [ f ]ᵀ
+    [ ◇ᴸ      f   ]ᵀ = [ f ]ᵀ
+    [ ◇ᴿ      f   ]ᵀ = [ f ]ᵀ
+    [ ⊗ᴿ      f g ]ᵀ = ⊗ᵢ [ f ]ᵀ [ g ]ᵀ
+    [ ⇚ᴿ      f g ]ᵀ = ⊗ᵢ [ f ]ᵀ [ g ]ᵀ
+    [ ⇛ᴿ      g f ]ᵀ = ⊗ᵢ [ f ]ᵀ [ g ]ᵀ
+    [ ⊕ᴸ      f g ]ᵀ = ⊗ᵢ [ f ]ᵀ [ g ]ᵀ
+    [ ⇒ᴸ      f g ]ᵀ = ⊗ᵢ [ f ]ᵀ [ g ]ᵀ
+    [ ⇐ᴸ      g f ]ᵀ = ⊗ᵢ [ f ]ᵀ [ g ]ᵀ
+    [ ⊗ᴸ      f   ]ᵀ = ⊗ₑᴸ₁ [ f ]ᵀ
+    [ ⇚ᴸ      f   ]ᵀ = ⊗ₑᴸ₁ [ f ]ᵀ
+    [ ⇛ᴸ      f   ]ᵀ = ⊗ₑᴸ₁ [ f ]ᵀ
+    [ ⊕ᴿ  {X} f   ]ᵀ = ⊗ₑᴸ₂ ⟦ X ⟧ˢ [ f ]ᵀ
+    [ ⇒ᴿ  {X} f   ]ᵀ = ⊗ₑᴸ₂ ⟦ X ⟧ˢ [ f ]ᵀ
+    [ ⇐ᴿ  {X} f   ]ᵀ = ⊗ₑᴸ₂ ⟦ X ⟧ˢ [ f ]ᵀ
+    [ r□◇ {X} {Y} f ]ᵀ = [ f ]ᵀ
+    [ r◇□ {X} {Y} f ]ᵀ = [ f ]ᵀ
+    [ r⇒⊗ {X} {Y} {Z} f ]ᵀ rewrite      assoc ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ  = Y[XZ]→X[YZ] ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ [ f ]ᵀ
+    [ r⊗⇒ {X} {Y} {Z} f ]ᵀ rewrite sym (assoc ⟦ Y ⟧ˢ ⟦ X ⟧ˢ ⟦ Z ⟧ˢ) = [YX]Z→[XY]Z ⟦ Y ⟧ˢ ⟦ X ⟧ˢ ⟦ Z ⟧ˢ [ f ]ᵀ
+    [ r⇐⊗ {X} {Y} {Z} f ]ᵀ rewrite      assoc ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ  = X[ZY]→X[YZ] ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ [ f ]ᵀ
+    [ r⊗⇐ {X} {Y} {Z} f ]ᵀ rewrite sym (assoc ⟦ X ⟧ˢ ⟦ Z ⟧ˢ ⟦ Y ⟧ˢ) = [XZ]Y→[XY]Z ⟦ X ⟧ˢ ⟦ Z ⟧ˢ ⟦ Y ⟧ˢ [ f ]ᵀ
+    [ r⇚⊕ {X} {Y} {Z} f ]ᵀ rewrite sym (assoc ⟦ Z ⟧ˢ ⟦ Y ⟧ˢ ⟦ X ⟧ˢ) = [XZ]Y→[XY]Z ⟦ Z ⟧ˢ ⟦ Y ⟧ˢ ⟦ X ⟧ˢ [ f ]ᵀ
+    [ r⊕⇚ {X} {Y} {Z} f ]ᵀ rewrite      assoc ⟦ Z ⟧ˢ ⟦ X ⟧ˢ ⟦ Y ⟧ˢ  = X[ZY]→X[YZ] ⟦ Z ⟧ˢ ⟦ X ⟧ˢ ⟦ Y ⟧ˢ [ f ]ᵀ
+    [ r⇛⊕ {X} {Y} {Z} f ]ᵀ rewrite sym (assoc ⟦ Z ⟧ˢ ⟦ Y ⟧ˢ ⟦ X ⟧ˢ) = [YX]Z→[XY]Z ⟦ Z ⟧ˢ ⟦ Y ⟧ˢ ⟦ X ⟧ˢ [ f ]ᵀ
+    [ r⊕⇛ {X} {Y} {Z} f ]ᵀ rewrite      assoc ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ ⟦ X ⟧ˢ  = Y[XZ]→X[YZ] ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ ⟦ X ⟧ˢ [ f ]ᵀ
+    [ d⇛⇐ {X} {Y} {Z} {W} f ]ᵀ = XYZW→ZXWY ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ ⟦ W ⟧ˢ [ f ]ᵀ
+    [ d⇛⇒ {X} {Y} {Z} {W} f ]ᵀ = XYZW→ZYXW ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ ⟦ W ⟧ˢ [ f ]ᵀ
+    [ d⇚⇒ {X} {Y} {Z} {W} f ]ᵀ = XYZW→YWXZ ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ ⟦ W ⟧ˢ [ f ]ᵀ
+    [ d⇚⇐ {X} {Y} {Z} {W} f ]ᵀ = XYZW→XWZY ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ ⟦ W ⟧ˢ [ f ]ᵀ
 
 
 Ord→Lin : Translation LGT.Type ΛT.Type LGB.LG_ ΛB.Λ_
-Ord→Lin = record { ⟦_⟧ᵀ = ⟦_⟧⁺ ; ⟦_⟧ᴶ = ⟦_⟧ᴶ ; [_] = [_] }
+Ord→Lin = record { ⟦_⟧ᵀ = ⟦_⟧⁺ ; ⟦_⟧ᴶ = ⟦_⟧ᴶ ; [_] = [_]ᵀ }

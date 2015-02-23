@@ -18,16 +18,16 @@ open import Logic.Classical.Ordered.LambekGrishin.Structure Univ
 
 
 infix  10 ·_·
-infixr 20 _⇒_
-infixl 20 _⇐_
-infixl 25 _⇚_
-infixr 25 _⇛_
-infixr 30 _⊗_
-infixr 30 _⊕_
+infix  15 [_] ⟨_⟩
+infixr 20 _⇒_ _⇐_
+infixl 25 _⇚_ _⇛_
+infixr 30 _⊗_ _⊕_
 
 
 data Structure : Polarity → Set ℓ where
   ·_· : {p  : Polarity}    (A  : Type)        → Structure p
+  [_] : (Γ⁻ : Structure -)                    → Structure -
+  ⟨_⟩ : (Γ⁺ : Structure +)                    → Structure +
   _⊗_ : (Γ⁺ : Structure +) (Δ⁺ : Structure +) → Structure +
   _⇚_ : (Γ⁺ : Structure +) (Δ⁻ : Structure -) → Structure +
   _⇛_ : (Γ⁻ : Structure -) (Δ⁺ : Structure +) → Structure +
@@ -38,6 +38,8 @@ data Structure : Polarity → Set ℓ where
 
 data Polarised : Polarity → Unpolarised.Structure → Set ℓ where
   ·_· : ∀ {p}   (A  : Type)                               → Polarised p (· A ·)
+  [_] : ∀ {Γ}   (Γ⁻ : Polarised - Γ)                      → Polarised - ([ Γ ])
+  ⟨_⟩ : ∀ {Γ}   (Γ⁺ : Polarised + Γ)                      → Polarised + (⟨ Γ ⟩)
   _⊗_ : ∀ {Γ Δ} (Γ⁺ : Polarised + Γ) (Δ⁺ : Polarised + Δ) → Polarised + (Γ ⊗ Δ)
   _⇚_ : ∀ {Γ Δ} (Γ⁺ : Polarised + Γ) (Δ⁻ : Polarised - Δ) → Polarised + (Γ ⇚ Δ)
   _⇛_ : ∀ {Γ Δ} (Γ⁻ : Polarised - Γ) (Δ⁺ : Polarised + Δ) → Polarised + (Γ ⇛ Δ)
@@ -62,6 +64,8 @@ module Correct where
 
   forget : ∀ {p Γ} (Γᴾ : Polarised p Γ) → Unpolarised.Structure
   forget (· A ·) = · A ·
+  forget ([ Γ ]) = [ forget Γ ]
+  forget (⟨ Γ ⟩) = ⟨ forget Γ ⟩
   forget (Γ ⊗ Δ) = forget Γ ⊗ forget Δ
   forget (Γ ⇚ Δ) = forget Γ ⇚ forget Δ
   forget (Γ ⇛ Δ) = forget Γ ⇛ forget Δ
@@ -71,6 +75,8 @@ module Correct where
 
   forget-correct : ∀ {p A} (Aᴾ : Polarised p A) → forget Aᴾ ≡ A
   forget-correct (· A ·) = refl
+  forget-correct ([ Γ ]) rewrite forget-correct Γ = refl
+  forget-correct (⟨ Γ ⟩) rewrite forget-correct Γ = refl
   forget-correct (Γ ⊗ Δ) rewrite forget-correct Γ | forget-correct Δ = refl
   forget-correct (Γ ⇚ Δ) rewrite forget-correct Γ | forget-correct Δ = refl
   forget-correct (Γ ⇛ Δ) rewrite forget-correct Γ | forget-correct Δ = refl
