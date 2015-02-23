@@ -84,9 +84,9 @@ size_t hashBinaryConnective(const BINARY_CONNECTIVE connective) {
 }
 size_t hashUnaryConnective(const UNARY_CONNECTIVE connective) {
     switch(connective) {
-        case ZERO:
+        case BOX:
             return 2;
-        case ONE:
+        case DIAMOND:
             return 3;
     }
     return 1;

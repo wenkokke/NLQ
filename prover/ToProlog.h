@@ -18,20 +18,20 @@ using namespace std;
 map<BINARY_CONNECTIVE,char*> createBinaryToTerm()
 {
     map<BINARY_CONNECTIVE,char*> m;
-    m[BACKSLASH] = "backslash";
-    m[SLASH] = "slash";
-    m[OTIMES] = "otimes";
-    m[OSLASH] = "oslash";
+    m[BACKSLASH]  = "backslash";
+    m[SLASH]      = "slash";
+    m[OTIMES]     = "otimes";
+    m[OSLASH]     = "oslash";
     m[OBACKSLASH] = "obslash";
-    m[OPLUS] = "oplus";
+    m[OPLUS]      = "oplus";
     return m;
 }
 map<BINARY_CONNECTIVE,char*> binaryToTerm = createBinaryToTerm();
 
 /* Print unary connectives to Term */
 void toPrologUnary(FILE *fout, UNARY_CONNECTIVE connective, bool prefix, bool structural) {
-    if(connective == ONE || connective == ZERO)
-        fprintf(fout, "%c%s%ceg", prefix ? 'l' : 'r', connective == ONE ? "d" : "", structural ? 'N' : 'n');
+    if(connective == BOX || connective == DIAMOND)
+        fprintf(fout, "%c%s%ceg", prefix ? 'l' : 'r', connective == BOX ? "d" : "", structural ? 'N' : 'n');
 }
 
 /* Print Term representation of formula to fout */

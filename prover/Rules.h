@@ -63,7 +63,34 @@ vector<Rule*> createRules()
     TWOWAY_RULE("r⇛⊕", "r⊕⇛", "r \\Rrightarrow \\oplus", "r \\oplus \\Rrightarrow",
         new Sequent(new Structure('X'), new Structure(new Structure('P'), OPLUS, new Structure('Q'))),
         new Sequent(new Structure(new Structure('P'), OBACKSLASH, new Structure('X')), new Structure('Q')));
+    TWOWAY_RULE("r□◇", "r◇□", "r \Box \Diamond", "r \Diamond \Box",
+        new Sequent(new Structure(DIAMOND, new Structure('X')),                    new Structure('Y') ),
+        new Sequent(                       new Structure('X') , new Structure(BOX, new Structure('Y'))));
 
+    /* ◇ᴸ */
+    rules.push_back(new Rule("◇ᴸ", "\\Diamond^L",
+        new Sequent(new Structure(new Formula(DIAMOND,               new Formula('A'))), new Structure('Y')),
+        new Sequent(new Structure(            DIAMOND, new Structure(new Formula('A'))), new Structure('Y'))
+    ));
+
+    /* ◇ᴿ */
+    rules.push_back(new Rule("◇ᴿ", "\\Diamond^R",
+        new Sequent(new Structure(DIAMOND, new Structure('X')), new Formula(DIAMOND, new Formula('B'))),
+        new Sequent(                       new Structure('X') ,                      new Formula('B') )
+
+    ));
+
+    /* □ᴸ */
+    rules.push_back(new Rule("□ᴸ", "\\Box^L",
+        new Sequent(new Formula(BOX, new Formula('A')), new Structure(BOX, new Structure('Y'))),
+        new Sequent(                 new Formula('A') ,                    new Structure('Y') )
+    ));
+
+    /* □ᴿ */
+    rules.push_back(new Rule("□ᴿ", "\\Box^R",
+        new Sequent(new Structure('X'), new Structure(new Formula(BOX,               new Formula('A')))),
+        new Sequent(new Structure('X'), new Structure(            BOX, new Structure(new Formula('A'))))
+    ));
 
     /* ⊗ᴿ */
     rules.push_back(new Rule("⊗ᴿ", "\\Rrightarrow^R",
