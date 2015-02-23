@@ -18,12 +18,17 @@ module Logic.Classical.Ordered.LambekGrishin.ResMon.Base {ℓ} (Univ : Set ℓ) 
 open import Logic.Classical.Ordered.LambekGrishin.Type             Univ
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement Univ
 
-
 infix 1 LG_
 
 data LG_ : Judgement → Set ℓ where
 
   ax     : ∀ {A}       → LG el A ⊢ el A
+
+  -- rules for unary residuation and monotonicity
+  mon-□  : ∀ {A B}     → LG   A ⊢   B → LG □ A ⊢ □ B
+  mon-◇  : ∀ {A B}     → LG   A ⊢   B → LG ◇ A ⊢ ◇ B
+  res-□◇ : ∀ {A B}     → LG   A ⊢ □ B → LG ◇ A ⊢   B
+  res-◇□ : ∀ {A B}     → LG ◇ A ⊢   B → LG   A ⊢ □ B
 
   -- rules for residuation and monotonicity
   mon-⊗  : ∀ {A B C D} → LG A ⊢ B → LG C ⊢ D → LG A ⊗ C ⊢ B ⊗ D
@@ -99,6 +104,8 @@ grish₄-injective refl = refl
 -- connectives from the non-associative Lambek calculus `LG`.
 ax′ : ∀ {A} → LG A ⊢ A
 ax′ {el A}  = ax
+ax′ {□  A}  = mon-□ ax′
+ax′ {◇  A}  = mon-◇ ax′
 ax′ {A ⊗ B} = mon-⊗ ax′ ax′
 ax′ {A ⇚ B} = mon-⇚ ax′ ax′
 ax′ {A ⇛ B} = mon-⇛ ax′ ax′
@@ -143,6 +150,10 @@ is-ax_ f = ∃ (λ A → f ≅ ax {A})
 -- if the proof is equal to the identity proof.
 is-ax?_ : ∀ {A B} (f : LG A ⊢ B) → Dec (is-ax f)
 is-ax? ax         = yes (_ , H.refl)
+is-ax? mon-□  _   = no (λ {(_ , ())})
+is-ax? mon-◇  _   = no (λ {(_ , ())})
+is-ax? res-□◇ _   = no (λ {(_ , ())})
+is-ax? res-◇□ _   = no (λ {(_ , ())})
 is-ax? mon-⊗  _ _ = no (λ {(_ , ())})
 is-ax? mon-⇒  _ _ = no (λ {(_ , ())})
 is-ax? mon-⇐  _ _ = no (λ {(_ , ())})

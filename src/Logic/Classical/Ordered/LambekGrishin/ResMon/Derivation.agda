@@ -40,6 +40,13 @@ infix 1 LG_⋯_
 data LG_⋯_ : (I J : Judgement) → Set ℓ where
   []     : ∀ {J}         → LG J ⋯ J
 
+
+  -- rules for unary residuation and monotonicity
+  mon-□  : ∀ {J A B}     → LG J ⋯   A ⊢   B → LG J ⋯ □ A ⊢ □ B
+  mon-◇  : ∀ {J A B}     → LG J ⋯   A ⊢   B → LG J ⋯ ◇ A ⊢ ◇ B
+  res-□◇ : ∀ {J A B}     → LG J ⋯   A ⊢ □ B → LG J ⋯ ◇ A ⊢   B
+  res-◇□ : ∀ {J A B}     → LG J ⋯ ◇ A ⊢   B → LG J ⋯   A ⊢ □ B
+
   -- rules for residuation and monotonicity
   res-⇒⊗ : ∀ {J A B C}   → LG J ⋯ B ⊢ A ⇒ C → LG J ⋯ A ⊗ B ⊢ C
   res-⊗⇒ : ∀ {J A B C}   → LG J ⋯ A ⊗ B ⊢ C → LG J ⋯ B ⊢ A ⇒ C
@@ -83,6 +90,10 @@ data is-[]_ : {I J : Judgement} (f : LG I ⋯ J) → Set ℓ where
 
 is-[]?_ : ∀ {I J} (f : LG I ⋯ J) → Dec (is-[] f)
 is-[]? []         = yes []
+is-[]? mon-□  _   = no (λ ())
+is-[]? mon-◇  _   = no (λ ())
+is-[]? res-□◇ _   = no (λ ())
+is-[]? res-◇□ _   = no (λ ())
 is-[]? res-⇒⊗ _   = no (λ ())
 is-[]? res-⊗⇒ _   = no (λ ())
 is-[]? res-⇐⊗ _   = no (λ ())
@@ -116,6 +127,10 @@ module Simple where
   -- in the proof context.
   _[_] : ∀ {I J} → LG I ⋯ J → LG I → LG J
   []           [ g ] = g
+  mon-□  f     [ g ] = mon-□  (f  [ g ])
+  mon-◇  f     [ g ] = mon-◇  (f  [ g ])
+  res-□◇ f     [ g ] = res-□◇ (f  [ g ])
+  res-◇□ f     [ g ] = res-◇□ (f  [ g ])
   res-⇒⊗ f     [ g ] = res-⇒⊗ (f  [ g ])
   res-⊗⇒ f     [ g ] = res-⊗⇒ (f  [ g ])
   res-⇐⊗ f     [ g ] = res-⇐⊗ (f  [ g ])
@@ -147,6 +162,10 @@ module Simple where
   -- proof context into the hole in the other proof context.
   _<_> : ∀ {I J K} (f : LG J ⋯ K) (g : LG I ⋯ J) → LG I ⋯ K
   []           < g > = g
+  mon-□  f     < g > = mon-□  (f  < g >)
+  mon-◇  f     < g > = mon-◇  (f  < g >)
+  res-□◇ f     < g > = res-□◇ (f  < g >)
+  res-◇□ f     < g > = res-◇□ (f  < g >)
   res-⇒⊗ f     < g > = res-⇒⊗ (f  < g >)
   res-⊗⇒ f     < g > = res-⊗⇒ (f  < g >)
   res-⇐⊗ f     < g > = res-⇐⊗ (f  < g >)
@@ -178,6 +197,10 @@ module Simple where
   <>-def : ∀ {I J K} (f : LG I ⋯ J) (g : LG J ⋯ K) (x : LG I)
          → (g < f >) [ x ] ≡ g [ f [ x ] ]
   <>-def f []             x = refl
+  <>-def f (mon-□  g)     x rewrite <>-def f g  x = refl
+  <>-def f (mon-◇  g)     x rewrite <>-def f g  x = refl
+  <>-def f (res-□◇ g)     x rewrite <>-def f g  x = refl
+  <>-def f (res-◇□ g)     x rewrite <>-def f g  x = refl
   <>-def f (res-⇒⊗ g)     x rewrite <>-def f g  x = refl
   <>-def f (res-⊗⇒ g)     x rewrite <>-def f g  x = refl
   <>-def f (res-⇐⊗ g)     x rewrite <>-def f g  x = refl
@@ -206,6 +229,10 @@ module Simple where
   <>-assoc : ∀ {A B C D} (h : LG A ⋯ B) (g : LG B ⋯ C) (f : LG C ⋯ D)
            → (f < g >) < h > ≡ f < g < h > >
   <>-assoc h g []             = refl
+  <>-assoc h g (mon-□  f)     rewrite <>-assoc h g f  = refl
+  <>-assoc h g (mon-◇  f)     rewrite <>-assoc h g f  = refl
+  <>-assoc h g (res-□◇ f)     rewrite <>-assoc h g f  = refl
+  <>-assoc h g (res-◇□ f)     rewrite <>-assoc h g f  = refl
   <>-assoc h g (res-⇒⊗ f)     rewrite <>-assoc h g f  = refl
   <>-assoc h g (res-⊗⇒ f)     rewrite <>-assoc h g f  = refl
   <>-assoc h g (res-⇐⊗ f)     rewrite <>-assoc h g f  = refl
@@ -236,6 +263,10 @@ module Simple where
 
   <>-identityʳ : ∀ {A B} (f : LG A ⋯ B) → f < [] > ≡ f
   <>-identityʳ []             = refl
+  <>-identityʳ (mon-□  f)     rewrite <>-identityʳ f  = refl
+  <>-identityʳ (mon-◇  f)     rewrite <>-identityʳ f  = refl
+  <>-identityʳ (res-□◇ f)     rewrite <>-identityʳ f  = refl
+  <>-identityʳ (res-◇□ f)     rewrite <>-identityʳ f  = refl
   <>-identityʳ (mon-⊗ᴸ f₁ f₂) rewrite <>-identityʳ f₁ = refl
   <>-identityʳ (mon-⊗ᴿ f₁ f₂) rewrite <>-identityʳ f₂ = refl
   <>-identityʳ (mon-⇒ᴸ f₁ f₂) rewrite <>-identityʳ f₁ = refl

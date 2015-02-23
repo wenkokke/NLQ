@@ -3,7 +3,7 @@
 ------------------------------------------------------------------------
 
 
-module Logic.Classical.Ordered.LambekGrishin {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.ResMon {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Classical.Ordered.LambekGrishin.Type              Univ public hiding (module DecEq)
