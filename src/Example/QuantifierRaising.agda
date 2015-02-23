@@ -52,7 +52,7 @@ someone  = some , person
 JOHN_LOVES_BILL : LG · JOHN · ⊗ · LOVES · ⊗ · BILL · ⊢[ S⁻ ]
 JOHN_LOVES_BILL = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))
 john_loves_bill : Bool
-john_loves_bill = [ JOHN_LOVES_BILL ] (john , loves′ , bill , ∅) id
+john_loves_bill = toAgda JOHN_LOVES_BILL (john , loves′ , bill , ∅) id
 --> john loves bill
 
 
@@ -63,7 +63,7 @@ JOHN_LOVES_EVERYONE
   ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
   ( ↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻))))))))))))))))))
 john_loves_everyone : Bool
-john_loves_everyone = [ JOHN_LOVES_EVERYONE ] (john , loves′ , everyone , ∅) id
+john_loves_everyone = toAgda JOHN_LOVES_EVERYONE (john , loves′ , everyone , ∅) id
 --> forallₑ (λ x → person x ⊃ (john loves x))
 
 EVERYONE_LOVES_BILL : LG · EVERYONE · ⊗ · LOVES · ⊗ · BILL · ⊢[ S⁻ ]
@@ -72,7 +72,7 @@ EVERYONE_LOVES_BILL
   ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
   ( ↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻))))))))))))))))))
 everyone_loves_bill : Bool
-everyone_loves_bill = [ EVERYONE_LOVES_BILL ] (everyone , loves′ , bill , ∅) id
+everyone_loves_bill = toAgda EVERYONE_LOVES_BILL (everyone , loves′ , bill , ∅) id
 --> forallₑ (λ x → person x ⊃ (x loves bill))
 
 
@@ -84,7 +84,7 @@ EVERYONE_LOVES_SOMEONE₁
   ( ↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
   ( ↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))))))))))))))
 everyone_loves_someone₁ : Bool
-everyone_loves_someone₁ = [ EVERYONE_LOVES_SOMEONE₁ ] (everyone , loves′ , someone , ∅) id
+everyone_loves_someone₁ = toAgda EVERYONE_LOVES_SOMEONE₁ (everyone , loves′ , someone , ∅) id
 --> forallₑ (λ x → person x ⊃ existsₑ (λ y → person y ∧ x loves y))
 
 EVERYONE_LOVES_SOMEONE₂ : LG · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ NP⁺ · ⊗ · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ) ⊢[ S⁻ ]
@@ -95,7 +95,7 @@ EVERYONE_LOVES_SOMEONE₂
   ( ↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
   ( ↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))))))))))))
 everyone_loves_someone₂ : Bool
-everyone_loves_someone₂ = [ EVERYONE_LOVES_SOMEONE₂ ] (everyone , loves′ , someone , ∅) id
+everyone_loves_someone₂ = toAgda EVERYONE_LOVES_SOMEONE₂ (everyone , loves′ , someone , ∅) id
 --> existsₑ (λ y → person y ∧ forallₑ (λ x → person x ⊃ (x loves y)))
 
 EVERYONE_LOVES_SOMEONE₃ : LG · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ NP⁺ · ⊗ · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ) ⊢[ S⁻ ]
@@ -106,7 +106,7 @@ EVERYONE_LOVES_SOMEONE₃
   ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
   ( ↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))))))))
 everyone_loves_someone₃ : Bool
-everyone_loves_someone₃ = [ EVERYONE_LOVES_SOMEONE₃ ] (everyone , loves′ , someone , ∅) id
+everyone_loves_someone₃ = toAgda EVERYONE_LOVES_SOMEONE₃ (everyone , loves′ , someone , ∅) id
 --> forallₑ (λ x → person x ⊃ existsₑ (λ y → person y ∧ x loves y))
 
 EVERYONE_LOVES_SOMEONE₄ : LG · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ NP⁺ · ⊗ · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ) ⊢[ S⁻ ]
@@ -117,7 +117,7 @@ EVERYONE_LOVES_SOMEONE₄
   ( ↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
   ( ↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))))))))))))))))
 everyone_loves_someone₄ : Bool
-everyone_loves_someone₄ = [ EVERYONE_LOVES_SOMEONE₄ ] (everyone , loves′ , someone , ∅) id
+everyone_loves_someone₄ = toAgda EVERYONE_LOVES_SOMEONE₄ (everyone , loves′ , someone , ∅) id
 --> existsₑ (λ y → person y ∧ forallₑ (λ x → person x ⊃ (x loves y)))
 
 EVERYONE_LOVES_SOMEONE₅ : LG · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ NP⁺ · ⊗ · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ) ⊢[ S⁻ ]
@@ -128,7 +128,7 @@ EVERYONE_LOVES_SOMEONE₅
   ( ↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
   ( ↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))))))))))))
 everyone_loves_someone₅ : Bool
-everyone_loves_someone₅ = [ EVERYONE_LOVES_SOMEONE₅ ] (everyone , loves′ , someone , ∅) id
+everyone_loves_someone₅ = toAgda EVERYONE_LOVES_SOMEONE₅ (everyone , loves′ , someone , ∅) id
 --> forallₑ (λ x → person x ⊃ existsₑ (λ y → person y ∧ x loves y))
 
 EVERYONE_LOVES_SOMEONE₆ : LG · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ NP⁺ · ⊗ · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ) ⊢[ S⁻ ]
@@ -139,7 +139,7 @@ EVERYONE_LOVES_SOMEONE₆
   ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
   ( ↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))))))))))
 everyone_loves_someone₆ : Bool
-everyone_loves_someone₆ = [ EVERYONE_LOVES_SOMEONE₆ ] (everyone , loves′ , someone , ∅) id
+everyone_loves_someone₆ = toAgda EVERYONE_LOVES_SOMEONE₆ (everyone , loves′ , someone , ∅) id
 --> existsₑ (λ y → person y ∧ forallₑ (λ x → person x ⊃ (x loves y)))
 
 
@@ -151,7 +151,7 @@ MARY_THINKS_SOMEONE_LEFT₁
   ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
   ( ↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻))))))))))))))))) (⇒ᴸ ax⁺ ax⁻)))))
 mary_thinks_someone_left₁ : Bool
-mary_thinks_someone_left₁ = [ MARY_THINKS_SOMEONE_LEFT₁ ] (mary , thinks′ , someone , left′ , ∅) id
+mary_thinks_someone_left₁ = toAgda MARY_THINKS_SOMEONE_LEFT₁ (mary , thinks′ , someone , left′ , ∅) id
 --> mary thinks existsₑ (λ x → person x ∧ x left)
 
 MARY_THINKS_SOMEONE_LEFT₂ : LG · MARY · ⊗ · THINKS · ⊗ · SOMEONE · ⊗ · LEFT · ⊢[ S⁻ ]
@@ -161,7 +161,7 @@ MARY_THINKS_SOMEONE_LEFT₂
   ( ⇁ (r⇐⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
   ( ↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))))))))))) (⇒ᴸ ax⁺ ax⁻))))))))))))))
 mary_thinks_someone_left₂ : Bool
-mary_thinks_someone_left₂ = [ MARY_THINKS_SOMEONE_LEFT₂ ] (mary , thinks′ , someone , left′ , ∅) id
+mary_thinks_someone_left₂ = toAgda MARY_THINKS_SOMEONE_LEFT₂ (mary , thinks′ , someone , left′ , ∅) id
 --> mary thinks existsₑ (λ x → person x ∧ x left)
 
 ------------------------------------------------------------------------
@@ -190,5 +190,5 @@ MARY_THINKS_SOMEONE_LEFT₃
   ( ↽ (r⊗⇐ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ
   ( ⇁ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))) (⇒ᴸ ax⁺ ax⁻))))))))))))))))))))
 mary_thinks_someone_left₃ : Bool
-mary_thinks_someone_left₃ = [ MARY_THINKS_SOMEONE_LEFT₃ ] (mary , thinks′ , someone , left′ , ∅) id
+mary_thinks_someone_left₃ = toAgda MARY_THINKS_SOMEONE_LEFT₃ (mary , thinks′ , someone , left′ , ∅) id
 --> existsₑ (λ x → person x ∧ mary thinks (x left))
