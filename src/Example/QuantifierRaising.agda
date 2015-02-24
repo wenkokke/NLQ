@@ -60,6 +60,11 @@ SOMEONE′  = SOME′ ⊗ PERSON
 someone′  : ⟦ SOMEONE′ ⟧ᵀ
 someone′  = some′ , person
 
+EVERYONE¹ : Type
+EVERYONE¹  = ( ₁ np ) ¹
+everyone¹  : ⟦ EVERYONE¹ ⟧ᵀ
+everyone¹  = λ p → forallₑ (λ x → person x ⊃ p x)
+
 SOMEONE¹ : Type
 SOMEONE¹  = ( ₁ np ) ¹
 someone¹  : ⟦ SOMEONE¹ ⟧ᵀ
@@ -159,105 +164,20 @@ everyone_loves_someone₆ = toAgda EVERYONE_LOVES_SOMEONE₆ (everyone , loves�
 --> existsₑ (λ y → person y ∧ forallₑ (λ x → person x ⊃ (x loves y)))
 
 
-------------------------------------------------------------------------
--- TODO:
---
---   This case is problematic, and should be barred using unary
---   residuated operators (i.e. □ and ◇ with their structural forms
---   [_] and ⟨_⟩).
---
---   However, it seems that when using the trick of subtracting
---   negatively polarised NPs, we do not need the Grishin interaction
---   principles to derive the desired proofs.
---
---   So, we are left with the following problem: we want a type that
---   can be restricted using unary residuation (i.e. by using the
---   Grishin interaction principles, though I suppose that proof #3
---   would also be blocked by other operators) but which can still
---   create a continuation which holds the *entire* quantifier.
---
-------------------------------------------------------------------------
+EVERYONE_LOVES_SOMEONE₇ : LG · ( ₁ np ) ¹ · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · ( ₁ np ) ¹ · ) ⊢[ s⁻ ]
+EVERYONE_LOVES_SOMEONE₇
+  = ⇁ (r⇐⊗ (·¹ᴿ (r₁¹ (⇀ (₁·ᴿ
+  ( ↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (·¹ᴿ (r₁¹ (⇀ (₁·ᴿ
+  ( ↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))
+everyone_loves_someone₇ : Bool
+everyone_loves_someone₇ = toAgda EVERYONE_LOVES_SOMEONE₇ (everyone¹ , loves′ , someone¹ , ∅) id
+--> forallₑ (λ x → person x ⊃ existsₑ (λ y → person y ∧ x loves y))
 
-MARY_THINKS_SOMEONE_LEFT₁ : LG · MARY · ⊗ · THINKS · ⊗ · SOMEONE · ⊗ · LEFT · ⊢[ s⁻ ]
-MARY_THINKS_SOMEONE_LEFT₁
-  = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ
-  ( ⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
-  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
-  ( ↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻))))))))))))))))) (⇒ᴸ ax⁺ ax⁻)))))
-mary_thinks_someone_left₁ : Bool
-mary_thinks_someone_left₁ = toAgda MARY_THINKS_SOMEONE_LEFT₁ (mary , thinks′ , someone , left′ , ∅) id
---> mary thinks existsₑ (λ x → person x ∧ x left)
-
-MARY_THINKS_SOMEONE_LEFT₂ : LG · MARY · ⊗ · THINKS · ⊗ · SOMEONE · ⊗ · LEFT · ⊢[ s⁻ ]
-MARY_THINKS_SOMEONE_LEFT₂
-  = ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
-  ( ↽ (r⊗⇐ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ
-  ( ⇁ (r⇐⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
-  ( ↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))))))))))) (⇒ᴸ ax⁺ ax⁻))))))))))))))
-mary_thinks_someone_left₂ : Bool
-mary_thinks_someone_left₂ = toAgda MARY_THINKS_SOMEONE_LEFT₂ (mary , thinks′ , someone , left′ , ∅) id
---> mary thinks existsₑ (λ x → person x ∧ x left)
-
-MARY_THINKS_SOMEONE_LEFT₃ : LG · MARY · ⊗ · THINKS · ⊗ · SOMEONE · ⊗ · LEFT · ⊢[ s⁻ ]
-MARY_THINKS_SOMEONE_LEFT₃
-  = ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
-  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
-  ( ↽ (r⊗⇐ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ
-  ( ⇁ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))) (⇒ᴸ ax⁺ ax⁻))))))))))))))))))))
-mary_thinks_someone_left₃ : Bool
-mary_thinks_someone_left₃ = toAgda MARY_THINKS_SOMEONE_LEFT₃ (mary , thinks′ , someone , left′ , ∅) id
---> existsₑ (λ x → person x ∧ mary thinks (x left))
-
-
-MARY_THINKS_JOHN_LEFT : LG · MARY · ⊗ · ( np ⇒ s⁻ ) ⇐ ( □ s⁻ ) · ⊗ · JOHN · ⊗ · np ⇒ ( □ s⁻ ) · ⊢[ s⁻ ]
-MARY_THINKS_JOHN_LEFT
-  = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ
-  ( ⇁ (□ᴿ (r⇒⊗ (↼ (⇒ᴸ ax⁺ (□ᴸ ax⁻)))))) (⇒ᴸ ax⁺ ax⁻)))))
-
-
-------------------------------------------------------------------------
--- TODO:
---
---   It isn't this simple. We have to construct a type A which, on the
---   input side of the sequent will be forced to ⟨A⟩ or [A].
---
---   Perhaps if we force all applications of □ to be axioms?! No, the
---   problem isn't that it's eliminated *not* as an axiom (since it
---   already is, so restricting the rule in this respect doesn't
---   matter), but that eliminating these s⁻'s together doesn't force
---   the continuation to land here.
---
-------------------------------------------------------------------------
-
-MARY_THINKS_SOMEONE_LEFT₄ : LG · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ ( □ s⁻ ) · ⊗ ( · ( ( np⁻ ⇚ ( np ⇛ np⁻ ) ) ⇐ n ) ⊗ n · ⊗ · np ⇒ ( □ s⁻ ) · ) ) ⊢[ s⁻ ]
-MARY_THINKS_SOMEONE_LEFT₄
-  = ⇁ (r⇒⊗ (r⇐⊗      (↼ (flip ⇐ᴸ (⇒ᴸ ax⁺ ax⁻)
-  ( ⇁ (r⇐⊗ (⊗ᴸ  (r⇐⊗ (↼ (     ⇐ᴸ ax⁺
-  ( ↽ (⇚ᴸ  (r⊕⇚ (r⇛⊕ (⇀ (     ⇛ᴿ ax⁺
-  ( ↽ (r⊗⇐ (□ᴿ  (r⇒⊗ (↼ (     ⇒ᴸ ax⁺ (□ᴸ ax⁻)
-    ))))))))))))))))))))))
-mary_thinks_someone_left₄ : Bool
-mary_thinks_someone_left₄ = toAgda MARY_THINKS_SOMEONE_LEFT₄ (mary , thinks′ , someone , left′ , ∅) id
---> mary thinks existsₑ (λ x → person x ∧ x left)
-
-MARY_THINKS_SOMEONE_LEFT₅ : LG · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ ( □ s⁻ ) · ⊗ ( · ( ( np⁻ ⇚ ( np ⇛ np⁻ ) ) ⇐ n ) ⊗ n · ⊗ · np ⇒ ( □ s⁻ ) · ) ) ⊢[ s⁻ ]
-MARY_THINKS_SOMEONE_LEFT₅
-  = ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (     ⇐ᴸ ax⁺
-  ( ↽ (r⊗⇐ (r⊗⇒ (r⇐⊗          (↼ (flip ⇐ᴸ (⇒ᴸ ax⁺ ax⁻)
-  ( ⇁ (r⇐⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕      (⇀ (     ⇛ᴿ ax⁺
-  ( ↽ (r⊗⇐ (□ᴿ (r⇒⊗           (↼ (     ⇒ᴸ ax⁺ (□ᴸ ax⁻)
-    ))))))))))))))))))))))))))
-mary_thinks_someone_left₅ : Bool
-mary_thinks_someone_left₅ = toAgda MARY_THINKS_SOMEONE_LEFT₅ (mary , thinks′ , someone , left′ , ∅) id
---> mary thinks existsₑ (λ x → person x ∧ x left)
-
-MARY_THINKS_SOMEONE_LEFT₆ : LG · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ ( □ s⁻ ) · ⊗ ( · ( ( np⁻ ⇚ ( np ⇛ np⁻ ) ) ⇐ n ) ⊗ n · ⊗ · np ⇒ ( □ s⁻ ) · ) ) ⊢[ s⁻ ]
-MARY_THINKS_SOMEONE_LEFT₆
-  = ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (     ⇐ᴸ ax⁺
-  ( ↽ (⇚ᴸ  (r⊕⇚ (r⇛⊕          (⇀ (     ⇛ᴿ ax⁺
-  ( ↽ (r⊗⇐ (r⊗⇒ (r⇐⊗          (↼ (flip ⇐ᴸ (⇒ᴸ ax⁺ ax⁻)
-  ( ⇁ (□ᴿ  (((r⇒⊗             (↼ (     ⇒ᴸ ax⁺ (□ᴸ ax⁻)
-    ))))))))))))))))))))))))))
-mary_thinks_someone_left₆ : Bool
-mary_thinks_someone_left₆ = toAgda MARY_THINKS_SOMEONE_LEFT₆ (mary , thinks′ , someone , left′ , ∅) id
---> existsₑ (λ x → person x ∧ mary thinks (x left))
+EVERYONE_LOVES_SOMEONE₈ : LG · ( ₁ np ) ¹ · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · ( ₁ np ) ¹ · ) ⊢[ s⁻ ]
+EVERYONE_LOVES_SOMEONE₈
+  = ⇁ (r⇒⊗ (r⇒⊗ (·¹ᴿ (r₁¹ (⇀ (₁·ᴿ
+  ( ↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (·¹ᴿ (r₁¹ (⇀ (₁·ᴿ
+  ( ↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))
+everyone_loves_someone₈ : Bool
+everyone_loves_someone₈ = toAgda EVERYONE_LOVES_SOMEONE₈ (everyone¹ , loves′ , someone¹ , ∅) id
+--> existsₑ (λ y → person y ∧ forallₑ (λ x → person x ⊃ (x loves y)))

@@ -48,23 +48,33 @@ map<string,UNARY_CONNECTIVE> createStringToUnary()
     map<string,UNARY_CONNECTIVE> m;
     m["□"] = BOX;
     m["◇"] = DIAMOND;
+    m["₀"] = ZERO;
     m["⁰"] = ZERO;
+    m["₁"] = ONE;
     m["¹"] = ONE;
     return m;
 }
 map<string,UNARY_CONNECTIVE> stringToUnary = createStringToUnary();
 
-/* List of mapping from unary connectives to string */
-map<UNARY_CONNECTIVE,char*> createUnaryToString()
-{
-    map<UNARY_CONNECTIVE,char*> m;
-    m[BOX]     = "□";
-    m[DIAMOND] = "◇";
-    m[ZERO]    = "⁰";
-    m[ONE]     = "¹";
-    return m;
+char* unaryToString(UNARY_CONNECTIVE unary_connective, bool prefix) {
+    switch (unary_connective)
+    {
+    case BOX:
+        return "□";
+    case DIAMOND:
+        return "◇";
+    case ZERO:
+        if (prefix)
+            return "₀";
+        else
+            return "⁰";
+    case ONE:
+        if (prefix)
+            return "₁";
+        else
+            return "¹";
+    }
 }
-map<UNARY_CONNECTIVE,char*> unaryToString = createUnaryToString();
 
 /* Print string representation of formula to fout */
 void toStringFormula(FILE *fout, Formula *formula, bool top) {
@@ -90,10 +100,10 @@ void toStringFormula(FILE *fout, Formula *formula, bool top) {
             if(!top)
                 fprintf(fout, "( ");
             if(formula->prefix)
-                fprintf(fout, "%s ", unaryToString[formula->unary_connective]);
+                fprintf(fout, "%s ", unaryToString(formula->unary_connective, formula->prefix));
             toStringFormula(fout, formula->inner, false);
             if(!formula->prefix)
-                fprintf(fout, "%s ", unaryToString[formula->unary_connective]);
+                fprintf(fout, "%s ", unaryToString(formula->unary_connective, formula->prefix));
             if(!top)
                 fprintf(fout, ") ");
             break;
@@ -127,15 +137,29 @@ void toStringStructure(FILE *fout, Structure *structure, bool top) {
             break;
         /* Unary */
         case UNARY:
-            if(!top)
-                fprintf(fout, "( ");
-            if(structure->prefix)
-                fprintf(fout, "%s ", unaryToString[structure->unary_connective]);
-            toStringStructure(fout, structure->inner, false);
-            if(!structure->prefix)
-                fprintf(fout, "%s ", unaryToString[structure->unary_connective]);
-            if(!top)
-                fprintf(fout, ") ");
+            switch (structure->unary_connective)
+            {
+            case BOX:
+                fprintf(fout, "[ ");
+                toStringStructure(fout, structure->inner, false);
+                fprintf(fout, "] ");
+                break;
+            case DIAMOND:
+                fprintf(fout, "⟨ ");
+                toStringStructure(fout, structure->inner, false);
+                fprintf(fout, "⟩ ");
+                break;
+            default:
+                if(!top)
+                    fprintf(fout, "( ");
+                if(structure->prefix)
+                    fprintf(fout, "%s ", unaryToString(structure->unary_connective, structure->prefix));
+                toStringStructure(fout, structure->inner, false);
+                if(!structure->prefix)
+                    fprintf(fout, "%s ", unaryToString(structure->unary_connective, structure->prefix));
+                if(!top)
+                    fprintf(fout, ") ");
+            }
             break;
         /* Match */
         case MATCH:
