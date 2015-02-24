@@ -246,3 +246,10 @@ MARY_THINKS_SOMEONE_LEFT₆
 mary_thinks_someone_left₆ : Bool
 mary_thinks_someone_left₆ = toAgda MARY_THINKS_SOMEONE_LEFT₆ (mary , thinks′ , someone , left′ , ∅) id
 --> existsₑ (λ x → person x ∧ mary thinks (x left))
+
+a : LG · NP⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ ( □ S⁻ ) · ⊗ ( · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ · NP⁺ ⇒ ( □ S⁻ ) · ) ) ⊢[ S⁻ ]
+a = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ (⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺ (↽ (r⊗⇐ (□ᴿ (r⇒⊗ (↼ (⇒ᴸ ax⁺ (□ᴸ ax⁻))))))))))))))))))) (⇒ᴸ ax⁺ ax⁻)))))
+c : LG · NP⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ ( □ S⁻ ) · ⊗ ( · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ · NP⁺ ⇒ ( □ S⁻ ) · ) ) ⊢[ S⁻ ]
+c = ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ (⇁ (r⇐⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺ (↽ (r⊗⇐ (□ᴿ (r⇒⊗ (↼ (⇒ᴸ ax⁺ (□ᴸ ax⁻)))))))))))))) (⇒ᴸ ax⁺ ax⁻))))))))))))))
+e : LG · NP⁺ · ⊗ ( · ( NP⁺ ⇒ S⁻ ) ⇐ ( □ S⁻ ) · ⊗ ( · ( ( NP⁻ ⇚ ( NP⁺ ⇛ NP⁻ ) ) ⇐ N⁺ ) ⊗ N⁺ · ⊗ · NP⁺ ⇒ ( □ S⁻ ) · ) ) ⊢[ S⁻ ]
+e = ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺ (↽ (r⊗⇐ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ (⇁ (□ᴿ (r⇒⊗ (↼ (⇒ᴸ ax⁺ (□ᴸ ax⁻)))))) (⇒ᴸ ax⁺ ax⁻))))))))))))))))))))

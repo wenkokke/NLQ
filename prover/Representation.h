@@ -15,18 +15,20 @@ using namespace std;
 
 /* The binary connectives */
 enum BINARY_CONNECTIVE {
-    OTIMES     , /* (*) */
-    OBACKSLASH , /* (\) */
-    OSLASH     , /* (/) */
-    OPLUS      , /* (+) */
-    BACKSLASH  , /*  \  */
-    SLASH        /*  /  */
+    OTIMES     , /* ⊗ */
+    OBACKSLASH , /* ⇛ */
+    OSLASH     , /* ⇚ */
+    OPLUS      , /* ⊕ */
+    BACKSLASH  , /* ⇒ */
+    SLASH        /* ⇐ */
 };
 
 /* The unary connectives */
 enum UNARY_CONNECTIVE {
-    BOX,         /* [] */
-    DIAMOND      /* <> */
+    BOX,         /* □ */
+    DIAMOND,     /* ◇ */
+    ZERO,        /* 0 */
+    ONE          /* 1 */
 };
 
 /* The different types of formulas and structures */
