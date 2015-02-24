@@ -29,6 +29,10 @@ mutual
   ⌊ el  A ⌋ = zero
   ⌊ □   A ⌋ = ⌈ A ⌉
   ⌊ ◇   A ⌋ = ⌈ A ⌉
+  ⌊ ₀   A ⌋ = ⌈ A ⌉
+  ⌊ A   ⁰ ⌋ = ⌈ A ⌉
+  ⌊ ₁   A ⌋ = ⌈ A ⌉
+  ⌊ A   ¹ ⌋ = ⌈ A ⌉
   ⌊ A ⊗ B ⌋ = ⌈ A ⌉ + ⌈ B ⌉
   ⌊ A ⇚ B ⌋ = ⌈ A ⌉ + ⌈ B ⌉
   ⌊ A ⇛ B ⌋ = ⌈ A ⌉ + ⌈ B ⌉

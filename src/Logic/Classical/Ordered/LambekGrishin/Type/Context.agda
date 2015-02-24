@@ -46,6 +46,11 @@ data Context : Set ℓ where
   □>_  : Context → Context
   ◇>_  : Context → Context
 
+  ₀>_  : Context → Context
+  _<⁰  : Context → Context
+  ₁>_  : Context → Context
+  _<¹  : Context → Context
+
   _⊗>_ : Type → Context → Context
   _⇛>_ : Type → Context → Context
   _⇚>_ : Type → Context → Context
@@ -70,6 +75,17 @@ data Context : Set ℓ where
 ◇>-injective : ∀ {A B} → ◇> A ≡ ◇> B → A ≡ B
 ◇>-injective refl = refl
 
+₀>-injective : ∀ {A B} → ₀> A ≡ ₀> B → A ≡ B
+₀>-injective refl = refl
+
+<⁰-injective : ∀ {A B} → A <⁰ ≡ B <⁰ → A ≡ B
+<⁰-injective refl = refl
+
+₁>-injective : ∀ {A B} → ₁> A ≡ ₁> B → A ≡ B
+₁>-injective refl = refl
+
+<¹-injective : ∀ {A B} → A <¹ ≡ B <¹ → A ≡ B
+<¹-injective refl = refl
 
 ⊗>-injective : ∀ {A B C D} → A ⊗> B ≡ C ⊗> D → A ≡ C × B ≡ D
 ⊗>-injective refl = refl , refl
@@ -118,6 +134,10 @@ module Simple where
   []       [ A ] = A
   (□> B)   [ A ] = □ (B [ A ])
   (◇> B)   [ A ] = ◇ (B [ A ])
+  (₀> B)   [ A ] = ₀ (B [ A ])
+  (₁> B)   [ A ] = ₁ (B [ A ])
+  (B <⁰)   [ A ] = (B [ A ]) ⁰
+  (B <¹)   [ A ] = (B [ A ]) ¹
   (B ⊗> C) [ A ] = B ⊗ (C [ A ])
   (B ⇒> C) [ A ] = B ⇒ (C [ A ])
   (B ⇐> C) [ A ] = B ⇐ (C [ A ])
@@ -136,6 +156,10 @@ module Simple where
   []       < A > = A
   (□> B)   < A > = □> (B < A >)
   (◇> B)   < A > = ◇> (B < A >)
+  (₀> B)   < A > = ₀> (B < A >)
+  (₁> B)   < A > = ₁> (B < A >)
+  (B <⁰)   < A > = (B < A >) <⁰
+  (B <¹)   < A > = (B < A >) <¹
   (B ⊗> C) < A > = B ⊗> (C < A >)
   (B ⇒> C) < A > = B ⇒> (C < A >)
   (B ⇐> C) < A > = B ⇐> (C < A >)
@@ -161,6 +185,10 @@ module Simple where
   <>-def []       B C = refl
   <>-def (□> A)   B C rewrite <>-def A B C = refl
   <>-def (◇> A)   B C rewrite <>-def A B C = refl
+  <>-def (₀> A)   B C rewrite <>-def A B C = refl
+  <>-def (₁> A)   B C rewrite <>-def A B C = refl
+  <>-def (A <⁰)   B C rewrite <>-def A B C = refl
+  <>-def (A <¹)   B C rewrite <>-def A B C = refl
   <>-def (_ ⊗> A) B C rewrite <>-def A B C = refl
   <>-def (_ ⇒> A) B C rewrite <>-def A B C = refl
   <>-def (_ ⇐> A) B C rewrite <>-def A B C = refl
@@ -187,6 +215,10 @@ module Simple where
   <>-assoc []       B C = refl
   <>-assoc (□> A)   B C rewrite <>-assoc A B C = refl
   <>-assoc (◇> A)   B C rewrite <>-assoc A B C = refl
+  <>-assoc (₀> A)   B C rewrite <>-assoc A B C = refl
+  <>-assoc (₁> A)   B C rewrite <>-assoc A B C = refl
+  <>-assoc (A <⁰)   B C rewrite <>-assoc A B C = refl
+  <>-assoc (A <¹)   B C rewrite <>-assoc A B C = refl
   <>-assoc (_ ⊗> A) B C rewrite <>-assoc A B C = refl
   <>-assoc (_ ⇒> A) B C rewrite <>-assoc A B C = refl
   <>-assoc (_ ⇐> A) B C rewrite <>-assoc A B C = refl
@@ -210,6 +242,10 @@ module Simple where
   <>-identityʳ [] = refl
   <>-identityʳ (□> Γ)   rewrite <>-identityʳ Γ = refl
   <>-identityʳ (◇> Γ)   rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (₀> Γ)   rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (₁> Γ)   rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (Γ <⁰)   rewrite <>-identityʳ Γ = refl
+  <>-identityʳ (Γ <¹)   rewrite <>-identityʳ Γ = refl
   <>-identityʳ (A ⊗> Γ) rewrite <>-identityʳ Γ = refl
   <>-identityʳ (A ⇒> Γ) rewrite <>-identityʳ Γ = refl
   <>-identityʳ (A ⇐> Γ) rewrite <>-identityʳ Γ = refl
@@ -235,6 +271,10 @@ open Simple
 ⊗-unfold {[]}     Χ≠[] _ = ⊥-elim (Χ≠[] refl)
 ⊗-unfold {□> _} _ ()
 ⊗-unfold {◇> _} _ ()
+⊗-unfold {₀> _} _ ()
+⊗-unfold {₁> _} _ ()
+⊗-unfold {_ <⁰} _ ()
+⊗-unfold {_ <¹} _ ()
 ⊗-unfold {B ⊗> Χ} _ _ = Χ , B , inj₁ refl
 ⊗-unfold {Χ <⊗ B} _ _ = Χ , B , inj₂ refl
 ⊗-unfold {B ⇚> Χ} _ ()
@@ -255,6 +295,10 @@ open Simple
 ⇚-unfold {[]}     Χ≠[] _ = ⊥-elim (Χ≠[] refl)
 ⇚-unfold {□> _} _ ()
 ⇚-unfold {◇> _} _ ()
+⇚-unfold {₀> _} _ ()
+⇚-unfold {₁> _} _ ()
+⇚-unfold {_ <⁰} _ ()
+⇚-unfold {_ <¹} _ ()
 ⇚-unfold {B ⊗> Χ} _ ()
 ⇚-unfold {Χ <⊗ B} _ ()
 ⇚-unfold {B ⇚> Χ} _ _ = Χ , B , inj₁ refl
@@ -275,6 +319,10 @@ open Simple
 ⇛-unfold {[]}     Χ≠[] _ = ⊥-elim (Χ≠[] refl)
 ⇛-unfold {□> _} _ ()
 ⇛-unfold {◇> _} _ ()
+⇛-unfold {₀> _} _ ()
+⇛-unfold {₁> _} _ ()
+⇛-unfold {_ <⁰} _ ()
+⇛-unfold {_ <¹} _ ()
 ⇛-unfold {B ⊗> Χ} _ ()
 ⇛-unfold {Χ <⊗ B} _ ()
 ⇛-unfold {B ⇚> Χ} _ ()
@@ -295,6 +343,10 @@ open Simple
 ⊕-unfold {[]}     Χ≠[] _ = ⊥-elim (Χ≠[] refl)
 ⊕-unfold {□> _} _ ()
 ⊕-unfold {◇> _} _ ()
+⊕-unfold {₀> _} _ ()
+⊕-unfold {₁> _} _ ()
+⊕-unfold {_ <⁰} _ ()
+⊕-unfold {_ <¹} _ ()
 ⊕-unfold {B ⊗> Χ} _ ()
 ⊕-unfold {Χ <⊗ B} _ ()
 ⊕-unfold {B ⇚> Χ} _ ()
@@ -315,6 +367,10 @@ open Simple
 ⇒-unfold {[]}     Χ≠[] _ = ⊥-elim (Χ≠[] refl)
 ⇒-unfold {□> _} _ ()
 ⇒-unfold {◇> _} _ ()
+⇒-unfold {₀> _} _ ()
+⇒-unfold {₁> _} _ ()
+⇒-unfold {_ <⁰} _ ()
+⇒-unfold {_ <¹} _ ()
 ⇒-unfold {B ⊗> Χ} _ ()
 ⇒-unfold {Χ <⊗ B} _ ()
 ⇒-unfold {B ⇚> Χ} _ ()
@@ -335,6 +391,10 @@ open Simple
 ⇐-unfold {[]}     Χ≠[] _ = ⊥-elim (Χ≠[] refl)
 ⇐-unfold {□> _} _ ()
 ⇐-unfold {◇> _} _ ()
+⇐-unfold {₀> _} _ ()
+⇐-unfold {₁> _} _ ()
+⇐-unfold {_ <⁰} _ ()
+⇐-unfold {_ <¹} _ ()
 ⇐-unfold {B ⊗> Χ} _ ()
 ⇐-unfold {Χ <⊗ B} _ ()
 ⇐-unfold {B ⇚> Χ} _ ()
@@ -356,6 +416,10 @@ is-[]? : (A : Context) → Dec (A ≡ [])
 is-[]? []       = yes refl
 is-[]? (□> _)   = no (λ ())
 is-[]? (◇> _)   = no (λ ())
+is-[]? (₀> _)   = no (λ ())
+is-[]? (₁> _)   = no (λ ())
+is-[]? (_ <⁰)   = no (λ ())
+is-[]? (_ <¹)   = no (λ ())
 is-[]? (_ ⊗> _) = no (λ ())
 is-[]? (_ ⇛> _) = no (λ ())
 is-[]? (_ ⇚> _) = no (λ ())
@@ -376,6 +440,10 @@ is-[]? (_ <⇐ _) = no (λ ())
 Γ≠[]→elB≠Γ[A] [] Γ≠[] p = Γ≠[] refl
 Γ≠[]→elB≠Γ[A] (□> _)   Γ≠[] ()
 Γ≠[]→elB≠Γ[A] (◇> _)   Γ≠[] ()
+Γ≠[]→elB≠Γ[A] (₀> _)   Γ≠[] ()
+Γ≠[]→elB≠Γ[A] (₁> _)   Γ≠[] ()
+Γ≠[]→elB≠Γ[A] (_ <⁰)   Γ≠[] ()
+Γ≠[]→elB≠Γ[A] (_ <¹)   Γ≠[] ()
 Γ≠[]→elB≠Γ[A] (_ ⊗> Γ) Γ≠[] ()
 Γ≠[]→elB≠Γ[A] (_ ⇛> Γ) Γ≠[] ()
 Γ≠[]→elB≠Γ[A] (_ ⇚> Γ) Γ≠[] ()
@@ -396,6 +464,10 @@ is-[]? (_ <⇐ _) = no (λ ())
 Δ≠[]→Δ<Γ>≠[] Γ [] Δ≠[] _ = Δ≠[] refl
 Δ≠[]→Δ<Γ>≠[] Γ (□>   _) Δ≠[] ()
 Δ≠[]→Δ<Γ>≠[] Γ (◇>   _) Δ≠[] ()
+Δ≠[]→Δ<Γ>≠[] Γ (₀>   _) Δ≠[] ()
+Δ≠[]→Δ<Γ>≠[] Γ (₁>   _) Δ≠[] ()
+Δ≠[]→Δ<Γ>≠[] Γ (_   <⁰) Δ≠[] ()
+Δ≠[]→Δ<Γ>≠[] Γ (_   <¹) Δ≠[] ()
 Δ≠[]→Δ<Γ>≠[] Γ (_ ⊗> Δ) Δ≠[] ()
 Δ≠[]→Δ<Γ>≠[] Γ (_ ⇛> Δ) Δ≠[] ()
 Δ≠[]→Δ<Γ>≠[] Γ (_ ⇚> Δ) Δ≠[] ()
@@ -414,9 +486,13 @@ is-[]? (_ <⇐ _) = no (λ ())
 -- another context around it will always result in a non-empty
 -- context.
 Γ≠[]→Δ<Γ>≠[] : ∀ Γ Δ → Γ ≢ [] → Δ < Γ > ≢ []
-Γ≠[]→Δ<Γ>≠[] Γ    []    Γ≠[] = Γ≠[]
+Γ≠[]→Δ<Γ>≠[] Γ []       Γ≠[] = Γ≠[]
 Γ≠[]→Δ<Γ>≠[] Γ (□>   _) Γ≠[] = λ ()
 Γ≠[]→Δ<Γ>≠[] Γ (◇>   _) Γ≠[] = λ ()
+Γ≠[]→Δ<Γ>≠[] Γ (₀>   _) Γ≠[] = λ ()
+Γ≠[]→Δ<Γ>≠[] Γ (₁>   _) Γ≠[] = λ ()
+Γ≠[]→Δ<Γ>≠[] Γ (_   <⁰) Γ≠[] = λ ()
+Γ≠[]→Δ<Γ>≠[] Γ (_   <¹) Γ≠[] = λ ()
 Γ≠[]→Δ<Γ>≠[] Γ (A ⊗> Δ) Γ≠[] = λ ()
 Γ≠[]→Δ<Γ>≠[] Γ (A ⇛> Δ) Γ≠[] = λ ()
 Γ≠[]→Δ<Γ>≠[] Γ (A ⇚> Δ) Γ≠[] = λ ()
@@ -438,6 +514,10 @@ A≤Γ[A] : ∀ A Γ → ⌈ A ⌉ ≤ ⌈ Γ [ A ] ⌉
 A≤Γ[A] A [] = ≤-refl
 A≤Γ[A] A (□>   Γ) = ≤-step (A≤Γ[A] A Γ)
 A≤Γ[A] A (◇>   Γ) = ≤-step (A≤Γ[A] A Γ)
+A≤Γ[A] A (₀>   Γ) = ≤-step (A≤Γ[A] A Γ)
+A≤Γ[A] A (₁>   Γ) = ≤-step (A≤Γ[A] A Γ)
+A≤Γ[A] A (Γ   <⁰) = ≤-step (A≤Γ[A] A Γ)
+A≤Γ[A] A (Γ   <¹) = ≤-step (A≤Γ[A] A Γ)
 A≤Γ[A] A (B ⊗> Γ) = ≤-step (≤-trans (A≤Γ[A] A Γ) (n≤m+n ⌈ B ⌉ ⌈ Γ [ A ] ⌉))
 A≤Γ[A] A (B ⇛> Γ) = ≤-step (≤-trans (A≤Γ[A] A Γ) (n≤m+n ⌈ B ⌉ ⌈ Γ [ A ] ⌉))
 A≤Γ[A] A (B ⇚> Γ) = ≤-step (≤-trans (A≤Γ[A] A Γ) (n≤m+n ⌈ B ⌉ ⌈ Γ [ A ] ⌉))
@@ -459,6 +539,10 @@ A≤Γ[A] A (Γ <⇐ B) = ≤-step (≤-trans (A≤Γ[A] A Γ) (m≤m+n ⌈ Γ [
 Γ≠[]→A<Γ[A] A [] Γ≠[] = ⊥-elim (Γ≠[] refl)
 Γ≠[]→A<Γ[A] A (□>   Γ) _ = s≤s (A≤Γ[A] A Γ)
 Γ≠[]→A<Γ[A] A (◇>   Γ) _ = s≤s (A≤Γ[A] A Γ)
+Γ≠[]→A<Γ[A] A (₀>   Γ) _ = s≤s (A≤Γ[A] A Γ)
+Γ≠[]→A<Γ[A] A (₁>   Γ) _ = s≤s (A≤Γ[A] A Γ)
+Γ≠[]→A<Γ[A] A (Γ   <⁰) _ = s≤s (A≤Γ[A] A Γ)
+Γ≠[]→A<Γ[A] A (Γ   <¹) _ = s≤s (A≤Γ[A] A Γ)
 Γ≠[]→A<Γ[A] A (B ⊗> Γ) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (n≤m+n ⌈ B ⌉ ⌈ Γ [ A ] ⌉))
 Γ≠[]→A<Γ[A] A (B ⇛> Γ) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (n≤m+n ⌈ B ⌉ ⌈ Γ [ A ] ⌉))
 Γ≠[]→A<Γ[A] A (B ⇚> Γ) _ = s≤s (≤-trans (A≤Γ[A] A Γ) (n≤m+n ⌈ B ⌉ ⌈ Γ [ A ] ⌉))
@@ -625,6 +709,150 @@ module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
   _ <⊕ _ ≟-Context ◇> _   = no (λ ())
   _ <⇒ _ ≟-Context ◇> _   = no (λ ())
   _ <⇐ _ ≟-Context ◇> _   = no (λ ())
+  ₀> A   ≟-Context ₀> B   with A ≟-Context B
+  ... | yes A=B rewrite A=B = yes refl
+  ... | no  A≠B = no (A≠B ∘ ₀>-injective)
+  ₁> _   ≟-Context ₀> _   = no (λ ())
+  ₀> _   ≟-Context ₁> _   = no (λ ())
+  ₁> A   ≟-Context ₁> B   with A ≟-Context B
+  ... | yes A=B rewrite A=B = yes refl
+  ... | no  A≠B = no (A≠B ∘ ₁>-injective)
+  ₀> _   ≟-Context []     = no (λ ())
+  ₁> _   ≟-Context []     = no (λ ())
+  ₀> _   ≟-Context _ ⊗> _ = no (λ ())
+  ₁> _   ≟-Context _ ⊗> _ = no (λ ())
+  ₀> _   ≟-Context _ ⇛> _ = no (λ ())
+  ₁> _   ≟-Context _ ⇛> _ = no (λ ())
+  ₀> _   ≟-Context _ ⇚> _ = no (λ ())
+  ₁> _   ≟-Context _ ⇚> _ = no (λ ())
+  ₀> _   ≟-Context _ ⊕> _ = no (λ ())
+  ₁> _   ≟-Context _ ⊕> _ = no (λ ())
+  ₀> _   ≟-Context _ ⇒> _ = no (λ ())
+  ₁> _   ≟-Context _ ⇒> _ = no (λ ())
+  ₀> _   ≟-Context _ ⇐> _ = no (λ ())
+  ₁> _   ≟-Context _ ⇐> _ = no (λ ())
+  ₀> _   ≟-Context _ <⊗ _ = no (λ ())
+  ₁> _   ≟-Context _ <⊗ _ = no (λ ())
+  ₀> _   ≟-Context _ <⇛ _ = no (λ ())
+  ₁> _   ≟-Context _ <⇛ _ = no (λ ())
+  ₀> _   ≟-Context _ <⇚ _ = no (λ ())
+  ₁> _   ≟-Context _ <⇚ _ = no (λ ())
+  ₀> _   ≟-Context _ <⊕ _ = no (λ ())
+  ₁> _   ≟-Context _ <⊕ _ = no (λ ())
+  ₀> _   ≟-Context _ <⇒ _ = no (λ ())
+  ₁> _   ≟-Context _ <⇒ _ = no (λ ())
+  ₀> _   ≟-Context _ <⇐ _ = no (λ ())
+  ₁> _   ≟-Context _ <⇐ _ = no (λ ())
+  _ ⊗> _ ≟-Context ₀> _   = no (λ ())
+  _ ⇛> _ ≟-Context ₀> _   = no (λ ())
+  _ ⇚> _ ≟-Context ₀> _   = no (λ ())
+  _ ⊕> _ ≟-Context ₀> _   = no (λ ())
+  _ ⇒> _ ≟-Context ₀> _   = no (λ ())
+  _ ⇐> _ ≟-Context ₀> _   = no (λ ())
+  _ <⊗ _ ≟-Context ₀> _   = no (λ ())
+  _ <⇛ _ ≟-Context ₀> _   = no (λ ())
+  _ <⇚ _ ≟-Context ₀> _   = no (λ ())
+  _ <⊕ _ ≟-Context ₀> _   = no (λ ())
+  _ <⇒ _ ≟-Context ₀> _   = no (λ ())
+  _ <⇐ _ ≟-Context ₀> _   = no (λ ())
+  _ ⊗> _ ≟-Context ₁> _   = no (λ ())
+  _ ⇛> _ ≟-Context ₁> _   = no (λ ())
+  _ ⇚> _ ≟-Context ₁> _   = no (λ ())
+  _ ⊕> _ ≟-Context ₁> _   = no (λ ())
+  _ ⇒> _ ≟-Context ₁> _   = no (λ ())
+  _ ⇐> _ ≟-Context ₁> _   = no (λ ())
+  _ <⊗ _ ≟-Context ₁> _   = no (λ ())
+  _ <⇛ _ ≟-Context ₁> _   = no (λ ())
+  _ <⇚ _ ≟-Context ₁> _   = no (λ ())
+  _ <⊕ _ ≟-Context ₁> _   = no (λ ())
+  _ <⇒ _ ≟-Context ₁> _   = no (λ ())
+  _ <⇐ _ ≟-Context ₁> _   = no (λ ())
+  A <⁰   ≟-Context B <⁰   with A ≟-Context B
+  ... | yes A=B rewrite A=B = yes refl
+  ... | no  A≠B = no (A≠B ∘ <⁰-injective)
+  _ <¹   ≟-Context _ <⁰   = no (λ ())
+  _ <⁰   ≟-Context _ <¹   = no (λ ())
+  A <¹   ≟-Context B <¹   with A ≟-Context B
+  ... | yes A=B rewrite A=B = yes refl
+  ... | no  A≠B = no (A≠B ∘ <¹-injective)
+  _ <⁰   ≟-Context []     = no (λ ())
+  _ <¹   ≟-Context []     = no (λ ())
+  _ <⁰   ≟-Context _ ⊗> _ = no (λ ())
+  _ <¹   ≟-Context _ ⊗> _ = no (λ ())
+  _ <⁰   ≟-Context _ ⇛> _ = no (λ ())
+  _ <¹   ≟-Context _ ⇛> _ = no (λ ())
+  _ <⁰   ≟-Context _ ⇚> _ = no (λ ())
+  _ <¹   ≟-Context _ ⇚> _ = no (λ ())
+  _ <⁰   ≟-Context _ ⊕> _ = no (λ ())
+  _ <¹   ≟-Context _ ⊕> _ = no (λ ())
+  _ <⁰   ≟-Context _ ⇒> _ = no (λ ())
+  _ <¹   ≟-Context _ ⇒> _ = no (λ ())
+  _ <⁰   ≟-Context _ ⇐> _ = no (λ ())
+  _ <¹   ≟-Context _ ⇐> _ = no (λ ())
+  _ <⁰   ≟-Context _ <⊗ _ = no (λ ())
+  _ <¹   ≟-Context _ <⊗ _ = no (λ ())
+  _ <⁰   ≟-Context _ <⇛ _ = no (λ ())
+  _ <¹   ≟-Context _ <⇛ _ = no (λ ())
+  _ <⁰   ≟-Context _ <⇚ _ = no (λ ())
+  _ <¹   ≟-Context _ <⇚ _ = no (λ ())
+  _ <⁰   ≟-Context _ <⊕ _ = no (λ ())
+  _ <¹   ≟-Context _ <⊕ _ = no (λ ())
+  _ <⁰   ≟-Context _ <⇒ _ = no (λ ())
+  _ <¹   ≟-Context _ <⇒ _ = no (λ ())
+  _ <⁰   ≟-Context _ <⇐ _ = no (λ ())
+  _ <¹   ≟-Context _ <⇐ _ = no (λ ())
+  _ ⊗> _ ≟-Context _ <⁰   = no (λ ())
+  _ ⇛> _ ≟-Context _ <⁰   = no (λ ())
+  _ ⇚> _ ≟-Context _ <⁰   = no (λ ())
+  _ ⊕> _ ≟-Context _ <⁰   = no (λ ())
+  _ ⇒> _ ≟-Context _ <⁰   = no (λ ())
+  _ ⇐> _ ≟-Context _ <⁰   = no (λ ())
+  _ <⊗ _ ≟-Context _ <⁰   = no (λ ())
+  _ <⇛ _ ≟-Context _ <⁰   = no (λ ())
+  _ <⇚ _ ≟-Context _ <⁰   = no (λ ())
+  _ <⊕ _ ≟-Context _ <⁰   = no (λ ())
+  _ <⇒ _ ≟-Context _ <⁰   = no (λ ())
+  _ <⇐ _ ≟-Context _ <⁰   = no (λ ())
+  _ ⊗> _ ≟-Context _ <¹   = no (λ ())
+  _ ⇛> _ ≟-Context _ <¹   = no (λ ())
+  _ ⇚> _ ≟-Context _ <¹   = no (λ ())
+  _ ⊕> _ ≟-Context _ <¹   = no (λ ())
+  _ ⇒> _ ≟-Context _ <¹   = no (λ ())
+  _ ⇐> _ ≟-Context _ <¹   = no (λ ())
+  _ <⊗ _ ≟-Context _ <¹   = no (λ ())
+  _ <⇛ _ ≟-Context _ <¹   = no (λ ())
+  _ <⇚ _ ≟-Context _ <¹   = no (λ ())
+  _ <⊕ _ ≟-Context _ <¹   = no (λ ())
+  _ <⇒ _ ≟-Context _ <¹   = no (λ ())
+  _ <⇐ _ ≟-Context _ <¹   = no (λ ())
+  _≟-Context_ [] (₀>_ _)  = no (λ ())
+  _≟-Context_ [] (_<⁰ _)  = no (λ ())
+  _≟-Context_ [] (₁>_ _)  = no (λ ())
+  _≟-Context_ [] (_<¹ _)  = no (λ ())
+  _≟-Context_ (□>_ _) (₀>_ _) = no (λ ())
+  _≟-Context_ (□>_ _) (_<⁰ _) = no (λ ())
+  _≟-Context_ (□>_ _) (₁>_ _) = no (λ ())
+  _≟-Context_ (□>_ _) (_<¹ _) = no (λ ())
+  _≟-Context_ (◇>_ _) (₀>_ _) = no (λ ())
+  _≟-Context_ (◇>_ _) (_<⁰ _) = no (λ ())
+  _≟-Context_ (◇>_ _) (₁>_ _) = no (λ ())
+  _≟-Context_ (◇>_ _) (_<¹ _) = no (λ ())
+  _≟-Context_ (₀>_ _) (□>_ _) = no (λ ())
+  _≟-Context_ (₀>_ _) (◇>_ _) = no (λ ())
+  _≟-Context_ (₀>_ _) (_<⁰ _) = no (λ ())
+  _≟-Context_ (₀>_ _) (_<¹ _) = no (λ ())
+  _≟-Context_ (_<⁰ _) (□>_ _) = no (λ ())
+  _≟-Context_ (_<⁰ _) (◇>_ _) = no (λ ())
+  _≟-Context_ (_<⁰ _) (₀>_ _) = no (λ ())
+  _≟-Context_ (_<⁰ _) (₁>_ _) = no (λ ())
+  _≟-Context_ (₁>_ _) (□>_ _) = no (λ ())
+  _≟-Context_ (₁>_ _) (◇>_ _) = no (λ ())
+  _≟-Context_ (₁>_ _) (_<⁰ _) = no (λ ())
+  _≟-Context_ (₁>_ _) (_<¹ _) = no (λ ())
+  _≟-Context_ (_<¹ _) (□>_ _) = no (λ ())
+  _≟-Context_ (_<¹ _) (◇>_ _) = no (λ ())
+  _≟-Context_ (_<¹ _) (₀>_ _) = no (λ ())
+  _≟-Context_ (_<¹ _) (₁>_ _) = no (λ ())
   A ⊗> Γ ≟-Context []     = no (λ ())
   A ⇒> Γ ≟-Context []     = no (λ ())
   A ⇐> Γ ≟-Context []     = no (λ ())

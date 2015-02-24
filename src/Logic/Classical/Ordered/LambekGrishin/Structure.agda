@@ -30,6 +30,10 @@ data Structure : Set ℓ where
   ·_· : Type      → Structure
   [_] : Structure → Structure
   ⟨_⟩ : Structure → Structure
+  ₀_  : Structure → Structure
+  _⁰  : Structure → Structure
+  ₁_  : Structure → Structure
+  _¹  : Structure → Structure
   _⇒_ : Structure → Structure → Structure
   _⇐_ : Structure → Structure → Structure
   _⇚_ : Structure → Structure → Structure

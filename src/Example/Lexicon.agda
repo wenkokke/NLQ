@@ -59,13 +59,13 @@ abstract
 -- specific to lambek-grishin
 
 JOHN BILL MARY LOVES THINKS LEFT PERSON : Type
-JOHN   = NP⁺
-BILL   = NP⁺
-MARY   = NP⁺
-LOVES  = (NP⁺ ⇒ S⁻) ⇐ NP⁺
-THINKS = (NP⁺ ⇒ S⁻) ⇐ S⁻
-LEFT   = NP⁺ ⇒ S⁻
-PERSON = N⁺
+JOHN   = np
+BILL   = np
+MARY   = np
+LOVES  = (np ⇒ s⁻) ⇐ np
+THINKS = (np ⇒ s⁻) ⇐ s⁻
+LEFT   = np ⇒ s⁻
+PERSON = n
 
 loves′  : ⟦ LOVES ⟧ᵀ
 loves′  ((x , k) , y) = k (x loves y)

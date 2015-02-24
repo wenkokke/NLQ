@@ -45,6 +45,10 @@ mutual
   ⟦ el (- , A) ⟧⁺ = ¬ (¬ el A)
   ⟦     □   A  ⟧⁺ = ¬  ⟦ A ⟧⁻
   ⟦     ◇   A  ⟧⁺ =    ⟦ A ⟧⁺
+  ⟦     ₀   A  ⟧⁺ = ¬  ⟦ A ⟧⁺
+  ⟦     A   ⁰  ⟧⁺ = ¬  ⟦ A ⟧⁺
+  ⟦     ₁   A  ⟧⁺ =    ⟦ A ⟧⁻
+  ⟦     A   ¹  ⟧⁺ =    ⟦ A ⟧⁻
   ⟦     A ⊗ B  ⟧⁺ =    ⟦ A ⟧⁺ ⊗ ⟦ B ⟧⁺
   ⟦     A ⇚ B  ⟧⁺ =    ⟦ A ⟧⁺ ⊗ ⟦ B ⟧⁻
   ⟦     A ⇛ B  ⟧⁺ =    ⟦ A ⟧⁻ ⊗ ⟦ B ⟧⁺
@@ -57,6 +61,10 @@ mutual
   ⟦ el (- , A) ⟧⁻ = ¬ el A
   ⟦     □   A  ⟧⁻ =    ⟦ A ⟧⁻
   ⟦     ◇   A  ⟧⁻ = ¬  ⟦ A ⟧⁺
+  ⟦     ₀   A  ⟧⁻ =    ⟦ A ⟧⁺
+  ⟦     A   ⁰  ⟧⁻ =    ⟦ A ⟧⁺
+  ⟦     ₁   A  ⟧⁻ = ¬  ⟦ A ⟧⁻
+  ⟦     A   ¹  ⟧⁻ = ¬  ⟦ A ⟧⁻
   ⟦     A ⊗ B  ⟧⁻ = ¬ (⟦ A ⟧⁺ ⊗ ⟦ B ⟧⁺)
   ⟦     A ⇚ B  ⟧⁻ = ¬ (⟦ A ⟧⁺ ⊗ ⟦ B ⟧⁻)
   ⟦     A ⇛ B  ⟧⁻ = ¬ (⟦ A ⟧⁻ ⊗ ⟦ B ⟧⁺)
@@ -65,9 +73,12 @@ mutual
   ⟦     A ⇐ B  ⟧⁻ =    ⟦ A ⟧⁻ ⊗ ⟦ B ⟧⁺
 
 
+
 Positive-≡ : ∀ {A} → Positive A → ⟦ A ⟧⁻ ≡ ¬ ⟦ A ⟧⁺
 Positive-≡ (el  A) = refl
 Positive-≡ (◇   A) = refl
+Positive-≡ (₁   A) = refl
+Positive-≡ (A   ¹) = refl
 Positive-≡ (A ⊗ B) = refl
 Positive-≡ (A ⇚ B) = refl
 Positive-≡ (A ⇛ B) = refl
@@ -75,6 +86,8 @@ Positive-≡ (A ⇛ B) = refl
 Negative-≡ : ∀ {A} → Negative A → ⟦ A ⟧⁺ ≡ ¬ ⟦ A ⟧⁻
 Negative-≡ (el  A) = refl
 Negative-≡ (□   A) = refl
+Negative-≡ (₀   A) = refl
+Negative-≡ (A   ⁰) = refl
 Negative-≡ (A ⊕ B) = refl
 Negative-≡ (A ⇒ B) = refl
 Negative-≡ (A ⇐ B) = refl
@@ -87,6 +100,10 @@ private
     ⟦ ·_· { - } A ⟧ˢ = ⟦ A ⟧⁻ , ∅
     ⟦     [ Γ ]   ⟧ˢ = ⟦ Γ ⟧ˢ
     ⟦     ⟨ Γ ⟩   ⟧ˢ = ⟦ Γ ⟧ˢ
+    ⟦     ₀   Γ   ⟧ˢ = ⟦ Γ ⟧ˢ
+    ⟦     Γ   ⁰   ⟧ˢ = ⟦ Γ ⟧ˢ
+    ⟦     ₁   Γ   ⟧ˢ = ⟦ Γ ⟧ˢ
+    ⟦     Γ   ¹   ⟧ˢ = ⟦ Γ ⟧ˢ
     ⟦     Γ ⊗ Δ   ⟧ˢ = ⟦ Γ ⟧ˢ ++ ⟦ Δ ⟧ˢ
     ⟦     Γ ⇚ Δ   ⟧ˢ = ⟦ Γ ⟧ˢ ++ ⟦ Δ ⟧ˢ
     ⟦     Γ ⇛ Δ   ⟧ˢ = ⟦ Γ ⟧ˢ ++ ⟦ Δ ⟧ˢ
@@ -112,6 +129,14 @@ private
     [ □ᴿ      f   ]ᵀ = [ f ]ᵀ
     [ ◇ᴸ      f   ]ᵀ = [ f ]ᵀ
     [ ◇ᴿ      f   ]ᵀ = [ f ]ᵀ
+    [ ₀·ᴸ     f   ]ᵀ = [ f ]ᵀ
+    [ ₀·ᴿ     f   ]ᵀ = [ f ]ᵀ
+    [ ·⁰ᴸ     f   ]ᵀ = [ f ]ᵀ
+    [ ·⁰ᴿ     f   ]ᵀ = [ f ]ᵀ
+    [ ₁·ᴸ     f   ]ᵀ = [ f ]ᵀ
+    [ ₁·ᴿ     f   ]ᵀ = [ f ]ᵀ
+    [ ·¹ᴸ     f   ]ᵀ = [ f ]ᵀ
+    [ ·¹ᴿ     f   ]ᵀ = [ f ]ᵀ
     [ ⊗ᴿ      f g ]ᵀ = ⊗ᵢ [ f ]ᵀ [ g ]ᵀ
     [ ⇚ᴿ      f g ]ᵀ = ⊗ᵢ [ f ]ᵀ [ g ]ᵀ
     [ ⇛ᴿ      g f ]ᵀ = ⊗ᵢ [ f ]ᵀ [ g ]ᵀ
@@ -126,6 +151,10 @@ private
     [ ⇐ᴿ  {X} f   ]ᵀ = ⊗ₑᴸ₂ ⟦ X ⟧ˢ [ f ]ᵀ
     [ r□◇ {X} {Y} f ]ᵀ = [ f ]ᵀ
     [ r◇□ {X} {Y} f ]ᵀ = [ f ]ᵀ
+    [ r₀⁰ {X} {Y} f ]ᵀ = sᴸ ⟦ X ⟧ˢ [ f ]ᵀ
+    [ r⁰₀ {X} {Y} f ]ᵀ = sᴸ ⟦ Y ⟧ˢ [ f ]ᵀ
+    [ r₁¹ {X} {Y} f ]ᵀ = sᴸ ⟦ X ⟧ˢ [ f ]ᵀ
+    [ r¹₁ {X} {Y} f ]ᵀ = sᴸ ⟦ Y ⟧ˢ [ f ]ᵀ
     [ r⇒⊗ {X} {Y} {Z} f ]ᵀ rewrite      assoc ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ  = Y[XZ]→X[YZ] ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ [ f ]ᵀ
     [ r⊗⇒ {X} {Y} {Z} f ]ᵀ rewrite sym (assoc ⟦ Y ⟧ˢ ⟦ X ⟧ˢ ⟦ Z ⟧ˢ) = [YX]Z→[XY]Z ⟦ Y ⟧ˢ ⟦ X ⟧ˢ ⟦ Z ⟧ˢ [ f ]ᵀ
     [ r⇐⊗ {X} {Y} {Z} f ]ᵀ rewrite      assoc ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ  = X[ZY]→X[YZ] ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ [ f ]ᵀ
