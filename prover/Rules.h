@@ -85,13 +85,14 @@ vector<Rule*> createRules()
 
     /* ·¹ᴸ */
     rules.push_back(new Rule("·¹ᴸ", "\\cdot^{1L}",
-        new Sequent(new Structure(new Formula  (new Formula('A') , ONE)), new Structure('Y')),
-        new Sequent(new Structure(new Structure(new Formula('A')), ONE) , new Structure('Y'))));
+        new Sequent(new Structure(new Structure('Y'), ONE), new Formula(new Formula  ('A'), ONE)),
+        new Sequent(              new Formula  ('A')      ,             new Structure('Y')      )));
 
     /* ·¹ᴿ */
     rules.push_back(new Rule("·¹ᴿ", "\\cdot^{1R}",
-        new Sequent(new Structure(new Structure('Y'), ONE), new Formula(new Formula  ('A'), ONE)),
-        new Sequent(              new Formula  ('A')      ,             new Structure('Y')      )));
+        new Sequent(new Structure(new Formula  (new Formula('A') , ONE)), new Structure('Y')),
+        new Sequent(new Structure(new Structure(new Formula('A')), ONE) , new Structure('Y'))));
+
 
     /* ₀·ᴸ */
     rules.push_back(new Rule("₀·ᴸ", "_0\\cdot^L",

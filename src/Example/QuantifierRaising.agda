@@ -11,6 +11,7 @@ open import Data.Product                          using (_,_)
 open import Data.String                           using (String)
 open import Data.Vec                              using (Vec; _∷_; [])
 open import Relation.Nullary                      using (Dec; yes; no)
+open import Relation.Nullary.Decidable            using (fromWitness)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Example.Lexicon
 
@@ -59,6 +60,10 @@ SOMEONE′  = SOME′ ⊗ PERSON
 someone′  : ⟦ SOMEONE′ ⟧ᵀ
 someone′  = some′ , person
 
+SOMEONE¹ : Type
+SOMEONE¹  = ( ₁ np ) ¹
+someone¹  : ⟦ SOMEONE¹ ⟧ᵀ
+someone¹  = λ p → existsₑ (λ x → person x ∧ p x)
 
 JOHN_LOVES_BILL : LG · JOHN · ⊗ · LOVES · ⊗ · BILL · ⊢[ s⁻ ]
 JOHN_LOVES_BILL = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))
@@ -154,6 +159,24 @@ everyone_loves_someone₆ = toAgda EVERYONE_LOVES_SOMEONE₆ (everyone , loves�
 --> existsₑ (λ y → person y ∧ forallₑ (λ x → person x ⊃ (x loves y)))
 
 
+------------------------------------------------------------------------
+-- TODO:
+--
+--   This case is problematic, and should be barred using unary
+--   residuated operators (i.e. □ and ◇ with their structural forms
+--   [_] and ⟨_⟩).
+--
+--   However, it seems that when using the trick of subtracting
+--   negatively polarised NPs, we do not need the Grishin interaction
+--   principles to derive the desired proofs.
+--
+--   So, we are left with the following problem: we want a type that
+--   can be restricted using unary residuation (i.e. by using the
+--   Grishin interaction principles, though I suppose that proof #3
+--   would also be blocked by other operators) but which can still
+--   create a continuation which holds the *entire* quantifier.
+--
+------------------------------------------------------------------------
 
 MARY_THINKS_SOMEONE_LEFT₁ : LG · MARY · ⊗ · THINKS · ⊗ · SOMEONE · ⊗ · LEFT · ⊢[ s⁻ ]
 MARY_THINKS_SOMEONE_LEFT₁
@@ -174,25 +197,6 @@ MARY_THINKS_SOMEONE_LEFT₂
 mary_thinks_someone_left₂ : Bool
 mary_thinks_someone_left₂ = toAgda MARY_THINKS_SOMEONE_LEFT₂ (mary , thinks′ , someone , left′ , ∅) id
 --> mary thinks existsₑ (λ x → person x ∧ x left)
-
-------------------------------------------------------------------------
--- TODO:
---
---   This case is problematic, and should be barred using unary
---   residuated operators (i.e. □ and ◇ with their structural forms
---   [_] and ⟨_⟩).
---
---   However, it seems that when using the trick of subtracting
---   negatively polarised NPs, we do not need the Grishin interaction
---   principles to derive the desired proofs.
---
---   So, we are left with the following problem: we want a type that
---   can be restricted using unary residuation (i.e. by using the
---   Grishin interaction principles, though I suppose that proof #3
---   would also be blocked by other operators) but which can still
---   create a continuation which holds the *entire* quantifier.
---
-------------------------------------------------------------------------
 
 MARY_THINKS_SOMEONE_LEFT₃ : LG · MARY · ⊗ · THINKS · ⊗ · SOMEONE · ⊗ · LEFT · ⊢[ s⁻ ]
 MARY_THINKS_SOMEONE_LEFT₃
@@ -256,24 +260,4 @@ MARY_THINKS_SOMEONE_LEFT₆
     ))))))))))))))))))))))))))
 mary_thinks_someone_left₆ : Bool
 mary_thinks_someone_left₆ = toAgda MARY_THINKS_SOMEONE_LEFT₆ (mary , thinks′ , someone , left′ , ∅) id
---> existsₑ (λ x → person x ∧ mary thinks (x left))
-
-
-------------------------------------------------------------------------
--- TODO:
---
---   Though, excitingly, in the below example, only one reading is
---   available, it is sadly the wrong reading, with wide scope for the
---   existential quantifier.
---
-------------------------------------------------------------------------
-
-MARY_THINKS_SOMEONE_LEFT₇ : LG · np · ⊗ · ( np ⇒ s⁻ ) ⇐ ( □ s⁻ ) · ⊗ · ( ( np ⇚ ( s⁻ ⇛ s⁻ ) ) ⇐ n ) ⊗ n · ⊗ · np ⇒ ( □ s⁻ ) · ⊢[ s⁻ ]
-MARY_THINKS_SOMEONE_LEFT₇
-  = ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
-  ( ↽ (⇚ᴸ (d⇚⇐ (r⇚⊕ (d⇚⇒ (r⇚⊕ (d⇚⇒ (r⇛⊕ (⇀ (⇛ᴿ
-  ( ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ
-  ( ⇁ (□ᴿ (r⇒⊗ (↼ (⇒ᴸ ax⁺ (□ᴸ ax⁻)))))) (⇒ᴸ ax⁺ ax⁻)))))) ax⁻)))))))))))))))))
-mary_thinks_someone_left₇ : Bool
-mary_thinks_someone_left₇ = toAgda MARY_THINKS_SOMEONE_LEFT₇ (mary , thinks′ , someone′ , left′ , ∅) id
 --> existsₑ (λ x → person x ∧ mary thinks (x left))
