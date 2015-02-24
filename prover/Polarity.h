@@ -32,6 +32,8 @@ bool changePolarityUnary(UNARY_CONNECTIVE connective) {
     switch(connective) {
         case BOX:
         case DIAMOND:
+        case ZERO:
+        case ONE:
             return true;
     }
     return false;
@@ -56,7 +58,9 @@ bool structuralPolarityBinary(BINARY_CONNECTIVE connective, bool input) {
 bool structuralPolarityUnary(UNARY_CONNECTIVE connective, bool input) {
     switch(connective) {
         case BOX:
+        case ZERO:
             return !input;
+        case ONE:
         case DIAMOND:
             return  input;
     }

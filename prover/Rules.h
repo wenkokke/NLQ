@@ -66,6 +66,52 @@ vector<Rule*> createRules()
     TWOWAY_RULE("r□◇", "r◇□", "r \Box \Diamond", "r \Diamond \Box",
         new Sequent(new Structure(DIAMOND, new Structure('X')),                    new Structure('Y') ),
         new Sequent(                       new Structure('X') , new Structure(BOX, new Structure('Y'))));
+    TWOWAY_RULE("r¹₁", "r₁¹", "r^1\\cdot_1", "r_1\\cdot^1",
+        new Sequent(new Structure(ONE, new Structure('Y')), new Structure('X')),
+        new Sequent(new Structure(new Structure('X'), ONE), new Structure('Y')));
+    TWOWAY_RULE("r⁰₀", "r₀⁰", "r^0\\cdot_0", "r_0\\cdot^0",
+        new Sequent(new Structure('Y'), new Structure(ZERO, new Structure('X'))),
+        new Sequent(new Structure('X'), new Structure(new Structure('Y'), ZERO)));
+
+    /* ₁.ᴿ */
+    rules.push_back(new Rule("₁·ᴿ", "_1\\cdot^R",
+        new Sequent(new Structure(ONE, new Structure('Y')), new Formula(ONE, new Formula  ('A'))),
+        new Sequent(                   new Formula  ('A') ,                  new Structure('Y'))));
+
+    /* ₁.ᴸ */
+    rules.push_back(new Rule("₁·ᴸ", "_1\\cdot^L",
+        new Sequent(new Structure(new Formula(ONE,               new Formula('A'))), new Structure('Y')),
+        new Sequent(new Structure(            ONE, new Structure(new Formula('A'))), new Structure('Y'))));
+
+    /* ·¹ᴸ */
+    rules.push_back(new Rule("¹·ᴸ", "\\cdot^{1L}",
+        new Sequent(new Structure(new Formula  (new Formula('A') , ONE)), new Structure('Y')),
+        new Sequent(new Structure(new Structure(new Formula('A')), ONE) , new Structure('Y'))));
+
+    /* ·¹ᴿ */
+    rules.push_back(new Rule("¹·ᴿ", "\\cdot^{1R}",
+        new Sequent(new Structure(new Structure('Y'), ONE), new Formula(new Formula  ('A'), ONE)),
+        new Sequent(              new Formula  ('A')      ,             new Structure('Y')      )));
+
+    /* ₀·ᴸ */
+    rules.push_back(new Rule("₀·ᴸ", "_0\\cdot^L",
+        new Sequent(new Formula(ZERO, new Formula  ('A')), new Structure(ZERO, new Structure('X'))),
+        new Sequent(                  new Structure('X') ,                     new Formula  ('A'))));
+
+    /* ₀·ᴿ */
+    rules.push_back(new Rule("₀·ᴿ", "_0\\cdot^R",
+        new Sequent(new Structure('X'), new Structure(            ZERO, new Structure(new Formula('A')))),
+        new Sequent(new Structure('X'), new Structure(new Formula(ZERO,               new Formula('A'))))));
+
+    /* ·⁰ᴸ */
+    rules.push_back(new Rule("⁰·ᴸ", "\\cdot^{0L}",
+        new Sequent(new Formula(new Formula  ('A'), ZERO), new Structure(new Structure('X'), ZERO)),
+        new Sequent(            new Structure('X')       ,               new Formula  ('A'))));
+
+    /* ·⁰ᴿ */
+    rules.push_back(new Rule("⁰·ᴿ", "\\cdot^{0R}",
+        new Sequent(new Structure('X'), new Structure(new Formula  (new Formula('A') , ZERO))),
+        new Sequent(new Structure('X'), new Structure(new Structure(new Formula('A')), ZERO))));
 
     /* ◇ᴸ */
     rules.push_back(new Rule("◇ᴸ", "\\Diamond^L",

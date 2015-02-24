@@ -33,6 +33,8 @@ map<UNARY_CONNECTIVE,char*> createUnaryToLaTeX()
     map<UNARY_CONNECTIVE,char*> m;
     m[BOX]     = "\\Box ";
     m[DIAMOND] = "\\Diamond ";
+    m[ZERO]    = "^0";
+    m[ONE]     = "^1";
     return m;
 }
 map<UNARY_CONNECTIVE,char*> unaryToLaTeX = createUnaryToLaTeX();
@@ -66,8 +68,11 @@ void toLaTeXFormula(FILE *fout, Formula *formula, bool top) {
         case UNARY:
             if(!top)
                 fprintf(fout, "(");
-            fprintf(fout, unaryToLaTeX[formula->unary_connective]);
+            if (formula->prefix)
+                fprintf(fout, unaryToLaTeX[formula->unary_connective]);
             toLaTeXFormula(fout, formula->inner, false);
+            if (!formula->prefix)
+                fprintf(fout, unaryToLaTeX[formula->unary_connective]);
             if(!top)
                 fprintf(fout, ")");
             break;
@@ -103,10 +108,11 @@ void toLaTeXStructure(FILE *fout, Structure *structure, bool top) {
         case UNARY:
             if(!top)
                 fprintf(fout, "(");
-            toLaTeXUnary(fout, structure->unary_connective, structure->prefix, true);
-            fprintf(fout, "{");
+            if (structure->prefix)
+                fprintf(fout, unaryToLaTeX[structure->unary_connective]);
             toLaTeXStructure(fout, structure->inner, false);
-            fprintf(fout, "}");
+            if (!structure->prefix)
+                fprintf(fout, unaryToLaTeX[structure->unary_connective]);
             if(!top)
                 fprintf(fout, ")");
             break;

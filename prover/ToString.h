@@ -48,6 +48,8 @@ map<string,UNARY_CONNECTIVE> createStringToUnary()
     map<string,UNARY_CONNECTIVE> m;
     m["□"] = BOX;
     m["◇"] = DIAMOND;
+    m["⁰"] = ZERO;
+    m["¹"] = ONE;
     return m;
 }
 map<string,UNARY_CONNECTIVE> stringToUnary = createStringToUnary();
@@ -58,6 +60,8 @@ map<UNARY_CONNECTIVE,char*> createUnaryToString()
     map<UNARY_CONNECTIVE,char*> m;
     m[BOX]     = "□";
     m[DIAMOND] = "◇";
+    m[ZERO]    = "⁰";
+    m[ONE]     = "¹";
     return m;
 }
 map<UNARY_CONNECTIVE,char*> unaryToString = createUnaryToString();
