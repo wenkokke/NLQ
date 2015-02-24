@@ -53,10 +53,10 @@ open import Logic.Intuitionistic.Unrestricted.Agda.Environment                  
 
 open Translation (Un→Agda ◇ Lin→Un ◇ Ord→Lin) public renaming ([_] to toAgda)
 
-NP⁺ NP⁻ N⁺ N⁻ S⁺ S⁻ : Type
-NP⁺ = el (+ , NP)
-NP⁻ = el (- , NP)
-N⁺  = el (+ , N)
-N⁻  = el (- , N)
-S⁺  = el (+ , S)
-S⁻  = el (- , S)
+np np⁻ n n⁻ s s⁻ : Type
+np  = el (+ , NP)
+np⁻ = el (- , NP)
+n   = el (+ , N)
+n⁻  = el (- , N)
+s   = el (+ , S)
+s⁻  = el (- , S)

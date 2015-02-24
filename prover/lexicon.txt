@@ -1,27 +1,30 @@
-unicorn    : N.
-teacher    : N.
+unicorn    : n.
+teacher    : n.
 
-nice       : (N ⇐ N).
-old        : (N ⇐ N).
+nice       : (n ⇐ n).
+old        : (n ⇐ n).
 
-john       : NP.
-mary       : NP.
-bill       : NP.
+john       : np.
+mary       : np.
+bill       : np.
 
-smiles     : (NP ⇒ S⁻).
-left       : (NP ⇒ S⁻).
-cheats     : (NP ⇒ S⁻).
+smiles     : (np ⇒ s⁻).
+left       : (np ⇒ s⁻).
+left'      : (np ⇒ □ s⁻).
+cheats     : (np ⇒ s⁻).
 
-teases     : ((NP ⇒ S⁻) ⇐ NP).
-loves      : ((NP ⇒ S⁻) ⇐ NP).
+teases     : ((np ⇒ s⁻) ⇐ np).
+loves      : ((np ⇒ s⁻) ⇐ np).
 
-thinks     : ((NP ⇒ S⁻) ⇐ ((⁰ S⁻) ⁰)).
+thinks     : ((np ⇒ s⁻) ⇐ s⁻).
+thinks'    : ((np ⇒ s⁻) ⇐ □ s⁻).
+thinks0    : ((np ⇒ s⁻) ⇐ ((⁰ s⁻) ⁰)).
 
-% everyone  : (((NP⁻ ⇚ (NP ⇛ NP⁻)) ⇐ N) ⊗ N).
-% someone   : (((NP⁻ ⇚ (NP ⇛ NP⁻)) ⇐ N) ⊗ N).
+everyone   : (((np⁻ ⇚ (np ⇛ np⁻)) ⇐ n) ⊗ n).
+someone    : (((np⁻ ⇚ (np ⇛ np⁻)) ⇐ n) ⊗ n).
 
-% everyone  : (((NP ⇚ (S⁻ ⇛ S⁻)) ⇐ N) ⊗ N).
-% someone   : (((NP ⇚ (S⁻ ⇛ S⁻)) ⇐ N) ⊗ N).
+everyone'  : (((np ⇚ (s⁻ ⇛ s⁻)) ⇐ n) ⊗ n).
+someone'   : (((np ⇚ (s⁻ ⇛ s⁻)) ⇐ n) ⊗ n).
 
-everyone  : ((¹ NP) ¹).
-someone   : ((¹ NP) ¹).
+everyone1  : ((¹ np) ¹).
+someone1   : ((¹ np) ¹).

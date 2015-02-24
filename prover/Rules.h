@@ -84,12 +84,12 @@ vector<Rule*> createRules()
         new Sequent(new Structure(            ONE, new Structure(new Formula('A'))), new Structure('Y'))));
 
     /* ·¹ᴸ */
-    rules.push_back(new Rule("¹·ᴸ", "\\cdot^{1L}",
+    rules.push_back(new Rule("·¹ᴸ", "\\cdot^{1L}",
         new Sequent(new Structure(new Formula  (new Formula('A') , ONE)), new Structure('Y')),
         new Sequent(new Structure(new Structure(new Formula('A')), ONE) , new Structure('Y'))));
 
     /* ·¹ᴿ */
-    rules.push_back(new Rule("¹·ᴿ", "\\cdot^{1R}",
+    rules.push_back(new Rule("·¹ᴿ", "\\cdot^{1R}",
         new Sequent(new Structure(new Structure('Y'), ONE), new Formula(new Formula  ('A'), ONE)),
         new Sequent(              new Formula  ('A')      ,             new Structure('Y')      )));
 
@@ -104,12 +104,12 @@ vector<Rule*> createRules()
         new Sequent(new Structure('X'), new Structure(new Formula(ZERO,               new Formula('A'))))));
 
     /* ·⁰ᴸ */
-    rules.push_back(new Rule("⁰·ᴸ", "\\cdot^{0L}",
+    rules.push_back(new Rule("·⁰ᴸ", "\\cdot^{0L}",
         new Sequent(new Formula(new Formula  ('A'), ZERO), new Structure(new Structure('X'), ZERO)),
         new Sequent(            new Structure('X')       ,               new Formula  ('A'))));
 
     /* ·⁰ᴿ */
-    rules.push_back(new Rule("⁰·ᴿ", "\\cdot^{0R}",
+    rules.push_back(new Rule("·⁰ᴿ", "\\cdot^{0R}",
         new Sequent(new Structure('X'), new Structure(new Formula  (new Formula('A') , ZERO))),
         new Sequent(new Structure('X'), new Structure(new Structure(new Formula('A')), ZERO))));
 

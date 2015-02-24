@@ -74,6 +74,38 @@ data LG_ : Judgement → Set ℓ where
       → LG X ⊢ [ ·   A · ]
       → LG X ⊢   · □ A ·
 
+  ₀·ᴸ : ∀ {X A}
+      → LG     X  ⊢[   A ]
+      → LG [ ₀ A ]⊢  ₀ X
+
+  ₀·ᴿ : ∀ {X A}
+      → LG X ⊢ ₀ · A ·
+      → LG X ⊢ · ₀ A ·
+
+  ·⁰ᴸ : ∀ {X A}
+      → LG   X    ⊢[ A   ]
+      → LG [ A ⁰ ]⊢  X ⁰
+
+  ·⁰ᴿ : ∀ {X A}
+      → LG X ⊢ · A · ⁰
+      → LG X ⊢ · A ⁰ ·
+
+  ₁·ᴸ : ∀ {Y A}
+      → LG ₁ · A · ⊢ Y
+      → LG · ₁ A · ⊢ Y
+
+  ₁·ᴿ : ∀ {Y A}
+      → LG [   A ]⊢    Y
+      → LG   ₁ Y  ⊢[ ₁ A ]
+
+  ·¹ᴸ : ∀ {Y A}
+      → LG [ A   ]⊢  Y
+      → LG   Y ¹  ⊢[ A ¹ ]
+
+  ·¹ᴿ : ∀ {Y A}
+      → LG · A · ¹ ⊢ Y
+      → LG · A ¹ · ⊢ Y
+
   ⊗ᴿ  : ∀ {X Y A B}
       → LG X ⊢[ A ]
       → LG Y ⊢[ B ]
@@ -136,6 +168,23 @@ data LG_ : Judgement → Set ℓ where
   r◇□ : ∀ {X Y}
       → LG ⟨ X ⟩ ⊢   Y
       → LG   X   ⊢ [ Y ]
+
+  -- residuation rules for (₀ , ⁰ , ₁ , ¹)
+  r⁰₀ : ∀ {X Y}
+      → LG X ⊢ Y ⁰
+      → LG Y ⊢ ₀ X
+
+  r₀⁰ : ∀ {X Y}
+      → LG Y ⊢ ₀ X
+      → LG X ⊢ Y ⁰
+
+  r¹₁ : ∀ {X Y}
+      → LG X ¹ ⊢ Y
+      → LG ₁ Y ⊢ X
+
+  r₁¹ : ∀ {X Y}
+      → LG ₁ Y ⊢ X
+      → LG X ¹ ⊢ Y
 
   -- residuation rules for (⇐ , ⊗ , ⇒)
   r⇒⊗ : ∀ {X Y Z}
