@@ -22,7 +22,7 @@ using namespace std;
 map<string,Formula*> lexicon;
 
 /* All possible tokens (order in parsing order) */
-char* possibleTokens[] = {":", "⊗", "⇚", "⇛", "⊕", ".", "⇐", "□", "◇", "⇒", "(", ")"};
+char* possibleTokens[] = {":", "⊗", "⇚", "⇛", "⊕", ".", "⇐", "□", "◇", "⇒", "(", ")", "₀", "⁰", "₁", "¹", "[", "]", "<", ">"};
 int numPossibleTokens = 12;
 
 /* Utility function, check if str[idx] matches the string token */
@@ -227,6 +227,20 @@ Structure *parsePhraseTokens(vector<string>::iterator &it, vector<string>::itera
             return NULL;
         }
         it++;
+    } else if((*it) == "[") {
+        it++;
+        first = new Structure(BOX, parsePhraseTokens(it, end));
+        if((*it) != "]" || first == NULL) {
+            return NULL;
+        }
+        it++;
+    } else if((*it) == "<") {
+        it++;
+        first = new Structure(DIAMOND, parsePhraseTokens(it, end));
+        if((*it) != ">" || first == NULL) {
+            return NULL;
+        }
+        it++;
     } else { /* Primitive */
         if(lexicon.find(*it) == lexicon.end()) {
             printf("Could not find \"%s\" in lexicon.\n", (*it).c_str());
@@ -237,7 +251,7 @@ Structure *parsePhraseTokens(vector<string>::iterator &it, vector<string>::itera
     }
 
     /* Check if we are done already */
-    if(it == end || (*it) == ")")
+    if(it == end || (*it) == ")" || (*it) == "]" || (*it) == ">")
         return first;
 
     /* More words follow, construct the return */

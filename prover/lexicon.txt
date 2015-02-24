@@ -17,7 +17,7 @@ teases     : ((np ⇒ s⁻) ⇐ np).
 loves      : ((np ⇒ s⁻) ⇐ np).
 
 thinks     : ((np ⇒ s⁻) ⇐ s⁻).
-thinks'    : ((np ⇒ s⁻) ⇐ □ s⁻).
+thinks'    : ((np ⇒ s⁻) ⇐ ◇ s⁻).
 thinks0    : ((np ⇒ s⁻) ⇐ ((⁰ s⁻) ⁰)).
 
 everyone   : (((np⁻ ⇚ (np ⇛ np⁻)) ⇐ n) ⊗ n).
