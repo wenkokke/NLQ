@@ -29,6 +29,11 @@ data Polarised (p : Polarity) : Polarity → Context → Set ℓ where
 
   []   : Polarised p p []
 
+  ₀>_  : {A : Context} (A⁻ : Polarised p - A) → Polarised p - (₀> A)
+  _<⁰  : {A : Context} (A⁻ : Polarised p - A) → Polarised p - (A <⁰)
+  ₁>_  : {A : Context} (A⁺ : Polarised p + A) → Polarised p + (₁> A)
+  _<¹  : {A : Context} (A⁺ : Polarised p + A) → Polarised p + (A <¹)
+
   _⊗>_ : (A : Type) {B : Context} (B⁺ : Polarised p + B) → Polarised p + (A ⊗> B)
   _<⊗_ : {A : Context} (A⁺ : Polarised p + A) (B : Type) → Polarised p + (A <⊗ B)
   _⇒>_ : (A : Type) {B : Context} (B⁻ : Polarised p - B) → Polarised p - (A ⇒> B)
@@ -50,6 +55,10 @@ module Simple where
   -- Apply a context to a type by plugging the type into the context.
   _[_] : ∀ {p₁ p₂ A} → Polarised p₁ p₂ A → Type → Type
   []       [ A ] = A
+  (₀> B)   [ A ] = ₀ (B [ A ])
+  (₁> B)   [ A ] = ₁ (B [ A ])
+  (B <⁰)   [ A ] = (B [ A ]) ⁰
+  (B <¹)   [ A ] = (B [ A ]) ¹
   (B ⊗> C) [ A ] = B ⊗ (C [ A ])
   (B ⇒> C) [ A ] = B ⇒ (C [ A ])
   (C <⊗ B) [ A ] = (C [ A ]) ⊗ B
@@ -58,6 +67,10 @@ module Simple where
   _<_> : ∀ {p₁ p₂ p₃ A B}
        → Polarised p₂ p₃ A → Polarised p₁ p₂ B → Polarised p₁ p₃ (A < B >′)
   []       < A > = A
+  (₀> B)   < A > = ₀> (B < A >)
+  (₁> B)   < A > = ₁> (B < A >)
+  (B <⁰)   < A > = (B < A >) <⁰
+  (B <¹)   < A > = (B < A >) <¹
   (B ⊗> C) < A > = B ⊗> (C < A >)
   (B ⇒> C) < A > = B ⇒> (C < A >)
   (C <⊗ B) < A > = (C < A >) <⊗ B
@@ -78,12 +91,20 @@ private
 
   forget : ∀ {p₁ p₂ A} → Polarised p₁ p₂ A → Context
   forget []       = []
+  forget (₀> A)   = ₀> forget A
+  forget (₁> A)   = ₁> forget A
+  forget (A <⁰)   = forget A <⁰
+  forget (A <¹)   = forget A <¹
   forget (A ⊗> B) = A ⊗> forget B
   forget (A <⊗ B) = forget A <⊗ B
   forget (A ⇒> B) = A ⇒> forget B
   forget (A <⇒ B) = forget A <⇒ B
   forget-correct : ∀ {p₁ p₂ A} (Aᴾ : Polarised p₁ p₂ A) → forget Aᴾ ≡ A
   forget-correct []       = refl
+  forget-correct (₀> A)   rewrite forget-correct A = refl
+  forget-correct (₁> A)   rewrite forget-correct A = refl
+  forget-correct (A <⁰)   rewrite forget-correct A = refl
+  forget-correct (A <¹)   rewrite forget-correct A = refl
   forget-correct (A ⊗> B) rewrite forget-correct B = refl
   forget-correct (A <⊗ B) rewrite forget-correct A = refl
   forget-correct (A ⇒> B) rewrite forget-correct B = refl

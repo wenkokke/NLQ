@@ -60,11 +60,71 @@ A⊄elB : ∀ {A B} → A ⊄ el B
 A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 
 
+-- Lemma: the `₀` constructor injects into the subtype relations.
+₀-inj-⊆ : ∀ {A B} → A ⊆ ₀ B → A ≡ ₀ B ⊎ A ⊆ B
+₀-inj-⊆ (   []  , refl) = inj₁ refl
+₀-inj-⊆ (₀> A   , refl) = inj₂ (A , refl)
+₀-inj-⊆ (₁> _   , ())
+₀-inj-⊆ (_ <⁰   , ())
+₀-inj-⊆ (_ <¹   , ())
+₀-inj-⊆ (_ ⊗> _ , ())
+₀-inj-⊆ (_ ⇒> _ , ())
+₀-inj-⊆ (_ <⊗ _ , ())
+₀-inj-⊆ (_ <⇒ _ , ())
+₀-inj-⊂ : ∀ {A B} → A ⊂ ₀ B → A ⊆ B
+₀-inj-⊂ (A⊆₀B , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (₀-inj-⊆ A⊆₀B)
+
+-- Lemma: the `₁` constructor injects into the subtype relations.
+₁-inj-⊆ : ∀ {A B} → A ⊆ ₁ B → A ≡ ₁ B ⊎ A ⊆ B
+₁-inj-⊆ (   []  , refl) = inj₁ refl
+₁-inj-⊆ (₁> A   , refl) = inj₂ (A , refl)
+₁-inj-⊆ (₀> _   , ())
+₁-inj-⊆ (_ <⁰   , ())
+₁-inj-⊆ (_ <¹   , ())
+₁-inj-⊆ (_ ⊗> _ , ())
+₁-inj-⊆ (_ ⇒> _ , ())
+₁-inj-⊆ (_ <⊗ _ , ())
+₁-inj-⊆ (_ <⇒ _ , ())
+₁-inj-⊂ : ∀ {A B} → A ⊂ ₁ B → A ⊆ B
+₁-inj-⊂ (A⊆₁B , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (₁-inj-⊆ A⊆₁B)
+
+-- Lemma: the `⁰` constructor injects into the subtype relations.
+⁰-inj-⊆ : ∀ {A B} → A ⊆ B ⁰ → A ≡ B ⁰ ⊎ A ⊆ B
+⁰-inj-⊆ (   []  , refl) = inj₁ refl
+⁰-inj-⊆ (A <⁰   , refl) = inj₂ (A , refl)
+⁰-inj-⊆ (₀> _   , ())
+⁰-inj-⊆ (₁> _   , ())
+⁰-inj-⊆ (_ <¹   , ())
+⁰-inj-⊆ (_ ⊗> _ , ())
+⁰-inj-⊆ (_ ⇒> _ , ())
+⁰-inj-⊆ (_ <⊗ _ , ())
+⁰-inj-⊆ (_ <⇒ _ , ())
+⁰-inj-⊂ : ∀ {A B} → A ⊂ B ⁰ → A ⊆ B
+⁰-inj-⊂ (A⊆⁰B , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (⁰-inj-⊆ A⊆⁰B)
+
+-- Lemma: the `¹` constructor injects into the subtype relations.
+¹-inj-⊆ : ∀ {A B} → A ⊆ B ¹ → A ≡ B ¹ ⊎ A ⊆ B
+¹-inj-⊆ (   []  , refl) = inj₁ refl
+¹-inj-⊆ (A <¹   , refl) = inj₂ (A , refl)
+¹-inj-⊆ (₀> _   , ())
+¹-inj-⊆ (₁> _   , ())
+¹-inj-⊆ (_ <⁰   , ())
+¹-inj-⊆ (_ ⊗> _ , ())
+¹-inj-⊆ (_ ⇒> _ , ())
+¹-inj-⊆ (_ <⊗ _ , ())
+¹-inj-⊆ (_ <⇒ _ , ())
+¹-inj-⊂ : ∀ {A B} → A ⊂ B ¹ → A ⊆ B
+¹-inj-⊂ (A⊆¹B , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (¹-inj-⊆ A⊆¹B)
+
 -- Lemma: the `⇒` constructor injects into the subtype relations.
 ⇒-inj-⊆ : ∀ {A B C} → A ⊆ B ⇒ C → A ≡ B ⇒ C ⊎ (A ⊆ B ⊎ A ⊆ C)
 ⇒-inj-⊆ (   []  , refl) = inj₁ refl
 ⇒-inj-⊆ (B ⇒> Ξ , refl) = inj₂ (inj₂ (Ξ , refl))
 ⇒-inj-⊆ (Ξ <⇒ C , refl) = inj₂ (inj₁ (Ξ , refl))
+⇒-inj-⊆ (₀> _   , ())
+⇒-inj-⊆ (₁> _   , ())
+⇒-inj-⊆ (_ <⁰   , ())
+⇒-inj-⊆ (_ <¹   , ())
 ⇒-inj-⊆ (_ ⊗> _ , ())
 ⇒-inj-⊆ (_ <⊗ _ , ())
 ⇒-inj-⊂ : ∀ {A B C} → A ⊂ B ⇒ C → A ⊆ B ⊎ A ⊆ C
@@ -78,6 +138,10 @@ A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 ⊗-inj-⊆ (   []  , refl) = inj₁ refl
 ⊗-inj-⊆ (B ⊗> Ξ , refl) = inj₂ (inj₂ (Ξ , refl))
 ⊗-inj-⊆ (Ξ <⊗ C , refl) = inj₂ (inj₁ (Ξ , refl))
+⊗-inj-⊆ (₀> _   , ())
+⊗-inj-⊆ (₁> _   , ())
+⊗-inj-⊆ (_ <⁰   , ())
+⊗-inj-⊆ (_ <¹   , ())
 ⊗-inj-⊆ (_ ⇒> _ , ())
 ⊗-inj-⊆ (_ <⇒ _ , ())
 
@@ -108,6 +172,18 @@ module Simple where
   A ⊆? B with (A ≟ B)
   A ⊆? B | yes A=B = yes ([] , A=B)
   A ⊆? (el B)  | no  A≠B = no (A≠B ∘ A⊆elB→A=elB)
+  A ⊆? (₀  B)  | no  A≠B with A ⊆? B
+  ...| yes A⊆B = yes (weaken (₀> []) A⊆B)
+  ...| no  A⊈B = no ([ A≠B , A⊈B ]′ ∘ ₀-inj-⊆)
+  A ⊆? (B  ⁰)  | no  A≠B with A ⊆? B
+  ...| yes A⊆B = yes (weaken ([] <⁰) A⊆B)
+  ...| no  A⊈B = no ([ A≠B , A⊈B ]′ ∘ ⁰-inj-⊆)
+  A ⊆? (₁  B)  | no  A≠B with A ⊆? B
+  ...| yes A⊆B = yes (weaken (₁> []) A⊆B)
+  ...| no  A⊈B = no ([ A≠B , A⊈B ]′ ∘ ₁-inj-⊆)
+  A ⊆? (B  ¹)  | no  A≠B with A ⊆? B
+  ...| yes A⊆B = yes (weaken ([] <¹) A⊆B)
+  ...| no  A⊈B = no ([ A≠B , A⊈B ]′ ∘ ¹-inj-⊆)
   A ⊆? (B ⇒ C) | no  A≠B with A ⊆? B | A ⊆? C
   ...| yes A⊆B | _       = yes (weaken ([] <⇒ C) A⊆B)
   ...| _       | yes A⊆C = yes (weaken (B ⇒> []) A⊆C)
@@ -156,6 +232,10 @@ mutual
 
   [A|A⊂_] : (B : Type) → Vec Type ⌊ B ⌋
   [A|A⊂ el  B ] = []
+  [A|A⊂ ₀   B ] = [A|A⊆ B ]
+  [A|A⊂ ₁   B ] = [A|A⊆ B ]
+  [A|A⊂ B   ⁰ ] = [A|A⊆ B ]
+  [A|A⊂ B   ¹ ] = [A|A⊆ B ]
   [A|A⊂ B ⇒ C ] = [A|A⊆ B ] ++ [A|A⊆ C ]
   [A|A⊂ B ⊗ C ] = [A|A⊆ B ] ++ [A|A⊆ C ]
 private
@@ -176,6 +256,7 @@ private
   inr {A} {B} {C} (i , p) = raise   ⌈ B ⌉ i , P.trans p (sym (lookup-++-raise   [A|A⊆ B ] [A|A⊆ C ] i))
 
 
+
 mutual
   [A|A⊆B]-correct : ∀ {A B} → A ⊆ B → Σ[ i ∈ Fin ⌈ B ⌉ ]( A ≡ lookup i [A|A⊆ B ] )
   [A|A⊆B]-correct {A} {B} A⊆B with A ≟ B
@@ -185,6 +266,10 @@ mutual
 
   [A|A⊂B]-correct : ∀ {A B} → A ⊂ B → Σ[ i ∈ Fin ⌊ B ⌋ ]( A ≡ lookup i [A|A⊂ B ] )
   [A|A⊂B]-correct {B = el  B} A⊂elB = ⊥-elim (A⊄elB A⊂elB)
+  [A|A⊂B]-correct {B = ₀   B} A⊂₀B  = [A|A⊆B]-correct (₀-inj-⊂ A⊂₀B)
+  [A|A⊂B]-correct {B = B   ⁰} A⊂B⁰  = [A|A⊆B]-correct (⁰-inj-⊂ A⊂B⁰)
+  [A|A⊂B]-correct {B = ₁   B} A⊂₁B  = [A|A⊆B]-correct (₁-inj-⊂ A⊂₁B)
+  [A|A⊂B]-correct {B = B   ¹} A⊂B¹  = [A|A⊆B]-correct (¹-inj-⊂ A⊂B¹)
   [A|A⊂B]-correct {B = B ⇒ C} A⊂B⇒C with ⇒-inj-⊂ A⊂B⇒C
   ...| inj₁ A⊆B = inl ([A|A⊆B]-correct A⊆B)
   ...| inj₂ A⊆C = inr ([A|A⊆B]-correct A⊆C)

@@ -46,8 +46,7 @@ main = shakeArgs shakeOptions $ do
   run makeLambda
   run makeLinearLambda
   run makeLambek
-  run makeLinearLambdaCMinus
-  run makeOrderedLambdaCMinus
+  run makeLambdaCMinus
 
 
   -- Generate: Everything
@@ -81,10 +80,8 @@ main = shakeArgs shakeOptions $ do
     liftIO $ removeFiles srcDir ["Everything.agda"]
     putNormal "Removing generated files for Lambek Calculus"
     clobber makeLambek
-    putNormal "Removing generated files for Ordered Lambda-C-Minus Calculus"
-    clobber makeOrderedLambdaCMinus
-    putNormal "Removing generated files for Linear Lambda-C-Minus Calculus"
-    clobber makeLinearLambdaCMinus
+    putNormal "Removing generated files for Lambda-C-Minus Calculus"
+    clobber makeLambdaCMinus
     putNormal "Removing generated Agda interface files"
     liftIO $ removeFiles srcDir ["//*.agdai"]
 
@@ -118,14 +115,42 @@ format = unlines . concatMap fmt
             | otherwise       = "\n"
 
 
+
+--------------------------------------------------------------------------------
+-- Make: Lambda C-Minus
+--------------------------------------------------------------------------------
+
+makeLambdaCMinus :: Mapping
+makeLambdaCMinus  = Mapping
+  { blacklist   = [ "⇛" , "⇐" , "□" , "◇" , " ₀" , "(₀" , "⁰ " , "⁰)" , " ₁" , "(₁" , "¹ " , "¹)" , "[_]⊢_" ]
+  , textMapping = [ "Ordered"       ==> "Unrestricted"
+                  , "Structure"     ==> "List Type"
+                  , "LambekGrishin" ==> "LambdaCMinus"
+                  ]
+  , fileMapping = [ srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus"  </> "Type.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type/Complexity.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus"  </> "Type/Complexity.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type/Context.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus"  </> "Type/Context.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type/Context/Polarised.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus"  </> "Type/Context/Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type/Polarised.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus"  </> "Type/Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type/Subtype.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus"  </> "Type/Subtype.agda"
+                  ]
+  }
+
 --------------------------------------------------------------------------------
 -- Make: Linear Lambda C-Minus
 --------------------------------------------------------------------------------
 
+{-
 makeLinearLambdaCMinus :: Mapping
 makeLinearLambdaCMinus = Mapping
-  { blacklist   = [ "open import Logic.Classical.Ordered.LambdaCMinus.Structure Univ"
-                  , "cᴸ₁" , "cᴸ" , "cᴸ′"
+  { blacklist   =
+                  [ "cᴸ₁" , "cᴸ" , "cᴸ′"
                   , "wᴸ₁" , "wᴸ" , "wᴸ′"
                   , "axᵢ"
                   ]
@@ -143,29 +168,7 @@ makeLinearLambdaCMinus = Mapping
                 ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Base.agda"
                   ]
   }
-
-
---------------------------------------------------------------------------------
--- Make: Ordered Lambda C-Minus
---------------------------------------------------------------------------------
-
--- TODO: edit such that LambdaCMinus's 'Structure' is generated from
---       a more general 'Structure' (such as from LambekGrishin/Polarised)
-
-makeOrderedLambdaCMinus :: Mapping
-makeOrderedLambdaCMinus = Mapping
-  { blacklist   = [ "⇛" , "□" , "◇" ]
-  , textMapping = [ "LambekGrishin" ==> "LambdaCMinus"
-                  , "LG"            ==> "λC⁻"
-                  , "⇚-injective"   ==> "-_injective"
-                  , "⇚"             ==> "-"
-                  ]
-  , fileMapping = [ srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Type.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambdaCMinus"  </> "Type.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Type/Complexity.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambdaCMinus"  </> "Type/Complexity.agda"
-                  ]
-  }
+-}
 
 --------------------------------------------------------------------------------
 -- Make: Lambek Calculus
@@ -173,7 +176,7 @@ makeOrderedLambdaCMinus = Mapping
 
 makeLambek :: Mapping
 makeLambek = Mapping
-  { blacklist   = [ "⊕" , "⇛" , "⇚" , "□" , "◇" ]
+  { blacklist   = [ "⊕" , "⇛" , "⇚" , "□" , "◇" , "₀" , "⁰" , "₁" , "¹" ]
   , textMapping = [ "LambekGrishin" ==> "Lambek"
                   , "LG"            ==> "NL"
                   , "Classical"     ==> "Intuitionistic"

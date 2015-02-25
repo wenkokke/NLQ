@@ -11,12 +11,13 @@ open import Data.Sum                              using (_⊎_; inj₁; inj₂)
 open import Relation.Nullary.Decidable            using (True; toWitness; fromWitness)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst; subst₂)
 
+
 module Logic.Classical.Unrestricted.LambdaCMinus.Base {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Index
-open import Logic.Classical.Linear.LambdaCMinus.Type      Univ
-open import Logic.Classical.Linear.LambdaCMinus.Judgement Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Type      Univ renaming (_⇚_ to _-_)
+open import Logic.Classical.Unrestricted.LambdaCMinus.Judgement Univ
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 
@@ -70,7 +71,7 @@ data λC⁻_ : Judgement → Set ℓ where
 
   cᴸ₁  : ∀ {Γ A B Δ}
        → λC⁻ A , (A , Γ) ⊢[ B ] Δ
-       → λC⁻      A , Γ ⊢[ B ] Δ
+       → λC⁻      A , Γ  ⊢[ B ] Δ
 
   wᴸ₁  : ∀ {Γ A B Δ}
        → λC⁻     Γ ⊢[ B ] Δ
@@ -286,18 +287,6 @@ axᵢ : ∀ {Γ Δ} (x : _) → λC⁻ Γ ⊢[ Γ ‼ x ] Δ
 axᵢ {Γ = ∅} ()
 axᵢ {Γ = A , Γ}  zero   = sᴸ (A , ∅) (wᴸ Γ ax)
 axᵢ {Γ = A , Γ} (suc x) = wᴸ₁ (axᵢ x)
-
-
--- Lemma: every function can be lifted to a function with the identity
--- continuation.
---lift : ∀ {Γ A B C Δ} → λC⁻ A ⇒ B , Γ ⊢[ A - C ⇒ B - C ] Δ
---lift {Γ} {A} {B} {C} {Δ}
---     = ⇒ᵢ
---     $ -ₑ {A - C , ∅} {A ⇒ B , Γ} ax
---     $ -ᵢ {A , (A ⇒ B , ∅)} {Γ}
---       (sᴸ  (A , ∅) (⇒ₑ ax ax))
---       (sᴸ′ (C , ∅) (wᴸ′ Γ (⇒ₑᵏ (# 0) ax)))
-
 
 -- Lemma: introduction and elimination of right-handed empty context.
 ∅ᵢ : ∀ {Γ A Δ} → λC⁻ Γ      ⊢[ A ] Δ → λC⁻ Γ ++ ∅ ⊢[ A ] Δ
