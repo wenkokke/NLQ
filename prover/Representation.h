@@ -46,6 +46,13 @@ enum SEQUENT_TYPE {
     STRUCTURAL
 };
 
+/* Polarity checks with match characters */
+enum POLARITY_CHECK {
+    CHECK_POSITIVE ,
+    CHECK_NEGATIVE ,
+    NO_CHECK
+};
+
 /* Representation of a formula */
 struct Formula {
     FORMULA_STRUCTURE_TYPE type;
@@ -74,6 +81,7 @@ struct Formula {
         /* Match */
         struct {
             char matchChar;
+            POLARITY_CHECK polarity_check;
         };
     };
 
@@ -145,6 +153,12 @@ struct Formula {
     Formula(char matchChar) {
         this->type              = MATCH;
         this->matchChar         = matchChar;
+        this->polarity_check    = NO_CHECK;
+    }
+    Formula(char matchChar, POLARITY_CHECK polarity_check) {
+        this->type              = MATCH;
+        this->matchChar         = matchChar;
+        this->polarity_check    = polarity_check;
     }
 };
 

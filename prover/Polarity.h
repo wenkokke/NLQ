@@ -11,6 +11,39 @@
 #include "Representation.h"
 #include <cstring>
 
+bool isFormulaPositive(Formula *formula) {
+    switch (formula->type) {
+    case PRIMITIVE:
+        return strstr(formula->name, "⁻") == NULL;
+    case UNARY:
+        switch (formula->unary_connective) {
+        case BOX:
+        case ZERO:
+            return false;
+        case DIAMOND:
+        case ONE:
+            return true;
+        }
+    case BINARY:
+        switch (formula->binary_connective) {
+        case OTIMES:
+        case OSLASH:
+        case OBACKSLASH:
+            return true;
+        case OPLUS:
+        case SLASH:
+        case BACKSLASH:
+            return false;
+        }
+    case MATCH:
+        break; /* Never handled, just to avoid compile warnings */
+    }
+}
+
+bool isFormulaNegative(Formula *formula) {
+    return !isFormulaPositive(formula);
+}
+
 /* Does this connective change the polarity */
 bool changePolarityBinary(BINARY_CONNECTIVE connective, bool left) {
     switch(connective) {
@@ -30,11 +63,12 @@ bool changePolarityBinary(BINARY_CONNECTIVE connective, bool left) {
 /* Does this connective change the polarity */
 bool changePolarityUnary(UNARY_CONNECTIVE connective) {
     switch(connective) {
-        case BOX:
-        case DIAMOND:
         case ZERO:
         case ONE:
             return true;
+        case BOX:
+        case DIAMOND:
+            return false;
     }
     return false;
 }
