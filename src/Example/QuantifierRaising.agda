@@ -163,7 +163,6 @@ everyone_loves_someone₆ : Bool
 everyone_loves_someone₆ = toAgda EVERYONE_LOVES_SOMEONE₆ (everyone , loves′ , someone , ∅) id
 --> existsₑ (λ y → person y ∧ forallₑ (λ x → person x ⊃ (x loves y)))
 
-
 EVERYONE_LOVES_SOMEONE₇ : LG · ( ₁ np ) ¹ · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · ( ₁ np ) ¹ · ) ⊢[ s⁻ ]
 EVERYONE_LOVES_SOMEONE₇
   = ⇁ (r⇐⊗ (·¹ᴿ (r₁¹ (⇀ (₁·ᴿ
@@ -181,3 +180,78 @@ EVERYONE_LOVES_SOMEONE₈
 everyone_loves_someone₈ : Bool
 everyone_loves_someone₈ = toAgda EVERYONE_LOVES_SOMEONE₈ (everyone¹ , loves′ , someone¹ , ∅) id
 --> existsₑ (λ y → person y ∧ forallₑ (λ x → person x ⊃ (x loves y)))
+
+
+MARY_THINKS_SOMEONE_LEFT₁ : LG · np · ⊗ · ( np ⇒ s⁻ ) ⇐ ( ◇ s⁻ ) · ⊗ ⟨ · ( ₁ np ) ¹ · ⊗ · np ⇒ s⁻ · ⟩ ⊢[ s⁻ ]
+MARY_THINKS_SOMEONE_LEFT₁
+  = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ (◇ᴿ
+  ( ⇁ (r⇐⊗ (·¹ᴿ (r₁¹ (⇀ (₁·ᴿ
+  ( ↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))))))))))) (⇒ᴸ ax⁺ ax⁻)))))
+mary_thinks_someone_left₁ : Bool
+mary_thinks_someone_left₁ = toAgda MARY_THINKS_SOMEONE_LEFT₁ (mary , thinks′ , someone¹ , left′ , ∅) id
+--> mary thinks existsₑ (λ x → person x ∧ x left)
+
+MARY_THINKS_SOMEONE_LEFT₂ : LG · np · ⊗ · ( np ⇒ s⁻ ) ⇐ ( ◇ s⁻ ) · ⊗ ⟨ · ( ₁ np ) ¹ · ⊗ · np ⇒ s⁻ · ⟩ ⊢[ s⁻ ]
+MARY_THINKS_SOMEONE_LEFT₂
+  = ⇁ (r⇒⊗ (r⇒⊗ (r□◇ (r⇐⊗ (·¹ᴿ (r₁¹ (⇀ (₁·ᴿ
+  ( ↽ (r⊗⇐ (r◇□ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ (◇ᴿ
+  ( ⇁ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻))))) (⇒ᴸ ax⁺ ax⁻))))))))))))))))
+mary_thinks_someone_left₂ : Bool
+mary_thinks_someone_left₂ = toAgda MARY_THINKS_SOMEONE_LEFT₂ (mary , thinks′ , someone¹ , left′ , ∅) id
+--> existsₑ (λ x → person x ∧ mary thinks (x left))
+
+
+------------------------------------------------------------------------
+-- TODO:
+--
+--  The difference between #3 and #4 is that #3 is entirely
+--  well-behaved: it first collapses the ◇/⟨_⟩ pair, and thereby
+--  forces that the clause is dealt with in a separate proof.
+--
+--  In #4 we see that the proof first moves the ⟨_⟩ out of the way to
+--  change the work on the internal types. However, all it does is
+--  collapse the harmless product type. It then puts the ⟨_⟩ back in
+--  place, and continues the proof. This explains why the
+--  interpretation is still correct, and why this "extra" derivation
+--  is absent in the sentence using `( ₁ np ) ¹` as the quantifier
+--  type.
+--
+--  However, in #5 we see the same as in #2, where the ⟨_⟩ is moved
+--  out of the way to collapse the entire embedded sentence, thereby
+--  moving the quantifiers to the top-level instead of to the top of
+--  the embedded sentence.
+--
+------------------------------------------------------------------------
+
+MARY_THINKS_SOMEONE_LEFT₃ : LG · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ ( ◇ s⁻ ) · ⊗ ⟨ ( · ( ( np⁻ ⇚ ( np ⇛ np⁻ ) ) ⇐ n ) ⊗ n · ⊗ · np ⇒ s⁻ · ) ⟩ ) ⊢[ s⁻ ]
+MARY_THINKS_SOMEONE_LEFT₃
+  = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ (◇ᴿ
+  ( ⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))) (⇒ᴸ ax⁺ ax⁻)))))
+mary_thinks_someone_left₃ : Bool
+mary_thinks_someone_left₃ = toAgda MARY_THINKS_SOMEONE_LEFT₃ (mary , thinks′ , someone , left′ , ∅) id
+--> mary thinks existsₑ (λ x → person x ∧ x left)
+
+MARY_THINKS_SOMEONE_LEFT₄ : LG · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ ( ◇ s⁻ ) · ⊗ ⟨ ( · ( ( np⁻ ⇚ ( np ⇛ np⁻ ) ) ⇐ n ) ⊗ n · ⊗ · np ⇒ s⁻ · ) ⟩ ) ⊢[ s⁻ ]
+MARY_THINKS_SOMEONE_LEFT₄
+  = ⇁ (r⇒⊗ (r⇒⊗ (r□◇ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (r⊗⇐ (r◇□ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ (◇ᴿ
+  ( ⇁ (r⇐⊗ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻))))))))))))) (⇒ᴸ ax⁺ ax⁻))))))))))))))))
+mary_thinks_someone_left₄ : Bool
+mary_thinks_someone_left₄ = toAgda MARY_THINKS_SOMEONE_LEFT₄ (mary , thinks′ , someone , left′ , ∅) id
+--> mary thinks existsₑ (λ x → person x ∧ x left)
+
+MARY_THINKS_SOMEONE_LEFT₅ : LG · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ ( ◇ s⁻ ) · ⊗ ⟨ ( · ( ( np⁻ ⇚ ( np ⇛ np⁻ ) ) ⇐ n ) ⊗ n · ⊗ · np ⇒ s⁻ · ) ⟩ ) ⊢[ s⁻ ]
+MARY_THINKS_SOMEONE_LEFT₅
+  = ⇁ (r⇒⊗ (r⇒⊗ (r□◇ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺
+  ( ↽ (⇚ᴸ (r⊕⇚ (r⇛⊕ (⇀ (⇛ᴿ ax⁺
+  ( ↽ (r⊗⇐ (r◇□ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ (◇ᴿ
+  ( ⇁ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻))))) (⇒ᴸ ax⁺ ax⁻))))))))))))))))))))))
+mary_thinks_someone_left₅ : Bool
+mary_thinks_someone_left₅ = toAgda MARY_THINKS_SOMEONE_LEFT₅ (mary , thinks′ , someone , left′ , ∅) id
+--> existsₑ (λ x → person x ∧ mary thinks (x left))
+
+main : Bool
+main = {!toAgda h (mary , thinks″ , someone¹ , left′ , ∅) id!}

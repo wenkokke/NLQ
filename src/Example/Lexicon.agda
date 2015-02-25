@@ -58,13 +58,12 @@ abstract
 
 -- specific to lambek-grishin
 
-JOHN BILL MARY LOVES THINKS THINKS′ THINKS0 LEFT LEFT′ PERSON : Type
+JOHN BILL MARY LOVES THINKS THINKS0 LEFT LEFT′ PERSON : Type
 JOHN    = np
 BILL    = np
 MARY    = np
 LOVES   = (np ⇒ s⁻) ⇐ np
 THINKS  = (np ⇒ s⁻) ⇐     s⁻
-THINKS′ = (np ⇒ s⁻) ⇐   □ s⁻
 THINKS0 = (np ⇒ s⁻) ⇐ ((₀ s⁻) ⁰)
 LEFT    = np ⇒   s⁻
 LEFT′   = np ⇒ □ s⁻
@@ -74,7 +73,9 @@ loves′  : ⟦ LOVES ⟧ᵀ
 loves′  ((x , k) , y) = k (x loves y)
 left′   : ⟦ LEFT ⟧ᵀ
 left′    (x , k)      = k (x left)
-thinks′ : ⟦ THINKS ⟧ᵀ
+thinks′ : ⟦ (np ⇒ s⁻) ⇐ ◇ s⁻ ⟧ᵀ
 thinks′ ((x , k) , y) = k (x thinks (y id))
+thinks″ : ⟦ ( np ⇒ s⁻ ) ⇐ ( □ ( ◇ s⁻ ) ) ⟧ᵀ
+thinks″ ((x , k) , y) = k (x thinks (y (λ k → k id)))
 thinks0 : ⟦ THINKS0 ⟧ᵀ
 thinks0 ((x , k) , y) = k (x thinks (y (λ k → k id)))

@@ -26,29 +26,29 @@ vector<Rule*> createRules()
 
     /* Axioms */
     rules.push_back(new Rule("ax⁻", "",
-                new Sequent(new Formula('p'), new Structure(new Formula('p')))));
+        new Sequent(new Formula('*', CHECK_NEGATIVE), new Structure(new Formula('*', CHECK_NEGATIVE)))));
     rules.push_back(new Rule("ax⁺", "",
-                new Sequent(new Structure(new Formula('p')), new Formula('p'))));
+        new Sequent(new Structure(new Formula('*', CHECK_POSITIVE)), new Formula('*', CHECK_POSITIVE))));
 
     /* Focus left */
     rules.push_back(new Rule("↽", "\\leftharpoondown",
-        new Sequent(              new Formula('A') , new Structure('X')),
-        new Sequent(new Structure(new Formula('A')), new Structure('X'))));
+        new Sequent(              new Formula('A', CHECK_POSITIVE) , new Structure('X')),
+        new Sequent(new Structure(new Formula('A', CHECK_POSITIVE)), new Structure('X'))));
 
     /* Focus right */
     rules.push_back(new Rule("⇁", "\\rightharpoondown",
-        new Sequent(new Structure('X'),               new Formula('A') ),
-        new Sequent(new Structure('X'), new Structure(new Formula('A')))));
+        new Sequent(new Structure('X'),               new Formula('A', CHECK_NEGATIVE) ),
+        new Sequent(new Structure('X'), new Structure(new Formula('A', CHECK_NEGATIVE)))));
 
     /* Defocus left */
     rules.push_back(new Rule("↼", "\\leftharpoonup",
-        new Sequent(new Structure(new Formula('A')), new Structure('X')),
-        new Sequent(              new Formula('A') , new Structure('X'))));
+        new Sequent(new Structure(new Formula('A', CHECK_NEGATIVE)), new Structure('X')),
+        new Sequent(              new Formula('A', CHECK_NEGATIVE) , new Structure('X'))));
 
     /* Defocus right */
     rules.push_back(new Rule("⇀", "\\rightharpoonup",
-        new Sequent(new Structure('X'), new Structure(new Formula('A'))),
-        new Sequent(new Structure('X'),               new Formula('A') )));
+        new Sequent(new Structure('X'), new Structure(new Formula('A', CHECK_POSITIVE))),
+        new Sequent(new Structure('X'),               new Formula('A', CHECK_POSITIVE) )));
 
     /* Residuation */
     TWOWAY_RULE("r⇐⊗", "r⊗⇐", "r \\Leftarrow \\otimes", "r \\otimes \\Leftarrow",

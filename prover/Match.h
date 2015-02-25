@@ -23,19 +23,27 @@ bool matchFormula(Formula *f1, Formula *f2, bool input, bool store, bool checkNu
     /* Compare pointers */
     if(f1 == f2) return true;
 
-    /* First check if this is formula match wildcard */
-    if(f1->type == MATCH && (f1->matchChar != 'p' || f2->type == PRIMITIVE)) {
-        if(!store)
+    /* Check polarity if this is required. */
+    if (f1->type == MATCH) {
+
+        if ((f1->polarity_check == CHECK_POSITIVE && isFormulaNegative(f2)) ||
+            (f1->polarity_check == CHECK_NEGATIVE && isFormulaPositive(f2)))
+            return false;
+
+        /* First check if this is formula match wildcard */
+        if(f1->matchChar != '*' || f2->type == PRIMITIVE) {
+            if(!store)
+                return true;
+
+            if(formulaMatches.find(f1->matchChar) != formulaMatches.end()) {
+                /* Match already found, check if they are the same */
+                return matchFormula(formulaMatches[f1->matchChar], f2, input, store, checkNum, connectiveNum);
+            }
+
+            /* Add this to the match table */
+            formulaMatches[f1->matchChar] = f2;
             return true;
-
-        if(formulaMatches.find(f1->matchChar) != formulaMatches.end()) {
-            /* Match already found, check if they are the same */
-            return matchFormula(formulaMatches[f1->matchChar], f2, input, store, checkNum, connectiveNum);
         }
-
-        /* Add this to the match table */
-        formulaMatches[f1->matchChar] = f2;
-        return true;
     }
 
     /* Check if types are the same */
@@ -49,13 +57,17 @@ bool matchFormula(Formula *f1, Formula *f2, bool input, bool store, bool checkNu
             return strcmp(f1->name, f2->name) == 0 && (!checkNum || f1->literal_index == f2->literal_index);
         /* Binary */
         case BINARY:
-            ret = f1->binary_connective == f2->binary_connective && matchFormula(f1->left, f2->left, input != changePolarityBinary(f1->binary_connective, true), store, checkNum, connectiveNum) && matchFormula(f1->right, f2->right, input != changePolarityBinary(f1->binary_connective, false), store, checkNum, connectiveNum);
+            ret = f1->binary_connective == f2->binary_connective
+                && matchFormula(f1->left,  f2->left,  input != changePolarityBinary(f1->binary_connective, true),  store, checkNum, connectiveNum)
+                && matchFormula(f1->right, f2->right, input != changePolarityBinary(f1->binary_connective, false), store, checkNum, connectiveNum);
             if(ret && !structuralPolarityBinary(f2->binary_connective, input))
                 *connectiveNum = f2->binary_index;
             return ret;
         /* Unary */
         case UNARY:
-            ret = f1->unary_connective == f2->unary_connective && f1->prefix == f2->prefix && matchFormula(f1->inner, f2->inner, input != changePolarityUnary(f1->unary_connective), store, checkNum, connectiveNum);
+            ret =  f1->unary_connective == f2->unary_connective
+                && f1->prefix           == f2->prefix
+                && matchFormula(f1->inner, f2->inner, input != changePolarityUnary(f1->unary_connective), store, checkNum, connectiveNum);
             if(ret && !structuralPolarityUnary(f2->unary_connective, input))
                 *connectiveNum = f2->unary_index;
             return ret;
