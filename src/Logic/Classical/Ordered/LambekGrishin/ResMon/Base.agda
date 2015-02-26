@@ -37,10 +37,10 @@ data LG_ : Judgement → Set ℓ where
   r₀⁰ : ∀ {A B}     → LG B ⊢ ₀ A   → LG   A   ⊢   B ⁰
 
   -- rules for residuation and monotonicity for (₁ , ¹)
-  m₁  : ∀ {A B}     → LG   B   ⊢ A   → LG ₁ A   ⊢ ₁ B
-  m¹  : ∀ {A B}     → LG   B   ⊢ A   → LG   A ¹ ⊢   B ¹
-  r¹₁ : ∀ {A B}     → LG   B ¹ ⊢ A   → LG ₁ A   ⊢   B
-  r₁¹ : ∀ {A B}     → LG ₁ B   ⊢ A   → LG   A ¹ ⊢   B
+  m₁  : ∀ {A B}     → LG   B   ⊢ A → LG ₁ A   ⊢ ₁ B
+  m¹  : ∀ {A B}     → LG   B   ⊢ A → LG   A ¹ ⊢   B ¹
+  r¹₁ : ∀ {A B}     → LG   B ¹ ⊢ A → LG ₁ A   ⊢   B
+  r₁¹ : ∀ {A B}     → LG ₁ B   ⊢ A → LG   A ¹ ⊢   B
 
   -- rules for residuation and monotonicity for (⇐ , ⊗ , ⇒)
   m⊗  : ∀ {A B C D} → LG A ⊢ B     → LG C ⊢ D     → LG A ⊗ C ⊢ B ⊗ D
@@ -65,51 +65,6 @@ data LG_ : Judgement → Set ℓ where
   d⇛⇒ : ∀ {A B C D} → LG A ⊗ B ⊢ C ⊕ D → LG C ⇛ B ⊢ A ⇒ D
   d⇚⇒ : ∀ {A B C D} → LG A ⊗ B ⊢ C ⊕ D → LG B ⇚ D ⊢ A ⇒ C
   d⇚⇐ : ∀ {A B C D} → LG A ⊗ B ⊢ C ⊕ D → LG A ⇚ D ⊢ C ⇐ B
-
-
--- Proofs which show that constructors of terms (as all Agda
--- data-constructors) respect equality.
-
-m⊗-injective : ∀ {A B C D f₁ f₂ g₁ g₂} → m⊗ {A} {B} {C} {D} f₁ f₂ ≡ m⊗ g₁ g₂ → f₁ ≡ g₁ × f₂ ≡ g₂
-m⊗-injective refl = refl , refl
-m⇒-injective : ∀ {A B C D f₁ f₂ g₁ g₂} → m⇒ {A} {B} {C} {D} f₁ f₂ ≡ m⇒ g₁ g₂ → f₁ ≡ g₁ × f₂ ≡ g₂
-m⇒-injective refl = refl , refl
-m⇐-injective : ∀ {A B C D f₁ f₂ g₁ g₂} → m⇐ {A} {B} {C} {D} f₁ f₂ ≡ m⇐ g₁ g₂ → f₁ ≡ g₁ × f₂ ≡ g₂
-m⇐-injective refl = refl , refl
-
-r⇒⊗-injective : ∀ {A B C f g} → r⇒⊗ {A} {B} {C} f ≡ r⇒⊗ g → f ≡ g
-r⇒⊗-injective refl = refl
-r⊗⇒-injective : ∀ {A B C f g} → r⊗⇒ {A} {B} {C} f ≡ r⊗⇒ g → f ≡ g
-r⊗⇒-injective refl = refl
-r⇐⊗-injective : ∀ {A B C f g} → r⇐⊗ {A} {B} {C} f ≡ r⇐⊗ g → f ≡ g
-r⇐⊗-injective refl = refl
-r⊗⇐-injective : ∀ {A B C f g} → r⊗⇐ {A} {B} {C} f ≡ r⊗⇐ g → f ≡ g
-r⊗⇐-injective refl = refl
-
-m⊕-injective : ∀ {A B C D f₁ f₂ g₁ g₂} → m⊕ {A} {B} {C} {D} f₁ f₂ ≡ m⊕ g₁ g₂ → f₁ ≡ g₁ × f₂ ≡ g₂
-m⊕-injective refl = refl , refl
-m⇛-injective : ∀ {A B C D f₁ f₂ g₁ g₂} → m⇛ {A} {B} {C} {D} f₁ f₂ ≡ m⇛ g₁ g₂ → f₁ ≡ g₁ × f₂ ≡ g₂
-m⇛-injective refl = refl , refl
-m⇚-injective : ∀ {A B C D f₁ f₂ g₁ g₂} → m⇚ {A} {B} {C} {D} f₁ f₂ ≡ m⇚ g₁ g₂ → f₁ ≡ g₁ × f₂ ≡ g₂
-m⇚-injective refl = refl , refl
-
-r⇛⊕-injective : ∀ {A B C f g} → r⇛⊕ {A} {B} {C} f ≡ r⇛⊕ g → f ≡ g
-r⇛⊕-injective refl = refl
-r⊕⇛-injective : ∀ {A B C f g} → r⊕⇛ {A} {B} {C} f ≡ r⊕⇛ g → f ≡ g
-r⊕⇛-injective refl = refl
-r⊕⇚-injective : ∀ {A B C f g} → r⊕⇚ {A} {B} {C} f ≡ r⊕⇚ g → f ≡ g
-r⊕⇚-injective refl = refl
-r⇚⊕-injective : ∀ {A B C f g} → r⇚⊕ {A} {B} {C} f ≡ r⇚⊕ g → f ≡ g
-r⇚⊕-injective refl = refl
-
-d⇛⇐-injective : ∀ {A B C D f g} → d⇛⇐ {A} {B} {C} {D} f ≡ d⇛⇐ g → f ≡ g
-d⇛⇐-injective refl = refl
-d⇛⇒-injective : ∀ {A B C D f g} → d⇛⇒ {A} {B} {C} {D} f ≡ d⇛⇒ g → f ≡ g
-d⇛⇒-injective refl = refl
-d⇚⇒-injective : ∀ {A B C D f g} → d⇚⇒ {A} {B} {C} {D} f ≡ d⇚⇒ g → f ≡ g
-d⇚⇒-injective refl = refl
-d⇚⇐-injective : ∀ {A B C D f g} → d⇚⇐ {A} {B} {C} {D} f ≡ d⇚⇐ g → f ≡ g
-d⇚⇐-injective refl = refl
 
 
 -- Derived rule for identity, which holds as long as the type A only
@@ -196,7 +151,3 @@ is-ax? d⇛⇐ _   = no (λ {(_ , ())})
 is-ax? d⇛⇒ _   = no (λ {(_ , ())})
 is-ax? d⇚⇒ _   = no (λ {(_ , ())})
 is-ax? d⇚⇐ _   = no (λ {(_ , ())})
-
-
-f:elA⊢elA→f≡ax : ∀ {A} (f : LG el A ⊢ el A) → f ≡ ax
-f:elA⊢elA→f≡ax ax = refl
