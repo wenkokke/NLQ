@@ -29,10 +29,10 @@ data Polarised (p : Polarity) : Polarity → Context → Set ℓ where
 
   []   : Polarised p p []
 
-  ₀>_  : {A : Context} (A⁻ : Polarised p - A) → Polarised p - (₀> A)
-  _<⁰  : {A : Context} (A⁻ : Polarised p - A) → Polarised p - (A <⁰)
-  ₁>_  : {A : Context} (A⁺ : Polarised p + A) → Polarised p + (₁> A)
-  _<¹  : {A : Context} (A⁺ : Polarised p + A) → Polarised p + (A <¹)
+  ₀>_  : {A : Context} (A⁻ : Polarised p + A) → Polarised p - (₀> A)
+  _<⁰  : {A : Context} (A⁻ : Polarised p + A) → Polarised p - (A <⁰)
+  ₁>_  : {A : Context} (A⁺ : Polarised p - A) → Polarised p + (₁> A)
+  _<¹  : {A : Context} (A⁺ : Polarised p - A) → Polarised p + (A <¹)
 
   _⊗>_ : (A : Type) {B : Context} (B⁺ : Polarised p + B) → Polarised p + (A ⊗> B)
   _<⊗_ : {A : Context} (A⁺ : Polarised p + A) (B : Type) → Polarised p + (A <⊗ B)
