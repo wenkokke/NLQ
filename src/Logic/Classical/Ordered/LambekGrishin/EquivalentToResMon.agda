@@ -9,10 +9,12 @@
 open import Function.Equivalence                       using (_⇔_; equivalence)
 open import Data.Product                               using (_×_; _,_; proj₂)
 open import Relation.Nullary                           using (Dec; yes; no; ¬_)
+open import Relation.Nullary.Decidable                 using (fromWitness)
 open import Relation.Binary.PropositionalEquality as P using (_≡_)
 
 
 module Logic.Classical.Ordered.LambekGrishin.EquivalentToResMon {ℓ} (Univ : Set ℓ) where
+
 
 open import Logic.Polarity
 
@@ -20,6 +22,7 @@ PolarisedUniv : Set ℓ
 PolarisedUniv = (Polarity × Univ)
 
 open import Logic.Classical.Ordered.LambekGrishin.Type                PolarisedUniv as LG
+open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ
 open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised PolarisedUniv
 open import Logic.Classical.Ordered.LambekGrishin.Judgement           PolarisedUniv as LGJ
 open import Logic.Classical.Ordered.LambekGrishin.Base                Univ
@@ -79,14 +82,14 @@ private
   to (◇ᴿ  f  ) = m◇ (to f)
   to (□ᴸ  f  ) = m□ (to f)
   to (□ᴿ  f  ) = to f
-  to (₀·ᴸ f  ) = m₀ (to f)
-  to (₀·ᴿ f  ) = to f
-  to (·⁰ᴸ f  ) = m⁰ (to f)
-  to (·⁰ᴿ f  ) = to f
-  to (₁·ᴸ f  ) = to f
-  to (₁·ᴿ f  ) = m₁ (to f)
-  to (·¹ᴸ f  ) = m¹ (to f)
-  to (·¹ᴿ f  ) = to f
+  to (₀ᴸ  f  ) = m₀ (to f)
+  to (₀ᴿ  f  ) = to f
+  to (⁰ᴸ  f  ) = m⁰ (to f)
+  to (⁰ᴿ  f  ) = to f
+  to (₁ᴸ  f  ) = to f
+  to (₁ᴿ  f  ) = m₁ (to f)
+  to (¹ᴸ  f  ) = to f
+  to (¹ᴿ  f  ) = m¹ (to f)
   to (⊗ᴿ  f g) = m⊗ (to f) (to g)
   to (⇚ᴿ  f g) = m⇚ (to f) (to g)
   to (⇛ᴿ  f g) = m⇛ (to g) (to f)
@@ -140,8 +143,8 @@ private
     ⟦ ◇ A   ⟧⁺ = ⟨ ⟦ A ⟧⁺ ⟩
     ⟦ ₁ A   ⟧⁺ = ₁ ⟦ A ⟧⁻
     ⟦ A ¹   ⟧⁺ = ⟦ A ⟧⁻ ¹
-    ⟦ A ⇚ B ⟧⁺ = ⟦ A ⟧⁺ ⇚ ⟦ A ⟧⁻
-    ⟦ A ⇛ B ⟧⁺ = ⟦ A ⟧⁻ ⇛ ⟦ A ⟧⁺
+    ⟦ A ⇚ B ⟧⁺ = ⟦ A ⟧⁺ ⇚ ⟦ B ⟧⁻
+    ⟦ A ⇛ B ⟧⁺ = ⟦ A ⟧⁻ ⇛ ⟦ B ⟧⁺
     ⟦ A ⊗ B ⟧⁺ = ⟦ A ⟧⁺ ⊗ ⟦ B ⟧⁺
     ⟦   A   ⟧⁺ = · ⟦ A ⟧ᵀ ·
 
@@ -157,35 +160,67 @@ private
   From : RMJ.Judgement → LGJ.Judgement
   From (A ⊢ B) = ⟦ A ⟧⁺ ⊢ ⟦ B ⟧⁻
 
+  mutual
+    lem-⟦·⟧⁺ : ∀ {A Y} → LG ⟦ A ⟧⁺ ⊢ Y → LG · ⟦ A ⟧ᵀ · ⊢ Y
+    lem-⟦·⟧⁺ {A = el A}  f = f
+    lem-⟦·⟧⁺ {A = □ A}   f = f
+    lem-⟦·⟧⁺ {A = ◇ A}   f = ◇ᴸ (r□◇ (lem-⟦·⟧⁺ (r◇□ f)))
+    lem-⟦·⟧⁺ {A = ₀ A}   f = f
+    lem-⟦·⟧⁺ {A = A ⁰}   f = f
+    lem-⟦·⟧⁺ {A = ₁ A}   f = ₁ᴸ (r¹₁ (lem-⟦·⟧⁻ (r₁¹ f)))
+    lem-⟦·⟧⁺ {A = A ¹}   f = ¹ᴸ (r₁¹ (lem-⟦·⟧⁻ (r¹₁ f)))
+    lem-⟦·⟧⁺ {A = A ⇒ B} f = f
+    lem-⟦·⟧⁺ {A = A ⇐ B} f = f
+    lem-⟦·⟧⁺ {A = A ⇚ B} f = ⇚ᴸ (r⊕⇚ (lem-⟦·⟧⁺ (r⇛⊕ (lem-⟦·⟧⁻ (r⊕⇛ (r⇚⊕ f))))))
+    lem-⟦·⟧⁺ {A = A ⇛ B} f = ⇛ᴸ (r⊕⇛ (lem-⟦·⟧⁺ (r⇚⊕ (lem-⟦·⟧⁻ (r⊕⇚ (r⇛⊕ f))))))
+    lem-⟦·⟧⁺ {A = A ⊗ B} f = ⊗ᴸ (r⇐⊗ (lem-⟦·⟧⁺ (r⊗⇐ (r⇒⊗ (lem-⟦·⟧⁺ (r⊗⇒ f))))))
+    lem-⟦·⟧⁺ {A = A ⊕ B} f = f
+
+    lem-⟦·⟧⁻ : ∀ {X B} → LG X ⊢ ⟦ B ⟧⁻ → LG X ⊢ · ⟦ B ⟧ᵀ ·
+    lem-⟦·⟧⁻ {B = el B}  f = f
+    lem-⟦·⟧⁻ {B = □ B}   f = □ᴿ (r◇□ (lem-⟦·⟧⁻ (r□◇ f)))
+    lem-⟦·⟧⁻ {B = ◇ B}   f = f
+    lem-⟦·⟧⁻ {B = ₀ B}   f = ₀ᴿ (r⁰₀ (lem-⟦·⟧⁺ (r₀⁰ f)))
+    lem-⟦·⟧⁻ {B = B ⁰}   f = ⁰ᴿ (r₀⁰ (lem-⟦·⟧⁺ (r⁰₀ f)))
+    lem-⟦·⟧⁻ {B = ₁ B}   f = f
+    lem-⟦·⟧⁻ {B = B ¹}   f = f
+    lem-⟦·⟧⁻ {B = B ⇒ C} f = ⇒ᴿ (r⊗⇒ (lem-⟦·⟧⁻ (r⇐⊗ (lem-⟦·⟧⁺ (r⊗⇐ (r⇒⊗ f))))))
+    lem-⟦·⟧⁻ {B = B ⇐ C} f = ⇐ᴿ (r⊗⇐ (lem-⟦·⟧⁻ (r⇒⊗ (lem-⟦·⟧⁺ (r⊗⇒ (r⇐⊗ f))))))
+    lem-⟦·⟧⁻ {B = B ⇚ C} f = f
+    lem-⟦·⟧⁻ {B = B ⇛ C} f = f
+    lem-⟦·⟧⁻ {B = B ⊗ C} f = f
+    lem-⟦·⟧⁻ {B = B ⊕ C} f = ⊕ᴿ (r⇚⊕ (lem-⟦·⟧⁻ (r⊕⇚ (r⇛⊕ (lem-⟦·⟧⁻ (r⊕⇛ f))))))
+
+
   from : ∀ {J} → RM J → LG (From J)
   from (ax     ) = ⇀ ax⁺
-  from (m□  f  ) = {!!}
-  from (m◇  f  ) = {!!}
-  from (r□◇ f  ) = {!!}
-  from (r◇□ f  ) = {!!}
-  from (m⁰  f  ) = {!!}
-  from (m₀  f  ) = {!!}
-  from (r⁰₀ f  ) = {!!}
-  from (r₀⁰ f  ) = {!!}
-  from (m₁  f  ) = {!!}
-  from (m¹  f  ) = {!!}
-  from (r¹₁ f  ) = {!!}
-  from (r₁¹ f  ) = {!!}
-  from (m⊗  f g) = {!!}
-  from (m⇒  f g) = {!!}
-  from (m⇐  f g) = {!!}
-  from (r⇒⊗ f  ) = {!!}
-  from (r⊗⇒ f  ) = {!!}
-  from (r⇐⊗ f  ) = {!!}
-  from (r⊗⇐ f  ) = {!!}
-  from (m⊕  f g) = {!!}
-  from (m⇛  f g) = {!!}
-  from (m⇚  f g) = {!!}
-  from (r⇛⊕ f  ) = {!!}
-  from (r⊕⇛ f  ) = {!!}
-  from (r⊕⇚ f  ) = {!!}
-  from (r⇚⊕ f  ) = {!!}
-  from (d⇛⇐ f  ) = {!!}
-  from (d⇛⇒ f  ) = {!!}
-  from (d⇚⇒ f  ) = {!!}
-  from (d⇚⇐ f  ) = {!!}
+  from (m□  f  ) = ↼ (□ᴸ (↽ {p = {!!}} (lem-⟦·⟧⁺ (from f))))
+  from (m◇  f  ) = ⇀ (◇ᴿ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from f))))
+  from (r□◇ f  ) = r□◇ (from f)
+  from (r◇□ f  ) = r◇□ (from f)
+  from (m₀  f  ) = ↼ (₀ᴸ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from f))))
+  from (m⁰  f  ) = ↼ (⁰ᴸ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from f))))
+  from (r⁰₀ f  ) = r⁰₀ (from f)
+  from (r₀⁰ f  ) = r₀⁰ (from f)
+  from (m₁  f  ) = ⇀ (₁ᴿ (↽ {p = {!!}} (lem-⟦·⟧⁺ (from f))))
+  from (m¹  f  ) = ⇀ (¹ᴿ (↽ {p = {!!}} (lem-⟦·⟧⁺ (from f))))
+  from (r¹₁ f  ) = r¹₁ (from f)
+  from (r₁¹ f  ) = r₁¹ (from f)
+  from (m⊗  f g) = ⇀ (⊗ᴿ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from f))) (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from g))))
+  from (m⇒  f g) = ↼ (⇒ᴸ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from f))) (↽ {p = {!!}} (lem-⟦·⟧⁺ (from g))))
+  from (m⇐  f g) = ↼ (⇐ᴸ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from g))) (↽ {p = {!!}} (lem-⟦·⟧⁺ (from f))))
+  from (r⇒⊗ f  ) = r⇒⊗ (from f)
+  from (r⊗⇒ f  ) = r⊗⇒ (from f)
+  from (r⇐⊗ f  ) = r⇐⊗ (from f)
+  from (r⊗⇐ f  ) = r⊗⇐ (from f)
+  from (m⊕  f g) = ↼ (⊕ᴸ (↽ {p = {!!}} (lem-⟦·⟧⁺ (from f))) (↽ {p = {!!}} (lem-⟦·⟧⁺ (from g))))
+  from (m⇛  f g) = ⇀ (⇛ᴿ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from g))) (↽ {p = {!!}} (lem-⟦·⟧⁺ (from f))))
+  from (m⇚  f g) = ⇀ (⇚ᴿ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from f))) (↽ {p = {!!}} (lem-⟦·⟧⁺ (from g))))
+  from (r⇛⊕ f  ) = r⇛⊕ (from f)
+  from (r⊕⇛ f  ) = r⊕⇛ (from f)
+  from (r⊕⇚ f  ) = r⊕⇚ (from f)
+  from (r⇚⊕ f  ) = r⇚⊕ (from f)
+  from (d⇛⇐ f  ) = d⇛⇐ (from f)
+  from (d⇛⇒ f  ) = d⇛⇒ (from f)
+  from (d⇚⇒ f  ) = d⇚⇒ (from f)
+  from (d⇚⇐ f  ) = d⇚⇐ (from f)

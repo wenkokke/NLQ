@@ -61,12 +61,12 @@ vector<Rule*> createRules()
         new Sequent(new Structure(            ONE, new Structure(new Formula('A'))), new Structure('Y'))));
     /* ·¹ᴸ */
     rules.push_back(new Rule("·¹ᴸ", "\\cdot^{1L}",
-        new Sequent(new Structure(new Structure('Y'), ONE), new Formula(new Formula  ('A'), ONE)),
-        new Sequent(              new Formula  ('A')      ,             new Structure('Y')      )));
-    /* ·¹ᴿ */
-    rules.push_back(new Rule("·¹ᴿ", "\\cdot^{1R}",
         new Sequent(new Structure(new Formula  (new Formula('A') , ONE)), new Structure('Y')),
         new Sequent(new Structure(new Structure(new Formula('A')), ONE) , new Structure('Y'))));
+    /* ·¹ᴿ */
+    rules.push_back(new Rule("·¹ᴿ", "\\cdot^{1R}",
+        new Sequent(new Structure(new Structure('Y'), ONE), new Formula(new Formula  ('A'), ONE)),
+        new Sequent(              new Formula  ('A')      ,             new Structure('Y')      )));
     /* r¹₁ , r₁¹ */
     TWOWAY_RULE("r¹₁", "r₁¹", "r^1\\cdot_1", "r_1\\cdot^1",
         new Sequent(new Structure(ONE, new Structure('Y')), new Structure('X')),

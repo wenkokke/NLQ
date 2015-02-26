@@ -45,8 +45,8 @@ data LG_ : Judgement → Set ℓ where
       → LG X ⊢[  A  ]
 
   ↽   : ∀ {X A} {p : True (Positive? A)}
-      → LG · A · ⊢ X
-      → LG [ A ]⊢ X
+      → LG  · A · ⊢ X
+      → LG [  A  ]⊢ X
 
   -- defocus right and left
   ⇀   : ∀ {X A} {p : True (Positive? A)}
@@ -74,37 +74,37 @@ data LG_ : Judgement → Set ℓ where
       → LG X ⊢ [ ·   A · ]
       → LG X ⊢   · □ A ·
 
-  ₀·ᴸ : ∀ {X A}
+  ₀ᴸ  : ∀ {X A}
       → LG     X  ⊢[   A ]
       → LG [ ₀ A ]⊢  ₀ X
 
-  ₀·ᴿ : ∀ {X A}
+  ₀ᴿ  : ∀ {X A}
       → LG X ⊢ ₀ · A ·
       → LG X ⊢ · ₀ A ·
 
-  ·⁰ᴸ : ∀ {X A}
+  ⁰ᴸ  : ∀ {X A}
       → LG   X    ⊢[ A   ]
       → LG [ A ⁰ ]⊢  X ⁰
 
-  ·⁰ᴿ : ∀ {X A}
+  ⁰ᴿ  : ∀ {X A}
       → LG X ⊢ · A · ⁰
       → LG X ⊢ · A ⁰ ·
 
-  ₁·ᴸ : ∀ {Y A}
+  ₁ᴸ  : ∀ {Y A}
       → LG ₁ · A · ⊢ Y
       → LG · ₁ A · ⊢ Y
 
-  ₁·ᴿ : ∀ {Y A}
+  ₁ᴿ  : ∀ {Y A}
       → LG [   A ]⊢    Y
       → LG   ₁ Y  ⊢[ ₁ A ]
 
-  ·¹ᴸ : ∀ {Y A}
-      → LG [ A   ]⊢  Y
-      → LG   Y ¹  ⊢[ A ¹ ]
-
-  ·¹ᴿ : ∀ {Y A}
+  ¹ᴸ  : ∀ {Y A}
       → LG · A · ¹ ⊢ Y
       → LG · A ¹ · ⊢ Y
+
+  ¹ᴿ  : ∀ {Y A}
+      → LG [ A   ]⊢  Y
+      → LG   Y ¹  ⊢[ A ¹ ]
 
   ⊗ᴿ  : ∀ {X Y A B}
       → LG X ⊢[ A ]
