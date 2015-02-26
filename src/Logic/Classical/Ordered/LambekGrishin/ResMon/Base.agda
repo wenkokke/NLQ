@@ -22,27 +22,39 @@ infix 1 LG_
 
 data LG_ : Judgement → Set ℓ where
 
-  ax     : ∀ {A}       → LG el A ⊢ el A
+  ax  : ∀ {A}       → LG el A ⊢ el A
 
-  -- rules for unary residuation and monotonicity
+  -- rules for residuation and monotonicity for (□ , ◇)
   m□  : ∀ {A B}     → LG   A ⊢   B → LG □ A ⊢ □ B
   m◇  : ∀ {A B}     → LG   A ⊢   B → LG ◇ A ⊢ ◇ B
   r□◇ : ∀ {A B}     → LG   A ⊢ □ B → LG ◇ A ⊢   B
   r◇□ : ∀ {A B}     → LG ◇ A ⊢   B → LG   A ⊢ □ B
 
-  -- rules for residuation and monotonicity
-  m⊗  : ∀ {A B C D} → LG A ⊢ B → LG C ⊢ D → LG A ⊗ C ⊢ B ⊗ D
-  m⇒  : ∀ {A B C D} → LG A ⊢ B → LG C ⊢ D → LG B ⇒ C ⊢ A ⇒ D
-  m⇐  : ∀ {A B C D} → LG A ⊢ B → LG C ⊢ D → LG A ⇐ D ⊢ B ⇐ C
+  -- rules for residuation and monotonicity for (₀ , ⁰)
+  m⁰  : ∀ {A B}     → LG B ⊢   A   → LG   A ⁰ ⊢   B ⁰
+  m₀  : ∀ {A B}     → LG B ⊢   A   → LG ₀ A   ⊢ ₀ B
+  r⁰₀ : ∀ {A B}     → LG B ⊢   A ⁰ → LG   A   ⊢ ₀ B
+  r₀⁰ : ∀ {A B}     → LG B ⊢ ₀ A   → LG   A   ⊢   B ⁰
+
+  -- rules for residuation and monotonicity for (₁ , ¹)
+  m₁  : ∀ {A B}     → LG   B   ⊢ A   → LG ₁ A   ⊢ ₁ B
+  m¹  : ∀ {A B}     → LG   B   ⊢ A   → LG   A ¹ ⊢   B ¹
+  r¹₁ : ∀ {A B}     → LG   B ¹ ⊢ A   → LG ₁ A   ⊢   B
+  r₁¹ : ∀ {A B}     → LG ₁ B   ⊢ A   → LG   A ¹ ⊢   B
+
+  -- rules for residuation and monotonicity for (⇐ , ⊗ , ⇒)
+  m⊗  : ∀ {A B C D} → LG A ⊢ B     → LG C ⊢ D     → LG A ⊗ C ⊢ B ⊗ D
+  m⇒  : ∀ {A B C D} → LG A ⊢ B     → LG C ⊢ D     → LG B ⇒ C ⊢ A ⇒ D
+  m⇐  : ∀ {A B C D} → LG A ⊢ B     → LG C ⊢ D     → LG A ⇐ D ⊢ B ⇐ C
   r⇒⊗ : ∀ {A B C}   → LG B ⊢ A ⇒ C → LG A ⊗ B ⊢ C
   r⊗⇒ : ∀ {A B C}   → LG A ⊗ B ⊢ C → LG B ⊢ A ⇒ C
   r⇐⊗ : ∀ {A B C}   → LG A ⊢ C ⇐ B → LG A ⊗ B ⊢ C
   r⊗⇐ : ∀ {A B C}   → LG A ⊗ B ⊢ C → LG A ⊢ C ⇐ B
 
-  -- rules for co-residuation and co-monotonicity
-  m⊕  : ∀ {A B C D} → LG A ⊢ B → LG C ⊢ D → LG A ⊕ C ⊢ B ⊕ D
-  m⇛  : ∀ {A B C D} → LG C ⊢ D → LG A ⊢ B → LG D ⇛ A ⊢ C ⇛ B
-  m⇚  : ∀ {A B C D} → LG A ⊢ B → LG C ⊢ D → LG A ⇚ D ⊢ B ⇚ C
+  -- rules for residuation and monotonicity for (⇚ , ⊕ , ⇛)
+  m⊕  : ∀ {A B C D} → LG A ⊢ B     → LG C ⊢ D     → LG A ⊕ C ⊢ B ⊕ D
+  m⇛  : ∀ {A B C D} → LG C ⊢ D     → LG A ⊢ B     → LG D ⇛ A ⊢ C ⇛ B
+  m⇚  : ∀ {A B C D} → LG A ⊢ B     → LG C ⊢ D     → LG A ⇚ D ⊢ B ⇚ C
   r⇛⊕ : ∀ {A B C}   → LG B ⇛ C ⊢ A → LG C ⊢ B ⊕ A
   r⊕⇛ : ∀ {A B C}   → LG C ⊢ B ⊕ A → LG B ⇛ C ⊢ A
   r⊕⇚ : ∀ {A B C}   → LG C ⊢ B ⊕ A → LG C ⇚ A ⊢ B
@@ -106,6 +118,10 @@ ax′ : ∀ {A} → LG A ⊢ A
 ax′ {el A}  = ax
 ax′ {□  A}  = m□ ax′
 ax′ {◇  A}  = m◇ ax′
+ax′ {₀  A}  = m₀ ax′
+ax′ {A  ⁰}  = m⁰ ax′
+ax′ {₁  A}  = m₁ ax′
+ax′ {A  ¹}  = m¹ ax′
 ax′ {A ⊗ B} = m⊗ ax′ ax′
 ax′ {A ⇚ B} = m⇚ ax′ ax′
 ax′ {A ⇛ B} = m⇛ ax′ ax′
@@ -149,11 +165,19 @@ is-ax_ f = ∃ (λ A → f ≅ ax {A})
 -- Decision procedure for heterogeneous equality of proofs, checking
 -- if the proof is equal to the identity proof.
 is-ax?_ : ∀ {A B} (f : LG A ⊢ B) → Dec (is-ax f)
-is-ax? ax         = yes (_ , H.refl)
+is-ax? ax      = yes (_ , H.refl)
 is-ax? m□  _   = no (λ {(_ , ())})
 is-ax? m◇  _   = no (λ {(_ , ())})
 is-ax? r□◇ _   = no (λ {(_ , ())})
 is-ax? r◇□ _   = no (λ {(_ , ())})
+is-ax? m⁰  _   = no (λ {(_ , ())})
+is-ax? m₀  _   = no (λ {(_ , ())})
+is-ax? r⁰₀ _   = no (λ {(_ , ())})
+is-ax? r₀⁰ _   = no (λ {(_ , ())})
+is-ax? m₁  _   = no (λ {(_ , ())})
+is-ax? m¹  _   = no (λ {(_ , ())})
+is-ax? r¹₁ _   = no (λ {(_ , ())})
+is-ax? r₁¹ _   = no (λ {(_ , ())})
 is-ax? m⊗  _ _ = no (λ {(_ , ())})
 is-ax? m⇒  _ _ = no (λ {(_ , ())})
 is-ax? m⇐  _ _ = no (λ {(_ , ())})

@@ -41,13 +41,25 @@ data LG_⋯_ : (I J : Judgement) → Set ℓ where
   []     : ∀ {J}         → LG J ⋯ J
 
 
-  -- rules for unary residuation and monotonicity
+  -- rules for residuation and monotonicity for (□ , ◇)
   m□  : ∀ {J A B}     → LG J ⋯   A ⊢   B → LG J ⋯ □ A ⊢ □ B
   m◇  : ∀ {J A B}     → LG J ⋯   A ⊢   B → LG J ⋯ ◇ A ⊢ ◇ B
   r□◇ : ∀ {J A B}     → LG J ⋯   A ⊢ □ B → LG J ⋯ ◇ A ⊢   B
   r◇□ : ∀ {J A B}     → LG J ⋯ ◇ A ⊢   B → LG J ⋯   A ⊢ □ B
 
-  -- rules for residuation and monotonicity
+  -- rules for residuation and monotonicity for (₀ , ⁰)
+  m⁰  : ∀ {J A B}     → LG J ⋯ B ⊢   A   → LG J ⋯   A ⁰ ⊢   B ⁰
+  m₀  : ∀ {J A B}     → LG J ⋯ B ⊢   A   → LG J ⋯ ₀ A   ⊢ ₀ B
+  r⁰₀ : ∀ {J A B}     → LG J ⋯ B ⊢   A ⁰ → LG J ⋯   A   ⊢ ₀ B
+  r₀⁰ : ∀ {J A B}     → LG J ⋯ B ⊢ ₀ A   → LG J ⋯   A   ⊢   B ⁰
+
+  -- rules for residuation and monotonicity for (₁ , ¹)
+  m₁  : ∀ {J A B}     → LG J ⋯   B   ⊢ A → LG J ⋯ ₁ A   ⊢ ₁ B
+  m¹  : ∀ {J A B}     → LG J ⋯   B   ⊢ A → LG J ⋯   A ¹ ⊢   B ¹
+  r¹₁ : ∀ {J A B}     → LG J ⋯   B ¹ ⊢ A → LG J ⋯ ₁ A   ⊢   B
+  r₁¹ : ∀ {J A B}     → LG J ⋯ ₁ B   ⊢ A → LG J ⋯   A ¹ ⊢   B
+
+  -- rules for residuation and monotonicity for (⇐ , ⊗ , ⇒)
   r⇒⊗ : ∀ {J A B C}   → LG J ⋯ B ⊢ A ⇒ C → LG J ⋯ A ⊗ B ⊢ C
   r⊗⇒ : ∀ {J A B C}   → LG J ⋯ A ⊗ B ⊢ C → LG J ⋯ B ⊢ A ⇒ C
   r⇐⊗ : ∀ {J A B C}   → LG J ⋯ A ⊢ C ⇐ B → LG J ⋯ A ⊗ B ⊢ C
@@ -59,7 +71,7 @@ data LG_⋯_ : (I J : Judgement) → Set ℓ where
   m⇐ᴸ : ∀ {J A B C D} → LG J ⋯ A ⊢ B → LG C ⊢ D → LG J ⋯ A ⇐ D ⊢ B ⇐ C
   m⇐ᴿ : ∀ {J A B C D} → LG A ⊢ B → LG J ⋯ C ⊢ D → LG J ⋯ A ⇐ D ⊢ B ⇐ C
 
-  -- rules for co-residuation and co-monotonicity
+  -- rules for residuation and monotonicity for (⇚ , ⊕ , ⇛)
   r⇛⊕ : ∀ {J A B C}   → LG J ⋯ B ⇛ C ⊢ A → LG J ⋯ C ⊢ B ⊕ A
   r⊕⇛ : ∀ {J A B C}   → LG J ⋯ C ⊢ B ⊕ A → LG J ⋯ B ⇛ C ⊢ A
   r⊕⇚ : ∀ {J A B C}   → LG J ⋯ C ⊢ B ⊕ A → LG J ⋯ C ⇚ A ⊢ B
@@ -94,6 +106,14 @@ is-[]? m□  _   = no (λ ())
 is-[]? m◇  _   = no (λ ())
 is-[]? r□◇ _   = no (λ ())
 is-[]? r◇□ _   = no (λ ())
+is-[]? m⁰  _   = no (λ ())
+is-[]? m₀  _   = no (λ ())
+is-[]? r⁰₀ _   = no (λ ())
+is-[]? r₀⁰ _   = no (λ ())
+is-[]? m₁  _   = no (λ ())
+is-[]? m¹  _   = no (λ ())
+is-[]? r¹₁ _   = no (λ ())
+is-[]? r₁¹ _   = no (λ ())
 is-[]? r⇒⊗ _   = no (λ ())
 is-[]? r⊗⇒ _   = no (λ ())
 is-[]? r⇐⊗ _   = no (λ ())
@@ -131,6 +151,14 @@ module Simple where
   m◇  f     [ g ] = m◇  (f  [ g ])
   r□◇ f     [ g ] = r□◇ (f  [ g ])
   r◇□ f     [ g ] = r◇□ (f  [ g ])
+  m₀  f     [ g ] = m₀  (f  [ g ])
+  m⁰  f     [ g ] = m⁰  (f  [ g ])
+  r₀⁰ f     [ g ] = r₀⁰ (f  [ g ])
+  r⁰₀ f     [ g ] = r⁰₀ (f  [ g ])
+  m₁  f     [ g ] = m₁  (f  [ g ])
+  m¹  f     [ g ] = m¹  (f  [ g ])
+  r₁¹ f     [ g ] = r₁¹ (f  [ g ])
+  r¹₁ f     [ g ] = r¹₁ (f  [ g ])
   r⇒⊗ f     [ g ] = r⇒⊗ (f  [ g ])
   r⊗⇒ f     [ g ] = r⊗⇒ (f  [ g ])
   r⇐⊗ f     [ g ] = r⇐⊗ (f  [ g ])
@@ -166,6 +194,14 @@ module Simple where
   m◇  f     < g > = m◇  (f  < g >)
   r□◇ f     < g > = r□◇ (f  < g >)
   r◇□ f     < g > = r◇□ (f  < g >)
+  m₀  f     < g > = m₀  (f  < g >)
+  m⁰  f     < g > = m⁰  (f  < g >)
+  r₀⁰ f     < g > = r₀⁰ (f  < g >)
+  r⁰₀ f     < g > = r⁰₀ (f  < g >)
+  m₁  f     < g > = m₁  (f  < g >)
+  m¹  f     < g > = m¹  (f  < g >)
+  r₁¹ f     < g > = r₁¹ (f  < g >)
+  r¹₁ f     < g > = r¹₁ (f  < g >)
   r⇒⊗ f     < g > = r⇒⊗ (f  < g >)
   r⊗⇒ f     < g > = r⊗⇒ (f  < g >)
   r⇐⊗ f     < g > = r⇐⊗ (f  < g >)
@@ -201,6 +237,14 @@ module Simple where
   <>-def f (m◇  g)     x rewrite <>-def f g  x = refl
   <>-def f (r□◇ g)     x rewrite <>-def f g  x = refl
   <>-def f (r◇□ g)     x rewrite <>-def f g  x = refl
+  <>-def f (m₀  g)     x rewrite <>-def f g  x = refl
+  <>-def f (m⁰  g)     x rewrite <>-def f g  x = refl
+  <>-def f (r₀⁰ g)     x rewrite <>-def f g  x = refl
+  <>-def f (r⁰₀ g)     x rewrite <>-def f g  x = refl
+  <>-def f (m₁  g)     x rewrite <>-def f g  x = refl
+  <>-def f (m¹  g)     x rewrite <>-def f g  x = refl
+  <>-def f (r₁¹ g)     x rewrite <>-def f g  x = refl
+  <>-def f (r¹₁ g)     x rewrite <>-def f g  x = refl
   <>-def f (r⇒⊗ g)     x rewrite <>-def f g  x = refl
   <>-def f (r⊗⇒ g)     x rewrite <>-def f g  x = refl
   <>-def f (r⇐⊗ g)     x rewrite <>-def f g  x = refl
@@ -233,6 +277,14 @@ module Simple where
   <>-assoc h g (m◇  f)     rewrite <>-assoc h g f  = refl
   <>-assoc h g (r□◇ f)     rewrite <>-assoc h g f  = refl
   <>-assoc h g (r◇□ f)     rewrite <>-assoc h g f  = refl
+  <>-assoc h g (m₀  f)     rewrite <>-assoc h g f  = refl
+  <>-assoc h g (m⁰  f)     rewrite <>-assoc h g f  = refl
+  <>-assoc h g (r₀⁰ f)     rewrite <>-assoc h g f  = refl
+  <>-assoc h g (r⁰₀ f)     rewrite <>-assoc h g f  = refl
+  <>-assoc h g (m₁  f)     rewrite <>-assoc h g f  = refl
+  <>-assoc h g (m¹  f)     rewrite <>-assoc h g f  = refl
+  <>-assoc h g (r₁¹ f)     rewrite <>-assoc h g f  = refl
+  <>-assoc h g (r¹₁ f)     rewrite <>-assoc h g f  = refl
   <>-assoc h g (r⇒⊗ f)     rewrite <>-assoc h g f  = refl
   <>-assoc h g (r⊗⇒ f)     rewrite <>-assoc h g f  = refl
   <>-assoc h g (r⇐⊗ f)     rewrite <>-assoc h g f  = refl
@@ -267,6 +319,14 @@ module Simple where
   <>-identityʳ (m◇  f)     rewrite <>-identityʳ f  = refl
   <>-identityʳ (r□◇ f)     rewrite <>-identityʳ f  = refl
   <>-identityʳ (r◇□ f)     rewrite <>-identityʳ f  = refl
+  <>-identityʳ (m₀  f)     rewrite <>-identityʳ f  = refl
+  <>-identityʳ (m⁰  f)     rewrite <>-identityʳ f  = refl
+  <>-identityʳ (r₀⁰ f)     rewrite <>-identityʳ f  = refl
+  <>-identityʳ (r⁰₀ f)     rewrite <>-identityʳ f  = refl
+  <>-identityʳ (m₁  f)     rewrite <>-identityʳ f  = refl
+  <>-identityʳ (m¹  f)     rewrite <>-identityʳ f  = refl
+  <>-identityʳ (r₁¹ f)     rewrite <>-identityʳ f  = refl
+  <>-identityʳ (r¹₁ f)     rewrite <>-identityʳ f  = refl
   <>-identityʳ (m⊗ᴸ f₁ f₂) rewrite <>-identityʳ f₁ = refl
   <>-identityʳ (m⊗ᴿ f₁ f₂) rewrite <>-identityʳ f₂ = refl
   <>-identityʳ (m⇒ᴸ f₁ f₂) rewrite <>-identityʳ f₁ = refl
