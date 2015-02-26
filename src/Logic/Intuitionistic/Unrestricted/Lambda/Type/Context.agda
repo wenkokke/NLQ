@@ -26,7 +26,8 @@ module Logic.Intuitionistic.Unrestricted.Lambda.Type.Context {ℓ} (Univ : Set �
 
 open import Logic.Intuitionistic.Unrestricted.Lambda.Type            Univ renaming (module DecEq to TypeDecEq)
 open import Logic.Intuitionistic.Unrestricted.Lambda.Type.Complexity Univ
-open DecTotalOrder decTotalOrder using (_≤_) renaming (refl to ≤-refl; trans to ≤-trans)
+
+open DecTotalOrder    decTotalOrder    using (_≤_) renaming (refl to ≤-refl; trans to ≤-trans)
 open StrictTotalOrder strictTotalOrder using (_<_) renaming (irrefl to <-irrefl; trans to <-trans)
 
 
@@ -337,18 +338,40 @@ module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
 
   _≟-Context_ : (Γ Δ : Context) → Dec (Γ ≡ Δ)
   []     ≟-Context []     = yes refl
+  ₀> A   ≟-Context ₀> B   with A ≟-Context B
+  ... | yes A=B rewrite A=B = yes refl
+  ... | no  A≠B = no (A≠B ∘ ₀>-injective)
+  ₁> A   ≟-Context ₁> B   with A ≟-Context B
+  ... | yes A=B rewrite A=B = yes refl
+  ... | no  A≠B = no (A≠B ∘ ₁>-injective)
+  A <⁰   ≟-Context B <⁰   with A ≟-Context B
+  ... | yes A=B rewrite A=B = yes refl
+  ... | no  A≠B = no (A≠B ∘ <⁰-injective)
+  A <¹   ≟-Context B <¹   with A ≟-Context B
+  ... | yes A=B rewrite A=B = yes refl
+  ... | no  A≠B = no (A≠B ∘ <¹-injective)
+  A ⊗> Γ ≟-Context B ⊗> Δ with (A ≟-Type B) | (Γ ≟-Context Δ)
+  ... | yes A≡B | yes Γ≡Δ rewrite A≡B | Γ≡Δ = yes refl
+  ... | no  A≢B | _       = no (A≢B ∘ proj₁ ∘ ⊗>-injective)
+  ... | _       | no  Γ≢Δ = no (Γ≢Δ ∘ proj₂ ∘ ⊗>-injective)
+  A ⇒> Γ ≟-Context B ⇒> Δ with (A ≟-Type B) | (Γ ≟-Context Δ)
+  ... | yes A≡B | yes Γ≡Δ rewrite A≡B | Γ≡Δ = yes refl
+  ... | no  A≢B | _       = no (A≢B ∘ proj₁ ∘ ⇒>-injective)
+  ... | _       | no  Γ≢Δ = no (Γ≢Δ ∘ proj₂ ∘ ⇒>-injective)
+  Γ <⊗ A ≟-Context Δ <⊗ B with (Γ ≟-Context Δ) | (A ≟-Type B)
+  ... | yes Γ≡Δ | yes A≡B rewrite Γ≡Δ | A≡B = yes refl
+  ... | no  Γ≢Δ | _       = no (Γ≢Δ ∘ proj₁ ∘ <⊗-injective)
+  ... | _       | no  A≢B = no (A≢B ∘ proj₂ ∘ <⊗-injective)
+  Γ <⇒ A ≟-Context Δ <⇒ B with (Γ ≟-Context Δ) | (A ≟-Type B)
+  ... | yes Γ≡Δ | yes A≡B rewrite Γ≡Δ | A≡B = yes refl
+  ... | no  Γ≢Δ | _       = no (Γ≢Δ ∘ proj₁ ∘ <⇒-injective)
+  ... | _       | no  A≢B = no (A≢B ∘ proj₂ ∘ <⇒-injective)
   []     ≟-Context B ⊗> Δ = no (λ ())
   []     ≟-Context B ⇒> Δ = no (λ ())
   []     ≟-Context Δ <⊗ B = no (λ ())
   []     ≟-Context Δ <⇒ B = no (λ ())
-  ₀> A   ≟-Context ₀> B   with A ≟-Context B
-  ... | yes A=B rewrite A=B = yes refl
-  ... | no  A≠B = no (A≠B ∘ ₀>-injective)
   ₁> _   ≟-Context ₀> _   = no (λ ())
   ₀> _   ≟-Context ₁> _   = no (λ ())
-  ₁> A   ≟-Context ₁> B   with A ≟-Context B
-  ... | yes A=B rewrite A=B = yes refl
-  ... | no  A≠B = no (A≠B ∘ ₁>-injective)
   ₀> _   ≟-Context []     = no (λ ())
   ₁> _   ≟-Context []     = no (λ ())
   ₀> _   ≟-Context _ ⊗> _ = no (λ ())
@@ -367,14 +390,8 @@ module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
   _ ⇒> _ ≟-Context ₁> _   = no (λ ())
   _ <⊗ _ ≟-Context ₁> _   = no (λ ())
   _ <⇒ _ ≟-Context ₁> _   = no (λ ())
-  A <⁰   ≟-Context B <⁰   with A ≟-Context B
-  ... | yes A=B rewrite A=B = yes refl
-  ... | no  A≠B = no (A≠B ∘ <⁰-injective)
   _ <¹   ≟-Context _ <⁰   = no (λ ())
   _ <⁰   ≟-Context _ <¹   = no (λ ())
-  A <¹   ≟-Context B <¹   with A ≟-Context B
-  ... | yes A=B rewrite A=B = yes refl
-  ... | no  A≠B = no (A≠B ∘ <¹-injective)
   _ <⁰   ≟-Context []     = no (λ ())
   _ <¹   ≟-Context []     = no (λ ())
   _ <⁰   ≟-Context _ ⊗> _ = no (λ ())
@@ -393,50 +410,34 @@ module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
   _ ⇒> _ ≟-Context _ <¹   = no (λ ())
   _ <⊗ _ ≟-Context _ <¹   = no (λ ())
   _ <⇒ _ ≟-Context _ <¹   = no (λ ())
-  _≟-Context_ [] (₀>_ _)  = no (λ ())
-  _≟-Context_ [] (_<⁰ _)  = no (λ ())
-  _≟-Context_ [] (₁>_ _)  = no (λ ())
-  _≟-Context_ [] (_<¹ _)  = no (λ ())
-  _≟-Context_ (₀>_ _) (_<⁰ _) = no (λ ())
-  _≟-Context_ (₀>_ _) (_<¹ _) = no (λ ())
-  _≟-Context_ (_<⁰ _) (₀>_ _) = no (λ ())
-  _≟-Context_ (_<⁰ _) (₁>_ _) = no (λ ())
-  _≟-Context_ (₁>_ _) (_<⁰ _) = no (λ ())
-  _≟-Context_ (₁>_ _) (_<¹ _) = no (λ ())
-  _≟-Context_ (_<¹ _) (₀>_ _) = no (λ ())
-  _≟-Context_ (_<¹ _) (₁>_ _) = no (λ ())
-  A ⊗> Γ ≟-Context []     = no (λ ())
-  A ⇒> Γ ≟-Context []     = no (λ ())
-  Γ <⊗ A ≟-Context []     = no (λ ())
-  Γ <⇒ A ≟-Context []     = no (λ ())
-  A ⊗> Γ ≟-Context B ⊗> Δ with (A ≟-Type B) | (Γ ≟-Context Δ)
-  ... | yes A≡B | yes Γ≡Δ rewrite A≡B | Γ≡Δ = yes refl
-  ... | no  A≢B | _       = no (A≢B ∘ proj₁ ∘ ⊗>-injective)
-  ... | _       | no  Γ≢Δ = no (Γ≢Δ ∘ proj₂ ∘ ⊗>-injective)
-  A ⊗> Γ ≟-Context B ⇒> Δ = no (λ ())
-  A ⊗> Γ ≟-Context Δ <⊗ B = no (λ ())
-  A ⊗> Γ ≟-Context Δ <⇒ B = no (λ ())
-  A ⇒> Γ ≟-Context B ⊗> Δ = no (λ ())
-  A ⇒> Γ ≟-Context B ⇒> Δ with (A ≟-Type B) | (Γ ≟-Context Δ)
-  ... | yes A≡B | yes Γ≡Δ rewrite A≡B | Γ≡Δ = yes refl
-  ... | no  A≢B | _       = no (A≢B ∘ proj₁ ∘ ⇒>-injective)
-  ... | _       | no  Γ≢Δ = no (Γ≢Δ ∘ proj₂ ∘ ⇒>-injective)
-  A ⇒> Γ ≟-Context Δ <⊗ B = no (λ ())
-  A ⇒> Γ ≟-Context Δ <⇒ B = no (λ ())
-  Γ <⊗ A ≟-Context B ⊗> Δ = no (λ ())
-  Γ <⊗ A ≟-Context B ⇒> Δ = no (λ ())
-  Γ <⊗ A ≟-Context Δ <⊗ B with (Γ ≟-Context Δ) | (A ≟-Type B)
-  ... | yes Γ≡Δ | yes A≡B rewrite Γ≡Δ | A≡B = yes refl
-  ... | no  Γ≢Δ | _       = no (Γ≢Δ ∘ proj₁ ∘ <⊗-injective)
-  ... | _       | no  A≢B = no (A≢B ∘ proj₂ ∘ <⊗-injective)
-  Γ <⊗ A ≟-Context Δ <⇒ B = no (λ ())
-  Γ <⇒ A ≟-Context B ⊗> Δ = no (λ ())
-  Γ <⇒ A ≟-Context B ⇒> Δ = no (λ ())
-  Γ <⇒ A ≟-Context Δ <⊗ B = no (λ ())
-  Γ <⇒ A ≟-Context Δ <⇒ B with (Γ ≟-Context Δ) | (A ≟-Type B)
-  ... | yes Γ≡Δ | yes A≡B rewrite Γ≡Δ | A≡B = yes refl
-  ... | no  Γ≢Δ | _       = no (Γ≢Δ ∘ proj₁ ∘ <⇒-injective)
-  ... | _       | no  A≢B = no (A≢B ∘ proj₂ ∘ <⇒-injective)
+  []     ≟-Context ₀> _   = no (λ ())
+  []     ≟-Context _ <⁰   = no (λ ())
+  []     ≟-Context ₁> _   = no (λ ())
+  []     ≟-Context _ <¹   = no (λ ())
+  ₀> _   ≟-Context _ <⁰   = no (λ ())
+  ₀> _   ≟-Context _ <¹   = no (λ ())
+  _ <⁰   ≟-Context ₀> _   = no (λ ())
+  _ <⁰   ≟-Context ₁> _   = no (λ ())
+  ₁> _   ≟-Context _ <⁰   = no (λ ())
+  ₁> _   ≟-Context _ <¹   = no (λ ())
+  _ <¹   ≟-Context ₀> _   = no (λ ())
+  _ <¹   ≟-Context ₁> _   = no (λ ())
+  _ ⊗> _ ≟-Context []     = no (λ ())
+  _ ⇒> _ ≟-Context []     = no (λ ())
+  _ <⊗ _ ≟-Context []     = no (λ ())
+  _ <⇒ _ ≟-Context []     = no (λ ())
+  _ ⊗> _ ≟-Context _ ⇒> _ = no (λ ())
+  _ ⊗> _ ≟-Context _ <⊗ _ = no (λ ())
+  _ ⊗> _ ≟-Context _ <⇒ _ = no (λ ())
+  _ ⇒> _ ≟-Context _ ⊗> _ = no (λ ())
+  _ ⇒> _ ≟-Context _ <⊗ _ = no (λ ())
+  _ ⇒> _ ≟-Context _ <⇒ _ = no (λ ())
+  _ <⊗ _ ≟-Context _ ⊗> _ = no (λ ())
+  _ <⊗ _ ≟-Context _ ⇒> _ = no (λ ())
+  _ <⊗ _ ≟-Context _ <⇒ _ = no (λ ())
+  _ <⇒ _ ≟-Context _ ⊗> _ = no (λ ())
+  _ <⇒ _ ≟-Context _ ⇒> _ = no (λ ())
+  _ <⇒ _ ≟-Context _ <⊗ _ = no (λ ())
   instance
     decSetoid : DecSetoid _ _
     decSetoid = P.decSetoid _≟-Context_

@@ -82,8 +82,8 @@ main = shakeArgs shakeOptions $ do
     clobber makeLambek
     putNormal "Removing generated files for Lambda-C-Minus Calculus"
     clobber makeLambdaCMinus
-    putNormal "Removing generated Agda interface files"
-    liftIO $ removeFiles srcDir ["//*.agdai"]
+    --putNormal "Removing generated Agda interface files"
+    --liftIO $ removeFiles srcDir ["//*.agdai"]
 
 
 
@@ -142,40 +142,13 @@ makeLambdaCMinus  = Mapping
                   ]
   }
 
---------------------------------------------------------------------------------
--- Make: Linear Lambda C-Minus
---------------------------------------------------------------------------------
-
-{-
-makeLinearLambdaCMinus :: Mapping
-makeLinearLambdaCMinus = Mapping
-  { blacklist   =
-                  [ "cᴸ₁" , "cᴸ" , "cᴸ′"
-                  , "wᴸ₁" , "wᴸ" , "wᴸ′"
-                  , "axᵢ"
-                  ]
-  , textMapping = [ "Unrestricted" ==> "Linear"
-                  , "Ordered"      ==> "Linear"
-                  , "Structure"    ==> "List Type"
-                  ]
-  , fileMapping = [ srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Type.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Type.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Type/Complexity.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Type/Complexity.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambdaCMinus" </> "Judgement.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Judgement.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus" </> "Base.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambdaCMinus" </> "Base.agda"
-                  ]
-  }
--}
 
 --------------------------------------------------------------------------------
 -- Make: Lambek Calculus
 --------------------------------------------------------------------------------
 
 makeLambek :: Mapping
-makeLambek = Mapping
+makeLambek  = Mapping
   { blacklist   = [ "⊕" , "⇛" , "⇚" , "□" , "◇" , "₀" , "⁰" , "₁" , "¹" ]
   , textMapping = [ "LambekGrishin" ==> "Lambek"
                   , "LG"            ==> "NL"
@@ -217,9 +190,8 @@ makeLambek = Mapping
 -- Mapping: Lambda Calculus
 --------------------------------------------------------------------------------
 
-
 makeLambda :: Mapping
-makeLambda = Mapping
+makeLambda  = Mapping
   { blacklist   = [ "⊕" , "⇛" , "⇚" , "⇐" , "□" , "◇" ]
   , textMapping = [ "LG"            ==> "Λ"
                   , "Classical"     ==> "Intuitionistic"
@@ -246,9 +218,8 @@ makeLambda = Mapping
 -- Mapping: Linear Lambda Calculus
 --------------------------------------------------------------------------------
 
-
 makeLinearLambda :: Mapping
-makeLinearLambda = Mapping
+makeLinearLambda  = Mapping
   { blacklist   = [ "wᴸ₁" , "wᴸ"
                   , "cᴸ₁" , "cᴸ"
                   ]
