@@ -1,8 +1,7 @@
 ------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
 --
--- Implements a proof of equivalence with the residuation-monotonicity
--- calculus as `eq`.
+-- Implements a proof of equivalence with the de Grootte's SC as `eq`.
 ------------------------------------------------------------------------
 
 
