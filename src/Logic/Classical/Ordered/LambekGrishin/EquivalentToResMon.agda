@@ -117,3 +117,75 @@ private
   to (d⇛⇒ f  ) = d⇛⇒ (to f)
   to (d⇚⇒ f  ) = d⇚⇒ (to f)
   to (d⇚⇐ f  ) = d⇚⇐ (to f)
+
+
+  ⟦_⟧ᵀ : RM.Type → LG.Type
+  ⟦ RM.el A  ⟧ᵀ = el (+ , A)
+  ⟦ RM.□ A   ⟧ᵀ = □ ⟦ A ⟧ᵀ
+  ⟦ RM.◇ A   ⟧ᵀ = ◇ ⟦ A ⟧ᵀ
+  ⟦ RM.₀ A   ⟧ᵀ = ₀ ⟦ A ⟧ᵀ
+  ⟦ A RM.⁰   ⟧ᵀ = ⟦ A ⟧ᵀ ⁰
+  ⟦ RM.₁ A   ⟧ᵀ = ₁ ⟦ A ⟧ᵀ
+  ⟦ A RM.¹   ⟧ᵀ = ⟦ A ⟧ᵀ ¹
+  ⟦ A RM.⇒ B ⟧ᵀ = ⟦ A ⟧ᵀ ⇒ ⟦ B ⟧ᵀ
+  ⟦ A RM.⇐ B ⟧ᵀ = ⟦ A ⟧ᵀ ⇐ ⟦ B ⟧ᵀ
+  ⟦ A RM.⇚ B ⟧ᵀ = ⟦ A ⟧ᵀ ⇚ ⟦ B ⟧ᵀ
+  ⟦ A RM.⇛ B ⟧ᵀ = ⟦ A ⟧ᵀ ⇛ ⟦ B ⟧ᵀ
+  ⟦ A RM.⊗ B ⟧ᵀ = ⟦ A ⟧ᵀ ⊗ ⟦ B ⟧ᵀ
+  ⟦ A RM.⊕ B ⟧ᵀ = ⟦ A ⟧ᵀ ⊕ ⟦ B ⟧ᵀ
+
+
+  mutual
+    ⟦_⟧⁺ : RM.Type → Structure +
+    ⟦ ◇ A   ⟧⁺ = ⟨ ⟦ A ⟧⁺ ⟩
+    ⟦ ₁ A   ⟧⁺ = ₁ ⟦ A ⟧⁻
+    ⟦ A ¹   ⟧⁺ = ⟦ A ⟧⁻ ¹
+    ⟦ A ⇚ B ⟧⁺ = ⟦ A ⟧⁺ ⇚ ⟦ A ⟧⁻
+    ⟦ A ⇛ B ⟧⁺ = ⟦ A ⟧⁻ ⇛ ⟦ A ⟧⁺
+    ⟦ A ⊗ B ⟧⁺ = ⟦ A ⟧⁺ ⊗ ⟦ B ⟧⁺
+    ⟦   A   ⟧⁺ = · ⟦ A ⟧ᵀ ·
+
+    ⟦_⟧⁻ : RM.Type → Structure -
+    ⟦ □ A   ⟧⁻ = [ ⟦ A ⟧⁻ ]
+    ⟦ ₀ A   ⟧⁻ = ₀ ⟦ A ⟧⁺
+    ⟦ A ⁰   ⟧⁻ = ⟦ A ⟧⁺ ⁰
+    ⟦ A ⇒ B ⟧⁻ = ⟦ A ⟧⁺ ⇒ ⟦ B ⟧⁻
+    ⟦ A ⇐ B ⟧⁻ = ⟦ A ⟧⁻ ⇐ ⟦ B ⟧⁺
+    ⟦ A ⊕ B ⟧⁻ = ⟦ A ⟧⁻ ⊕ ⟦ B ⟧⁻
+    ⟦   A   ⟧⁻ = · ⟦ A ⟧ᵀ ·
+
+  From : RMJ.Judgement → LGJ.Judgement
+  From (A ⊢ B) = ⟦ A ⟧⁺ ⊢ ⟦ B ⟧⁻
+
+  from : ∀ {J} → RM J → LG (From J)
+  from (ax     ) = ⇀ ax⁺
+  from (m□  f  ) = {!!}
+  from (m◇  f  ) = {!!}
+  from (r□◇ f  ) = {!!}
+  from (r◇□ f  ) = {!!}
+  from (m⁰  f  ) = {!!}
+  from (m₀  f  ) = {!!}
+  from (r⁰₀ f  ) = {!!}
+  from (r₀⁰ f  ) = {!!}
+  from (m₁  f  ) = {!!}
+  from (m¹  f  ) = {!!}
+  from (r¹₁ f  ) = {!!}
+  from (r₁¹ f  ) = {!!}
+  from (m⊗  f g) = {!!}
+  from (m⇒  f g) = {!!}
+  from (m⇐  f g) = {!!}
+  from (r⇒⊗ f  ) = {!!}
+  from (r⊗⇒ f  ) = {!!}
+  from (r⇐⊗ f  ) = {!!}
+  from (r⊗⇐ f  ) = {!!}
+  from (m⊕  f g) = {!!}
+  from (m⇛  f g) = {!!}
+  from (m⇚  f g) = {!!}
+  from (r⇛⊕ f  ) = {!!}
+  from (r⊕⇛ f  ) = {!!}
+  from (r⊕⇚ f  ) = {!!}
+  from (r⇚⊕ f  ) = {!!}
+  from (d⇛⇐ f  ) = {!!}
+  from (d⇛⇒ f  ) = {!!}
+  from (d⇚⇒ f  ) = {!!}
+  from (d⇚⇐ f  ) = {!!}
