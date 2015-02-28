@@ -191,7 +191,7 @@ void toPrologFooter(FILE *fout, int numBoxes) {
 /* Show this derivation as Term */
 void toPrologShowDerivation(Derivation *derivation, int numConnectives) {
     /* Write Term to file */
-    FILE *fout = fopen("lgterm.pl", "w");
+    FILE *fout = fopen("proof.pl", "w");
     toPrologHeader(fout);
     toPrologDerivation(fout, derivation, 0, numConnectives);
     toPrologFooter(fout, 1);
@@ -201,7 +201,7 @@ void toPrologShowDerivation(Derivation *derivation, int numConnectives) {
 /* Show this derivation as Term */
 void toPrologShowDerivations(vector<Derivation *> derivations, int numConnectives) {
     /* Write Term to file */
-    FILE *fout = fopen("lgterm.pl", "w");
+    FILE *fout = fopen("proof.pl", "w");
     toPrologHeader(fout);
     for(unsigned int i = 0; i < derivations.size(); i++)
         toPrologDerivation(fout, derivations[i], i, numConnectives);

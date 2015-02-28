@@ -73,7 +73,7 @@ void toAgdaFooter(FILE *fout, int numBoxes) {
 /* Show this derivation as Term */
 void toAgdaShowDerivation(Derivation *derivation, int numConnectives) {
     /* Write Term to file */
-    FILE *fout = fopen("lgterm.agda", "w");
+    FILE *fout = fopen("proof.agda", "w");
     toAgdaHeader(fout);
     toAgdaDerivation(fout, derivation, 1, numConnectives);
     toAgdaFooter(fout, 1);
@@ -83,7 +83,7 @@ void toAgdaShowDerivation(Derivation *derivation, int numConnectives) {
 /* Show this derivation as Term */
 void toAgdaShowDerivations(vector<Derivation *> derivations, int numConnectives) {
     /* Write Term to file */
-    FILE *fout = fopen("lgterm.agda", "w");
+    FILE *fout = fopen("proof.agda", "w");
     toAgdaHeader(fout);
     for(unsigned int i = 0; i < derivations.size(); i++)
         toAgdaDerivation(fout, derivations[i], i, numConnectives);

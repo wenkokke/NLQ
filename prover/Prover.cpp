@@ -13,9 +13,10 @@
 #include "ToAgda.h"
 #include "Rules.h"
 #include "Prover.h"
+#include <string>
 
 void showArguments() {
-    printf("LGprover [lexicon file] [phrase] [type]\n");
+    printf("prove [agda|prolog|latex] [lexicon file] [phrase] [type]\n");
 }
 
 int main(int argc, char **argv) {
@@ -34,18 +35,19 @@ int main(int argc, char **argv) {
         return 3;
 
     Sequent *seq = new Sequent(left, right);
-    printf("Proving ");
-    toStringSequent(stdout, seq); printf("\n");
+    fprintf(stderr, "Proving ");
+    toStringSequent(stderr, seq);
+    fprintf(stderr, "\n");
 
     int numConnectives;
     vector<Derivation *> der = deriveSequent(seq, &numConnectives);
     if(der.size() > 0) {
-        printf("Found %d derivations!\n", der.size());
+        fprintf(stderr, "Found %d derivations!\n", der.size());
         toAgdaShowDerivations(der, numConnectives);
+        toPrologShowDerivations(der, numConnectives);
         toLatexShowDerivations(der, numConnectives);
     } else {
-        printf("No derivations found.\n");
+        fprintf(stderr, "No derivations found.\n");
     }
-
     return 0;
 }

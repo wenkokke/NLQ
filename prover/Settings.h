@@ -21,6 +21,6 @@
 #define SHOW_PRIMITIVE_INDEX false
 
 /* The command to parse and show the latex file 'lgproof.tex' */
-#define LATEX_COMMAND "pdflatex lgproof.tex 1> /dev/null && ps aux | grep Preview.app | grep -v grep; if [ $? = 0 ]; then open lgproof.pdf; fi"
+#define LATEX_COMMAND "pdflatex proof.tex 1> /dev/null && ps aux | grep Preview.app | grep -v grep; if [ $? = 0 ]; then open proof.pdf; fi"
 
 #endif
