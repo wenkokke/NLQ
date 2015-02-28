@@ -192,6 +192,7 @@ private
     lem-⟦·⟧⁻ {B = B ⊕ C} f = ⊕ᴿ (r⇚⊕ (lem-⟦·⟧⁻ (r⊕⇚ (r⇛⊕ (lem-⟦·⟧⁻ (r⊕⇛ f))))))
 
 
+{-
   from : ∀ {J} → RM J → LG (From J)
   from (ax     ) = ⇀ ax⁺
   from (m□  f  ) = ↼ (□ᴸ (↽ {p = {!!}} (lem-⟦·⟧⁺ (from f))))
@@ -224,3 +225,4 @@ private
   from (d⇛⇒ f  ) = d⇛⇒ (from f)
   from (d⇚⇒ f  ) = d⇚⇒ (from f)
   from (d⇚⇐ f  ) = d⇚⇐ (from f)
+-}

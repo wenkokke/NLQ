@@ -21,6 +21,15 @@ data Judgement : Set ℓ where
   _⊢_    : List Type        → List Type → Judgement
   _⊢[_]_ : List Type → Type → List Type → Judgement
 
+
+ante : Judgement → List Type
+ante (Γ ⊢      _) = Γ
+ante (Γ ⊢[ _ ] _) = Γ
+
+succ : Judgement → List Type
+succ (_ ⊢      Δ) = Δ
+succ (_ ⊢[ _ ] Δ) = Δ
+
 ⊢-injective : ∀ {Γ₁ Γ₂ Γ₃ Γ₄} → (Γ₁ ⊢ Γ₂) ≡ (Γ₃ ⊢ Γ₄) → Γ₁ ≡ Γ₃ × Γ₂ ≡ Γ₄
 ⊢-injective refl = refl , refl
 

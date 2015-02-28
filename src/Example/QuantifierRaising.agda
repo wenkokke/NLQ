@@ -165,8 +165,8 @@ everyone_loves_someone₆ = toAgda EVERYONE_LOVES_SOMEONE₆ (everyone , loves�
 
 EVERYONE_LOVES_SOMEONE₇ : LG · ( ₁ np ) ¹ · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · ( ₁ np ) ¹ · ) ⊢[ s⁻ ]
 EVERYONE_LOVES_SOMEONE₇
-  = ⇁ (r⇐⊗ (·¹ᴿ (r₁¹ (⇀ (₁·ᴿ
-  ( ↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (·¹ᴿ (r₁¹ (⇀ (₁·ᴿ
+  = ⇁ (r⇐⊗ (¹ᴸ (r₁¹ (⇀ (₁ᴿ
+  ( ↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (¹ᴸ (r₁¹ (⇀ (₁ᴿ
   ( ↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))
 everyone_loves_someone₇ : Bool
 everyone_loves_someone₇ = toAgda EVERYONE_LOVES_SOMEONE₇ (everyone¹ , loves′ , someone¹ , ∅) id
@@ -174,8 +174,8 @@ everyone_loves_someone₇ = toAgda EVERYONE_LOVES_SOMEONE₇ (everyone¹ , loves
 
 EVERYONE_LOVES_SOMEONE₈ : LG · ( ₁ np ) ¹ · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · ( ₁ np ) ¹ · ) ⊢[ s⁻ ]
 EVERYONE_LOVES_SOMEONE₈
-  = ⇁ (r⇒⊗ (r⇒⊗ (·¹ᴿ (r₁¹ (⇀ (₁·ᴿ
-  ( ↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (·¹ᴿ (r₁¹ (⇀ (₁·ᴿ
+  = ⇁ (r⇒⊗ (r⇒⊗ (¹ᴸ (r₁¹ (⇀ (₁ᴿ
+  ( ↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (¹ᴸ (r₁¹ (⇀ (₁ᴿ
   ( ↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))
 everyone_loves_someone₈ : Bool
 everyone_loves_someone₈ = toAgda EVERYONE_LOVES_SOMEONE₈ (everyone¹ , loves′ , someone¹ , ∅) id
@@ -185,7 +185,7 @@ everyone_loves_someone₈ = toAgda EVERYONE_LOVES_SOMEONE₈ (everyone¹ , loves
 MARY_THINKS_SOMEONE_LEFT₁ : LG · np · ⊗ · ( np ⇒ s⁻ ) ⇐ ( ◇ s⁻ ) · ⊗ ⟨ · ( ₁ np ) ¹ · ⊗ · np ⇒ s⁻ · ⟩ ⊢[ s⁻ ]
 MARY_THINKS_SOMEONE_LEFT₁
   = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ (◇ᴿ
-  ( ⇁ (r⇐⊗ (·¹ᴿ (r₁¹ (⇀ (₁·ᴿ
+  ( ⇁ (r⇐⊗ (¹ᴸ (r₁¹ (⇀ (₁ᴿ
   ( ↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))))))))))) (⇒ᴸ ax⁺ ax⁻)))))
 mary_thinks_someone_left₁ : Bool
 mary_thinks_someone_left₁ = toAgda MARY_THINKS_SOMEONE_LEFT₁ (mary , thinks′ , someone¹ , left′ , ∅) id
@@ -193,7 +193,7 @@ mary_thinks_someone_left₁ = toAgda MARY_THINKS_SOMEONE_LEFT₁ (mary , thinks�
 
 MARY_THINKS_SOMEONE_LEFT₂ : LG · np · ⊗ · ( np ⇒ s⁻ ) ⇐ ( ◇ s⁻ ) · ⊗ ⟨ · ( ₁ np ) ¹ · ⊗ · np ⇒ s⁻ · ⟩ ⊢[ s⁻ ]
 MARY_THINKS_SOMEONE_LEFT₂
-  = ⇁ (r⇒⊗ (r⇒⊗ (r□◇ (r⇐⊗ (·¹ᴿ (r₁¹ (⇀ (₁·ᴿ
+  = ⇁ (r⇒⊗ (r⇒⊗ (r□◇ (r⇐⊗ (¹ᴸ (r₁¹ (⇀ (₁ᴿ
   ( ↽ (r⊗⇐ (r◇□ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ (◇ᴿ
   ( ⇁ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻))))) (⇒ᴸ ax⁺ ax⁻))))))))))))))))
 mary_thinks_someone_left₂ : Bool
@@ -252,6 +252,3 @@ MARY_THINKS_SOMEONE_LEFT₅
 mary_thinks_someone_left₅ : Bool
 mary_thinks_someone_left₅ = toAgda MARY_THINKS_SOMEONE_LEFT₅ (mary , thinks′ , someone , left′ , ∅) id
 --> existsₑ (λ x → person x ∧ mary thinks (x left))
-
-main : Bool
-main = {!toAgda h (mary , thinks″ , someone¹ , left′ , ∅) id!}

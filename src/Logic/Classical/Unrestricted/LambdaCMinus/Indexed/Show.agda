@@ -17,8 +17,8 @@ open import Data.Vec             using (Vec; _∷_; []; lookup; tail)
 module Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Show {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Classical.Linear.LambdaCMinus.Type               Univ
-open import Logic.Classical.Linear.LambdaCMinus.Judgement          Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Type         Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Judgement    Univ
 open import Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base Univ
 
 private
@@ -46,7 +46,7 @@ private
   parens str = "(" ++ str ++ ")"
 
 
-  showTerm′ : ∀ {J} (namesˣ : Vec String (length (anta J)))
+  showTerm′ : ∀ {J} (namesˣ : Vec String (length (ante J)))
                     (namesᵏ : Vec String (length (succ J)))
             → λC⁻ J → State Generator String
   showTerm′ nˣ nᵏ (ax  x  ) = return $ lookup x nˣ
@@ -90,7 +90,7 @@ private
 -- Version of |showTerm| which allows the user to submit a vector of
 -- top-level names.
 showTermWith : ∀ {J}
-             → (namesˣ : Vec String (length (anta J)))
+             → (namesˣ : Vec String (length (ante J)))
              → (namesᵏ : Vec String (length (succ J)))
              → λC⁻ J → String
 showTermWith nˣ nᵏ f = proj₁ (showTerm′ nˣ nᵏ f (namesˣ , namesᵏ))
@@ -99,7 +99,7 @@ showTermWith nˣ nᵏ f = proj₁ (showTerm′ nˣ nᵏ f (namesˣ , namesᵏ))
 showTerm : ∀ {J} → λC⁻ J → String
 showTerm {J} f = proj₁ (showTerm′ nˣ nᵏ f (drop |Γ| namesˣ , drop |Δ| namesᵏ))
   where
-    |Γ| = length (anta J)
+    |Γ| = length (ante J)
     |Δ| = length (succ J)
     nˣ  = take |Γ| namesˣ
     nᵏ  = take |Δ| namesᵏ

@@ -13,9 +13,9 @@ module Logic.Classical.Unrestricted.LambdaCMinus.ToAgda {ℓ₁ ℓ₂} (Univ : 
 
 
 open import Logic.Translation
-open import Logic.Classical.Linear.LambdaCMinus.Type       Univ
-open import Logic.Classical.Linear.LambdaCMinus.Judgement  Univ
-open import Logic.Classical.Unrestricted.LambdaCMinus.Base Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Type      Univ renaming (_⇚_ to _-_)
+open import Logic.Classical.Unrestricted.LambdaCMinus.Judgement Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Base      Univ
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment
 
 
@@ -39,7 +39,6 @@ private
   ⟦_⟧ᵀ : Type → Set ℓ₂
   ⟦ el A  ⟧ᵀ =        ⟦ A ⟧ᵁ
   ⟦ A ⇒ B ⟧ᵀ =      ¬ ⟦ B ⟧ᵀ → ¬ ⟦ A ⟧ᵀ
-  ⟦ B ⇐ A ⟧ᵀ =      ¬ ⟦ B ⟧ᵀ → ¬ ⟦ A ⟧ᵀ
   ⟦ A - B ⟧ᵀ =      ¬ ⟦ B ⟧ᵀ ×   ⟦ A ⟧ᵀ
   ⟦ A ⊗ B ⟧ᵀ = ¬ ¬ (  ⟦ A ⟧ᵀ ×   ⟦ B ⟧ᵀ)
   ⟦ A ⊕ B ⟧ᵀ = ¬   (¬ ⟦ A ⟧ᵀ × ¬ ⟦ B ⟧ᵀ)
