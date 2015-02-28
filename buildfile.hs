@@ -78,10 +78,16 @@ main = shakeArgs shakeOptions $ do
   phony "clobber" $ do
     putNormal "Removing Everything.agda"
     liftIO $ removeFiles srcDir ["Everything.agda"]
+
+    putNormal "Removing generated files for Lambda Calculus"
+    clobber makeLambda
+    putNormal "Removing generated files for Linear Lambda Calculus"
+    clobber makeLinearLambda
     putNormal "Removing generated files for Lambek Calculus"
     clobber makeLambek
-    putNormal "Removing generated files for Lambda-C-Minus Calculus"
+    putNormal "Removing generated files for Lambek C-Minus Calculus"
     clobber makeLambdaCMinus
+
     --putNormal "Removing generated Agda interface files"
     --liftIO $ removeFiles srcDir ["//*.agdai"]
 
@@ -120,9 +126,15 @@ format = unlines . concatMap fmt
 -- Make: Lambda C-Minus
 --------------------------------------------------------------------------------
 
+
 makeLambdaCMinus :: Mapping
 makeLambdaCMinus  = Mapping
-  { blacklist   = [ "⇛" , "⇐" , "□" , "◇" , " ₀" , "(₀" , "⁰ " , "⁰)" , " ₁" , "(₁" , "¹ " , "¹)" , "[_]⊢_" ]
+  { blacklist   = [ "⇛" , "⇐" , "□" , "◇"
+                  , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀"
+                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰"
+                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁"
+                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹"
+                  ]
   , textMapping = [ "Ordered"       ==> "Unrestricted"
                   , "Structure"     ==> "List Type"
                   , "LambekGrishin" ==> "LambdaCMinus"
@@ -149,7 +161,12 @@ makeLambdaCMinus  = Mapping
 
 makeLambek :: Mapping
 makeLambek  = Mapping
-  { blacklist   = [ "⊕" , "⇛" , "⇚" , "□" , "◇" , "₀" , "⁰" , "₁" , "¹" ]
+  { blacklist   = [ "⊕", "⇛" , "⇚" , "□" , "◇"
+                  , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀"
+                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰"
+                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁"
+                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹"
+                  ]
   , textMapping = [ "LambekGrishin" ==> "Lambek"
                   , "LG"            ==> "NL"
                   , "Classical"     ==> "Intuitionistic"
@@ -192,7 +209,12 @@ makeLambek  = Mapping
 
 makeLambda :: Mapping
 makeLambda  = Mapping
-  { blacklist   = [ "⊕" , "⇛" , "⇚" , "⇐" , "□" , "◇" ]
+  { blacklist   = [ "⇐" , "⊕" , "⇛" , "⇚" , "□" , "◇"
+                  , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀"
+                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰"
+                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁"
+                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹"
+                  ]
   , textMapping = [ "LG"            ==> "Λ"
                   , "Classical"     ==> "Intuitionistic"
                   , "Ordered"       ==> "Unrestricted"
@@ -220,9 +242,7 @@ makeLambda  = Mapping
 
 makeLinearLambda :: Mapping
 makeLinearLambda  = Mapping
-  { blacklist   = [ "wᴸ₁" , "wᴸ"
-                  , "cᴸ₁" , "cᴸ"
-                  ]
+  { blacklist   = [ "wᴸ₁" , "wᴸ" , "cᴸ₁" , "cᴸ" ]
   , textMapping = [ "Unrestricted" ==> "Linear"
                   ]
   , fileMapping = [ srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda" </> "Base.agda"

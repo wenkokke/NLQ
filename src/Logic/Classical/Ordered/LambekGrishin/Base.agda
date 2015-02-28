@@ -27,7 +27,6 @@ open import Logic.Classical.Ordered.LambekGrishin.Judgement           PolarisedU
 open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ
 
 
-
 infix 1 LG_
 
 data LG_ : Judgement → Set ℓ where

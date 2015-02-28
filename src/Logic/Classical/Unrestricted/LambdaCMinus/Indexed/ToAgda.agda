@@ -13,8 +13,8 @@ module Logic.Classical.Unrestricted.LambdaCMinus.Indexed.ToAgda {ℓ₁ ℓ₂} 
 
 
 open import Logic.Translation
-open import Logic.Classical.Linear.LambdaCMinus.Type               Univ
-open import Logic.Classical.Linear.LambdaCMinus.Judgement          Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Type         Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Judgement    Univ
 open import Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base Univ
 open import Logic.Classical.Unrestricted.LambdaCMinus.ToAgda       Univ ⟦_⟧ᵁ R as E hiding (Un→Agda)
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment

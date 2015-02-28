@@ -18,8 +18,8 @@ module Logic.Classical.Unrestricted.LambdaCMinus.EquivalentToIndexed {ℓ} (Univ
 
 open import Logic.Index
 open import Logic.Translation
-open import Logic.Classical.Linear.LambdaCMinus.Type               Univ
-open import Logic.Classical.Linear.LambdaCMinus.Judgement          Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Type         Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Judgement    Univ
 open import Logic.Classical.Unrestricted.LambdaCMinus.Base         Univ as E
 open import Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base Univ as I
 open Monoid (Data.List.monoid Type) using (identity; assoc)
