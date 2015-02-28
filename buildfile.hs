@@ -19,10 +19,11 @@ import           Development.Shake.FilePath
 import           System.IO (hPutStr,hSetEncoding,hGetContents,utf8,IOMode(..),openFile,withFile)
 
 
-srcDir, stdlib, catlib :: FilePath
+srcDir, stdlib, catlib, prover :: FilePath
 srcDir = "src"
 stdlib = "/Users/pepijn/Projects/agda-stdlib/src"
 catlib = "/Users/pepijn/Projects/Categories"
+prover = "prover"
 
 
 -------------------------------------------------------------------------------
@@ -88,8 +89,9 @@ main = shakeArgs shakeOptions $ do
     putNormal "Removing generated files for Lambek C-Minus Calculus"
     clobber makeLambdaCMinus
 
-    --putNormal "Removing generated Agda interface files"
-    --liftIO $ removeFiles srcDir ["//*.agdai"]
+    putNormal "Removing generated prover files"
+    liftIO $ removeFiles prover [ "proof.agda" , "proof.aux" , "proof.log" , "proof.out"
+                                , "proof.pdf"  , "proof.pl"  , "proof.tex" , "prover"]
 
 
 

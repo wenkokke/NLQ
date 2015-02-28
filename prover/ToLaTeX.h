@@ -240,7 +240,7 @@ void toLaTeXFooter(FILE *fout, int numBoxes) {
 /* Show this derivation as LaTeX */
 void toLatexShowDerivation(Derivation *derivation, int numConnectives) {
     /* Write LaTeX to file */
-    FILE *fout = fopen("lgproof.tex", "w");
+    FILE *fout = fopen("proof.tex", "w");
     toLaTeXHeader(fout);
     toLaTeXDerivation(fout, derivation, 0, numConnectives);
     toLaTeXFooter(fout, 1);
@@ -253,7 +253,7 @@ void toLatexShowDerivation(Derivation *derivation, int numConnectives) {
 /* Show this derivation as LaTeX */
 void toLatexShowDerivations(vector<Derivation *> derivations, int numConnectives) {
     /* Write LaTeX to file */
-    FILE *fout = fopen("lgproof.tex", "w");
+    FILE *fout = fopen("proof.tex", "w");
     toLaTeXHeader(fout);
     for(unsigned int i = 0; i < derivations.size(); i++)
         toLaTeXDerivation(fout, derivations[i], i, numConnectives);
