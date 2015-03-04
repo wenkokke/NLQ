@@ -13,7 +13,7 @@ open import Relation.Nullary.Decidable                      using (True; toWitne
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_; refl; sym; cong)
 
 
-module Logic.Classical.Ordered.LambekGrishin.ToLinear {ℓ} (Univ : Set ℓ) (⊥ : Univ) where
+module Logic.Classical.Ordered.LambekGrishin.ToIntuitionisticLinearLambda {ℓ} (Univ : Set ℓ) (⊥ : Univ) where
 
 
 open import Logic.Polarity

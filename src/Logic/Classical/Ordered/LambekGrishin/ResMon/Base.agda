@@ -18,6 +18,7 @@ module Logic.Classical.Ordered.LambekGrishin.ResMon.Base {ℓ} (Univ : Set ℓ) 
 open import Logic.Classical.Ordered.LambekGrishin.Type             Univ
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement Univ
 
+
 infix 1 LG_
 
 data LG_ : Judgement → Set ℓ where
