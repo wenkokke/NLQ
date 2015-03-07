@@ -4,10 +4,13 @@
 ------------------------------------------------------------------------
 
 
-open import Function                                        using (_∘_)
-open import Data.List                                       using (List; _++_) renaming (_∷_ to _,_; _∷ʳ_ to _,′_; [] to ∅)
+open import Function                                        using (id; const; case_of_; _∘_)
+open import Function.Equivalence                            using (_⇔_; equivalence)
+open import Category.Applicative                            using (module RawApplicative)
+open import Category.Monad                                  using (module RawMonad)
 open import Data.Sum                                        using (_⊎_; inj₁; inj₂)
-open import Data.Product                                    using (∃; _×_; _,_)
+open import Data.Product                                    using (∃; ∃₂; _×_; _,_; _,′_; ,_; map; zip; swap; proj₁; proj₂; uncurry′)
+open import Data.Maybe                                      using (Maybe; just; nothing)
 open import Relation.Nullary                                using (Dec; yes; no)
 open import Relation.Nullary.Decidable                      using (True; toWitness)
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_; refl; sym; cong)
@@ -25,6 +28,7 @@ open import Logic.Classical.Linear.LambekGrishin.Type                PolarisedUn
 open import Logic.Classical.Linear.LambekGrishin.Structure.Polarised PolarisedUniv
 open import Logic.Classical.Linear.LambekGrishin.Judgement           PolarisedUniv
 open import Logic.Classical.Linear.LambekGrishin.Type.Polarised      Univ
+open RawApplicative (RawMonad.rawIApplicative (Data.Maybe.monad {ℓ})) using (_⊛_; zipWith)
 
 
 infix 1 LG_
