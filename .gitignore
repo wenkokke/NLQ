@@ -30,6 +30,11 @@ src/Logic/Classical/Linear/LambekGrishin/Structure.agda
 src/Logic/Classical/Linear/LambekGrishin/Structure/
 src/Logic/Classical/Linear/LambekGrishin/Type.agda
 src/Logic/Classical/Linear/LambekGrishin/Type/
+src/Logic/Classical/Unrestricted/LambekGrishin/Judgement.agda
+src/Logic/Classical/Unrestricted/LambekGrishin/Structure.agda
+src/Logic/Classical/Unrestricted/LambekGrishin/Structure/
+src/Logic/Classical/Unrestricted/LambekGrishin/Type.agda
+src/Logic/Classical/Unrestricted/LambekGrishin/Type/
 prover/prover
 prover/proof.agda
 prover/proof.aux

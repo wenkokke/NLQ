@@ -10,7 +10,7 @@ open import Relation.Nullary.Decidable                      using (True; toWitne
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_; refl; sym; cong)
 
 
-module Logic.Classical.Linear.LambekGrishin.Base {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Unrestricted.LambekGrishin.Base {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Polarity
@@ -18,10 +18,10 @@ open import Logic.Polarity
 PolarisedUniv : Set ℓ
 PolarisedUniv = (Polarity × Univ)
 
-open import Logic.Classical.Linear.LambekGrishin.Type                PolarisedUniv
-open import Logic.Classical.Linear.LambekGrishin.Structure.Polarised PolarisedUniv
-open import Logic.Classical.Linear.LambekGrishin.Judgement           PolarisedUniv
-open import Logic.Classical.Linear.LambekGrishin.Type.Polarised      Univ
+open import Logic.Classical.Unrestricted.LambekGrishin.Type                PolarisedUniv
+open import Logic.Classical.Unrestricted.LambekGrishin.Structure.Polarised PolarisedUniv
+open import Logic.Classical.Unrestricted.LambekGrishin.Judgement           PolarisedUniv
+open import Logic.Classical.Unrestricted.LambekGrishin.Type.Polarised      Univ
 
 
 infix 1 LG_
@@ -210,19 +210,35 @@ data LG_ : Judgement → Set ℓ where
       → LG X ⊢ Y ⊕ (Z ⊕ W)
       → LG X ⊢ (Y ⊕ Z) ⊕ W
 
+  -- contraction and weakening
+  ⊗ᶜ  : ∀ {X Y}
+      → LG X ⊗ X ⊢ Y
+      → LG     X ⊢ Y
+
+  ⊕ᶜ  : ∀ {X Y}
+      → LG X ⊢ Y ⊕ Y
+      → LG X ⊢ Y
+
+  ⊗ʷ  : ∀ {X Y Z}
+      → LG X     ⊢ Y
+      → LG X ⊗ Z ⊢ Y
+
+  ⊕ʷ  : ∀ {X Y Z}
+      → LG X ⊢ Y
+      → LG X ⊢ Y ⊕ Z
 
 -- derived exchange rules
 eᴸ′ : ∀ {X₁ X₂ X₃ X₄ Y}
     → LG (X₁ ⊗ X₃) ⊗ (X₂ ⊗ X₄) ⊢ Y
     → LG (X₁ ⊗ X₂) ⊗ (X₃ ⊗ X₄) ⊢ Y
-eᴸ′ = ⊗⃕ ∘ r⇒⊗ ∘ ⊗⃔ ∘ ⊗⃡  ∘ r⇒⊗
-    ∘ ⊗⃡ ∘ r⊗⇒ ∘ ⊗⃡  ∘ ⊗⃕ ∘ r⊗⇒ ∘ ⊗⃔
+eᴸ′ = ⊗⃕ ∘ r⇒⊗ ∘ ⊗⃔ ∘ ⊗⃡  ∘ r⇒⊗ ∘ ⊗⃡
+          ∘ r⊗⇒ ∘ ⊗⃡  ∘ ⊗⃕ ∘ r⊗⇒ ∘ ⊗⃔
 
 eᴿ′ : ∀ {X Y₁ Y₂ Y₃ Y₄}
     → LG X ⊢ (Y₁ ⊕ Y₃) ⊕ (Y₂ ⊕ Y₄)
     → LG X ⊢ (Y₁ ⊕ Y₂) ⊕ (Y₃ ⊕ Y₄)
-eᴿ′ = ⊕⃔ ∘ r⇚⊕ ∘ ⊕⃕ ∘ ⊕⃡  ∘ r⇚⊕
-    ∘ ⊕⃡ ∘ r⊕⇚ ∘ ⊕⃡  ∘ ⊕⃔ ∘ r⊕⇚ ∘ ⊕⃕
+eᴿ′ = ⊕⃔ ∘ r⇚⊕ ∘ ⊕⃕ ∘ ⊕⃡  ∘ r⇚⊕ ∘ ⊕⃡
+          ∘ r⊕⇚ ∘ ⊕⃡  ∘ ⊕⃔ ∘ r⊕⇚ ∘ ⊕⃕
 
 -- residuation rules for (⇐ , ⊗ , ⇒)
 r⇐⊗′ : ∀ {X Y Z}
