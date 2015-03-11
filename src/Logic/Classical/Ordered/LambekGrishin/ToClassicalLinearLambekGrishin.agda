@@ -19,21 +19,17 @@ module Logic.Classical.Ordered.LambekGrishin.ToClassicalLinearLambekGrishin {ℓ
 
 open import Logic.Polarity
 open import Logic.Translation
-
-PolarisedUniv : Set ℓ
-PolarisedUniv = (Polarity × Univ)
-
+open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ          as OP
 open import Logic.Classical.Ordered.LambekGrishin.Type                PolarisedUniv as OT
 open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised PolarisedUniv as OS
 open import Logic.Classical.Ordered.LambekGrishin.Judgement           PolarisedUniv as OJ
-open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ          as OP
-open import Logic.Classical.Ordered.LambekGrishin.Base                Univ          as O  hiding (PolarisedUniv)
+open import Logic.Classical.Ordered.LambekGrishin.Normal.Base         Univ          as O
 
 open import Logic.Classical.Linear.LambekGrishin.Type                PolarisedUniv as LT
 open import Logic.Classical.Linear.LambekGrishin.Structure.Polarised PolarisedUniv as LS
 open import Logic.Classical.Linear.LambekGrishin.Judgement           PolarisedUniv as LJ
 open import Logic.Classical.Linear.LambekGrishin.Type.Polarised      Univ          as LP
-open import Logic.Classical.Linear.LambekGrishin.Base                Univ          as L
+open import Logic.Classical.Linear.LambekGrishin.Normal.Base         Univ          as L
 
 
 private
@@ -143,16 +139,16 @@ private
   toLLG (r₁¹ f  ) = r₁¹ (toLLG f)
   toLLG (r⇒⊗ f  ) = r⇒⊗ (toLLG f)
   toLLG (r⊗⇒ f  ) = r⊗⇒ (toLLG f)
-  toLLG (r⇐⊗ f  ) = ⊗ᶜ (r⇒⊗ (toLLG f))
-  toLLG (r⊗⇐ f  ) = r⊗⇒ (⊗ᶜ (toLLG f))
+  toLLG (r⇐⊗ f  ) = ⊗⃡ (r⇒⊗ (toLLG f))
+  toLLG (r⊗⇐ f  ) = r⊗⇒ (⊗⃡ (toLLG f))
   toLLG (r⇚⊕ f  ) = r⇚⊕ (toLLG f)
   toLLG (r⊕⇚ f  ) = r⊕⇚ (toLLG f)
-  toLLG (r⇛⊕ f  ) = ⊕ᶜ (r⇚⊕ (toLLG f))
-  toLLG (r⊕⇛ f  ) = r⊕⇚ (⊕ᶜ (toLLG f))
+  toLLG (r⇛⊕ f  ) = ⊕⃡ (r⇚⊕ (toLLG f))
+  toLLG (r⊕⇛ f  ) = r⊕⇚ (⊕⃡ (toLLG f))
   toLLG (d⇛⇐ f  ) = d⇚⇒ (toLLG f)
-  toLLG (d⇛⇒ f  ) = d⇚⇒ (⊗ᶜ (toLLG f))
-  toLLG (d⇚⇒ f  ) = d⇚⇒ (⊗ᶜ (⊕ᶜ (toLLG f)))
-  toLLG (d⇚⇐ f  ) = d⇚⇒ (⊕ᶜ (toLLG f))
+  toLLG (d⇛⇒ f  ) = d⇚⇒ (⊗⃡ (toLLG f))
+  toLLG (d⇚⇒ f  ) = d⇚⇒ (⊗⃡ (⊕⃡ (toLLG f)))
+  toLLG (d⇚⇐ f  ) = d⇚⇒ (⊕⃡ (toLLG f))
 
 
 Ord→Lin : Translation OT.Type LT.Type O.LG_ L.LG_
