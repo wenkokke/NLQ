@@ -44,11 +44,11 @@ data LG_ : Judgement → Set ℓ where
       → LG [  A  ]⊢ X
 
   -- defocus right and left
-  ⇀   : ∀ {X A} {p : True (Negative? A)}
+  ⇀   : ∀ {X A} {p : True (Positive? A)}
       → LG X ⊢[  A  ]
       → LG X ⊢ · A ·
 
-  ↼   : ∀ {X A} {p : True (Positive? A)}
+  ↼   : ∀ {X A} {p : True (Negative? A)}
       → LG [  A  ]⊢ X
       → LG  · A · ⊢ X
 
@@ -231,7 +231,3 @@ data LG_ : Judgement → Set ℓ where
   d⇚⇐ : ∀ {X Y Z W}
       → LG X ⊗ Y ⊢ Z ⊕ W
       → LG X ⇚ W ⊢ Z ⇐ Y
-
-
-lemma : ∀ {A} → LG · ◇ A · ⊢ · ◇ A ·
-lemma = ↼ ax⁻
