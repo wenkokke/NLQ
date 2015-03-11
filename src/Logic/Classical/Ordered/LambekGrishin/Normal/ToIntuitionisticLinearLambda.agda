@@ -13,20 +13,16 @@ open import Relation.Nullary.Decidable                      using (True; toWitne
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_; refl; sym; cong)
 
 
-module Logic.Classical.Ordered.LambekGrishin.ToIntuitionisticLinearLambda {ℓ} (Univ : Set ℓ) (⊥ : Univ) where
+module Logic.Classical.Ordered.LambekGrishin.Normal.ToIntuitionisticLinearLambda {ℓ} (Univ : Set ℓ) (⊥ : Univ) where
 
 
 open import Logic.Polarity
 open import Logic.Translation
-
-PolarisedUniv : Set ℓ
-PolarisedUniv = (Polarity × Univ)
-
+open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ          as LGTᴾ
 open import Logic.Classical.Ordered.LambekGrishin.Type                PolarisedUniv as LGT
 open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised PolarisedUniv as LGS
 open import Logic.Classical.Ordered.LambekGrishin.Judgement           PolarisedUniv as LGJ
-open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ          as LGTᴾ
-open import Logic.Classical.Ordered.LambekGrishin.Base                Univ          as LGB
+open import Logic.Classical.Ordered.LambekGrishin.Normal.Base         Univ          as LGB
 
 open import Logic.Intuitionistic.Linear.Lambda.Type      Univ as ΛT
 open import Logic.Intuitionistic.Linear.Lambda.Judgement Univ as ΛJ
@@ -123,24 +119,8 @@ private
     [ ax⁻         ]ᵀ = ax
     [ ⇁ {p = p} f ]ᵀ rewrite Negative-≡ (toWitness p) = ⇒ᵢ (XA→AX [ f ]ᵀ)
     [ ↽ {p = p} f ]ᵀ rewrite Positive-≡ (toWitness p) = ⇒ᵢ [ f ]ᵀ
-    [ ⇀ {p = p} f ]ᵀ with toWitness p
-    [ ⇀ {p = p} f ]ᵀ | el  A = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
-    [ ⇀ {p = p} f ]ᵀ | □   A = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
-    [ ⇀ {p = p} f ]ᵀ | ₀   A = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
-    [ ⇀ {p = p} f ]ᵀ | A   ⁰ = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
-    [ ⇀ {p = p} f ]ᵀ | A ⊕ B = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
-    [ ⇀ {p = p} f ]ᵀ | A ⇒ B = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
-    [ ⇀ {p = p} f ]ᵀ | A ⇐ B = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
-    --rewrite Positive-≡ (toWitness p) = AX→XA (⇒ₑ ax [ f ]ᵀ)
-    [ ↼ {p = p} f ]ᵀ with toWitness p
-    [ ↼ {p = p} f ]ᵀ | el  A = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
-    [ ↼ {p = p} f ]ᵀ | ◇   A = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
-    [ ↼ {p = p} f ]ᵀ | ₁   A = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
-    [ ↼ {p = p} f ]ᵀ | A   ¹ = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
-    [ ↼ {p = p} f ]ᵀ | A ⊗ B = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
-    [ ↼ {p = p} f ]ᵀ | A ⇚ B = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
-    [ ↼ {p = p} f ]ᵀ | A ⇛ B = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
-    --rewrite Negative-≡ (toWitness p) = ⇒ₑ ax [ f ]ᵀ
+    [ ⇀ {p = p} f ]ᵀ rewrite Positive-≡ (toWitness p) = AX→XA (⇒ₑ ax [ f ]ᵀ)
+    [ ↼ {p = p} f ]ᵀ rewrite Negative-≡ (toWitness p) = ⇒ₑ ax [ f ]ᵀ
     [ □ᴸ      f   ]ᵀ = [ f ]ᵀ
     [ □ᴿ      f   ]ᵀ = [ f ]ᵀ
     [ ◇ᴸ      f   ]ᵀ = [ f ]ᵀ
