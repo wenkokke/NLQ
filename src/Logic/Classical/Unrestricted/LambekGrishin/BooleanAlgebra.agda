@@ -20,15 +20,11 @@ module Logic.Classical.Unrestricted.LambekGrishin.BooleanAlgebra {ℓ} (Univ : S
 
 
 open import Logic.Polarity
-
-PolarisedUniv : Set ℓ
-PolarisedUniv = (Polarity × Univ)
-
+open import Logic.Classical.Unrestricted.LambekGrishin.Type.Polarised      Univ
 open import Logic.Classical.Unrestricted.LambekGrishin.Type                PolarisedUniv
 open import Logic.Classical.Unrestricted.LambekGrishin.Structure.Polarised PolarisedUniv
 open import Logic.Classical.Unrestricted.LambekGrishin.Judgement           PolarisedUniv
-open import Logic.Classical.Unrestricted.LambekGrishin.Type.Polarised      Univ
-open import Logic.Classical.Unrestricted.LambekGrishin.Base                Univ
+open import Logic.Classical.Unrestricted.LambekGrishin.Normal.Base         Univ
 
 _≤_ : Rel Type ℓ
 A ≤ B = LG · A · ⊢ · B ·
@@ -65,8 +61,7 @@ private
   absorptive₄ : ∀ {A B} → A ≤ A ⊗ A ⊕ B
   absorptive₄ = ⊗ᶜ (⇀ (⊗ᴿ ax⁺ (⇁ (⊕ᴿ (⊕ʷ refl)))))
 
-
-
+{-
 isLattice : IsLattice _⊣⊢_ _⊕_ _⊗_
 isLattice = record
   { isEquivalence = isEquivalence
@@ -89,3 +84,4 @@ lattice = record
   ; _∧_       = _⊗_
   ; isLattice = {!!}
   }
+-}
