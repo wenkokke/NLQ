@@ -17,17 +17,13 @@ module Logic.Classical.Ordered.LambekGrishin.EquivalentToResMon {ℓ} (Univ : Se
 
 
 open import Logic.Polarity
-
-PolarisedUniv : Set ℓ
-PolarisedUniv = (Polarity × Univ)
-
-open import Logic.Classical.Ordered.LambekGrishin.Type                PolarisedUniv as LG
-open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised PolarisedUniv
-open import Logic.Classical.Ordered.LambekGrishin.Judgement           PolarisedUniv as LGJ
+open import Logic.Translation
+open import Logic.Classical.Ordered.LambekGrishin.Type                Univ as LG
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Univ
+open import Logic.Classical.Ordered.LambekGrishin.Judgement           Univ as LGJ
 open import Logic.Classical.Ordered.LambekGrishin.Base                Univ
 
-import Logic.Classical.Ordered.LambekGrishin.Type                     Univ as RM
+open import Logic.Classical.Ordered.LambekGrishin.Type                Univ as RM using ()
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement    Univ as RMJ
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base         Univ renaming (LG_ to RM_)
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Origin       Univ
@@ -36,7 +32,7 @@ open import Logic.Classical.Ordered.LambekGrishin.ResMon.Origin       Univ
 module To where
 
   ⟦_⟧ : LG.Type → RM.Type
-  ⟦ el A  ⟧ = RM.el (proj₂ A)
+  ⟦ el A  ⟧ = RM.el A
   ⟦  □ A  ⟧ = RM.□ ⟦ A ⟧
   ⟦  ◇ A  ⟧ = RM.◇ ⟦ A ⟧
   ⟦  ₀ A  ⟧ = RM.₀ ⟦ A ⟧
@@ -67,13 +63,13 @@ module To where
   ⟦ X ⇐ Y ⟧ˢ = ⟦ X ⟧ˢ RM.⇐ ⟦ Y ⟧ˢ
 
 
-  TO : LGJ.Judgement → RMJ.Judgement
-  TO (  X  ⊢  Y  ) = ⟦ X ⟧ˢ ⊢ ⟦ Y ⟧ˢ
-  TO ([ A ]⊢  Y  ) = ⟦ A ⟧ ⊢ ⟦ Y ⟧ˢ
-  TO (  X  ⊢[ B ]) = ⟦ X ⟧ˢ ⊢ ⟦ B ⟧
+  To : LGJ.Judgement → RMJ.Judgement
+  To (  X  ⊢  Y  ) = ⟦ X ⟧ˢ ⊢ ⟦ Y ⟧ˢ
+  To ([ A ]⊢  Y  ) = ⟦ A ⟧ ⊢ ⟦ Y ⟧ˢ
+  To (  X  ⊢[ B ]) = ⟦ X ⟧ˢ ⊢ ⟦ B ⟧
 
 
-  to : ∀ {J} → LG J → RM (TO J)
+  to : ∀ {J} → LG J → RM (To J)
   to (ax⁺    ) = ax′
   to (ax⁻    ) = ax′
   to (⇁   f  ) = to f
@@ -128,7 +124,7 @@ module To where
 module From where
 
   ⟦_⟧ : RM.Type → LG.Type
-  ⟦ RM.el A  ⟧ = el (+ , A)
+  ⟦ RM.el A  ⟧ = el  A
   ⟦ RM.□ A   ⟧ = □ ⟦ A ⟧
   ⟦ RM.◇ A   ⟧ = ◇ ⟦ A ⟧
   ⟦ RM.₀ A   ⟧ = ₀ ⟦ A ⟧
@@ -198,35 +194,35 @@ module From where
   From (A ⊢ B) = ⟦ A ⟧⁺ ⊢ ⟦ B ⟧⁻
 
 
---from : ∀ {J} → RM J → LG (From J)
---from (ax     ) = ⇀ ax⁺
---from (m□  f  ) = ↼ (□ᴸ (↽ {p = {!!}} (lem-⟦·⟧⁺ (from f))))
---from (m◇  f  ) = ⇀ (◇ᴿ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from f))))
---from (m₀  f  ) = ↼ (₀ᴸ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from f))))
---from (m⁰  f  ) = ↼ (⁰ᴸ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from f))))
---from (m₁  f  ) = ⇀ (₁ᴿ (↽ {p = {!!}} (lem-⟦·⟧⁺ (from f))))
---from (m¹  f  ) = ⇀ (¹ᴿ (↽ {p = {!!}} (lem-⟦·⟧⁺ (from f))))
---from (m⊗  f g) = ⇀ (⊗ᴿ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from f))) (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from g))))
---from (m⇒  f g) = ↼ (⇒ᴸ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from f))) (↽ {p = {!!}} (lem-⟦·⟧⁺ (from g))))
---from (m⇐  f g) = ↼ (⇐ᴸ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from g))) (↽ {p = {!!}} (lem-⟦·⟧⁺ (from f))))
---from (m⊕  f g) = ↼ (⊕ᴸ (↽ {p = {!!}} (lem-⟦·⟧⁺ (from f))) (↽ {p = {!!}} (lem-⟦·⟧⁺ (from g))))
---from (m⇛  f g) = ⇀ (⇛ᴿ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from g))) (↽ {p = {!!}} (lem-⟦·⟧⁺ (from f))))
---from (m⇚  f g) = ⇀ (⇚ᴿ (⇁ {p = {!!}} (lem-⟦·⟧⁻ (from f))) (↽ {p = {!!}} (lem-⟦·⟧⁺ (from g))))
---from (r□◇ f  ) = r□◇ (from f)
---from (r◇□ f  ) = r◇□ (from f)
---from (r⁰₀ f  ) = r⁰₀ (from f)
---from (r₀⁰ f  ) = r₀⁰ (from f)
---from (r¹₁ f  ) = r¹₁ (from f)
---from (r₁¹ f  ) = r₁¹ (from f)
---from (r⇒⊗ f  ) = r⇒⊗ (from f)
---from (r⊗⇒ f  ) = r⊗⇒ (from f)
---from (r⇐⊗ f  ) = r⇐⊗ (from f)
---from (r⊗⇐ f  ) = r⊗⇐ (from f)
---from (r⇛⊕ f  ) = r⇛⊕ (from f)
---from (r⊕⇛ f  ) = r⊕⇛ (from f)
---from (r⊕⇚ f  ) = r⊕⇚ (from f)
---from (r⇚⊕ f  ) = r⇚⊕ (from f)
---from (d⇛⇐ f  ) = d⇛⇐ (from f)
---from (d⇛⇒ f  ) = d⇛⇒ (from f)
---from (d⇚⇒ f  ) = d⇚⇒ (from f)
---from (d⇚⇐ f  ) = d⇚⇐ (from f)
+  from : ∀ {J} → RM J → LG (From J)
+  from (ax     ) = ⇀ ax⁺
+  from (m□  f  ) = ↼ (□ᴸ (↽ (lem-⟦·⟧⁺ (from f))))
+  from (m◇  f  ) = ⇀ (◇ᴿ (⇁ (lem-⟦·⟧⁻ (from f))))
+  from (m₀  f  ) = ↼ (₀ᴸ (⇁ (lem-⟦·⟧⁻ (from f))))
+  from (m⁰  f  ) = ↼ (⁰ᴸ (⇁ (lem-⟦·⟧⁻ (from f))))
+  from (m₁  f  ) = ⇀ (₁ᴿ (↽ (lem-⟦·⟧⁺ (from f))))
+  from (m¹  f  ) = ⇀ (¹ᴿ (↽ (lem-⟦·⟧⁺ (from f))))
+  from (m⊗  f g) = ⇀ (⊗ᴿ (⇁ (lem-⟦·⟧⁻ (from f))) (⇁ (lem-⟦·⟧⁻ (from g))))
+  from (m⇒  f g) = ↼ (⇒ᴸ (⇁ (lem-⟦·⟧⁻ (from f))) (↽ (lem-⟦·⟧⁺ (from g))))
+  from (m⇐  f g) = ↼ (⇐ᴸ (⇁ (lem-⟦·⟧⁻ (from g))) (↽ (lem-⟦·⟧⁺ (from f))))
+  from (m⊕  f g) = ↼ (⊕ᴸ (↽ (lem-⟦·⟧⁺ (from f))) (↽ (lem-⟦·⟧⁺ (from g))))
+  from (m⇛  f g) = ⇀ (⇛ᴿ (⇁ (lem-⟦·⟧⁻ (from g))) (↽ (lem-⟦·⟧⁺ (from f))))
+  from (m⇚  f g) = ⇀ (⇚ᴿ (⇁ (lem-⟦·⟧⁻ (from f))) (↽ (lem-⟦·⟧⁺ (from g))))
+  from (r□◇ f  ) = r□◇ (from f)
+  from (r◇□ f  ) = r◇□ (from f)
+  from (r⁰₀ f  ) = r⁰₀ (from f)
+  from (r₀⁰ f  ) = r₀⁰ (from f)
+  from (r¹₁ f  ) = r¹₁ (from f)
+  from (r₁¹ f  ) = r₁¹ (from f)
+  from (r⇒⊗ f  ) = r⇒⊗ (from f)
+  from (r⊗⇒ f  ) = r⊗⇒ (from f)
+  from (r⇐⊗ f  ) = r⇐⊗ (from f)
+  from (r⊗⇐ f  ) = r⊗⇐ (from f)
+  from (r⇛⊕ f  ) = r⇛⊕ (from f)
+  from (r⊕⇛ f  ) = r⊕⇛ (from f)
+  from (r⊕⇚ f  ) = r⊕⇚ (from f)
+  from (r⇚⊕ f  ) = r⇚⊕ (from f)
+  from (d⇛⇐ f  ) = d⇛⇐ (from f)
+  from (d⇛⇒ f  ) = d⇛⇒ (from f)
+  from (d⇚⇒ f  ) = d⇚⇒ (from f)
+  from (d⇚⇐ f  ) = d⇚⇐ (from f)

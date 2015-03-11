@@ -14,13 +14,9 @@ module Logic.Classical.Linear.LambekGrishin.Base {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Polarity
-
-PolarisedUniv : Set ℓ
-PolarisedUniv = (Polarity × Univ)
-
-open import Logic.Classical.Linear.LambekGrishin.Type                PolarisedUniv
-open import Logic.Classical.Linear.LambekGrishin.Structure.Polarised PolarisedUniv
-open import Logic.Classical.Linear.LambekGrishin.Judgement           PolarisedUniv
+open import Logic.Classical.Linear.LambekGrishin.Type                Univ
+open import Logic.Classical.Linear.LambekGrishin.Structure.Polarised Univ
+open import Logic.Classical.Linear.LambekGrishin.Judgement           Univ
 open import Logic.Classical.Linear.LambekGrishin.Type.Polarised      Univ
 
 
@@ -36,20 +32,20 @@ data LG_ : Judgement → Set ℓ where
       → LG [ A ]⊢ · A ·
 
   -- focus right and left
-  ⇁   : ∀ {X A} {p : True (Negative? A)}
+  ⇁   : ∀ {X A}
       → LG X ⊢ · A ·
       → LG X ⊢[  A  ]
 
-  ↽   : ∀ {X A} {p : True (Positive? A)}
+  ↽   : ∀ {X A}
       → LG  · A · ⊢ X
       → LG [  A  ]⊢ X
 
   -- defocus right and left
-  ⇀   : ∀ {X A} {p : True (Positive? A)}
+  ⇀   : ∀ {X A}
       → LG X ⊢[  A  ]
       → LG X ⊢ · A ·
 
-  ↼   : ∀ {X A} {p : True (Negative? A)}
+  ↼   : ∀ {X A}
       → LG [  A  ]⊢ X
       → LG  · A · ⊢ X
 
@@ -210,19 +206,19 @@ data LG_ : Judgement → Set ℓ where
       → LG X ⊢ Y ⊕ (Z ⊕ W)
       → LG X ⊢ (Y ⊕ Z) ⊕ W
 
-
+  -- contraction and weakening
 -- derived exchange rules
 eᴸ′ : ∀ {X₁ X₂ X₃ X₄ Y}
     → LG (X₁ ⊗ X₃) ⊗ (X₂ ⊗ X₄) ⊢ Y
     → LG (X₁ ⊗ X₂) ⊗ (X₃ ⊗ X₄) ⊢ Y
-eᴸ′ = ⊗⃕ ∘ r⇒⊗ ∘ ⊗⃔ ∘ ⊗⃡  ∘ r⇒⊗
-    ∘ ⊗⃡ ∘ r⊗⇒ ∘ ⊗⃡  ∘ ⊗⃕ ∘ r⊗⇒ ∘ ⊗⃔
+eᴸ′ = ⊗⃕ ∘ r⇒⊗ ∘ ⊗⃔ ∘ ⊗⃡  ∘ r⇒⊗ ∘ ⊗⃡
+          ∘ r⊗⇒ ∘ ⊗⃡  ∘ ⊗⃕ ∘ r⊗⇒ ∘ ⊗⃔
 
 eᴿ′ : ∀ {X Y₁ Y₂ Y₃ Y₄}
     → LG X ⊢ (Y₁ ⊕ Y₃) ⊕ (Y₂ ⊕ Y₄)
     → LG X ⊢ (Y₁ ⊕ Y₂) ⊕ (Y₃ ⊕ Y₄)
-eᴿ′ = ⊕⃔ ∘ r⇚⊕ ∘ ⊕⃕ ∘ ⊕⃡  ∘ r⇚⊕
-    ∘ ⊕⃡ ∘ r⊕⇚ ∘ ⊕⃡  ∘ ⊕⃔ ∘ r⊕⇚ ∘ ⊕⃕
+eᴿ′ = ⊕⃔ ∘ r⇚⊕ ∘ ⊕⃕ ∘ ⊕⃡  ∘ r⇚⊕ ∘ ⊕⃡
+          ∘ r⊕⇚ ∘ ⊕⃡  ∘ ⊕⃔ ∘ r⊕⇚ ∘ ⊕⃕
 
 -- residuation rules for (⇐ , ⊗ , ⇒)
 r⇐⊗′ : ∀ {X Y Z}
