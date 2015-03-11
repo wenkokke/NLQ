@@ -19,6 +19,7 @@
 ------------------------------------------------------------------------
 
 
+open import Function                                   using (id)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; cong)
 
 
@@ -47,7 +48,6 @@ module el where
        origin : (f′ : ∀ {G} → LG G ⊢ el B ⋯ J [ G ]ᴶ)
               → (pr : f ≡ f′ [ ax ]ᴰ)
               → Origin J⁺ f
-
 
 
   mutual
@@ -259,7 +259,6 @@ module el where
         where
           pr′ : g [ f ]ᴰ ≡ (g < f′ >ᴰ) [ ax ]ᴰ
           pr′ rewrite <>ᴰ-def f′ g ax = cong (_[_]ᴰ g) pr
-
 
 
 module □ where

@@ -1,23 +1,26 @@
 ------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
+--
 ------------------------------------------------------------------------
 
 
 open import Function                                        using (_∘_)
+open import Data.List                                       using (List; _++_) renaming (_∷_ to _,_; _∷ʳ_ to _,′_; [] to ∅)
+open import Data.Sum                                        using (_⊎_; inj₁; inj₂)
 open import Data.Product                                    using (∃; _×_; _,_)
 open import Relation.Nullary                                using (Dec; yes; no)
 open import Relation.Nullary.Decidable                      using (True; toWitness)
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_; refl; sym; cong)
 
 
-module Logic.Classical.Unrestricted.LambekGrishin.Base {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Normal.Base {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Classical.Unrestricted.LambekGrishin.Type                Univ
-open import Logic.Classical.Unrestricted.LambekGrishin.Structure.Polarised Univ
-open import Logic.Classical.Unrestricted.LambekGrishin.Judgement           Univ
-open import Logic.Classical.Unrestricted.LambekGrishin.Type.Polarised      Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type                PolarisedUniv
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised PolarisedUniv hiding (Polarised)
+open import Logic.Classical.Ordered.LambekGrishin.Judgement           PolarisedUniv
 
 
 infix 1 LG_
@@ -32,20 +35,20 @@ data LG_ : Judgement → Set ℓ where
       → LG [ A ]⊢ · A ·
 
   -- focus right and left
-  ⇁   : ∀ {X A}
+  ⇁   : ∀ {X A} {p : True (Negative? A)}
       → LG X ⊢ · A ·
       → LG X ⊢[  A  ]
 
-  ↽   : ∀ {X A}
+  ↽   : ∀ {X A} {p : True (Positive? A)}
       → LG  · A · ⊢ X
       → LG [  A  ]⊢ X
 
   -- defocus right and left
-  ⇀   : ∀ {X A}
+  ⇀   : ∀ {X A} {p : True (Negative? A)}
       → LG X ⊢[  A  ]
       → LG X ⊢ · A ·
 
-  ↼   : ∀ {X A}
+  ↼   : ∀ {X A} {p : True (Positive? A)}
       → LG [  A  ]⊢ X
       → LG  · A · ⊢ X
 
@@ -108,6 +111,11 @@ data LG_ : Judgement → Set ℓ where
       → LG [ B ]⊢ Y
       → LG X ⇚ Y ⊢[ A ⇚ B ]
 
+  ⇛ᴿ  : ∀ {X Y A B}
+      → LG X ⊢[ A ]
+      → LG [ B ]⊢ Y
+      → LG Y ⇛ X ⊢[ B ⇛ A ]
+
   ⊕ᴸ  : ∀ {X Y A B}
       → LG [ B ]⊢ Y
       → LG [ A ]⊢ X
@@ -118,6 +126,11 @@ data LG_ : Judgement → Set ℓ where
       → LG [ B ]⊢ Y
       → LG [ A ⇒ B ]⊢ X ⇒ Y
 
+  ⇐ᴸ  : ∀ {X Y A B}
+      → LG X ⊢[ A ]
+      → LG [ B ]⊢ Y
+      → LG [ B ⇐ A ]⊢ Y ⇐ X
+
   ⊗ᴸ  : ∀ {Y A B}
       → LG · A · ⊗ · B · ⊢ Y
       → LG · A   ⊗   B · ⊢ Y
@@ -126,6 +139,10 @@ data LG_ : Judgement → Set ℓ where
       → LG · A · ⇚ · B · ⊢ X
       → LG · A   ⇚   B · ⊢ X
 
+  ⇛ᴸ  : ∀ {X A B}
+      → LG · B · ⇛ · A · ⊢ X
+      → LG · B   ⇛   A · ⊢ X
+
   ⊕ᴿ  : ∀ {X A B}
       → LG X ⊢ · B · ⊕ · A ·
       → LG X ⊢ · B   ⊕   A ·
@@ -133,6 +150,10 @@ data LG_ : Judgement → Set ℓ where
   ⇒ᴿ  : ∀ {X A B}
       → LG X ⊢ · A · ⇒ · B ·
       → LG X ⊢ · A   ⇒   B ·
+
+  ⇐ᴿ  : ∀ {X A B}
+      → LG X ⊢ · B · ⇐ · A ·
+      → LG X ⊢ · B   ⇐   A ·
 
   -- residuation rules for (□ , ◇)
   r□◇ : ∀ {X Y}
@@ -160,6 +181,7 @@ data LG_ : Judgement → Set ℓ where
       → LG ₁ Y ⊢ X
       → LG X ¹ ⊢ Y
 
+  -- residuation rules for (⇐ , ⊗ , ⇒)
   r⇒⊗ : ∀ {X Y Z}
       → LG Y ⊢ X ⇒ Z
       → LG X ⊗ Y ⊢ Z
@@ -168,6 +190,15 @@ data LG_ : Judgement → Set ℓ where
       → LG X ⊗ Y ⊢ Z
       → LG Y ⊢ X ⇒ Z
 
+  r⇐⊗ : ∀ {X Y Z}
+      → LG X ⊢ Z ⇐ Y
+      → LG X ⊗ Y ⊢ Z
+
+  r⊗⇐ : ∀ {X Y Z}
+      → LG X ⊗ Y ⊢ Z
+      → LG X ⊢ Z ⇐ Y
+
+  -- residuation rules for (⇚ , ⊕ , ⇛)
   r⇚⊕ : ∀ {X Y Z}
       → LG Z ⇚ X ⊢ Y
       → LG Z ⊢ Y ⊕ X
@@ -176,84 +207,31 @@ data LG_ : Judgement → Set ℓ where
       → LG Z ⊢ Y ⊕ X
       → LG Z ⇚ X ⊢ Y
 
-  -- grishin interaction principles
+  r⇛⊕ : ∀ {X Y Z}
+      → LG Y ⇛ Z ⊢ X
+      → LG Z ⊢ Y ⊕ X
+
+  r⊕⇛ : ∀ {X Y Z}
+      → LG Z ⊢ Y ⊕ X
+      → LG Y ⇛ Z ⊢ X
+
+  -- grishin interaction principes
+  d⇛⇐ : ∀ {X Y Z W}
+      → LG X ⊗ Y ⊢ Z ⊕ W
+      → LG Z ⇛ X ⊢ W ⇐ Y
+
+  d⇛⇒ : ∀ {X Y Z W}
+      → LG X ⊗ Y ⊢ Z ⊕ W
+      → LG Z ⇛ Y ⊢ X ⇒ W
+
   d⇚⇒ : ∀ {X Y Z W}
       → LG X ⊗ Y ⊢ Z ⊕ W
-      → LG X ⇚ Z ⊢ Y ⇒ W
+      → LG Y ⇚ W ⊢ X ⇒ Z
 
-  -- structural rules
-  ⊗⃡  : ∀ {X Y Z}
-      → LG Y ⊗ X ⊢ Z
-      → LG X ⊗ Y ⊢ Z
+  d⇚⇐ : ∀ {X Y Z W}
+      → LG X ⊗ Y ⊢ Z ⊕ W
+      → LG X ⇚ W ⊢ Z ⇐ Y
 
-  ⊕⃡  : ∀ {X Y Z}
-      → LG X ⊢ Z ⊕ Y
-      → LG X ⊢ Y ⊕ Z
 
-  ⊗⃔ : ∀ {X Y Z W}
-      → LG (X ⊗ Y) ⊗ Z ⊢ W
-      → LG X ⊗ (Y ⊗ Z) ⊢ W
-
-  ⊗⃕ : ∀ {X Y Z W}
-      → LG X ⊗ (Y ⊗ Z) ⊢ W
-      → LG (X ⊗ Y) ⊗ Z ⊢ W
-
-  ⊕⃔ : ∀ {X Y Z W}
-      → LG X ⊢ (Y ⊕ Z) ⊕ W
-      → LG X ⊢ Y ⊕ (Z ⊕ W)
-
-  ⊕⃕ : ∀ {X Y Z W}
-      → LG X ⊢ Y ⊕ (Z ⊕ W)
-      → LG X ⊢ (Y ⊕ Z) ⊕ W
-
-  -- contraction and weakening
-  ⊗ᶜ  : ∀ {X Y}
-      → LG X ⊗ X ⊢ Y
-      → LG     X ⊢ Y
-
-  ⊕ᶜ  : ∀ {X Y}
-      → LG X ⊢ Y ⊕ Y
-      → LG X ⊢ Y
-
-  ⊗ʷ  : ∀ {X Y Z}
-      → LG X     ⊢ Y
-      → LG X ⊗ Z ⊢ Y
-
-  ⊕ʷ  : ∀ {X Y Z}
-      → LG X ⊢ Y
-      → LG X ⊢ Y ⊕ Z
-
--- derived exchange rules
-eᴸ′ : ∀ {X₁ X₂ X₃ X₄ Y}
-    → LG (X₁ ⊗ X₃) ⊗ (X₂ ⊗ X₄) ⊢ Y
-    → LG (X₁ ⊗ X₂) ⊗ (X₃ ⊗ X₄) ⊢ Y
-eᴸ′ = ⊗⃕ ∘ r⇒⊗ ∘ ⊗⃔ ∘ ⊗⃡  ∘ r⇒⊗ ∘ ⊗⃡
-          ∘ r⊗⇒ ∘ ⊗⃡  ∘ ⊗⃕ ∘ r⊗⇒ ∘ ⊗⃔
-
-eᴿ′ : ∀ {X Y₁ Y₂ Y₃ Y₄}
-    → LG X ⊢ (Y₁ ⊕ Y₃) ⊕ (Y₂ ⊕ Y₄)
-    → LG X ⊢ (Y₁ ⊕ Y₂) ⊕ (Y₃ ⊕ Y₄)
-eᴿ′ = ⊕⃔ ∘ r⇚⊕ ∘ ⊕⃕ ∘ ⊕⃡  ∘ r⇚⊕ ∘ ⊕⃡
-          ∘ r⊕⇚ ∘ ⊕⃡  ∘ ⊕⃔ ∘ r⊕⇚ ∘ ⊕⃕
-
--- residuation rules for (⇐ , ⊗ , ⇒)
-r⇐⊗′ : ∀ {X Y Z}
-     → LG X ⊢ Y ⇒ Z
-     → LG X ⊗ Y ⊢ Z
-r⇐⊗′ = ⊗⃡ ∘ r⇒⊗
-
-r⊗⇐′ : ∀ {X Y Z}
-     → LG X ⊗ Y ⊢ Z
-     → LG X ⊢ Y ⇒ Z
-r⊗⇐′ = r⊗⇒ ∘ ⊗⃡
-
--- residuation rules for (⇚ , ⊕ , ⇛)
-r⇛⊕′ : ∀ {X Y Z}
-     → LG Z ⇚ Y ⊢ X
-     → LG Z ⊢ Y ⊕ X
-r⇛⊕′ = ⊕⃡ ∘ r⇚⊕
-
-r⊕⇛′ : ∀ {X Y Z}
-     → LG Z ⊢ Y ⊕ X
-     → LG Z ⇚ Y ⊢ X
-r⊕⇛′ = r⊕⇚ ∘ ⊕⃡
+lemma : ∀ {A} → LG · ◇ A · ⊢ · ◇ A ·
+lemma = ↼ ax⁻

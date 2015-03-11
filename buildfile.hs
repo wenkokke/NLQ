@@ -191,8 +191,16 @@ makeLambek  = Mapping
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type" </> "Polarised.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type" </> "Subtype.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type" </> "Subtype.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Structure.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Structure.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Structure" </> "Complexity.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Structure" </> "Complexity.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Structure" </> "Polarised.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Structure" </> "Polarised.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Base.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Base.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Normal" </> "Base.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Normal" </> "Base.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Judgement.agda"
@@ -223,6 +231,8 @@ makeLinearLambekGrishin  = Mapping
   , textMapping = [ "Unrestricted" ==> "Linear" ]
   , fileMapping = [ srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Base.agda"
                 ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambekGrishin" </> "Base.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Normal" </> "Base.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambekGrishin" </> "Normal" </> "Base.agda"
                   ]
   }
 
@@ -248,6 +258,8 @@ makeUnrestrictedLambekGrishin  = Mapping
                 ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Type" </> "Subtype.agda"
                   , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Structure.agda"
                 ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Structure.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Structure" </> "Complexity.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Structure" </> "Complexity.agda"
                   , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Structure" </> "Polarised.agda"
                 ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Structure" </> "Polarised.agda"
                   , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Judgement.agda"

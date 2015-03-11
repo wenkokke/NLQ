@@ -14,7 +14,11 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 module Logic.Classical.Ordered.LambekGrishin.Type.Polarised {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type (Polarity × Univ)
+PolarisedUniv : Set ℓ
+PolarisedUniv = (Polarity × Univ)
+
+
+open import Logic.Classical.Ordered.LambekGrishin.Type PolarisedUniv
 
 
 data Polarised : Polarity → Type → Set ℓ where

@@ -123,8 +123,24 @@ private
     [ ax⁻         ]ᵀ = ax
     [ ⇁ {p = p} f ]ᵀ rewrite Negative-≡ (toWitness p) = ⇒ᵢ (XA→AX [ f ]ᵀ)
     [ ↽ {p = p} f ]ᵀ rewrite Positive-≡ (toWitness p) = ⇒ᵢ [ f ]ᵀ
-    [ ⇀ {p = p} f ]ᵀ rewrite Positive-≡ (toWitness p) = AX→XA (⇒ₑ ax [ f ]ᵀ)
-    [ ↼ {p = p} f ]ᵀ rewrite Negative-≡ (toWitness p) = ⇒ₑ ax [ f ]ᵀ
+    [ ⇀ {p = p} f ]ᵀ with toWitness p
+    [ ⇀ {p = p} f ]ᵀ | el  A = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
+    [ ⇀ {p = p} f ]ᵀ | □   A = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
+    [ ⇀ {p = p} f ]ᵀ | ₀   A = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
+    [ ⇀ {p = p} f ]ᵀ | A   ⁰ = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
+    [ ⇀ {p = p} f ]ᵀ | A ⊕ B = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
+    [ ⇀ {p = p} f ]ᵀ | A ⇒ B = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
+    [ ⇀ {p = p} f ]ᵀ | A ⇐ B = AX→XA (⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ)
+    --rewrite Positive-≡ (toWitness p) = AX→XA (⇒ₑ ax [ f ]ᵀ)
+    [ ↼ {p = p} f ]ᵀ with toWitness p
+    [ ↼ {p = p} f ]ᵀ | el  A = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
+    [ ↼ {p = p} f ]ᵀ | ◇   A = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
+    [ ↼ {p = p} f ]ᵀ | ₁   A = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
+    [ ↼ {p = p} f ]ᵀ | A   ¹ = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
+    [ ↼ {p = p} f ]ᵀ | A ⊗ B = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
+    [ ↼ {p = p} f ]ᵀ | A ⇚ B = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
+    [ ↼ {p = p} f ]ᵀ | A ⇛ B = ⇒ₑ (⇒ᵢ (⇒ₑ ax ax)) [ f ]ᵀ
+    --rewrite Negative-≡ (toWitness p) = ⇒ₑ ax [ f ]ᵀ
     [ □ᴸ      f   ]ᵀ = [ f ]ᵀ
     [ □ᴿ      f   ]ᵀ = [ f ]ᵀ
     [ ◇ᴸ      f   ]ᵀ = [ f ]ᵀ
