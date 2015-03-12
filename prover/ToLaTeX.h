@@ -28,16 +28,25 @@ map<BINARY_CONNECTIVE,char*> createBinaryToLaTeX()
 }
 map<BINARY_CONNECTIVE,char*> binaryToLaTeX = createBinaryToLaTeX();
 
-map<UNARY_CONNECTIVE,char*> createUnaryToLaTeX()
-{
-    map<UNARY_CONNECTIVE,char*> m;
-    m[BOX]     = "\\Box ";
-    m[DIAMOND] = "\\Diamond ";
-    m[ZERO]    = "^0";
-    m[ONE]     = "^1";
-    return m;
+char* unaryToLaTeX(UNARY_CONNECTIVE unary_connective, bool prefix) {
+    switch (unary_connective)
+    {
+    case BOX:
+        return "\\Box ";
+    case DIAMOND:
+        return "\\Diamond ";
+    case ZERO:
+        if (prefix)
+            return "_0";
+        else
+            return "^0";
+    case ONE:
+        if (prefix)
+            return "_1";
+        else
+            return "^1";
+    }
 }
-map<UNARY_CONNECTIVE,char*> unaryToLaTeX = createUnaryToLaTeX();
 
 /* Print unary connectives to LaTeX */
 void toLaTeXUnary(FILE *fout, UNARY_CONNECTIVE connective, bool prefix, bool structural) {
@@ -69,10 +78,10 @@ void toLaTeXFormula(FILE *fout, Formula *formula, bool top) {
             if(!top)
                 fprintf(fout, "(");
             if (formula->prefix)
-                fprintf(fout, unaryToLaTeX[formula->unary_connective]);
+                fprintf(fout, unaryToLaTeX(formula->unary_connective, formula->prefix));
             toLaTeXFormula(fout, formula->inner, false);
             if (!formula->prefix)
-                fprintf(fout, unaryToLaTeX[formula->unary_connective]);
+                fprintf(fout, unaryToLaTeX(formula->unary_connective, formula->prefix));
             if(!top)
                 fprintf(fout, ")");
             break;
@@ -106,15 +115,29 @@ void toLaTeXStructure(FILE *fout, Structure *structure, bool top) {
             break;
         /* Unary */
         case UNARY:
-            if(!top)
-                fprintf(fout, "(");
-            if (structure->prefix)
-                fprintf(fout, unaryToLaTeX[structure->unary_connective]);
-            toLaTeXStructure(fout, structure->inner, false);
-            if (!structure->prefix)
-                fprintf(fout, unaryToLaTeX[structure->unary_connective]);
-            if(!top)
-                fprintf(fout, ")");
+            switch (structure->unary_connective)
+            {
+            case BOX:
+                fprintf(fout, "\\mathop{\\lbrack} ");
+                toLaTeXStructure(fout, structure->inner, false);
+                fprintf(fout, "\\mathop{\\rbrack} ");
+                break;
+            case DIAMOND:
+                fprintf(fout, "\\mathop{\\langle} ");
+                toLaTeXStructure(fout, structure->inner, false);
+                fprintf(fout, "\\mathop{\\rangle} ");
+                break;
+            default:
+                if(!top)
+                    fprintf(fout, "(");
+                if (structure->prefix)
+                    fprintf(fout, unaryToLaTeX(structure->unary_connective, structure->prefix));
+                toLaTeXStructure(fout, structure->inner, false);
+                if (!structure->prefix)
+                    fprintf(fout, unaryToLaTeX(structure->unary_connective, structure->prefix));
+                if(!top)
+                    fprintf(fout, ")");
+            }
             break;
         /* Match */
         case MATCH:
