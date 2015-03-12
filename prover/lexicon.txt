@@ -10,7 +10,7 @@ bill       : np.
 
 smiles     : (np ⇒ s⁻).
 left       : (np ⇒ s⁻).
-left'      : (np ⇒ □ s⁻).
+left'      : (np ⇒ s⁻).
 cheats     : (np ⇒ s⁻).
 
 teases     : ((np ⇒ s⁻) ⇐ np).
