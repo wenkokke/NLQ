@@ -1,6 +1,16 @@
 ------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
 --
+-- Why are `⇀` and `↼` included?
+--
+--   While the defocussing rules (⇀ , ↼) can be derived using cut,
+--   the suggested procedure for "cut elimination" leaves some cuts in
+--   the derivation---namely, those cuts with axiomatic premises. This
+--   means that we, in effect, take an axiomatisation where we have the
+--   rule `cut` instead of `⇀` and `↼`, but restrict it to only allow
+--   for axiomatic premises (i.e. `cut ax⁺ _` and `cut _ ax⁻`)... which
+--   in reality is the same axiomatisation, but more cumbersome.
+--
 ------------------------------------------------------------------------
 
 
