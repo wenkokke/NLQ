@@ -3,9 +3,6 @@
 ------------------------------------------------------------------------
 
 
-open import Data.Empty using (⊥)
-
-
 module Logic.Classical.Ordered.LambekGrishin.ResMon.Trans {ℓ} (Univ : Set ℓ) where
 
 
