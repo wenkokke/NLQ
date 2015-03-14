@@ -174,6 +174,7 @@ makeLambek  = Mapping
                   , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰"
                   , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁"
                   , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹"
+                  , "⁰ᴸ" , "⁰ᴿ" , "¹ᴸ" , "¹ᴿ"
                   ]
   , textMapping = [ "LambekGrishin" ==> "Lambek"
                   , "LG"            ==> "NL"
@@ -197,6 +198,8 @@ makeLambek  = Mapping
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Structure" </> "Complexity.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Structure" </> "Polarised.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Structure" </> "Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Judgement.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Judgement.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Base.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Base.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Normal" </> "Base.agda"
