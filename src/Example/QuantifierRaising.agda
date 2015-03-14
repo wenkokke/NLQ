@@ -252,14 +252,3 @@ MARY_THINKS_SOMEONE_LEFT₅
 mary_thinks_someone_left₅ : Bool
 mary_thinks_someone_left₅ = toAgda MARY_THINKS_SOMEONE_LEFT₅ (mary , thinks′ , someone , left′ , ∅) id
 --> existsₑ (λ x → person x ∧ mary thinks (x left))
-
-a : LG · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ ( ◇ ( □ s⁻ ) ) · ⊗ ⟨ ( · ( ₁ np ) ¹ · ⊗ · np ⇒ ( □ s⁻ ) · ) ⟩ ) ⊢[ s⁻ ]
-a = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ (◇ᴿ (⇁ (□ᴿ (r⇐⊗ (¹ᴸ (r₁¹ (⇀ (₁ᴿ (↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ (□ᴸ ax⁻)))))))))))))) (⇒ᴸ ax⁺ ax⁻)))))
-b : LG · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ ( ◇ ( □ s⁻ ) ) · ⊗ ⟨ ( · ( ₁ np ) ¹ · ⊗ · np ⇒ ( □ s⁻ ) · ) ⟩ ) ⊢[ s⁻ ]
-b = ⇁ (r⇒⊗ (r⇒⊗ (r□◇ (r⇐⊗ (¹ᴸ (r₁¹ (⇀ (₁ᴿ (↽ (r⊗⇐ (r◇□ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ (◇ᴿ (⇁ (□ᴿ (r⇒⊗ (↼ (⇒ᴸ ax⁺ (□ᴸ ax⁻))))))) (⇒ᴸ ax⁺ ax⁻))))))))))))))))
-
-test1 test2 : Bool
-test1 = toAgda a (mary , thinks′ , someone¹ , left′ , ∅) id
-test2 = toAgda b (mary , thinks′ , someone¹ , left′ , ∅) id
-
-main = {!test2!}
