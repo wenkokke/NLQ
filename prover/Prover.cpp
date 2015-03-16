@@ -16,7 +16,7 @@
 #include <string>
 
 void showArguments() {
-    printf("prove [agda|prolog|latex] [lexicon file] [phrase] [type]\n");
+    printf("prover [lexicon file] [phrase] [type]\n");
 }
 
 int main(int argc, char **argv) {

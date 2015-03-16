@@ -151,7 +151,9 @@ void toLaTeXSequent(FILE *fout, Sequent *sequent) {
     switch(sequent->type) {
         /* Formula left */
         case FORMULA_LEFT:
+            fprintf(fout, "\\focus{");
             toLaTeXFormula(fout, sequent->leftF, true);
+            fprintf(fout, "}");
             fprintf(fout, "\\vdash ");
             toLaTeXStructure(fout, sequent->rightS, true);
             break;
@@ -159,7 +161,9 @@ void toLaTeXSequent(FILE *fout, Sequent *sequent) {
         case FORMULA_RIGHT:
             toLaTeXStructure(fout, sequent->leftS, true);
             fprintf(fout, "\\vdash ");
+            fprintf(fout, "\\focus{");
             toLaTeXFormula(fout, sequent->rightF, true);
+            fprintf(fout, "}");
             break;
         /* Structural */
         case STRUCTURAL:
@@ -221,6 +225,8 @@ void toLaTeXHeader(FILE *fout) {
     fprintf(fout, "\\usepackage{proof}\n");
     fprintf(fout, "\\usepackage{stmaryrd}\n");
     fprintf(fout, "\\usepackage{amssymb}\n");
+    fprintf(fout, "\\usepackage[usenames,dvipsnames]{xcolor}\n");
+    fprintf(fout, "\\usepackage{adjustbox}\n");
     fprintf(fout, "\\newcommand{\\leftleftharpoons}{\\mathbin{\\ooalign{\\hfil\\raisebox{1pt}{$\\leftharpoonup$}\\hfil\\cr\\hfil\\raisebox{-1pt}{$\\leftharpoondown$}\\hfil\\crcr}}}\n");
     fprintf(fout, "\\newcommand{\\rightrightharpoons}{\\mathbin{\\ooalign{\\hfil\\raisebox{1pt}{$\\rightharpoonup$}\\hfil\\cr\\hfil\\raisebox{-1pt}{$\\rightharpoondown$}\\hfil\\crcr}}}\n");
     fprintf(fout, "\\newcommand{\\lneg}[1]{{}^{\\mathbf{0}}#1}\n");
@@ -231,6 +237,7 @@ void toLaTeXHeader(FILE *fout) {
     fprintf(fout, "\\newcommand{\\rNeg}[1]{#1^{\\cdot 0}}\n");
     fprintf(fout, "\\newcommand{\\ldNeg}[1]{{}^{1 \\cdot}#1}\n");
     fprintf(fout, "\\newcommand{\\rdNeg}[1]{#1^{\\cdot 1}}\n");
+    fprintf(fout, "\\newcommand{\\focus}[1]{\\adjustbox{margin=0,bgcolor=Cerulean}{$\\>\\color{white}\\rule[-5pt]{0pt}{15pt}#1\\>$}}\n");
     fprintf(fout, "\\RequirePackage[pdftex,pdfview=Fit,pdfstartview=Fit]{hyperref}\n");
     fprintf(fout, "\\pagestyle{empty}\n");
     fprintf(fout, "\\newlength{\\wdtotal}\n");

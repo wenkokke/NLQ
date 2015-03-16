@@ -93,3 +93,26 @@ data LG_ : Judgement → Set ℓ where
   d⇛⇒ : ∀ {X Y Z W} → LG X ⊗ Y ⊢ Z ⊕ W → LG Z ⇛ Y ⊢ X ⇒ W
   d⇚⇒ : ∀ {X Y Z W} → LG X ⊗ Y ⊢ Z ⊕ W → LG Y ⇚ W ⊢ X ⇒ Z
   d⇚⇐ : ∀ {X Y Z W} → LG X ⊗ Y ⊢ Z ⊕ W → LG X ⇚ W ⊢ Z ⇐ Y
+
+
+
+-- raising and lowering
+↑₀′ : ∀ {A} → LG · A · ⊢ · ₀ (A ⁰) ·
+↑₀′ = ₀ᴿ (r⁰₀ (↼ (⁰ᴸ ax⁺)))
+↑⁰′ : ∀ {A} → LG · A · ⊢ · (₀ A) ⁰ ·
+↑⁰′ = ⁰ᴿ (r₀⁰ (↼ (₀ᴸ ax⁺)))
+↓₁′ : ∀ {A} → LG · ₁ (A ¹) · ⊢ · A ·
+↓₁′ = ₁ᴸ (r¹₁ (⇀ (¹ᴿ ax⁻)))
+↓¹′ : ∀ {A} → LG · (₁ A) ¹ · ⊢ · A ·
+↓¹′ = ¹ᴸ (r₁¹ (⇀ (₁ᴿ ax⁻)))
+
+
+-- monotonicity
+m⁰′ : ∀ {A B} → LG · B · ⊢ · A · → LG ·  A ⁰ · ⊢ · B ⁰ ·
+m⁰′ f = ⁰ᴿ (↼ (⁰ᴸ (⇁ f)))
+m₀′ : ∀ {A B} → LG · B · ⊢ · A · → LG · ₀ A  · ⊢ · ₀ B   ·
+m₀′ f = ₀ᴿ (↼ (₀ᴸ (⇁ f)))
+m₁′ : ∀ {A B} → LG · B · ⊢ · A · → LG · ₁ A  · ⊢ · ₁ B ·
+m₁′ f = ₁ᴸ (⇀ (₁ᴿ (↽ f)))
+m¹′ : ∀ {A B} → LG · B · ⊢ · A · → LG ·  A ¹ · ⊢ · B ¹ ·
+m¹′ f = ¹ᴸ (⇀ (¹ᴿ (↽ f)))
