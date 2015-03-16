@@ -271,6 +271,40 @@ makeUnrestrictedLambekGrishin  = Mapping
   }
 
 --------------------------------------------------------------------------------
+-- Make: Unrestricted Lambek Grishin Calculus
+--------------------------------------------------------------------------------
+
+makeLambekGrishinWithUnits :: Mapping
+makeLambekGrishinWithUnits  = Mapping
+  { blacklist   = [ " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀"
+                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰"
+                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁"
+                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" ]
+  , textMapping = [ ]
+  , fileMapping = [ srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Type.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Type.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Type" </> "Complexity.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Type" </> "Complexity.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Type" </> "Context.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Type" </> "Context.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Type" </> "Context" </> "Polarised.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Type" </> "Context" </> "Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Type" </> "Polarised.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Type" </> "Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Type" </> "Subtype.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Type" </> "Subtype.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Structure.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Structure.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Structure" </> "Complexity.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Structure" </> "Complexity.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Structure" </> "Polarised.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Structure" </> "Polarised.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Judgement.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Judgement.agda"
+                  ]
+  }
+
+--------------------------------------------------------------------------------
 -- Mapping: Lambda Calculus
 --------------------------------------------------------------------------------
 
