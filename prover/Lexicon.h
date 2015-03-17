@@ -215,7 +215,7 @@ bool readLexicon(char *lexiconName) {
     return true;
 }
 
-/* Parse a phrase from the list of tokens */
+/* Parse a phrase with structural annotations */
 Structure *parsePhraseTokens(vector<string>::iterator &it, vector<string>::iterator end) {
     Structure *first;
 
@@ -269,11 +269,63 @@ Structure *parsePhrase(char *sentence) {
     vector<string> tokens = tokenize(sentence);
     vector<string>::iterator it = tokens.begin();
     Structure *ret = parsePhraseTokens(it, tokens.end());
-    if(ret == NULL || it != tokens.end()) {
+    if (ret == NULL || it != tokens.end()) {
         printf("Could not parse sentence: %s\n", sentence);
         return NULL;
     }
     return ret;
+}
+
+/* Parse a phrase without any structural annotations */
+vector<Formula> *parsePhrase2(char *sentence) {
+
+    vector<string> tokens = tokenize(sentence);
+    vector<Formula> *ret;
+
+    for (vector<string>::iterator it = tokens.begin() ; it != tokens.end() ; ++it) {
+        if (lexicon.find(*it) == lexicon.end()) {
+            printf("Could not find \"%s\" in lexicon.\n", (*it).c_str());
+            return NULL;
+        }
+        ret->push_back(lexicon[*it]);
+    }
+    return ret;
+}
+
+/* Generate all candidate structures */
+vector<Structure> *candidateStructures(vector<Formula> *formulae, vector<Formula>::size_type begin, vector<Formula>::size_type end) {
+
+    vector<Structure> *ret;
+
+    if (begin == end) {
+        Formula *atom = &formulae->data()[begin];
+        ret->push_back(Structure(atom));
+    }
+    else {
+        for (vector<Formula>::size_type i = begin ; i != end ; ++i) {
+
+            vector<Structure> *ls = candidateStructures(formulae, begin, i);
+            vector<Structure> *rs = candidateStructures(formulae, i + 1, end);
+            for (vector<Structure>::size_type itl = 0 ; itl != ls->size() ; ++itl) {
+                for (vector<Structure>::size_type itr = 0 ; itr != rs->size() ; ++itr) {
+                    Structure *left  = &ls->data()[itl];
+                    Structure *right = &rs->data()[itr];
+                    ret->push_back(Structure(left, OTIMES, right));
+                }
+            }
+        }
+    }
+
+    return ret;
+}
+
+vector<Structure> *parsePhrase3(char *sentence) {
+    vector<Formula> *formulae = parsePhrase2(sentence);
+    if (formulae == NULL) {
+        printf("Could not parse sentence: %s\n", sentence);
+        return NULL;
+    }
+    return candidateStructures(formulae, 0, formulae->size() - 1);
 }
 
 #endif

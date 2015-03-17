@@ -15,6 +15,7 @@
 #include "Prover.h"
 #include <string>
 
+
 void showArguments() {
     printf("prover [lexicon file] [phrase] [type]\n");
 }
