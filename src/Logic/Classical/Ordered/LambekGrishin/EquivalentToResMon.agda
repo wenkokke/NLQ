@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
 --
--- Implements a proof of equivalence with the residuation-monotonicity
--- calculus as `eq`.
+-- Implements proofs of equivalence with the residuation-monotonicity
+-- calculus as `eq↑` and `eq↓`.
 --
 -- Every proof in `LG` maps to *exactly one* proof in `RM`, namely a
 -- proof for the judgement obtained by flattening all structures (as
@@ -15,8 +15,8 @@
 --
 -- This module implements the translation from `LG` to `RM` as `to`,
 -- and the two extremes in the translation from `RM` to `LG` as
--- `from₁` and `from₂`. The translation `from₁` maps formulae to their
--- maximally structured forms. The translation `from₂` embeds formulae
+-- `from↑` and `from↓`. The translation `from↑` maps formulae to their
+-- maximally structured forms. The translation `from↓` embeds formulae
 -- to atomic structures.
 --
 -- As a corollary, we import the proof of transitivity from the system
@@ -25,6 +25,7 @@
 ------------------------------------------------------------------------
 
 
+open import Function                                   using (_∘_)
 open import Function.Equivalence                       using (_⇔_; equivalence)
 open import Data.Product                               using (_×_; _,_; proj₂)
 open import Relation.Nullary                           using (Dec; yes; no; ¬_)
@@ -179,6 +180,10 @@ mutual
   deflate⁻ {B = B ⊕ C} f = ⊕ᴿ (r⇚⊕ (deflate⁻ (r⊕⇚ (r⇛⊕ (deflate⁻ (r⊕⇛ f))))))
 
 
+deflate : ∀ {A B} → LG ⟦ A ⟧⁺ ⊢ ⟦ B ⟧⁻ → LG · A · ⊢ · B ·
+deflate = deflate⁺ ∘ deflate⁻
+
+
 mutual
   reinflate⁺ : ∀ {X Y} → LG ⟦ ⟦ X ⟧ ⟧⁺ ⊢ Y → LG X ⊢ Y
   reinflate⁺ {X = · A ·} f = deflate⁺ f
@@ -199,50 +204,46 @@ mutual
   reinflate⁻ {Y = X ⇐ Y} f = r⊗⇐ (reinflate⁻ (r⇒⊗ (reinflate⁺ (r⊗⇒ (r⇐⊗ f)))))
 
 
-From₁ : RMJ.Judgement → LGJ.Judgement
-From₁ (A ⊢ B) = ⟦ A ⟧⁺ ⊢ ⟦ B ⟧⁻
+reinflate : ∀ {X Y} → LG ⟦ ⟦ X ⟧ ⟧⁺ ⊢ ⟦ ⟦ Y ⟧ ⟧⁻ → LG X ⊢ Y
+reinflate = reinflate⁺ ∘ reinflate⁻
 
-from₁ : ∀ {J} → RM J → LG (From₁ J)
-from₁ (ax     ) = ⇀ ax⁺
-from₁ (m□  f  ) = ↼ (□ᴸ (↽ (deflate⁺ (from₁ f))))
-from₁ (m◇  f  ) = ⇀ (◇ᴿ (⇁ (deflate⁻ (from₁ f))))
-from₁ (m₀  f  ) = ↼ (₀ᴸ (⇁ (deflate⁻ (from₁ f))))
-from₁ (m⁰  f  ) = ↼ (⁰ᴸ (⇁ (deflate⁻ (from₁ f))))
-from₁ (m₁  f  ) = ⇀ (₁ᴿ (↽ (deflate⁺ (from₁ f))))
-from₁ (m¹  f  ) = ⇀ (¹ᴿ (↽ (deflate⁺ (from₁ f))))
-from₁ (m⊗  f g) = ⇀ (⊗ᴿ (⇁ (deflate⁻ (from₁ f))) (⇁ (deflate⁻ (from₁ g))))
-from₁ (m⇒  f g) = ↼ (⇒ᴸ (⇁ (deflate⁻ (from₁ f))) (↽ (deflate⁺ (from₁ g))))
-from₁ (m⇐  f g) = ↼ (⇐ᴸ (⇁ (deflate⁻ (from₁ g))) (↽ (deflate⁺ (from₁ f))))
-from₁ (m⊕  f g) = ↼ (⊕ᴸ (↽ (deflate⁺ (from₁ f))) (↽ (deflate⁺ (from₁ g))))
-from₁ (m⇛  f g) = ⇀ (⇛ᴿ (⇁ (deflate⁻ (from₁ g))) (↽ (deflate⁺ (from₁ f))))
-from₁ (m⇚  f g) = ⇀ (⇚ᴿ (⇁ (deflate⁻ (from₁ f))) (↽ (deflate⁺ (from₁ g))))
-from₁ (r□◇ f  ) = r□◇ (from₁ f)
-from₁ (r◇□ f  ) = r◇□ (from₁ f)
-from₁ (r⁰₀ f  ) = r⁰₀ (from₁ f)
-from₁ (r₀⁰ f  ) = r₀⁰ (from₁ f)
-from₁ (r¹₁ f  ) = r¹₁ (from₁ f)
-from₁ (r₁¹ f  ) = r₁¹ (from₁ f)
-from₁ (r⇒⊗ f  ) = r⇒⊗ (from₁ f)
-from₁ (r⊗⇒ f  ) = r⊗⇒ (from₁ f)
-from₁ (r⇐⊗ f  ) = r⇐⊗ (from₁ f)
-from₁ (r⊗⇐ f  ) = r⊗⇐ (from₁ f)
-from₁ (r⇛⊕ f  ) = r⇛⊕ (from₁ f)
-from₁ (r⊕⇛ f  ) = r⊕⇛ (from₁ f)
-from₁ (r⊕⇚ f  ) = r⊕⇚ (from₁ f)
-from₁ (r⇚⊕ f  ) = r⇚⊕ (from₁ f)
-from₁ (d⇛⇐ f  ) = d⇛⇐ (from₁ f)
-from₁ (d⇛⇒ f  ) = d⇛⇒ (from₁ f)
-from₁ (d⇚⇒ f  ) = d⇚⇒ (from₁ f)
-from₁ (d⇚⇐ f  ) = d⇚⇐ (from₁ f)
 
-cancel : ∀ {J} → LG (From₁ (To J)) → LG J
-cancel {  X  ⊢  Y  } f =   (reinflate⁻ (reinflate⁺ f))
-cancel {[ A ]⊢  Y  } f = ↽ (reinflate⁻ (deflate⁺   f))
-cancel {  X  ⊢[ B ]} f = ⇁ (deflate⁻   (reinflate⁺ f))
+from↑ : ∀ {A B} → RM A ⊢ B → LG ⟦ A ⟧⁺ ⊢ ⟦ B ⟧⁻
+from↑ (ax     ) = ⇀ ax⁺
+from↑ (m□  f  ) = ↼ (□ᴸ (↽ (deflate⁺ (from↑ f))))
+from↑ (m◇  f  ) = ⇀ (◇ᴿ (⇁ (deflate⁻ (from↑ f))))
+from↑ (m₀  f  ) = ↼ (₀ᴸ (⇁ (deflate⁻ (from↑ f))))
+from↑ (m⁰  f  ) = ↼ (⁰ᴸ (⇁ (deflate⁻ (from↑ f))))
+from↑ (m₁  f  ) = ⇀ (₁ᴿ (↽ (deflate⁺ (from↑ f))))
+from↑ (m¹  f  ) = ⇀ (¹ᴿ (↽ (deflate⁺ (from↑ f))))
+from↑ (m⊗  f g) = ⇀ (⊗ᴿ (⇁ (deflate⁻ (from↑ f))) (⇁ (deflate⁻ (from↑ g))))
+from↑ (m⇒  f g) = ↼ (⇒ᴸ (⇁ (deflate⁻ (from↑ f))) (↽ (deflate⁺ (from↑ g))))
+from↑ (m⇐  f g) = ↼ (⇐ᴸ (⇁ (deflate⁻ (from↑ g))) (↽ (deflate⁺ (from↑ f))))
+from↑ (m⊕  f g) = ↼ (⊕ᴸ (↽ (deflate⁺ (from↑ f))) (↽ (deflate⁺ (from↑ g))))
+from↑ (m⇛  f g) = ⇀ (⇛ᴿ (⇁ (deflate⁻ (from↑ g))) (↽ (deflate⁺ (from↑ f))))
+from↑ (m⇚  f g) = ⇀ (⇚ᴿ (⇁ (deflate⁻ (from↑ f))) (↽ (deflate⁺ (from↑ g))))
+from↑ (r□◇ f  ) = r□◇ (from↑ f)
+from↑ (r◇□ f  ) = r◇□ (from↑ f)
+from↑ (r⁰₀ f  ) = r⁰₀ (from↑ f)
+from↑ (r₀⁰ f  ) = r₀⁰ (from↑ f)
+from↑ (r¹₁ f  ) = r¹₁ (from↑ f)
+from↑ (r₁¹ f  ) = r₁¹ (from↑ f)
+from↑ (r⇒⊗ f  ) = r⇒⊗ (from↑ f)
+from↑ (r⊗⇒ f  ) = r⊗⇒ (from↑ f)
+from↑ (r⇐⊗ f  ) = r⇐⊗ (from↑ f)
+from↑ (r⊗⇐ f  ) = r⊗⇐ (from↑ f)
+from↑ (r⇛⊕ f  ) = r⇛⊕ (from↑ f)
+from↑ (r⊕⇛ f  ) = r⊕⇛ (from↑ f)
+from↑ (r⊕⇚ f  ) = r⊕⇚ (from↑ f)
+from↑ (r⇚⊕ f  ) = r⇚⊕ (from↑ f)
+from↑ (d⇛⇐ f  ) = d⇛⇐ (from↑ f)
+from↑ (d⇛⇒ f  ) = d⇛⇒ (from↑ f)
+from↑ (d⇚⇒ f  ) = d⇚⇒ (from↑ f)
+from↑ (d⇚⇐ f  ) = d⇚⇐ (from↑ f)
+
 
 trans′ : ∀ {X A Y} → LG X ⊢[ A ] → LG [ A ]⊢ Y → LG X ⊢ Y
-trans′ f g = reinflate⁺ (reinflate⁻ (from₁ (RM.trans′ (to f) (to g))))
-
+trans′ f g = reinflate (from↑ (RM.trans′ (to f) (to g)))
 
 
 -- Inverted versions of structural rules which reintroduce
@@ -314,42 +315,43 @@ d⇚⇐′ : ∀ {A B C D} → LG · A ⊗ B · ⊢ · C ⊕ D · → LG · A �
 d⇚⇐′ f = ⇐ᴿ (⇚ᴸ (d⇚⇐ (⊗ᴸ′ (⊕ᴿ′ f))))
 
 
-From₂ : RMJ.Judgement → LGJ.Judgement
-From₂ (A ⊢ B) = · A · ⊢ · B ·
 
-from₂ : ∀ {J} → RM J → LG (From₂ J)
-from₂  ax       = ⇀ ax⁺
-from₂ (m□  f  ) = □ᴿ (↼ (□ᴸ (↽ (from₂ f))))
-from₂ (m◇  f  ) = ◇ᴸ (⇀ (◇ᴿ (⇁ (from₂ f))))
-from₂ (r□◇ f  ) = r□◇′ (from₂ f)
-from₂ (r◇□ f  ) = r◇□′ (from₂ f)
-from₂ (m⁰  f  ) = ⁰ᴿ (↼ (⁰ᴸ (⇁ (from₂ f))))
-from₂ (m₀  f  ) = ₀ᴿ (↼ (₀ᴸ (⇁ (from₂ f))))
-from₂ (r⁰₀ f  ) = r⁰₀′ (from₂ f)
-from₂ (r₀⁰ f  ) = r₀⁰′ (from₂ f)
-from₂ (m₁  f  ) = ₁ᴸ (⇀ (₁ᴿ (↽ (from₂ f))))
-from₂ (m¹  f  ) = ¹ᴸ (⇀ (¹ᴿ (↽ (from₂ f))))
-from₂ (r¹₁ f  ) = r¹₁′ (from₂ f)
-from₂ (r₁¹ f  ) = r₁¹′ (from₂ f)
-from₂ (m⊗  f g) = ⊗ᴸ (⇀ (⊗ᴿ (⇁ (from₂ f)) (⇁ (from₂ g))))
-from₂ (m⇒  f g) = ⇒ᴿ (↼ (⇒ᴸ (⇁ (from₂ f)) (↽ (from₂ g))))
-from₂ (m⇐  f g) = ⇐ᴿ (↼ (⇐ᴸ (⇁ (from₂ g)) (↽ (from₂ f))))
-from₂ (r⇒⊗ f  ) = r⇒⊗′ (from₂ f)
-from₂ (r⊗⇒ f  ) = r⊗⇒′ (from₂ f)
-from₂ (r⇐⊗ f  ) = r⇐⊗′ (from₂ f)
-from₂ (r⊗⇐ f  ) = r⊗⇐′ (from₂ f)
-from₂ (m⊕  f g) = ⊕ᴿ (↼ (⊕ᴸ (↽ (from₂ f)) (↽ (from₂ g))))
-from₂ (m⇛  f g) = ⇛ᴸ (⇀ (⇛ᴿ (⇁ (from₂ g)) (↽ (from₂ f))))
-from₂ (m⇚  f g) = ⇚ᴸ (⇀ (⇚ᴿ (⇁ (from₂ f)) (↽ (from₂ g))))
-from₂ (r⇛⊕ f  ) = r⇛⊕′ (from₂ f)
-from₂ (r⊕⇛ f  ) = r⊕⇛′ (from₂ f)
-from₂ (r⊕⇚ f  ) = r⊕⇚′ (from₂ f)
-from₂ (r⇚⊕ f  ) = r⇚⊕′ (from₂ f)
-from₂ (d⇛⇐ f  ) = d⇛⇐′ (from₂ f)
-from₂ (d⇛⇒ f  ) = d⇛⇒′ (from₂ f)
-from₂ (d⇚⇒ f  ) = d⇚⇒′ (from₂ f)
-from₂ (d⇚⇐ f  ) = d⇚⇐′ (from₂ f)
+from↓ : ∀ {A B} → RM A ⊢ B → LG · A · ⊢ · B ·
+from↓  ax       = ⇀ ax⁺
+from↓ (m□  f  ) = □ᴿ (↼ (□ᴸ (↽ (from↓ f))))
+from↓ (m◇  f  ) = ◇ᴸ (⇀ (◇ᴿ (⇁ (from↓ f))))
+from↓ (r□◇ f  ) = r□◇′ (from↓ f)
+from↓ (r◇□ f  ) = r◇□′ (from↓ f)
+from↓ (m⁰  f  ) = ⁰ᴿ (↼ (⁰ᴸ (⇁ (from↓ f))))
+from↓ (m₀  f  ) = ₀ᴿ (↼ (₀ᴸ (⇁ (from↓ f))))
+from↓ (r⁰₀ f  ) = r⁰₀′ (from↓ f)
+from↓ (r₀⁰ f  ) = r₀⁰′ (from↓ f)
+from↓ (m₁  f  ) = ₁ᴸ (⇀ (₁ᴿ (↽ (from↓ f))))
+from↓ (m¹  f  ) = ¹ᴸ (⇀ (¹ᴿ (↽ (from↓ f))))
+from↓ (r¹₁ f  ) = r¹₁′ (from↓ f)
+from↓ (r₁¹ f  ) = r₁¹′ (from↓ f)
+from↓ (m⊗  f g) = ⊗ᴸ (⇀ (⊗ᴿ (⇁ (from↓ f)) (⇁ (from↓ g))))
+from↓ (m⇒  f g) = ⇒ᴿ (↼ (⇒ᴸ (⇁ (from↓ f)) (↽ (from↓ g))))
+from↓ (m⇐  f g) = ⇐ᴿ (↼ (⇐ᴸ (⇁ (from↓ g)) (↽ (from↓ f))))
+from↓ (r⇒⊗ f  ) = r⇒⊗′ (from↓ f)
+from↓ (r⊗⇒ f  ) = r⊗⇒′ (from↓ f)
+from↓ (r⇐⊗ f  ) = r⇐⊗′ (from↓ f)
+from↓ (r⊗⇐ f  ) = r⊗⇐′ (from↓ f)
+from↓ (m⊕  f g) = ⊕ᴿ (↼ (⊕ᴸ (↽ (from↓ f)) (↽ (from↓ g))))
+from↓ (m⇛  f g) = ⇛ᴸ (⇀ (⇛ᴿ (⇁ (from↓ g)) (↽ (from↓ f))))
+from↓ (m⇚  f g) = ⇚ᴸ (⇀ (⇚ᴿ (⇁ (from↓ f)) (↽ (from↓ g))))
+from↓ (r⇛⊕ f  ) = r⇛⊕′ (from↓ f)
+from↓ (r⊕⇛ f  ) = r⊕⇛′ (from↓ f)
+from↓ (r⊕⇚ f  ) = r⊕⇚′ (from↓ f)
+from↓ (r⇚⊕ f  ) = r⇚⊕′ (from↓ f)
+from↓ (d⇛⇐ f  ) = d⇛⇐′ (from↓ f)
+from↓ (d⇛⇒ f  ) = d⇛⇒′ (from↓ f)
+from↓ (d⇚⇒ f  ) = d⇚⇒′ (from↓ f)
+from↓ (d⇚⇐ f  ) = d⇚⇐′ (from↓ f)
 
 
-eq : ∀ {A B} → (RM A ⊢ B) ⇔ (LG · A · ⊢ · B ·)
-eq = equivalence from₂ to
+eq↑ : ∀ {A B} → (RM A ⊢ B) ⇔ (LG ⟦ A ⟧⁺ ⊢ ⟦ B ⟧⁻)
+eq↑ = equivalence from↑ (to ∘ deflate)
+
+eq↓ : ∀ {A B} → (RM A ⊢ B) ⇔ (LG · A · ⊢ · B ·)
+eq↓ = equivalence from↓  to
