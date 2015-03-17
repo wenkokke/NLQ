@@ -46,6 +46,7 @@ open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base         Univ renam
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Trans        Univ as RM using ()
 
 
+
 -- Deflate a `Structure` into a `Type`
 ⟦_⟧ : ∀ {p} → Structure p → Type
 ⟦ · A · ⟧ = A
