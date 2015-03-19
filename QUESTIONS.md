@@ -1,5 +1,17 @@
 # Questions for Moortgat
 
+## March 26th
+
+ * Because in the structured version of **LG** there are many proofs
+   for every proof in **RM**, due to the gradient from unstructured to
+   maximally structured translations of formulas, I am wondering what
+   the benefit is of using **LG**. Does it net you better proof
+   search? I hardly think so. All I can see is that it forces some
+   residuation to take place before some introductions, but I think
+   that **RM** already offers such guarantees, as you can hardly
+   residuate an operator you have not introduced yet.
+
+
 ## March 17th
 
   * As mentioned in Bastenhof's thesis, in the presence of $A_{I+IV}$
@@ -7,6 +19,8 @@
     presence of both $A_{I+IV}$ *and* $C_{I+IV}$ they collapse into
     one negation. Does this imply that classically negation and
     co-negation are equivalent?
+
+    *Uhm...?*
 
   * Another point of note is that, when defined in terms of left and
     right (co-)implication, the negations can automatically interact
@@ -16,6 +30,9 @@
     perspective -- if they are desirable from a linguistic perspective
     at all?
 
+    *If they are desirable from a linguistic perspective at all then
+    yes.*
+
   * How would one neatly add the units into the focused system **LG**?
     The suggested laws (see below) would work just fine for the
     residuation-monotonicity system, but when one involves structures
@@ -24,6 +41,10 @@
     destructuring laws for units would have to be derived by throwing
     the unit out at a structural level, and then reintroducing it at a
     formula level.
+
+    *The idea is to add the rules at a structural level, and then add
+    structural rules for converting to logical rules. The inverse
+    rules should follow from transitivity.*
 
 ## March 12th
 
