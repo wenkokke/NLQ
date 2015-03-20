@@ -2,9 +2,6 @@
 module Base where
 
 
-import Text.Printf (printf)
-
-
 -- * Base data structures
 
 data Operator {-n :: Nat-} where
@@ -17,14 +14,13 @@ data Operator {-n :: Nat-} where
   deriving (Eq)
 
 data Formula :: * where
-  FEl  :: String -> Formula
-  FVar :: String -> Formula
+  FVar :: String   -> Formula
   FOp  :: Operator -> [Formula] -> Formula
   deriving (Eq)
 
 data Structure :: * where
-  SVar :: String  -> Structure
-  SEl  :: Formula -> Structure
+  SVar :: String   -> Structure
+  SEl  :: Formula  -> Structure
   SOp  :: Operator -> [Structure] -> Structure
   deriving (Eq)
 
@@ -38,7 +34,6 @@ data Judgement where
 -- * Show functions for judgements
 
 instance Show Formula where
-  showsPrec _ (FEl x)           = showString x
   showsPrec _ (FVar x)          = shows x
   showsPrec p (FOp Prod [x, y]) = showParen (p > 6) (showsPrec 6 x . showString " ⊗ " . showsPrec 6 y)
   showsPrec p (FOp ImpR [x, y]) = showParen (p > 5) (showsPrec 5 x . showString " ⇒ " . showsPrec 5 y)
@@ -48,8 +43,8 @@ instance Show Formula where
   showsPrec p (FOp SubR [x, y]) = showParen (p > 5) (showsPrec 5 x . showString " ⇛ " . showsPrec 5 y)
 
 instance Show Structure where
-  showsPrec _ (SEl x)           = shows x
   showsPrec _ (SVar x)          = shows x
+  showsPrec _ (SEl x)           = shows x
   showsPrec p (SOp Prod [x, y]) = showParen (p > 4) (showsPrec 4 x . showString " ⊗ " . showsPrec 4 y)
   showsPrec p (SOp ImpR [x, y]) = showParen (p > 3) (showsPrec 3 x . showString " ⇒ " . showsPrec 3 y)
   showsPrec p (SOp ImpL [x, y]) = showParen (p > 3) (showsPrec 3 x . showString " ⇐ " . showsPrec 3 y)
