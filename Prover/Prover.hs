@@ -1,13 +1,12 @@
 {-# LANGUAGE GADTs, RecordWildCards, FlexibleContexts #-}
-module Prover where
+module Prover.Prover where
 
+
+import Prover.Base
+import Prover.Match hiding ((++))
 
 import qualified Data.Set as S
 import Text.Printf (printf)
-import Debug.Trace (trace)
-
-import Base
-import Match hiding ((++))
 
 
 -- * Proof structures
@@ -55,6 +54,7 @@ search :: (VarClass f Int, UnifyClass f Int, MatchClass (f Int), SubstClass f In
       => f Int -> [Rule f Int] -> [Proof]
 search goal rules = go 1
   where
+    go 100   = error "searched up to level 100"
     go depth = let
       result = depthLimitedSearch depth goal rules
       in if null result

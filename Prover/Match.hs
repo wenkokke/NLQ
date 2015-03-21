@@ -1,11 +1,11 @@
 {-# LANGUAGE GADTs, MultiParamTypeClasses, FlexibleInstances, ScopedTypeVariables, FlexibleContexts, UndecidableInstances #-}
-module Match where
+module Prover.Match where
 
 
-import Base
+import Prover.Base
+
 import Text.Printf (printf)
 import Prelude hiding ((++))
-import Debug.Trace (trace)
 
 
 -- * Matching of terms
