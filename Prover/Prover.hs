@@ -3,8 +3,9 @@ module Prover.Prover where
 
 
 import Prover.Base
-import Prover.Match hiding ((++))
+import Prover.Unification hiding ((++),null)
 
+import Data.Maybe (mapMaybe)
 import qualified Data.Set as S
 import Text.Printf (printf)
 
@@ -31,32 +32,54 @@ instance Show Proof where
 -- * Proof search
 
 
-depthLimitedSearch
-  :: (VarClass f Int, UnifyClass f Int, MatchClass (f Int), SubstClass f Int)
-     => Int -> f Int -> [Rule f Int] -> [Proof]
-depthLimitedSearch depth goal = searchAcc depth (Just Nil) (goalSize, [goal], head)
+data Tree a where
+  Leaf ::       a  -> Tree a
+  Node :: [Tree a] -> Tree a
+
+
+solve :: (VarClass f Int, UnifyClass f Int, SubstClass f Int)
+         => Int -> f Int -> [Rule f Int] -> Tree Proof
+solve depth goal = solveAcc depth (goalSize, [goal], head)
   where
     goalSize = S.size (allVars goal)
 
-    searchAcc 0     _                     _  _     = [    ]
-    searchAcc _     Nothing               _  _     = [    ]
-    searchAcc _     (Just _) (_,     [] , p) _     = [p []]
-    searchAcc depth (Just s) (n, g : gs , p) rules = concatMap step rules
+    solveAcc 0                  _  _     = Node []
+    solveAcc _     (_,     [] , p) _     = Leaf (p [])
+    solveAcc depth (n, g : gs , p) rules = Node (mapMaybe step rules)
       where
-        step r@Rule{..} = searchAcc (depth - 1) mgu p' rules
-          where
-            conclusion' = update (+n) conclusion
-            mgu         = unifyAcc g conclusion' s
-            premises'   = map (update (+n)) premises
-            p'          = (n + ruleSize, premises' ++ gs, p . mkProof r)
+        step r@Rule{..} =
+          case unify g (update (+n) conclusion) of
+            Nothing  -> Nothing
+            Just mgu -> let
+              premises' = map (subst mgu . update (+n)) premises
+              p'        = (n + ruleSize, premises' ++ gs, p . mkProof r)
+              in Just (solveAcc (depth - 1) p' rules)
 
-search :: (VarClass f Int, UnifyClass f Int, MatchClass (f Int), SubstClass f Int)
-      => f Int -> [Rule f Int] -> [Proof]
-search goal rules = go 1
+
+dfs :: Tree Proof -> [Proof]
+dfs (Leaf x ) = [x]
+dfs (Node xs) = concatMap dfs xs
+
+
+bfs :: Tree a -> [a]
+bfs tree = go [tree]
   where
-    go 100   = error "searched up to level 100"
-    go depth = let
-      result = depthLimitedSearch depth goal rules
-      in if null result
-         then go (depth + 1)
-         else result
+    go :: [Tree a] -> [a]
+    go [] = []
+    go (Leaf x  : xxs) = x : go xxs
+    go (Node xs : xxs) = go (xxs ++ xs)
+
+
+dldfs :: Int -> Tree Proof -> [Proof]
+dldfs 0       _   = [ ]
+dldfs d (Leaf x ) = [x]
+dldfs d (Node xs) = concatMap (dldfs (d - 1)) xs
+
+
+iddfs :: Tree Proof -> [Proof]
+iddfs tree = go 5
+  where
+    go :: Int -> [Proof]
+    go d = if null ret then go (d + 1) else ret
+      where
+        ret = dldfs d tree

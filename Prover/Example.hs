@@ -6,7 +6,7 @@ import Prover.LambekGrishin
 
 
 sent :: Judgement String
-sent = john ·⊗· loves ·⊗· someone ⊢ ["S"]
+sent = john ·⊗· thinks ·⊗· mary ·⊗· left ⊢ ["S"]
 
 proofs :: [Proof]
-proofs = search (index sent) rules
+proofs = iddfs (solve maxBound (index sent) rules)
