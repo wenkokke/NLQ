@@ -11,6 +11,14 @@
    that **RM** already offers such guarantees, as you can hardly
    residuate an operator you have not introduced yet.
 
+ * Jeroen's code uses iterative deepening depth-first search to find
+   proofs in **LG**, and I cannot find a piece of code responsible for
+   determining the maximum search depth. Is there an algorithm which
+   can be used to determine the maximum proof size, given a sequent?
+   If not, it should be noted that Jeroen's code does not guarantee
+   that there aren't any proofs for a certain sequent of a deeper
+   depth.
+
 
 ## March 17th
 
