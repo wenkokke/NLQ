@@ -1,5 +1,5 @@
 {-# LANGUAGE GADTs, KindSignatures, RecordWildCards, MultiParamTypeClasses, FlexibleInstances, FlexibleContexts #-}
-module Base where
+module Prover.Base where
 
 
 import Control.Monad.Supply
