@@ -1,136 +1,91 @@
-{-# LANGUAGE GADTs, PolyKinds, DataKinds, KindSignatures, TypeOperators, FlexibleInstances, UndecidableInstances, MultiParamTypeClasses, OverlappingInstances, StandaloneDeriving #-}
+{-# LANGUAGE GADTs, KindSignatures, RecordWildCards, MultiParamTypeClasses, FlexibleInstances, FlexibleContexts #-}
 module Base where
 
 
--- * Base data structures
+import Control.Monad.Supply
+import Data.Set (Set)
+import qualified Data.Set as S
+import Data.Map (Map,(!))
+import qualified Data.Map as M
+import qualified Data.Foldable as F
 
-data Operator {-n :: Nat-} where
-  Prod :: Operator {-2-}
-  ImpR :: Operator {-2-}
-  ImpL :: Operator {-2-}
-  Plus :: Operator {-2-}
-  SubL :: Operator {-2-}
-  SubR :: Operator {-2-}
+
+-- * Term definition
+
+newtype Name n = Name String
   deriving (Eq)
 
-data Formula :: * where
-  FVar :: String   -> Formula
-  FOp  :: Operator -> [Formula] -> Formula
-  deriving (Eq)
+instance (Show n) => Show (Name n) where
+  show (Name x) = show x
 
-data Structure :: * where
-  SVar :: String   -> Structure
-  SEl  :: Formula  -> Structure
-  SOp  :: Operator -> [Structure] -> Structure
-  deriving (Eq)
 
-data Judgement where
-  Struct :: Structure -> Structure -> Judgement
-  FocusL :: Formula   -> Structure -> Judgement
-  FocusR :: Structure -> Formula   -> Judgement
+data Term (o :: *) (f :: * -> *) (n :: *) :: * where
+  Var :: !  n                     -> Term o f n
+  El  :: ! (f n)                  -> Term o f n
+  Op  :: !  o    -> ![Term o f n] -> Term o f n
   deriving (Eq)
 
 
--- * Show functions for judgements
+-- * Variable utilities
 
-instance Show Formula where
-  showsPrec _ (FVar x)          = shows x
-  showsPrec p (FOp Prod [x, y]) = showParen (p > 6) (showsPrec 6 x . showString " ⊗ " . showsPrec 6 y)
-  showsPrec p (FOp ImpR [x, y]) = showParen (p > 5) (showsPrec 5 x . showString " ⇒ " . showsPrec 5 y)
-  showsPrec p (FOp ImpL [x, y]) = showParen (p > 5) (showsPrec 5 x . showString " ⇐ " . showsPrec 5 y)
-  showsPrec p (FOp Plus [x, y]) = showParen (p > 6) (showsPrec 6 x . showString " ⊕ " . showsPrec 6 y)
-  showsPrec p (FOp SubL [x, y]) = showParen (p > 5) (showsPrec 5 x . showString " ⇚ " . showsPrec 5 y)
-  showsPrec p (FOp SubR [x, y]) = showParen (p > 5) (showsPrec 5 x . showString " ⇛ " . showsPrec 5 y)
+class VarClass f n where
+  update  :: (n -> m) -> f n -> f m
+  allVars :: (Ord n) => f n -> Set n
 
-instance Show Structure where
-  showsPrec _ (SVar x)          = shows x
-  showsPrec _ (SEl x)           = shows x
-  showsPrec p (SOp Prod [x, y]) = showParen (p > 4) (showsPrec 4 x . showString " ⊗ " . showsPrec 4 y)
-  showsPrec p (SOp ImpR [x, y]) = showParen (p > 3) (showsPrec 3 x . showString " ⇒ " . showsPrec 3 y)
-  showsPrec p (SOp ImpL [x, y]) = showParen (p > 3) (showsPrec 3 x . showString " ⇐ " . showsPrec 3 y)
-  showsPrec p (SOp Plus [x, y]) = showParen (p > 4) (showsPrec 4 x . showString " ⊕ " . showsPrec 4 y)
-  showsPrec p (SOp SubL [x, y]) = showParen (p > 3) (showsPrec 3 x . showString " ⇚ " . showsPrec 3 y)
-  showsPrec p (SOp SubR [x, y]) = showParen (p > 3) (showsPrec 3 x . showString " ⇛ " . showsPrec 3 y)
+instance VarClass Name n where
+  update  _ (Name x) = Name x
+  allVars   (Name _) = S.empty
 
-instance Show Judgement where
-  showsPrec _ (Struct x y) =                   shows x . showString   " ⊢ "   . shows y
-  showsPrec _ (FocusL x y) = showString "[ " . shows x . showString " ] ⊢ "   . shows y
-  showsPrec _ (FocusR x y) =                   shows x . showString   " ⊢ [ " . shows y . showString " ]"
+instance (VarClass f n) => VarClass (Term o f) n where
+  update u (Var  x ) = Var (u x)
+  update u (El   x ) = El (update u x)
+  update u (Op f xs) = Op f (map (update u) xs)
+
+  allVars  (Var  x ) = S.singleton x
+  allVars  (El   x ) = allVars x
+  allVars  (Op _ xs) = foldr (\x y -> S.union (allVars x) y) S.empty xs
 
 
--- * Conversions to `Formula`, `Structure` and `Judgement`
+mkTable :: (Ord n) => Set n -> Map n Int
+mkTable xs = evalSupply (F.foldrM (\x m -> supply >>= \i -> return (M.insert x i m)) M.empty xs) [1..]
 
-isFormula :: String -> Bool
-isFormula x = x `elem` ["A","B","C","D"]
-
-isStructure :: String -> Bool
-isStructure x = x `elem` ["X","Y","Z","W"]
-
-class IsFormula   a where toFormula   :: a -> Formula
-class IsStructure a where toStructure :: a -> Structure
-class IsJudgement (x :: *) (y :: *) where (⊢) :: x -> y -> Judgement
-
-instance IsFormula   Formula   where toFormula   = id
-instance IsFormula   String    where toFormula   = FVar
-instance IsStructure Structure where toStructure = id
-instance IsStructure Formula   where toStructure = SEl
-instance IsStructure String    where toStructure x
-                                       | isFormula   x = SEl (FVar x)
-                                       | isStructure x = SVar x
-
-instance IsJudgement Structure Structure  where x ⊢ y = Struct (toStructure x) (toStructure y)
-instance IsJudgement Formula   Formula    where x ⊢ y = Struct (toStructure x) (toStructure y)
-instance IsJudgement String    String     where x ⊢ y = Struct (toStructure x) (toStructure y)
-instance IsJudgement Structure Formula    where x ⊢ y = Struct (toStructure x) (toStructure y)
-instance IsJudgement Formula   Structure  where x ⊢ y = Struct (toStructure x) (toStructure y)
-instance IsJudgement Structure String     where x ⊢ y = Struct (toStructure x) (toStructure y)
-instance IsJudgement String    Structure  where x ⊢ y = Struct (toStructure x) (toStructure y)
-instance IsJudgement Formula   String     where x ⊢ y = Struct (toStructure x) (toStructure y)
-instance IsJudgement String    Formula    where x ⊢ y = Struct (toStructure x) (toStructure y)
-
-instance IsJudgement [Formula] Structure where x ⊢ y = FocusL (toFormula (head x)) (toStructure y)
-instance IsJudgement Structure [Formula] where x ⊢ y = FocusR (toStructure x) (toFormula (head y))
-instance IsJudgement [Formula] Formula   where x ⊢ y = FocusL (toFormula (head x)) (toStructure y)
-instance IsJudgement Formula   [Formula] where x ⊢ y = FocusR (toStructure x) (toFormula (head y))
-instance IsJudgement [Formula] String    where x ⊢ y = FocusL (toFormula (head x)) (toStructure y)
-instance IsJudgement String    [Formula] where x ⊢ y = FocusR (toStructure x) (toFormula (head y))
-
-instance IsJudgement [String]  Structure where x ⊢ y = FocusL (toFormula (head x)) (toStructure y)
-instance IsJudgement Structure [String]  where x ⊢ y = FocusR (toStructure x) (toFormula (head y))
-instance IsJudgement [String]  Formula   where x ⊢ y = FocusL (toFormula (head x)) (toStructure y)
-instance IsJudgement Formula   [String]  where x ⊢ y = FocusR (toStructure x) (toFormula (head y))
-instance IsJudgement [String]  String    where x ⊢ y = FocusL (toFormula (head x)) (toStructure y)
-instance IsJudgement String    [String]  where x ⊢ y = FocusR (toStructure x) (toFormula (head y))
+index :: (Ord n, VarClass f n) => f n -> f Int
+index x = update (table !) x
+  where
+    table = mkTable (allVars x)
 
 
--- * Syntactic sugar for writing `Formula`, `Structure` and `Judgement`
+-- * Rule definition
 
-infixr 6 ⊗
-infixr 6 ⊕
-infixr 5 ⇒
-infixr 5 ⇛
-infixl 5 ⇐
-infixl 5 ⇚
-infixr 4 ·⊗·
-infixr 4 ·⊕·
-infixr 3 ·⇒·
-infixr 3 ·⇛·
-infixl 3 ·⇐·
-infixl 3 ·⇚·
-infix 2 ⊢
+type RuleName = String
 
-(⊗), (⇒), (⇐), (⊕), (⇚), (⇛) :: (IsFormula x, IsFormula y) => x -> y -> Formula
-x ⊗ y = FOp Prod [toFormula x, toFormula y]
-x ⇒ y = FOp ImpR [toFormula x, toFormula y]
-x ⇐ y = FOp ImpL [toFormula x, toFormula y]
-x ⊕ y = FOp Plus [toFormula x, toFormula y]
-x ⇚ y = FOp SubL [toFormula x, toFormula y]
-x ⇛ y = FOp SubR [toFormula x, toFormula y]
+data Rule f n = Rule
+  { name       :: !RuleName
+  , ruleSize   :: !Int
+  , premises   :: ![f n]
+  , conclusion :: !(f n)
+  }
+  deriving (Eq)
 
-(·⊗·), (·⇒·), (·⇐·), (·⊕·), (·⇚·), (·⇛·) :: (IsStructure x, IsStructure y) => x -> y -> Structure
-x ·⊗· y = SOp Prod [toStructure x, toStructure y]
-x ·⇒· y = SOp ImpR [toStructure x, toStructure y]
-x ·⇐· y = SOp ImpL [toStructure x, toStructure y]
-x ·⊕· y = SOp Plus [toStructure x, toStructure y]
-x ·⇚· y = SOp SubL [toStructure x, toStructure y]
-x ·⇛· y = SOp SubR [toStructure x, toStructure y]
+instance (Show (f n), Show n) => Show (Rule f n) where
+  showsPrec _ Rule{..} =
+      showString "( "
+    . showList premises
+    . showString " ⟶ "
+    . shows conclusion
+    . showString " ) \""
+    . showString name
+    . showString "\"\n"
+
+
+-- * Rule construction syntax
+
+infixr 1 ⟶
+
+(⟶) :: (VarClass f n, Ord n) => [f n] -> f n -> String -> Rule f Int
+(⟶) p c n = Rule { name = n , ruleSize = ruleSize, premises = map index p , conclusion = index c }
+  where
+    ruleVars = S.union (allVars c) (foldr (\x y -> S.union (allVars x) y) S.empty p)
+    ruleSize = S.size ruleVars
+    table    = mkTable ruleVars
+    index    = update (table !)
