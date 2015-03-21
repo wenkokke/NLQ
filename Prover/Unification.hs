@@ -1,28 +1,11 @@
 {-# LANGUAGE GADTs, MultiParamTypeClasses, FlexibleInstances, ScopedTypeVariables, FlexibleContexts, UndecidableInstances #-}
-module Prover.Match where
+module Prover.Unification where
 
 
 import Prover.Base
 
 import Text.Printf (printf)
-import Prelude hiding ((++))
-
-
--- * Matching of terms
-
-class MatchClass a where
-  match :: a -> a -> Bool
-
-instance MatchClass (Name n) where
-  match = (==)
-
-instance (Eq o, MatchClass (f n)) => MatchClass (Term o f n) where
-  match (Var  _)  _         = True
-  match _         (Var  _ ) = True
-  match (El   x ) (El   y ) = x `match` y
-  match (Op f xs) (Op g ys) = f == g && and (zipWith match xs ys)
-  match _          _          = False
-
+import Prelude hiding ((++),null)
 
 
 -- * Substitutions
@@ -44,10 +27,11 @@ instance (Show (Subst f n), Show (Term o f n), Show n) => Show (Subst (Term o f)
   show (Snoc (Down Nil) x t) = printf "[%s ⟼ %s]"   (show x) (show t)
   show (Snoc       acc  x t) = printf "[%s ⟼ %s]%s" (show x) (show t) (show acc)
 
-empty :: Subst f n -> Bool
-empty Nil      = True
-empty (Down s) = empty s
-empty _        = False
+
+null :: Subst f n -> Bool
+null Nil      = True
+null (Down s) = null s
+null _        = False
 
 down :: Subst (Term o f) n -> Subst f n
 down = fst . split
@@ -128,5 +112,5 @@ instance (Eq n, Eq o, UnifyClass f n, SubstClass f n) => UnifyClass (Term o f) n
   unifyAcc       x   (Var  y ) Nil = Just (Snoc Nil y x)
   unifyAcc (Var  x )       y   Nil = Just (Snoc Nil x y)
   unifyAcc       x         y   acc
-    | empty acc = Nothing
+    | null acc  = Nothing
     | otherwise = fmap (acc ++) (unifyAcc (subst acc x) (subst acc y) Nil)
