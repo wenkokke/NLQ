@@ -1,0 +1,113 @@
+\begin{thebibliography}{}
+
+\bibitem[Bastenhof, 2013]{bastenhof2013}
+Bastenhof, A. (2013).
+\newblock Categorial symmetry.
+
+\bibitem[Curien and Herbelin, 2000]{curien2000}
+Curien, P.-L. and Herbelin, H. (2000).
+\newblock The duality of computation.
+\newblock {\em SIGPLAN Not.}, 35(9):233--243.
+
+\bibitem[de~Groote, 1994]{degroote1994}
+de~Groote, P. (1994).
+\newblock A cps-translation of the λµ-calculus.
+
+\bibitem[de~Groote, 2001]{degroote2001}
+de~Groote, P. (2001).
+\newblock Towards abstract categorial grammars.
+\newblock In {\em Association for Computational Linguistics, 39th Annual
+  Meeting and 10th Conference of the European Chapter, Proceedings of the
+  Conference}, pages 148--155.
+
+\bibitem[\'Erdi, 2013]{erdi2013}
+\'Erdi, G. (2013).
+\newblock Simply typed lambda calculus in agda, without shortcuts.
+\newblock
+  \url{http://gergo.erdi.hu/blog/2013-05-01-simply_typed_lambda_calculus_in_agda,_without_shortcuts/}.
+\newblock Accessed: 2014-01-28.
+
+\bibitem[Girard, 1991]{girard1991}
+Girard, J.-Y. (1991).
+\newblock A new constructive logic: classic logic.
+\newblock {\em Mathematical Structures in Computer Science}, 1:255--296.
+
+\bibitem[Kiselyov et~al., 2004]{kiselyov2004}
+Kiselyov, O., L\"{a}mmel, R., and Schupke, K. (2004).
+\newblock Strongly typed heterogeneous collections.
+\newblock In {\em Proceedings of the 2004 ACM SIGPLAN Workshop on Haskell},
+  Haskell '04, pages 96--107, New York, NY, USA. ACM.
+
+\bibitem[Lindblad and Benke, 2006]{lindblad2006}
+Lindblad, F. and Benke, M. (2006).
+\newblock A tool for automated theorem proving in agda.
+\newblock In {\em Proceedings of the 2004 International Conference on Types for
+  Proofs and Programs}, TYPES'04, pages 154--169, Berlin, Heidelberg.
+  Springer-Verlag.
+
+\bibitem[Martin-L\"{o}f, 1984]{martinlof1984}
+Martin-L\"{o}f, P. (1984).
+\newblock Intuitionistic type theory.
+
+\bibitem[Mazzoli, 2013]{mazzoli2013}
+Mazzoli, F. (2013).
+\newblock Agda by example: \textlambda-calculus.
+\newblock \url{http://mazzo.li/posts/Lambda.html}.
+\newblock Accessed: 2014-01-28.
+
+\bibitem[Moortgat, 2009]{moortgat2009}
+Moortgat, M. (2009).
+\newblock Symmetric categorial grammar.
+\newblock {\em Journal of Philosophical Logic}, 38(6):681--710.
+
+\bibitem[Moortgat and Moot, 2013]{moortgat2013}
+Moortgat, M. and Moot, R. (2013).
+\newblock Proofs nets and the categorial flow of information.
+
+\bibitem[Moortgat and Oehrle, 1999]{moortgat1999}
+Moortgat, M. and Oehrle, R. (1999).
+\newblock Proof nets for the grammatical base logic.
+\newblock {\em Dynamic perspectives in logic and linguistics, Roma, Bulzoni},
+  pages 131--143.
+
+\bibitem[Moot and Retor{\'{e}}, 2012]{moot2012}
+Moot, R. and Retor{\'{e}}, C. (2012).
+\newblock {\em The Logic of Categorial Grammars}.
+\newblock Springer Berlin Heidelberg.
+
+\bibitem[Mu, 2008]{mu2008}
+Mu, S.-C. (2008).
+\newblock Typed \textlambda-calculus interpreter in agda.
+\newblock
+  \url{http://www.iis.sinica.edu.tw/~scm/2008/typed-lambda-calculus-interprete/}.
+\newblock Accessed: 2014-01-28.
+
+\bibitem[Norell, 2009]{norell2009}
+Norell, U. (2009).
+\newblock Dependently typed programming in agda.
+\newblock In {\em Proceedings of the 4th International Workshop on Types in
+  Language Design and Implementation}, TLDI '09, pages 1--2, New York, NY, USA.
+  ACM.
+
+\bibitem[Parigot, 1992]{parigot1992}
+Parigot, M. (1992).
+\newblock λμ-calculus: An algorithmic interpretation of classical natural
+  deduction.
+\newblock In Voronkov, A., editor, {\em Logic Programming and Automated
+  Reasoning}, volume 624 of {\em Lecture Notes in Computer Science}, pages
+  190--201. Springer Berlin Heidelberg.
+
+\bibitem[Restall, 2011]{restall2011}
+Restall, G. (2011).
+\newblock Substructural logics.
+\newblock In Zalta, E.~N., editor, {\em The Stanford Encyclopedia of
+  Philosophy}. Summer 2011 edition.
+
+\bibitem[Wadler, 1993]{wadler1993}
+Wadler, P.~L. (1993).
+\newblock {A Taste of Linear Logic}.
+\newblock In {\em Proceedings of the 18th International Symposium on
+  Mathematical Foundations of Computer Science, Gd\'ansk}, New York, NY.
+  Springer-Verlag.
+
+\end{thebibliography}
