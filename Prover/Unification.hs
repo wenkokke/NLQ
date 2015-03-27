@@ -12,6 +12,11 @@ import Prelude hiding ((++),null)
 
 data Subst f n where
   Nil  :: Subst f n
+  Cons :: (n -> Term o f n) -> Subst f n -> Subst (Term o f) n
+
+{-
+data Subst f n where
+  Nil  :: Subst f n
   Down :: Subst f n             -> Subst (Term o f) n
   Snoc :: Subst f n -> n -> f n -> Subst         f  n
 
@@ -114,3 +119,4 @@ instance (Eq n, Eq o, UnifyClass f n, SubstClass f n) => UnifyClass (Term o f) n
   unifyAcc       x         y   acc
     | null acc  = Nothing
     | otherwise = fmap (acc ++) (unifyAcc (subst acc x) (subst acc y) Nil)
+-}
