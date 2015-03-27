@@ -214,8 +214,6 @@ makeLambek  = Mapping
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon" </> "Judgement" </> "Context" </> "Polarised.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Base.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon" </> "Base.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Derivation.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon" </> "Derivation.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Origin.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon" </> "Origin.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Trans.agda"
