@@ -7,7 +7,9 @@
   ]{hyperref}
 \usepackage{natbib}
 \usepackage{ifthen}
+\usepackage{enumitem}
 \renewcommand{\hscodestyle}{\small}
+%\usepackage{fullpage}
 
 
 % use Wouter's setup for notes (extended with ``hidden'')
@@ -49,18 +51,81 @@
 % define various which I'll be sure to use symbols
 \usepackage{textgreek}
 \usepackage{stmaryrd}
-\usepackage{relsize}
+\usepackage{scalerel}
+\usepackage{pict2e}
+\usepackage{picture}
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
-\DeclareUnicodeCharacter{8656}{$\slash$}
-\DeclareUnicodeCharacter{8658}{$\backslash$}
+
+\newcommand{\varslash}{%
+  \mathbin{\mathpalette\pictslash{{0}{1}}}%
+}
+\newcommand{\varbslash}{%
+  \mathbin{\mathpalette\pictslash{{1}{-1}}}%
+}
+
+\makeatletter
+\newcommand{\pictslash}[2]{%
+  \vcenter{%
+    \sbox0{$\m@th#1\varobslash$}\dimen0=.55\wd0
+    \hbox to\wd 0{%
+      \hfil\pictslash@aux#2\hfil
+    }%
+  }%
+}
+\newcommand{\pictslash@aux}[2]{%
+    \begin{picture}(\dimen0,\dimen0)
+    \roundcap
+    \linethickness{.15ex}
+    \put(0,#1\dimen0){\line(1,#2){\dimen0}}
+    \end{picture}%
+}
+\newcommand{\pictholer}[1]{%
+  \vcenter{%
+    \sbox0{$#1$}\dimen0=.1\wd0
+    \hbox to\dimen0{%
+      \begin{picture}(\dimen0,\ht0)
+      \linethickness{.15ex}
+      \put(0,0.333\ht0){\line(1, 1){.18\ht0}}
+      \put(0,0.666\ht0){\line(1,-1){.18\ht0}}
+      \end{picture}%
+    }%
+  }%
+}
+\newcommand{\pictholel}[1]{%
+  \vcenter{%
+    \sbox0{$#1$}\dimen0=.1\wd0
+    \hbox to\dimen0{%
+      \begin{picture}(\dimen0,\ht0)
+      \linethickness{.15ex}
+      \put(0,0.333\ht0){\line(-1, 1){.18\ht0}}
+      \put(0,0.666\ht0){\line(-1,-1){.18\ht0}}
+      \end{picture}%
+    }%
+  }%
+}
+\makeatother
+
+\newcommand{\holer}[1]{\hphantom{\pictholer{#1}}#1\pictholer{#1}}
+\newcommand{\holel}[1]{\pictholel{#1}#1\hphantom{\pictholer{#1}}}
+
+\DeclareUnicodeCharacter{8656}{$\varslash$}
+\DeclareUnicodeCharacter{8658}{$\varbslash$}
 \DeclareUnicodeCharacter{8666}{$\varoslash$}
 \DeclareUnicodeCharacter{8667}{$\varobslash$}
-\DeclareUnicodeCharacter{7478}{$^{J}$}
+\DeclareUnicodeCharacter{7478}{$$}% drop superscript J
 \DeclareUnicodeCharacter{7480}{$^{L}$}
-\DeclareUnicodeCharacter{7486}{$^{P}$}
+\DeclareUnicodeCharacter{7486}{$$}% drop superscript P
 \DeclareUnicodeCharacter{7487}{$^{R}$}
+\DeclareUnicodeCharacter{8314}{$^{+}$}
+\DeclareUnicodeCharacter{8315}{$^{-}$}
 
 
 % customise the appearance of itemise bullets
 \def\myitem{\item[$\circ$]}
+
+% customise the apprearance of lhs2TeX code blocks
+\renewcommand\hscodestyle{%
+   \setlength\leftskip{.5cm}%
+   \footnotesize
+}

@@ -16,13 +16,13 @@ end
 desc "Compile the paper"
 file 'main.pdf' => BibTeXFiles + FormatFiles + LaTeXFiles + LiterateFiles.ext('tex') do
   runCmd "pdflatex main.tex"
-  if $?.success?
-    runCmd "bibtex main"
-    if $?.success?
-      runCmd "pdflatex main.tex"
-      runCmd "pdflatex main.tex"
-    end
-  end
+  #if $?.success?
+  #  runCmd "bibtex main"
+  #  if $?.success?
+  #    runCmd "pdflatex main.tex"
+  #    runCmd "pdflatex main.tex"
+  #  end
+  #end
 end
 
 
@@ -57,7 +57,7 @@ def runCmd(cmd)
 end
 
 # Regular expression that filters implicit arguments from Agda source.
-RE_IMPLICIT = /(?<!record)(?<!λ)\s*(∀\s*)?\{([^\}]*?)\}(\s*→)?/
+RE_IMPLICIT = /(?<!record)(?<!λ)\s*(∀\s*)?\{([^=^\}]*)\}(\s*→)?/
 
 # Strip implicits from literate Agda source.
 def strip_implicits(src)
@@ -65,7 +65,6 @@ def strip_implicits(src)
     "\\begin{code}#{ $1.gsub(RE_IMPLICIT,'') }\\end{code}"
   end
 end
-
 
 CLOBBER.include('main.pdf')
 CLEAN.include(['*.blg', '*.out', '*.agdai', '*.aux', '*.implicit.tex', '*.ptb', '*.bbl', 'main.tex', '*.log'])
