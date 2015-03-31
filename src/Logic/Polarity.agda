@@ -15,6 +15,11 @@ data Polarity : Set where
   - : Polarity
 
 
+~_ : Polarity → Polarity
+~ + = -
+~ - = +
+
+
 _≟-Polarity_ : (p₁ p₂ : Polarity) → Dec (p₁ ≡ p₂)
 + ≟-Polarity + = yes refl
 - ≟-Polarity - = yes refl

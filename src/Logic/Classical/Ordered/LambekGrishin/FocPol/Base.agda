@@ -13,7 +13,7 @@ open import Relation.Nullary.Decidable                      using (True; toWitne
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_; refl; sym; cong)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Normal.Base {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.FocPol.Base {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Polarity

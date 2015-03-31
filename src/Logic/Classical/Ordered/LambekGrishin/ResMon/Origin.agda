@@ -20,7 +20,7 @@
 
 
 open import Function                                   using (id; flip; _∘_)
-open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; cong)
+open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym; subst)
 
 
 module Logic.Classical.Ordered.LambekGrishin.ResMon.Origin {ℓ} (Univ : Set ℓ) where
@@ -28,27 +28,23 @@ module Logic.Classical.Ordered.LambekGrishin.ResMon.Origin {ℓ} (Univ : Set ℓ
 
 open import Logic.Polarity
 open import Logic.Classical.Ordered.LambekGrishin.Type                               Univ as T
-open import Logic.Classical.Ordered.LambekGrishin.Type.Context                       Univ as TC
-open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised             Univ as TCP hiding (Polarised)
+open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised             Univ as TC
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement                   Univ
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.Context           Univ as JC
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.Context.Polarised Univ as JCP
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.Context.Polarised Univ as JC
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base                        Univ as LGB
-
-
-open  JC.Simple renaming (_[_] to _[_]ᴶ)
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Symmetry                    Univ
 
 
 module el where
 
-  data Origin {J B} (J⁺ : Polarised + J) (f : LG J [ el B ]ᴶ) : Set ℓ where
+  data Origin {B} ( J : Contextᴶ + ) (f : LG J [ el B ]ᴶ) : Set ℓ where
        origin : (f′ : ∀ {G} → LG G ⊢ el B → LG J [ G ]ᴶ)
               → (pr : f ≡ f′ ax)
-              → Origin J⁺ f
+              → Origin J f
 
 
   mutual
-    viewOrigin : ∀ {J B} (J⁺ : Polarised + J) (f : LG J [ el B ]ᴶ) → Origin J⁺ f
+    viewOrigin : ∀ {B} ( J : Contextᴶ + ) (f : LG J [ el B ]ᴶ) → Origin J f
     viewOrigin ([] <⊢ ._)       ax        = origin id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -247,25 +243,26 @@ module el where
     viewOrigin (._ ⊢> (A <⇐ B)) (r₁¹ f)   = go (₁> (A <⇐ B) <⊢ _)     f r₁¹
 
     private
-      go : ∀ {I J B}
-         → (I⁺ : Polarised + I) (f : LG I [ el B ]ᴶ)
-         → {J⁺ : Polarised + J} (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
-         → Origin J⁺ (g f)
-      go I⁺ f {J⁺} g with viewOrigin I⁺ f
+      go : ∀ {B}
+         → ( I : Contextᴶ + ) (f : LG I [ el B ]ᴶ)
+         → { J : Contextᴶ + } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → Origin J (g f)
+      go I f {J} g with viewOrigin I f
       ... | origin f′ pr rewrite pr = origin (g ∘ f′) refl
+
 
 
 module □ where
 
-  data Origin {J B} (J⁺ : Polarised + J) (f : LG J [ □ B ]ᴶ) : Set ℓ where
+  data Origin {B} ( J : Contextᴶ + ) (f : LG J [ □ B ]ᴶ) : Set ℓ where
        origin : ∀ {A}
                 → (h : LG B ⊢ A)
                 → (f′ : ∀ {G} → LG G ⊢ □ A → LG J [ G ]ᴶ)
                 → (pr : f ≡ f′ (m□ h))
-                → Origin J⁺ f
+                → Origin J f
 
   mutual
-    viewOrigin : ∀ {J B} (J⁺ : Polarised + J) (f : LG J [ □ B ]ᴶ) → Origin J⁺ f
+    viewOrigin : ∀ {B} ( J : Contextᴶ + ) (f : LG J [ □ B ]ᴶ) → Origin J f
     viewOrigin ([] <⊢ ._)       (m□  f)   = origin f id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -464,26 +461,26 @@ module □ where
     viewOrigin (._ ⊢> (A <⇐ B)) (r₁¹ f)   = go (₁> (A <⇐ B) <⊢ _)     f r₁¹
 
     private
-      go : ∀ {I J B}
-         → (I⁺ : Polarised + I) (f : LG I [ □ B ]ᴶ)
-         → {J⁺ : Polarised + J} (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
-         → Origin J⁺ (g f)
-      go I⁺ f {J⁺} g with viewOrigin I⁺ f
+      go : ∀ {B}
+         → ( I : Contextᴶ + ) (f : LG I [ □ B ]ᴶ)
+         → { J : Contextᴶ + } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → Origin J (g f)
+      go I f {J} g with viewOrigin I f
       ... | origin h f′ pr rewrite pr = origin h (g ∘ f′) refl
 
 
 
 module ₀ where
 
-  data Origin {J B} (J⁺ : Polarised + J) (f : LG J [ ₀ B ]ᴶ) : Set ℓ where
+  data Origin {B} ( J : Contextᴶ + ) (f : LG J [ ₀ B ]ᴶ) : Set ℓ where
        origin : ∀ {A}
               → (h  : LG A ⊢ B)
               → (f′ : ∀ {G} → LG G ⊢ ₀ A → LG J [ G ]ᴶ)
               → (pr : f ≡ f′ (m₀ h))
-              → Origin J⁺ f
+              → Origin J f
 
   mutual
-    viewOrigin : ∀ {J B} (J⁺ : Polarised + J) (f : LG J [ ₀ B ]ᴶ) → Origin J⁺ f
+    viewOrigin : ∀ {B} ( J : Contextᴶ + ) (f : LG J [ ₀ B ]ᴶ) → Origin J f
     viewOrigin ([] <⊢ ._)       (m₀  f)   = origin f id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -682,26 +679,44 @@ module ₀ where
     viewOrigin (._ ⊢> (A <⇐ B)) (r₁¹ f)   = go (₁> (A <⇐ B) <⊢ _)     f r₁¹
 
     private
-      go : ∀ {I J B}
-         → (I⁺ : Polarised + I) (f : LG I [ ₀ B ]ᴶ)
-         → {J⁺ : Polarised + J} (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
-         → Origin J⁺ (g f)
-      go I⁺ f {J⁺} g with viewOrigin I⁺ f
+      go : ∀ {B}
+         → ( I : Contextᴶ + ) (f : LG I [ ₀ B ]ᴶ)
+         → { J : Contextᴶ + } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → Origin J (g f)
+      go I f {J} g with viewOrigin I f
       ... | origin h f′ pr rewrite pr = origin h (g ∘ f′) refl
 
 
 
 module ⁰ where
 
-  data Origin {J B} (J⁺ : Polarised + J) (f : LG J [ B ⁰ ]ᴶ) : Set ℓ where
+  data Origin {B} ( J : Contextᴶ + ) (f : LG J [ B ⁰ ]ᴶ) : Set ℓ where
        origin : ∀ {A}
               → (h  : LG A ⊢ B)
               → (f′ : ∀ {G} → LG G ⊢ A ⁰ → LG J [ G ]ᴶ)
               → (pr : f ≡ f′ (m⁰ h))
-              → Origin J⁺ f
+              → Origin J f
 
+--viewOrigin : ∀ {B} ( J : Contextᴶ + ) (f : LG J [ B ⁰ ]ᴶ) → Origin J f
+--viewOrigin {B} J f = o⋈⋈
+--  where
+--    f⋈ : LG (J ⋈ᴶ′) [ ₀ (B ⋈) ]ᴶ
+--    f⋈ rewrite sym (⋈ᴶ-over-[]ᴶ J {B ⁰}) = lemma-⋈ f
+--    o⋈⋈ : Origin J f
+--    o⋈⋈ with ₀.viewOrigin (J ⋈ᴶ′) f⋈
+--    o⋈⋈ | ₀.origin {A} h f′ pr = origin h⋈ f′⋈ {!pr!}
+--      where
+--        h⋈ : LG A ⋈ ⊢ B
+--        h⋈ = subst (λ B → LG A ⋈ ⊢ B) (⋈-inv B) (lemma-⋈ h)
+--        f′⋈ : ∀ {G} → LG G ⊢ (A ⋈) ⁰ → LG J [ G ]ᴶ
+--        f′⋈ {G} x = subst LG_ (⋈ᴶ-inv (J [ G ]ᴶ)) (lemma-⋈ [f′x]⋈)
+--          where
+--            x⋈ : LG G ⋈ ⊢ ₀ A
+--            x⋈ = subst (λ A → LG G ⋈ ⊢ ₀ A) (⋈-inv A) (lemma-⋈ x)
+--            [f′x]⋈ : LG (J [ G ]ᴶ) ⋈ᴶ
+--            [f′x]⋈ = subst LG_ (sym (⋈ᴶ-over-[]ᴶ J {G})) (f′ x⋈)
   mutual
-    viewOrigin : ∀ {J B} (J⁺ : Polarised + J) (f : LG J [ B ⁰ ]ᴶ) → Origin J⁺ f
+    viewOrigin : ∀ {B} ( J : Contextᴶ + ) (f : LG J [ B ⁰ ]ᴶ) → Origin J f
     viewOrigin ([] <⊢ ._)       (m⁰  f)   = origin f id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -901,26 +916,26 @@ module ⁰ where
 
 
     private
-      go : ∀ {I J B}
-         → (I⁺ : Polarised + I) (f : LG I [ B ⁰ ]ᴶ)
-         → {J⁺ : Polarised + J} (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
-         → Origin J⁺ (g f)
-      go I⁺ f {J⁺} g with viewOrigin I⁺ f
+      go : ∀ {B}
+         → ( I : Contextᴶ + ) (f : LG I [ B ⁰ ]ᴶ)
+         → { J : Contextᴶ + } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → Origin J (g f)
+      go I f {J} g with viewOrigin I f
       ... | origin h f′ pr rewrite pr = origin h (g ∘ f′) refl
 
 
 
 module ⊕ where
 
-  data Origin {J B C} (J⁺ : Polarised + J) (f : LG J [ B ⊕ C ]ᴶ) : Set ℓ where
+  data Origin {B C} ( J : Contextᴶ + ) (f : LG J [ B ⊕ C ]ᴶ) : Set ℓ where
        origin : ∀ {E F}
                 → (h₁ : LG B ⊢ E) (h₂ : LG C ⊢ F)
                 → (f′ : ∀ {G} → LG G ⊢ E ⊕ F → LG J [ G ]ᴶ)
                 → (pr : f ≡ f′ (m⊕ h₁ h₂))
-                → Origin J⁺ f
+                → Origin J f
 
   mutual
-    viewOrigin : ∀ {J B C} (J⁺ : Polarised + J) (f : LG J [ B ⊕ C ]ᴶ) → Origin J⁺ f
+    viewOrigin : ∀ {B C} ( J : Contextᴶ + ) (f : LG J [ B ⊕ C ]ᴶ) → Origin J f
     viewOrigin ([] <⊢ ._)       (m⊕  f g) = origin f g id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -1119,26 +1134,26 @@ module ⊕ where
     viewOrigin (._ ⊢> (A <⇐ B)) (r₁¹ f)   = go (₁> (A <⇐ B) <⊢ _)     f r₁¹
 
     private
-      go : ∀ {I J B C}
-         → (I⁺ : Polarised + I) (f : LG I [ B ⊕ C ]ᴶ)
-         → {J⁺ : Polarised + J} (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
-         → Origin J⁺ (g f)
-      go I⁺ f {J⁺} g with viewOrigin I⁺ f
+      go : ∀ {B C}
+         → ( I : Contextᴶ + ) (f : LG I [ B ⊕ C ]ᴶ)
+         → { J : Contextᴶ + } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → Origin J (g f)
+      go I f {J} g with viewOrigin I f
       ... | origin h₁ h₂ f′ pr rewrite pr = origin h₁ h₂ (g ∘ f′) refl
 
 
 
 module ⇐ where
 
-  data Origin {J B C} (J⁺ : Polarised + J) (f : LG J [ B ⇐ C ]ᴶ) : Set ℓ where
+  data Origin {B C} ( J : Contextᴶ + ) (f : LG J [ B ⇐ C ]ᴶ) : Set ℓ where
        origin : ∀ {E F}
                 → (h₁ : LG B ⊢ E) (h₂ : LG F ⊢ C)
                 → (f′ : ∀ {G} → LG G ⊢ E ⇐ F → LG J [ G ]ᴶ)
                 → (pr : f ≡ f′ (m⇐ h₁ h₂))
-                → Origin J⁺ f
+                → Origin J f
 
   mutual
-    viewOrigin : ∀ {J B C} (J⁺ : Polarised + J) (f : LG J [ B ⇐ C ]ᴶ) → Origin J⁺ f
+    viewOrigin : ∀ {B C} ( J : Contextᴶ + ) (f : LG J [ B ⇐ C ]ᴶ) → Origin J f
     viewOrigin ([] <⊢ ._)       (m⇐  f g) = origin f g id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -1337,26 +1352,26 @@ module ⇐ where
     viewOrigin (._ ⊢> (A <⇐ B)) (r₁¹ f)   = go (₁> (A <⇐ B) <⊢ _)     f r₁¹
 
     private
-      go : ∀ {I J B C}
-         → (I⁺ : Polarised + I) (f : LG I [ B ⇐ C ]ᴶ)
-         → {J⁺ : Polarised + J} (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
-         → Origin J⁺ (g f)
-      go I⁺ f {J⁺} g with viewOrigin I⁺ f
+      go : ∀ {B C}
+         → ( I : Contextᴶ + ) (f : LG I [ B ⇐ C ]ᴶ)
+         → { J : Contextᴶ + } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → Origin J (g f)
+      go I f {J} g with viewOrigin I f
       ... | origin h₁ h₂ f′ pr rewrite pr = origin h₁ h₂ (g ∘ f′) refl
 
 
 
 module ⇒ where
 
-  data Origin {J B C} (J⁺ : Polarised + J) (f : LG J [ B ⇒ C ]ᴶ) : Set ℓ where
+  data Origin {B C} ( J : Contextᴶ + ) (f : LG J [ B ⇒ C ]ᴶ) : Set ℓ where
        origin : ∀ {E F}
                 → (h₁ : LG E ⊢ B) (h₂ : LG C ⊢ F)
                 → (f′ : ∀ {G} → LG G ⊢ E ⇒ F → LG J [ G ]ᴶ)
                 → (pr : f ≡ f′ (m⇒ h₁ h₂))
-                → Origin J⁺ f
+                → Origin J f
 
   mutual
-    viewOrigin : ∀ {J B C} (J⁺ : Polarised + J) (f : LG J [ B ⇒ C ]ᴶ) → Origin J⁺ f
+    viewOrigin : ∀ {B C} ( J : Contextᴶ + ) (f : LG J [ B ⇒ C ]ᴶ) → Origin J f
     viewOrigin ([] <⊢ ._)       (m⇒  f g) = origin f g id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -1555,26 +1570,26 @@ module ⇒ where
     viewOrigin (._ ⊢> (A <⇐ B)) (r₁¹ f)   = go (₁> (A <⇐ B) <⊢ _)     f r₁¹
 
     private
-      go : ∀ {I J B C}
-         → (I⁺ : Polarised + I) (f : LG I [ B ⇒ C ]ᴶ)
-         → {J⁺ : Polarised + J} (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
-         → Origin J⁺ (g f)
-      go I⁺ f {J⁺} g with viewOrigin I⁺ f
+      go : ∀ {B C}
+         → ( I : Contextᴶ + ) (f : LG I [ B ⇒ C ]ᴶ)
+         → { J : Contextᴶ + } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → Origin J (g f)
+      go I f {J} g with viewOrigin I f
       ... | origin h₁ h₂ f′ pr rewrite pr = origin h₁ h₂ (g ∘ f′) refl
 
 
 
 module ◇ where
 
-  data Origin {J B} (J⁻ : Polarised - J) (f : LG J [ ◇ B ]ᴶ) : Set ℓ where
+  data Origin {B} ( J : Contextᴶ - ) (f : LG J [ ◇ B ]ᴶ) : Set ℓ where
        origin : ∀ {A}
                 → (h : LG A ⊢ B)
                 → (f′ : ∀ {G} → LG ◇ A ⊢ G → LG J [ G ]ᴶ)
                 → (pr : f ≡ f′ (m◇ h))
-                → Origin J⁻ f
+                → Origin J f
 
   mutual
-    viewOrigin : ∀ {J B} (J⁻ : Polarised - J) (f : LG J [ ◇ B ]ᴶ) → Origin J⁻ f
+    viewOrigin : ∀ {B} ( J : Contextᴶ - ) (f : LG J [ ◇ B ]ᴶ) → Origin J f
     viewOrigin (._ ⊢> [])       (m◇  f)   = origin f id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -1773,28 +1788,28 @@ module ◇ where
     viewOrigin (._ ⊢> (A <⇐ B)) (r₁¹ f)   = go (₁> (A <⇐ B) <⊢ _)     f r₁¹
 
     private
-      go : ∀ {I J B}
-         → (I⁻ : Polarised - I) (f : LG I [ ◇ B ]ᴶ)
-         → {J⁻ : Polarised - J} (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
-         → Origin J⁻ (g f)
-      go I⁻ f {J⁻} g with viewOrigin I⁻ f
+      go : ∀ {B}
+         → ( I : Contextᴶ - ) (f : LG I [ ◇ B ]ᴶ)
+         → { J : Contextᴶ - } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → Origin J (g f)
+      go I f {J} g with viewOrigin I f
       ... | origin h f′ pr rewrite pr = origin h (g ∘ f′) refl
 
 
 
 module ₁ where
 
-  data Origin {J B} (J⁻ : Polarised - J) (f : LG J [ ₁ B ]ᴶ) : Set ℓ where
+  data Origin {B} ( J : Contextᴶ - ) (f : LG J [ ₁ B ]ᴶ) : Set ℓ where
        origin : ∀ {A}
                 → (h : LG B ⊢ A)
                 → (f′ : ∀ {G} → LG ₁ A ⊢ G → LG J [ G ]ᴶ)
                 → (pr : f ≡ f′ (m₁ h))
-                → Origin J⁻ f
+                → Origin J f
 
 
 
   mutual
-    viewOrigin : ∀ {J B} (J⁻ : Polarised - J) (f : LG J [ ₁ B ]ᴶ) → Origin J⁻ f
+    viewOrigin : ∀ {B} ( J : Contextᴶ - ) (f : LG J [ ₁ B ]ᴶ) → Origin J f
     viewOrigin (._ ⊢> [])       (m₁  f)   = origin f id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -1993,28 +2008,28 @@ module ₁ where
     viewOrigin (._ ⊢> (A <⇐ B)) (r₁¹ f)   = go (₁> (A <⇐ B) <⊢ _)     f r₁¹
 
     private
-      go : ∀ {I J B}
-         → (I⁻ : Polarised - I) (f : LG I [ ₁ B ]ᴶ)
-         → {J⁻ : Polarised - J} (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
-         → Origin J⁻ (g f)
-      go I⁻ f {J⁻} g with viewOrigin I⁻ f
+      go : ∀ {B}
+         → ( I : Contextᴶ - ) (f : LG I [ ₁ B ]ᴶ)
+         → { J : Contextᴶ - } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → Origin J (g f)
+      go I f {J} g with viewOrigin I f
       ... | origin h f′ pr rewrite pr = origin h (g ∘ f′) refl
 
 
 
 module ¹ where
 
-  data Origin {J B} (J⁻ : Polarised - J) (f : LG J [ B ¹ ]ᴶ) : Set ℓ where
+  data Origin {B} ( J : Contextᴶ - ) (f : LG J [ B ¹ ]ᴶ) : Set ℓ where
        origin : ∀ {A}
                 → (h : LG B ⊢ A)
                 → (f′ : ∀ {G} → LG A ¹ ⊢ G → LG J [ G ]ᴶ)
                 → (pr : f ≡ f′ (m¹ h))
-                → Origin J⁻ f
+                → Origin J f
 
 
 
   mutual
-    viewOrigin : ∀ {J B} (J⁻ : Polarised - J) (f : LG J [ B ¹ ]ᴶ) → Origin J⁻ f
+    viewOrigin : ∀ {B} ( J : Contextᴶ - ) (f : LG J [ B ¹ ]ᴶ) → Origin J f
     viewOrigin (._ ⊢> [])       (m¹  f)   = origin f id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -2213,25 +2228,25 @@ module ¹ where
     viewOrigin (._ ⊢> (A <⇐ B)) (r₁¹ f)   = go (₁> (A <⇐ B) <⊢ _)     f r₁¹
 
     private
-      go : ∀ {I J B}
-         → (I⁻ : Polarised - I) (f : LG I [ B ¹ ]ᴶ)
-         → {J⁻ : Polarised - J} (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
-         → Origin J⁻ (g f)
-      go I⁻ f {J⁻} g with viewOrigin I⁻ f
+      go : ∀ {B}
+         → ( I : Contextᴶ - ) (f : LG I [ B ¹ ]ᴶ)
+         → { J : Contextᴶ - } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → Origin J (g f)
+      go I f {J} g with viewOrigin I f
       ... | origin h f′ pr rewrite pr = origin h (g ∘ f′) refl
 
 
 module ⊗ where
 
-  data Origin {J B C} (J⁻ : Polarised - J) (f : LG J [ B ⊗ C ]ᴶ) : Set ℓ where
+  data Origin {B C} ( J : Contextᴶ - ) (f : LG J [ B ⊗ C ]ᴶ) : Set ℓ where
        origin : ∀ {E F}
                 → (h₁ : LG E ⊢ B) (h₂ : LG F ⊢ C)
                 → (f′ : ∀ {G} → LG E ⊗ F ⊢ G → LG J [ G ]ᴶ)
                 → (pr : f ≡ f′ (m⊗ h₁ h₂))
-                → Origin J⁻ f
+                → Origin J f
 
   mutual
-    viewOrigin : ∀ {J B C} (J⁻ : Polarised - J) (f : LG J [ B ⊗ C ]ᴶ) → Origin J⁻ f
+    viewOrigin : ∀ {B C} ( J : Contextᴶ - ) (f : LG J [ B ⊗ C ]ᴶ) → Origin J f
     viewOrigin (._ ⊢> [])       (m⊗  f g) = origin f g id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -2430,11 +2445,11 @@ module ⊗ where
     viewOrigin (._ ⊢> (A <⇐ B)) (r₁¹ f)   = go (₁> (A <⇐ B) <⊢ _)     f r₁¹
 
     private
-      go : ∀ {I J B C}
-         → (I⁻ : Polarised - I) (f : LG I [ B ⊗ C ]ᴶ)
-         → {J⁻ : Polarised - J} (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
-         → Origin J⁻ (g f)
-      go I⁻ f {J⁻} g with viewOrigin I⁻ f
+      go : ∀ {B C}
+         → ( I : Contextᴶ - ) (f : LG I [ B ⊗ C ]ᴶ)
+         → { J : Contextᴶ - } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → Origin J (g f)
+      go I f {J} g with viewOrigin I f
       ... | origin h₁ h₂ f′ pr rewrite pr = origin h₁ h₂ (g ∘ f′) refl
 
 
@@ -2442,15 +2457,15 @@ module ⊗ where
 
 module ⇚ where
 
-  data Origin {J B C} (J⁻ : Polarised - J) (f : LG J [ B ⇚ C ]ᴶ) : Set ℓ where
+  data Origin {B C} ( J : Contextᴶ - ) (f : LG J [ B ⇚ C ]ᴶ) : Set ℓ where
        origin : ∀ {E F}
                 → (h₁ : LG E ⊢ B) (h₂ : LG C ⊢ F)
                 → (f′ : ∀ {G} → LG E ⇚ F ⊢ G → LG J [ G ]ᴶ)
                 → (pr : f ≡ f′ (m⇚ h₁ h₂))
-                → Origin J⁻ f
+                → Origin J f
 
   mutual
-    viewOrigin : ∀ {J B C} (J⁻ : Polarised - J) (f : LG J [ B ⇚ C ]ᴶ) → Origin J⁻ f
+    viewOrigin : ∀ {B C} ( J : Contextᴶ - ) (f : LG J [ B ⇚ C ]ᴶ) → Origin J f
     viewOrigin (._ ⊢> [])       (m⇚  f g) = origin f g id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -2649,26 +2664,26 @@ module ⇚ where
     viewOrigin (._ ⊢> (A <⇐ B)) (r₁¹ f)   = go (₁> (A <⇐ B) <⊢ _)     f r₁¹
 
     private
-      go : ∀ {I J B C}
-         → (I⁻ : Polarised - I) (f : LG I [ B ⇚ C ]ᴶ)
-         → {J⁻ : Polarised - J} (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
-         → Origin J⁻ (g f)
-      go I⁻ f {J⁻} g with viewOrigin I⁻ f
+      go : ∀ {B C}
+         → ( I : Contextᴶ - ) (f : LG I [ B ⇚ C ]ᴶ)
+         → { J : Contextᴶ - } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → Origin J (g f)
+      go I f {J} g with viewOrigin I f
       ... | origin h₁ h₂ f′ pr rewrite pr = origin h₁ h₂ (g ∘ f′) refl
 
 
 
 module ⇛ where
 
-  data Origin {J B C} (J⁻ : Polarised - J) (f : LG J [ B ⇛ C ]ᴶ) : Set ℓ where
+  data Origin {B C} ( J : Contextᴶ - ) (f : LG J [ B ⇛ C ]ᴶ) : Set ℓ where
        origin : ∀ {E F}
                 → (h₁ : LG B ⊢ E) (h₂ : LG F ⊢ C)
                 → (f′ : ∀ {G} → LG E ⇛ F ⊢ G → LG J [ G ]ᴶ)
                 → (pr : f ≡ f′ (m⇛ h₁ h₂))
-                → Origin J⁻ f
+                → Origin J f
 
   mutual
-    viewOrigin : ∀ {J B C} (J⁻ : Polarised - J) (f : LG J [ B ⇛ C ]ᴶ) → Origin J⁻ f
+    viewOrigin : ∀ {B C} ( J : Contextᴶ - ) (f : LG J [ B ⇛ C ]ᴶ) → Origin J f
     viewOrigin (._ ⊢> [])       (m⇛  f g) = origin f g id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -2867,9 +2882,9 @@ module ⇛ where
     viewOrigin (._ ⊢> (A <⇐ B)) (r₁¹ f)   = go (₁> (A <⇐ B) <⊢ _)     f r₁¹
 
     private
-      go : ∀ {I J B C}
-         → (I⁻ : Polarised - I) (f : LG I [ B ⇛ C ]ᴶ)
-         → {J⁻ : Polarised - J} (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
-         → Origin J⁻ (g f)
-      go I⁻ f {J⁻} g with viewOrigin I⁻ f
+      go : ∀ {B C}
+         → ( I : Contextᴶ - ) (f : LG I [ B ⇛ C ]ᴶ)
+         → { J : Contextᴶ - } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → Origin J (g f)
+      go I f {J} g with viewOrigin I f
       ... | origin h₁ h₂ f′ pr rewrite pr = origin h₁ h₂ (g ∘ f′) refl
