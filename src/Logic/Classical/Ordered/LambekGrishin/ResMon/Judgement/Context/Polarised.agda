@@ -19,31 +19,15 @@ module Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.Context.Polarised 
 
 open import Logic.Polarity
 open import Logic.Classical.Ordered.LambekGrishin.Type                     Univ as T
-open import Logic.Classical.Ordered.LambekGrishin.Type.Context             Univ as TC  hiding (module Simple)
-open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised   Univ as TCP hiding (module Simple; module Polarised; Polarised)
+open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised   Univ as TCP
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement         Univ
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.Context Univ as JC  hiding (module Simple)
 
 
-data Polarised (p : Polarity) : JC.Context → Set ℓ where
-  _<⊢_ : ∀ {A} (A⁺ : TCP.Polarised p + A) (B : Type) → Polarised p (A <⊢ B)
-  _⊢>_ : ∀ (A : Type) {B} (B⁻ : TCP.Polarised p - B) → Polarised p (A ⊢> B)
+data Contextᴶ (p : Polarity) : Set ℓ where
+  _<⊢_  : Context p +  → Type         → Contextᴶ p
+  _⊢>_  : Type         → Context p -  → Contextᴶ p
 
 
-module Simple where
-
-
-  open  JC.Simple using () renaming (_<_> to _<_>ᴶ)
-  open TCP.Simple using () renaming (_[_] to _[_]ᶜ; _<_> to _<_>ᶜ)
-
-
-  -- Apply judgement contexts to types to get judgements
-  _[_] : ∀ {p A} → Polarised p A → Type → Judgement
-  (A <⊢ B) [ C ] = A [ C ]ᶜ ⊢ B
-  (A ⊢> B) [ C ] = A ⊢ B [ C ]ᶜ
-
-
-  -- Insert context into judgement contexts to get judgement contexts
-  _<_> : ∀ {p₁ p₂ J A} → Polarised p₂ J → TCP.Polarised p₁ p₂ A → Polarised p₁ (J < A >ᴶ)
-  (A <⊢ B) < C > = A < C >ᶜ <⊢ B
-  (A ⊢> B) < C > = A ⊢> B < C >ᶜ
+_[_]ᴶ : ∀ {p} → Contextᴶ p → Type → Judgement
+(A <⊢ B) [ C ]ᴶ = A [ C ] ⊢ B
+(A ⊢> B) [ C ]ᴶ = A ⊢ B [ C ]

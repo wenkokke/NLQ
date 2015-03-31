@@ -5,35 +5,26 @@
   urlcolor   = MidnightBlue,
   citecolor  = ForestGreen
   ]{hyperref}
+
 \usepackage{natbib}
+\makeatletter
+\renewcommand\bibsection%
+{
+  \section*{\refname
+    \@mkboth{\MakeUppercase{\refname}}{\MakeUppercase{\refname}}}
+}
+\makeatother
+
 \usepackage{ifthen}
 \usepackage{enumitem}
 \renewcommand{\hscodestyle}{\small}
-%\usepackage{fullpage}
 
 
 % use Wouter's setup for notes (extended with ``hidden'')
-\newboolean{marginNotes}
-\setboolean{marginNotes}{false}
-
-\newboolean{showNotes}
-\setboolean{showNotes}{true}
-
 \newboolean{showHidden}
 \setboolean{showHidden}{false}
 
-\newcommand{\hidden}[1]{
-  \ifthenelse{\boolean{showHidden}}
-             {#1}
-             {}}
-\newcommand{\marginNote}[1]{
-  \ifthenelse{\boolean{marginNotes}}
-             {\marginpar{#1}}
-             {#1}}
-\newcommand{\todo}[1]{
-  \ifthenelse{\boolean{showNotes}}
-             {\marginNote{\textcolor{red}{\textbf{TODO:~}#1}}}
-             {}}
+\newenvironment{hide}{\ifshowHidden}{\fi}
 
 \renewcommand{\sectionautorefname}{\S}
 \renewcommand{\subsectionautorefname}{\S\S}
@@ -64,6 +55,10 @@
   \mathbin{\mathpalette\pictslash{{1}{-1}}}%
 }
 
+% patch bibliography to behave like section
+\usepackage{etoolbox}
+\patchcmd{\thebibliography}{\chapter*}{\section*}{}{}
+
 \makeatletter
 \newcommand{\pictslash}[2]{%
   \vcenter{%
@@ -80,52 +75,26 @@
     \put(0,#1\dimen0){\line(1,#2){\dimen0}}
     \end{picture}%
 }
-\newcommand{\pictholer}[1]{%
-  \vcenter{%
-    \sbox0{$#1$}\dimen0=.1\wd0
-    \hbox to\dimen0{%
-      \begin{picture}(\dimen0,\ht0)
-      \linethickness{.15ex}
-      \put(0,0.333\ht0){\line(1, 1){.18\ht0}}
-      \put(0,0.666\ht0){\line(1,-1){.18\ht0}}
-      \end{picture}%
-    }%
-  }%
-}
-\newcommand{\pictholel}[1]{%
-  \vcenter{%
-    \sbox0{$#1$}\dimen0=.1\wd0
-    \hbox to\dimen0{%
-      \begin{picture}(\dimen0,\ht0)
-      \linethickness{.15ex}
-      \put(0,0.333\ht0){\line(-1, 1){.18\ht0}}
-      \put(0,0.666\ht0){\line(-1,-1){.18\ht0}}
-      \end{picture}%
-    }%
-  }%
-}
 \makeatother
 
-\newcommand{\holer}[1]{\hphantom{\pictholer{#1}}#1\pictholer{#1}}
-\newcommand{\holel}[1]{\pictholel{#1}#1\hphantom{\pictholer{#1}}}
+\newcommand{\holer}[1]{#1{\scriptscriptstyle\triangleright}}
+\newcommand{\holel}[1]{{\scriptscriptstyle\triangleleft}#1}
 
 \DeclareUnicodeCharacter{8656}{$\varslash$}
 \DeclareUnicodeCharacter{8658}{$\varbslash$}
 \DeclareUnicodeCharacter{8666}{$\varoslash$}
 \DeclareUnicodeCharacter{8667}{$\varobslash$}
-\DeclareUnicodeCharacter{7478}{$$}% drop superscript J
+\DeclareUnicodeCharacter{7478}{$^{J}$}
 \DeclareUnicodeCharacter{7480}{$^{L}$}
-\DeclareUnicodeCharacter{7486}{$$}% drop superscript P
 \DeclareUnicodeCharacter{7487}{$^{R}$}
 \DeclareUnicodeCharacter{8314}{$^{+}$}
 \DeclareUnicodeCharacter{8315}{$^{-}$}
+\DeclareUnicodeCharacter{9633}{$\Box$}
+\DeclareUnicodeCharacter{9671}{$\Diamond$}
 
 
 % customise the appearance of itemise bullets
 \def\myitem{\item[$\circ$]}
 
 % customise the apprearance of lhs2TeX code blocks
-\renewcommand\hscodestyle{%
-   \setlength\leftskip{.5cm}%
-   \footnotesize
-}
+\renewcommand\hscodestyle{\setlength\leftskip{\parindent}}

@@ -13,21 +13,23 @@ open import Relation.Nullary.Decidable                      using (True; toWitne
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_; refl; sym; cong)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Normal.ToIntuitionisticLinearLambda {ℓ} (Univ : Set ℓ) (⊥ : Univ) where
+module Logic.Classical.Ordered.LambekGrishin.FocPol.ToIntuitionisticLinearLambda {ℓ} (Univ : Set ℓ) (⊥ : Univ) where
 
 
 open import Logic.Polarity
 open import Logic.Translation
-open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ          as LGTᴾ
-open import Logic.Classical.Ordered.LambekGrishin.Type                PolarisedUniv as LGT
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised PolarisedUniv as LGS
-open import Logic.Classical.Ordered.LambekGrishin.Judgement           PolarisedUniv as LGJ
-open import Logic.Classical.Ordered.LambekGrishin.Normal.Base         Univ          as LGB
 
 open import Logic.Intuitionistic.Linear.Lambda.Type      Univ as ΛT
 open import Logic.Intuitionistic.Linear.Lambda.Judgement Univ as ΛJ
 open import Logic.Intuitionistic.Linear.Lambda.Base      Univ as ΛB
 open import Logic.Intuitionistic.Linear.Lambda.Permute   Univ as ΛP
+
+open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ          as LGTᴾ
+open import Logic.Classical.Ordered.LambekGrishin.Type                PolarisedUniv as LGT
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised PolarisedUniv as LGS
+open import Logic.Classical.Ordered.LambekGrishin.Judgement           PolarisedUniv as LGJ
+open import Logic.Classical.Ordered.LambekGrishin.FocPol.Base         Univ          as LGB
+
 open Monoid (Data.List.monoid ΛT.Type) using (assoc)
 
 

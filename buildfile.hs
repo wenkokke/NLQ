@@ -202,8 +202,8 @@ makeLambek  = Mapping
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Judgement.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Base.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Base.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Normal" </> "Base.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Normal" </> "Base.agda"
+                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "FocPol" </> "Base.agda"
+                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "FocPol" </> "Base.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon.agda"
                 ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon.agda"
                   , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Judgement.agda"
@@ -232,8 +232,8 @@ makeLinearLambekGrishin  = Mapping
   , textMapping = [ "Unrestricted" ==> "Linear" ]
   , fileMapping = [ srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Base.agda"
                 ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambekGrishin" </> "Base.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Normal" </> "Base.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambekGrishin" </> "Normal" </> "Base.agda"
+                  , srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "FocPol" </> "Base.agda"
+                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambekGrishin" </> "FocPol" </> "Base.agda"
                   ]
   }
 

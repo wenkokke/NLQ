@@ -33,3 +33,8 @@
 %format  <⊢   = "\holel{\vdash}"
 %format _⊢>_  = "\_\holer{\vdash}\_"
 %format _<⊢_  = "\_\holel{\vdash}\_"
+
+%format hole0 = "\{\ \}0"
+%format hole1 = "\{\ \}1"
+%format hole2 = "\{\ \}2"
+%format hole3 = "\{\ \}3"

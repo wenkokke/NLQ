@@ -16,13 +16,13 @@ end
 desc "Compile the paper"
 file 'main.pdf' => BibTeXFiles + FormatFiles + LaTeXFiles + LiterateFiles.ext('tex') do
   runCmd "pdflatex main.tex"
-  #if $?.success?
-  #  runCmd "bibtex main"
-  #  if $?.success?
-  #    runCmd "pdflatex main.tex"
-  #    runCmd "pdflatex main.tex"
-  #  end
-  #end
+  if $?.success?
+    runCmd "bibtex main"
+    if $?.success?
+      runCmd "pdflatex main.tex"
+      runCmd "pdflatex main.tex"
+    end
+  end
 end
 
 

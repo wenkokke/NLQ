@@ -24,7 +24,7 @@ open import Logic.Classical.Unrestricted.LambekGrishin.Type.Polarised      Univ
 open import Logic.Classical.Unrestricted.LambekGrishin.Type                PolarisedUniv
 open import Logic.Classical.Unrestricted.LambekGrishin.Structure.Polarised PolarisedUniv
 open import Logic.Classical.Unrestricted.LambekGrishin.Judgement           PolarisedUniv
-open import Logic.Classical.Unrestricted.LambekGrishin.Normal.Base         Univ
+open import Logic.Classical.Unrestricted.LambekGrishin.FocPol.Base         Univ
 
 _≤_ : Rel Type ℓ
 A ≤ B = LG · A · ⊢ · B ·

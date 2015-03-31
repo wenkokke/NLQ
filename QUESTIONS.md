@@ -2,22 +2,40 @@
 
 ## March 26th
 
- * Because in the structured version of **LG** there are many proofs
-   for every proof in **RM**, due to the gradient from unstructured to
-   maximally structured translations of formulas, I am wondering what
-   the benefit is of using **LG**. Does it net you better proof
-   search? I hardly think so. All I can see is that it forces some
-   residuation to take place before some introductions, but I think
-   that **RM** already offers such guarantees, as you can hardly
-   residuate an operator you have not introduced yet.
+  * What is the gain from also having a structural box operator without
+    any residuation rules? Perhaps investigate axioma for cut specified
+    to diamond (or box).
 
- * Jeroen's code uses iterative deepening depth-first search to find
-   proofs in **LG**, and I cannot find a piece of code responsible for
-   determining the maximum search depth. Is there an algorithm which
-   can be used to determine the maximum proof size, given a sequent?
-   If not, it should be noted that Jeroen's code does not guarantee
-   that there aren't any proofs for a certain sequent of a deeper
-   depth.
+  * How would one relate work in LG with the work in the corner working
+    with constants (e.g. B and C) in Barker and Shan's NL_CL.
+
+  * Create an axiomatisation for Baker and Shan's NL_CL in Agda.
+
+  * Look at the types for quantifiers and see if there actually is a problem.
+
+  * Because in the structured version of **LG** there are many proofs
+    for every proof in **RM**, due to the gradient from unstructured to
+    maximally structured translations of formulas, I am wondering what
+    the benefit is of using **LG**. Does it net you better proof
+    search? I hardly think so. All I can see is that it forces some
+    residuation to take place before some introductions, but I think
+    that **RM** already offers such guarantees, as you can hardly
+    residuate an operator you have not introduced yet. *That's
+    true. Not really a problem, though.*
+
+  * Jeroen's code uses iterative deepening depth-first search to find
+    proofs in **LG**, and I cannot find a piece of code responsible for
+    determining the maximum search depth. Is there an algorithm which
+    can be used to determine the maximum proof size, given a sequent?
+    If not, it should be noted that Jeroen's code does not guarantee
+    that there aren't any proofs for a certain sequent of a deeper
+    depth. *Yes. Perhaps it doesn't.*
+
+  * Should I submit my TYTLES paper anonymously? *Yes. Probably. And
+    submit to the student session as well. And send an email asking if
+    that's okay.*
+
+  * What would be the preferred way of describing LG in a brief manner?
 
 
 ## March 17th
