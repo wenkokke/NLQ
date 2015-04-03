@@ -32,7 +32,6 @@ open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised        
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement                   Univ
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.Context.Polarised Univ as JC
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base                        Univ as LGB
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Symmetry                    Univ
 
 
 module el where

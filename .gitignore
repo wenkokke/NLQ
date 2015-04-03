@@ -19,6 +19,7 @@ esslli2015/main.pdf
 esslli2015/main.tex
 esslli2015/Submitted to TYTLES 2015.pdf
 src/Everything.agda
+src/Logic/Classical/Ordered/Lambek/
 src/Logic/Classical/Unrestricted/LambdaCMinus/Type.agda
 src/Logic/Classical/Unrestricted/LambdaCMinus/Type/
 src/Logic/Intuitionistic/Unrestricted/Lambda/Type.agda
@@ -39,6 +40,7 @@ src/Logic/Intuitionistic/Ordered/Lambek/Trans.agda
 src/Logic/Intuitionistic/Ordered/Lambek/ResMon.agda
 src/Logic/Intuitionistic/Ordered/Lambek/ResMon/
 src/Logic/Intuitionistic/Ordered/Lambek/FocPol/
+src/Logic/Intuitionistic/Ordered/Lambek/EquivalentToResMon.agda
 src/Logic/Classical/Linear/LambekGrishin/Type.agda
 src/Logic/Classical/Linear/LambekGrishin/Type/
 src/Logic/Classical/Linear/LambekGrishin/Structure.agda

@@ -10,11 +10,12 @@ import           Data.Char (isSpace)
 import           Data.Either (isRight)
 import qualified Data.List as L
 import           Data.List.Split (splitWhen)
+import qualified Data.Maybe as M
 import           Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import           Data.Tuple (swap)
-import           Development.Shake
+import           Development.Shake hiding ((*>))
 import           Development.Shake.FilePath
 import           System.IO (hPutStr,hSetEncoding,hGetContents,utf8,IOMode(..),openFile,withFile)
 
@@ -31,9 +32,11 @@ prover = "prover"
 -------------------------------------------------------------------------------
 
 data Mapping =
-     Mapping { blacklist   :: [Text]
+     Mapping { name        :: String
+             , blacklist   :: [Text]
              , textMapping :: [(Text, Text)]
-             , fileMapping :: [(FilePath, FilePath)]
+             , include     :: [FilePattern]
+             , exclude     :: [FilePattern]
              }
 
 -------------------------------------------------------------------------------
@@ -44,12 +47,13 @@ main :: IO ()
 main = shakeArgs shakeOptions $ do
 
 
-  run makeLambda
-  run makeLinearLambda
-  run makeLambek
-  run makeLambdaCMinus
-  run makeLinearLambekGrishin
-  run makeUnrestrictedLambekGrishin
+  make lambda
+  make linearLambda
+  make nonAssociativeLambek
+
+  make lambdaCMinus
+  make linearLambekGrishin
+  make classicalNonAssociativeLambek
 
 
   -- Generate: Everything
@@ -78,26 +82,25 @@ main = shakeArgs shakeOptions $ do
         ,"-v0"]
 
   -- Clobber: Clean up after various tasks
-  phony "clobber" $ do
+  "clobber" ~> do
+
     putNormal "Removing Everything.agda"
     liftIO $ removeFiles srcDir ["Everything.agda"]
 
-    putNormal "Removing generated files for Lambda Calculus"
-    clobber makeLambda
-    putNormal "Removing generated files for Linear Lambda Calculus"
-    clobber makeLinearLambda
-    putNormal "Removing generated files for Lambek Calculus"
-    clobber makeLambek
-    putNormal "Removing generated files for Lambek C-Minus Calculus"
-    clobber makeLambdaCMinus
-    putNormal "Removing generated files for Linear Lambek Grishin"
-    clobber makeLinearLambekGrishin
-    putNormal "Removing generated files for Unrestricted Lambek Grishin"
-    clobber makeUnrestrictedLambekGrishin
+
+    clobber lambda
+    clobber linearLambda
+    clobber nonAssociativeLambek
+
+    clobber lambdaCMinus
+    clobber linearLambekGrishin
+    clobber classicalNonAssociativeLambek
 
     putNormal "Removing generated prover files"
-    liftIO $ removeFiles prover [ "proof.agda" , "proof.aux" , "proof.log" , "proof.out"
-                                , "proof.pdf"  , "proof.pl"  , "proof.tex" , "prover"]
+    liftIO $ removeFiles prover
+      [ "proof.agda" , "proof.aux" , "proof.log" , "proof.out"
+      , "proof.pdf"  , "proof.pl"  , "proof.tex" , "prover"
+      ]
 
 
 
@@ -134,222 +137,129 @@ format = unlines . concatMap fmt
 -- Make: Lambda C-Minus
 --------------------------------------------------------------------------------
 
-
-makeLambdaCMinus :: Mapping
-makeLambdaCMinus  = Mapping
-  { blacklist   = [ "⇛"  , "⇐"  , "□"  , "◇"
+lambdaCMinus :: Mapping
+lambdaCMinus = Mapping{..}
+  where
+    name        = "Lambda C-Minus Calculus"
+    blacklist   = [ "⇛"  , "⇐"  , "□"  , "◇"
                   , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀"
                   , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰"
                   , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁"
                   , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹"
                   ]
-  , textMapping = [ "Ordered"       ==> "Unrestricted"
+    textMapping = [ "Ordered"       ==> "Unrestricted"
                   , "Structure"     ==> "List Type"
                   , "LambekGrishin" ==> "LambdaCMinus"
                   ]
-  , fileMapping = [ srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus"  </> "Type.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Complexity.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus"  </> "Type" </> "Complexity.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Context.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus"  </> "Type" </> "Context.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Context" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus"  </> "Type" </> "Context" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus"  </> "Type" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Subtype.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambdaCMinus"  </> "Type" </> "Subtype.agda"
+    include     = [ srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type.agda"
+                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Complexity.agda"
+                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Context.agda"
+                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Context/Polarised.agda"
+                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Polarised.agda"
+                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Subtype.agda"
                   ]
-  }
-
+    exclude      = []
 
 --------------------------------------------------------------------------------
--- Make: Lambek Calculus
+-- Make: Non-associative Lambek Calculus
 --------------------------------------------------------------------------------
 
-makeLambek :: Mapping
-makeLambek  = Mapping
-  { blacklist   = [ "⊕"  , "⇛"  , "⇚"  , "□"   , "◇"
+nonAssociativeLambek :: Mapping
+nonAssociativeLambek = Mapping{..}
+  where
+    name        = "Non-associative Lambek Calculus"
+    blacklist   = [ "⊕"  , "⇛"  , "⇚"  , "□"   , "◇"
                   , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀"
                   , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰"
                   , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁"
                   , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹"
                   , "⁰ᴸ" , "⁰ᴿ" , "¹ᴸ" , "¹ᴿ"
                   ]
-  , textMapping = [ "LambekGrishin" ==> "Lambek"
+    textMapping = [ "LambekGrishin" ==> "Lambek"
                   , "LG"            ==> "NL"
                   , "Classical"     ==> "Intuitionistic"
                   ]
-  , fileMapping = [ srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type" </> "Complexity.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type" </> "Complexity.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type" </> "Context.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type" </> "Context.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type" </> "Context" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type" </> "Context" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Type" </> "Subtype.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Type" </> "Subtype.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Structure.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Structure.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Structure" </> "Complexity.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Structure" </> "Complexity.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Structure" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Structure" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Judgement.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Judgement.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "Base.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "Base.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "FocPol" </> "Base.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "FocPol" </> "Base.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Judgement.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon" </> "Judgement.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Judgement" </> "Context.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon" </> "Judgement" </> "Context.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Judgement" </> "Context" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon" </> "Judgement" </> "Context" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Base.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon" </> "Base.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Origin.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon" </> "Origin.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered" </> "LambekGrishin" </> "ResMon" </> "Trans.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Ordered" </> "Lambek"        </> "ResMon" </> "Trans.agda"
-                  ]
-  }
+    include     = [srcDir </> "Logic/Classical/Ordered/LambekGrishin//*.agda"]
+    exclude     = ["//ToIntuitionisticLinearLambda.agda"]
+
+--------------------------------------------------------------------------------
+-- Make: Non-associative Lambek Calculus
+--------------------------------------------------------------------------------
+
+classicalNonAssociativeLambek :: Mapping
+classicalNonAssociativeLambek = Mapping{..}
+  where
+    name        = "Classical Non-associative Lambek Calculus"
+    blacklist   = [ "d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐" ]
+    textMapping = [ "LambekGrishin" ==> "Lambek"
+                  , "LG"            ==> "CNL"    ]
+    include     = [srcDir </> "Logic/Classical/Ordered/LambekGrishin//*.agda"]
+    exclude     = []
+
+
 
 
 --------------------------------------------------------------------------------
--- Make: Linear Lambek Grishin Calculus
+-- Make: Linear Lambek-Grishin Calculus
 --------------------------------------------------------------------------------
 
-makeLinearLambekGrishin :: Mapping
-makeLinearLambekGrishin  = Mapping
-  { blacklist   = [ "⊗ᶜ" , "⊕ᶜ"  , "⊗ʷ" , "⊕ʷ" ]
-  , textMapping = [ "Unrestricted" ==> "Linear" ]
-  , fileMapping = [ srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Base.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambekGrishin" </> "Base.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "FocPol" </> "Base.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Linear"       </> "LambekGrishin" </> "FocPol" </> "Base.agda"
-                  ]
-  }
 
---------------------------------------------------------------------------------
--- Make: Unrestricted Lambek Grishin Calculus
---------------------------------------------------------------------------------
+linearLambekGrishin :: Mapping
+linearLambekGrishin = Mapping{..}
+  where
+  name        = "Linear Lambek-Grishin Calculus"
+  blacklist   = [ "⊗ᶜ" , "⊕ᶜ"  , "⊗ʷ" , "⊕ʷ" ]
+  textMapping = [ "Unrestricted" ==> "Linear" ]
+  include     = [ srcDir </> "Logic/Classical/Unrestricted/LambekGrishin/Base.agda"
+                , srcDir </> "Logic/Classical/Unrestricted/LambekGrishin/FocPol/Base.agda"
+                ]
+  exclude     = []
 
-makeUnrestrictedLambekGrishin :: Mapping
-makeUnrestrictedLambekGrishin  = Mapping
-  { blacklist   = [ "⇐" , "⇛" , "d⇚⇒" ]
-  , textMapping = [ "Ordered" ==> "Unrestricted" ]
-  , fileMapping = [ srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Type.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Complexity.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Type" </> "Complexity.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Context.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Type" </> "Context.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Context" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Type" </> "Context" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Type" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Subtype.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Type" </> "Subtype.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Structure.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Structure.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Structure" </> "Complexity.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Structure" </> "Complexity.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Structure" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Structure" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered"      </> "LambekGrishin" </> "Judgement.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Unrestricted" </> "LambekGrishin" </> "Judgement.agda"
-                  ]
-  }
-
---------------------------------------------------------------------------------
--- Make: Unrestricted Lambek Grishin Calculus
---------------------------------------------------------------------------------
-
-makeLambekGrishinWithUnits :: Mapping
-makeLambekGrishinWithUnits  = Mapping
-  { blacklist   = [ " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀"
-                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰"
-                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁"
-                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" ]
-  , textMapping = [ ]
-  , fileMapping = [ srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Type.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Type.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Type" </> "Complexity.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Type" </> "Complexity.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Type" </> "Context.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Type" </> "Context.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Type" </> "Context" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Type" </> "Context" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Type" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Type" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Type" </> "Subtype.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Type" </> "Subtype.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Structure.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Structure.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Structure" </> "Complexity.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Structure" </> "Complexity.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Structure" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Structure" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin"            </> "Judgement.agda"
-                ==> srcDir </> "Logic" </> "Classical" </> "Ordered" </> "LambekGrishin" </> "Unit" </> "Judgement.agda"
-                  ]
-  }
 
 --------------------------------------------------------------------------------
 -- Mapping: Lambda Calculus
 --------------------------------------------------------------------------------
 
-makeLambda :: Mapping
-makeLambda  = Mapping
-  { blacklist   = [ "⇐"  , "⊕"  , "⇛"  , "⇚"   , "□"  , "◇"
+
+lambda :: Mapping
+lambda = Mapping{..}
+  where
+    name        = "Lambda Calculus"
+    blacklist   = [ "⇐"  , "⊕"  , "⇛"  , "⇚"   , "□"  , "◇"
                   , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀"
                   , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰"
                   , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁"
                   , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹"
                   ]
-  , textMapping = [ "LG"            ==> "Λ"
+    textMapping = [ "LG"            ==> "Λ"
                   , "Classical"     ==> "Intuitionistic"
                   , "Ordered"       ==> "Unrestricted"
                   , "LambekGrishin" ==> "Lambda"
                   ]
-  , fileMapping = [ srcDir </> "Logic" </> "Classical"      </> "Ordered"      </> "LambekGrishin" </> "Type.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda"        </> "Type.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Complexity.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda"        </> "Type" </> "Complexity.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Context.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda"        </> "Type" </> "Context.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Context" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda"        </> "Type" </> "Context" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Polarised.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda"        </> "Type" </> "Polarised.agda"
-                  , srcDir </> "Logic" </> "Classical"      </> "Ordered"      </> "LambekGrishin" </> "Type" </> "Subtype.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda"        </> "Type" </> "Subtype.agda"
+    include     = [ srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type.agda"
+                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Complexity.agda"
+                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Context.agda"
+                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Context/Polarised.agda"
+                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Polarised.agda"
+                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Subtype.agda"
                   ]
-  }
-
+    exclude     = []
 
 --------------------------------------------------------------------------------
 -- Mapping: Linear Lambda Calculus
 --------------------------------------------------------------------------------
 
-makeLinearLambda :: Mapping
-makeLinearLambda  = Mapping
-  { blacklist   = [ "wᴸ₁" , "wᴸ" , "cᴸ₁" , "cᴸ" ]
-  , textMapping = [ "Unrestricted" ==> "Linear"
+linearLambda :: Mapping
+linearLambda = Mapping{..}
+  where
+    name        = "Linear Lambda Calculus"
+    blacklist   = [ "wᴸ₁" , "wᴸ" , "cᴸ₁" , "cᴸ" ]
+    textMapping = [ "Unrestricted" ==> "Linear"
                   ]
-  , fileMapping = [ srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda" </> "Base.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Linear"       </> "Lambda" </> "Base.agda"
-                  , srcDir </> "Logic" </> "Intuitionistic" </> "Unrestricted" </> "Lambda" </> "Permute.agda"
-                ==> srcDir </> "Logic" </> "Intuitionistic" </> "Linear"       </> "Lambda" </> "Permute.agda"
+    include     = [ srcDir </> "Logic/Intuitionistic/Unrestricted/Lambda/Base.agda"
+                  , srcDir </> "Logic/Intuitionistic/Unrestricted/Lambda/Permute.agda"
                   ]
-  }
+    exclude     = []
 
 
 -------------------------------------------------------------------------------
@@ -359,25 +269,42 @@ makeLinearLambda  = Mapping
 
 
 clobber :: Mapping -> Action ()
-clobber Mapping{..} = liftIO (removeFiles "." (map snd fileMapping))
+clobber Mapping{..} = do
+  putNormal $ "Removing generated files for " ++ name
+  liftIO . removeFiles "." =<< map (apply textMapping) <$> getDirectoryFiles "." include
 
-run :: Mapping -> Rules ()
-run Mapping{..} = do
 
-  when (not . null $ fileMapping) $ do
+apply :: [(Text, Text)] -> FilePath -> FilePath
+apply [] = id
+apply mapping = T.unpack . go mapping . T.pack
+  where
+    go [] = id
+    go ((from,to):rest) = T.replace from to . go rest
 
-    let wanted = map snd fileMapping
-    let prefix = joinPath (foldl1 commonPrefix (map (splitPath . dropFileName) wanted))
 
-    want wanted
+make :: Mapping -> Rules ()
+make Mapping{..} = do
 
-    prefix <//> "*.agda" *> \out ->
-      case lookup out (map swap fileMapping) of
-        Nothing  -> putLoud $ "Error: invalid mapping for " ++ out
-        Just src -> do
-          need [src]
-          liftIO $
-            T.writeFile out . restrictSource textMapping blacklist =<< T.readFile src
+  -- compute the destination pattern
+  let dstPattern = apply textMapping <$> include
+  let revMapping = map swap textMapping
+
+  -- require all files that match any of the file patterns
+  action $ need =<< map (apply textMapping)
+                <$> filter (\src -> not (any (?== src) exclude))
+                <$> getDirectoryFiles "." include
+
+  -- define a rule that builds
+  dstPattern |%> \dst -> do
+
+    let src = apply revMapping dst
+
+    need [src]
+
+    putQuiet $ "Generating " ++ dst
+
+    liftIO $
+      T.writeFile dst . restrictSource textMapping blacklist =<< T.readFile src
 
 
 -- |Parse a file and remove all groups which contain illegal symbols.
@@ -502,10 +429,3 @@ writeFileUTF8 :: FilePath -> String -> IO ()
 writeFileUTF8 f s = withFile f WriteMode $ \h -> do
   hSetEncoding h utf8
   hPutStr h s
-
-commonPrefix :: (Eq e) => [e] -> [e] -> [e]
-commonPrefix _ [] = []
-commonPrefix [] _ = []
-commonPrefix (x:xs) (y:ys)
-  | x == y    = x : commonPrefix xs ys
-  | otherwise = []

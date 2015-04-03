@@ -6,8 +6,8 @@
 \begin{document}
 
 \title{Formalising type-logical grammars in Agda}%
-%\author{Pepijn Kokke}%
-%\institute{Utrecht University}
+\author{Pepijn Kokke}%
+\institute{Utrecht University}%
 \maketitle
 
 \begin{abstract}

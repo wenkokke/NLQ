@@ -3,6 +3,9 @@
 ------------------------------------------------------------------------
 
 
+open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
+
+
 module Logic.Classical.Ordered.LambekGrishin.ResMon.Trans {ℓ} (Univ : Set ℓ) where
 
 
