@@ -2,6 +2,10 @@
 -- The Lambek Calculus in Agda
 ------------------------------------------------------------------------
 
+open import Level                                      using (zero)
+open import Categories.Category                        using (Category)
+open import Categories.Discrete                        using (Discrete)
+open import Categories.Functor                         using (Functor)
 open import Function                                   using (_∘_)
 open import Data.Product                               using (∃; ∃₂; _×_; _,_; proj₁; proj₂)
 open import Relation.Nullary                           using (Dec; yes; no)
@@ -31,19 +35,128 @@ data Type : Set ℓ where
   ₁_  : Type → Type
   _¹  : Type → Type
 
+  _⊗_ : Type → Type → Type
   _⇒_ : Type → Type → Type
   _⇐_ : Type → Type → Type
 
+  _⊕_ : Type → Type → Type
   _⇚_ : Type → Type → Type
   _⇛_ : Type → Type → Type
 
-  _⊗_ : Type → Type → Type
-  _⊕_ : Type → Type → Type
+
+
+CType : Category ℓ ℓ zero
+CType = Discrete Type
+
+
+
+-- Symmetries that should hold for these types.
+
+
+infixl 5 _⋈ _∞
+
+
+_⋈ : Type → Type
+el  A ⋈ = el       A
+□   A ⋈ = □       (A ⋈)
+◇   A ⋈ = ◇       (A ⋈)
+₀   A ⋈ = (A ⋈)   ⁰
+A   ⁰ ⋈ = ₀       (A ⋈)
+₁   A ⋈ = (A ⋈)   ¹
+A   ¹ ⋈ = ₁       (A ⋈)
+A ⊗ B ⋈ = (B ⋈) ⊗ (A ⋈)
+A ⇒ B ⋈ = (B ⋈) ⇐ (A ⋈)
+B ⇐ A ⋈ = (A ⋈) ⇒ (B ⋈)
+B ⊕ A ⋈ = (A ⋈) ⊕ (B ⋈)
+B ⇚ A ⋈ = (A ⋈) ⇛ (B ⋈)
+A ⇛ B ⋈ = (B ⋈) ⇚ (A ⋈)
+
+
+_∞ : Type → Type
+el  A ∞ = el       A
+□   A ∞ = ◇       (A ∞)
+◇   A ∞ = □       (A ∞)
+₀   A ∞ = (A ∞)   ¹
+A   ⁰ ∞ = ₁       (A ∞)
+₁   A ∞ = (A ∞)   ⁰
+A   ¹ ∞ = ₀       (A ∞)
+A ⊗ B ∞ = (B ∞) ⊕ (A ∞)
+A ⇒ B ∞ = (B ∞) ⇚ (A ∞)
+B ⇐ A ∞ = (A ∞) ⇛ (B ∞)
+B ⊕ A ∞ = (A ∞) ⊗ (B ∞)
+B ⇚ A ∞ = (A ∞) ⇒ (B ∞)
+A ⇛ B ∞ = (B ∞) ⇐ (A ∞)
+
+
+open import Algebra.FunctionProperties {A = Type} _≡_
+
+
+⋈-inv : Involutive _⋈
+⋈-inv (el  A)                           = refl
+⋈-inv (□   A) rewrite ⋈-inv A           = refl
+⋈-inv (◇   A) rewrite ⋈-inv A           = refl
+⋈-inv (₀   A) rewrite ⋈-inv A           = refl
+⋈-inv (A   ⁰) rewrite ⋈-inv A           = refl
+⋈-inv (₁   A) rewrite ⋈-inv A           = refl
+⋈-inv (A   ¹) rewrite ⋈-inv A           = refl
+⋈-inv (A ⊗ B) rewrite ⋈-inv A | ⋈-inv B = refl
+⋈-inv (A ⇒ B) rewrite ⋈-inv A | ⋈-inv B = refl
+⋈-inv (B ⇐ A) rewrite ⋈-inv A | ⋈-inv B = refl
+⋈-inv (A ⊕ B) rewrite ⋈-inv A | ⋈-inv B = refl
+⋈-inv (B ⇚ A) rewrite ⋈-inv A | ⋈-inv B = refl
+⋈-inv (A ⇛ B) rewrite ⋈-inv A | ⋈-inv B = refl
+
+
+∞-inv : Involutive _∞
+∞-inv (el  A)                           = refl
+∞-inv (□   A) rewrite ∞-inv A           = refl
+∞-inv (◇   A) rewrite ∞-inv A           = refl
+∞-inv (₀   A) rewrite ∞-inv A           = refl
+∞-inv (A   ⁰) rewrite ∞-inv A           = refl
+∞-inv (₁   A) rewrite ∞-inv A           = refl
+∞-inv (A   ¹) rewrite ∞-inv A           = refl
+∞-inv (A ⊗ B) rewrite ∞-inv A | ∞-inv B = refl
+∞-inv (A ⇒ B) rewrite ∞-inv A | ∞-inv B = refl
+∞-inv (B ⇐ A) rewrite ∞-inv A | ∞-inv B = refl
+∞-inv (A ⊕ B) rewrite ∞-inv A | ∞-inv B = refl
+∞-inv (B ⇚ A) rewrite ∞-inv A | ∞-inv B = refl
+∞-inv (A ⇛ B) rewrite ∞-inv A | ∞-inv B = refl
+
+
+⋈∞⋈=∞ : (A : Type) → A ⋈ ∞ ⋈ ≡ A ∞
+⋈∞⋈=∞ (el  A)                           = refl
+⋈∞⋈=∞ (□   A) rewrite ⋈∞⋈=∞ A           = refl
+⋈∞⋈=∞ (◇   A) rewrite ⋈∞⋈=∞ A           = refl
+⋈∞⋈=∞ (₀   A) rewrite ⋈∞⋈=∞ A           = refl
+⋈∞⋈=∞ (A   ⁰) rewrite ⋈∞⋈=∞ A           = refl
+⋈∞⋈=∞ (₁   A) rewrite ⋈∞⋈=∞ A           = refl
+⋈∞⋈=∞ (A   ¹) rewrite ⋈∞⋈=∞ A           = refl
+⋈∞⋈=∞ (A ⊗ B) rewrite ⋈∞⋈=∞ A | ⋈∞⋈=∞ B = refl
+⋈∞⋈=∞ (A ⇒ B) rewrite ⋈∞⋈=∞ A | ⋈∞⋈=∞ B = refl
+⋈∞⋈=∞ (B ⇐ A) rewrite ⋈∞⋈=∞ A | ⋈∞⋈=∞ B = refl
+⋈∞⋈=∞ (A ⊕ B) rewrite ⋈∞⋈=∞ A | ⋈∞⋈=∞ B = refl
+⋈∞⋈=∞ (B ⇚ A) rewrite ⋈∞⋈=∞ A | ⋈∞⋈=∞ B = refl
+⋈∞⋈=∞ (A ⇛ B) rewrite ⋈∞⋈=∞ A | ⋈∞⋈=∞ B = refl
+
+
+∞⋈∞=⋈ : (A : Type) → A ∞ ⋈ ∞ ≡ A ⋈
+∞⋈∞=⋈ (el  A)                           = refl
+∞⋈∞=⋈ (□   A) rewrite ∞⋈∞=⋈ A           = refl
+∞⋈∞=⋈ (◇   A) rewrite ∞⋈∞=⋈ A           = refl
+∞⋈∞=⋈ (₀   A) rewrite ∞⋈∞=⋈ A           = refl
+∞⋈∞=⋈ (A   ⁰) rewrite ∞⋈∞=⋈ A           = refl
+∞⋈∞=⋈ (₁   A) rewrite ∞⋈∞=⋈ A           = refl
+∞⋈∞=⋈ (A   ¹) rewrite ∞⋈∞=⋈ A           = refl
+∞⋈∞=⋈ (A ⊗ B) rewrite ∞⋈∞=⋈ A | ∞⋈∞=⋈ B = refl
+∞⋈∞=⋈ (A ⇒ B) rewrite ∞⋈∞=⋈ A | ∞⋈∞=⋈ B = refl
+∞⋈∞=⋈ (B ⇐ A) rewrite ∞⋈∞=⋈ A | ∞⋈∞=⋈ B = refl
+∞⋈∞=⋈ (A ⊕ B) rewrite ∞⋈∞=⋈ A | ∞⋈∞=⋈ B = refl
+∞⋈∞=⋈ (B ⇚ A) rewrite ∞⋈∞=⋈ A | ∞⋈∞=⋈ B = refl
+∞⋈∞=⋈ (A ⇛ B) rewrite ∞⋈∞=⋈ A | ∞⋈∞=⋈ B = refl
 
 
 -- Proofs which show that constructors of types (as all Agda
 -- data-constructors) respect equality.
-
 el-injective : ∀ {A B} → el A ≡ el B → A ≡ B
 el-injective refl = refl
 
@@ -222,9 +335,7 @@ case-⊕ (_ ⊕ _) = yes (_ , _ , refl)
 
 
 -- Proof that if the given universe has decidable equality, then so do types.
-module DecEq
-       (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B))
-       where
+module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
 
   infix 4 _≟-Type_
 
