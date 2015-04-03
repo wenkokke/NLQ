@@ -15,7 +15,7 @@ open import Relation.Binary.HeterogeneousEquality as H using (_≅_)
 module Logic.Classical.Ordered.LambekGrishin.ResMon.Base {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type             Univ hiding (_⋈; _∞)
+open import Logic.Classical.Ordered.LambekGrishin.Type             Univ
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement Univ
 
 
@@ -111,80 +111,80 @@ appl-⇚′ f = r⇚⊕ (m⇚ f ax′)
 
 
 -- Symmetries that do hold
-_⋈ : ∀ {J} → LG J → LG J ⋈ᴶ
-_⋈  ax       = ax
-_⋈ (m□  f  ) = m□  (f ⋈)
-_⋈ (m◇  f  ) = m◇  (f ⋈)
-_⋈ (r□◇ f  ) = r□◇ (f ⋈)
-_⋈ (r◇□ f  ) = r◇□ (f ⋈)
-_⋈ (m⁰  f  ) = m₀  (f ⋈)
-_⋈ (m₀  f  ) = m⁰  (f ⋈)
-_⋈ (r⁰₀ f  ) = r₀⁰ (f ⋈)
-_⋈ (r₀⁰ f  ) = r⁰₀ (f ⋈)
-_⋈ (m₁  f  ) = m¹  (f ⋈)
-_⋈ (m¹  f  ) = m₁  (f ⋈)
-_⋈ (r¹₁ f  ) = r₁¹ (f ⋈)
-_⋈ (r₁¹ f  ) = r¹₁ (f ⋈)
-_⋈ (m⊗  f g) = m⊗  (g ⋈) (f ⋈)
-_⋈ (m⇒  f g) = m⇐  (g ⋈) (f ⋈)
-_⋈ (m⇐  f g) = m⇒  (g ⋈) (f ⋈)
-_⋈ (r⇒⊗ f  ) = r⇐⊗ (f ⋈)
-_⋈ (r⊗⇒ f  ) = r⊗⇐ (f ⋈)
-_⋈ (r⇐⊗ f  ) = r⇒⊗ (f ⋈)
-_⋈ (r⊗⇐ f  ) = r⊗⇒ (f ⋈)
-_⋈ (m⊕  f g) = m⊕  (g ⋈) (f ⋈)
-_⋈ (m⇛  f g) = m⇚  (g ⋈) (f ⋈)
-_⋈ (m⇚  f g) = m⇛  (g ⋈) (f ⋈)
-_⋈ (r⇛⊕ f  ) = r⇚⊕ (f ⋈)
-_⋈ (r⊕⇛ f  ) = r⊕⇚ (f ⋈)
-_⋈ (r⊕⇚ f  ) = r⊕⇛ (f ⋈)
-_⋈ (r⇚⊕ f  ) = r⇛⊕ (f ⋈)
-_⋈ (d⇛⇐ f  ) = d⇚⇒ (f ⋈)
-_⋈ (d⇛⇒ f  ) = d⇚⇐ (f ⋈)
-_⋈ (d⇚⇒ f  ) = d⇛⇐ (f ⋈)
-_⋈ (d⇚⇐ f  ) = d⇛⇒ (f ⋈)
+_⋈ᵗ : ∀ {J} → LG J → LG J ⋈ᴶ
+_⋈ᵗ  ax       = ax
+_⋈ᵗ (m□  f  ) = m□  (f ⋈ᵗ)
+_⋈ᵗ (m◇  f  ) = m◇  (f ⋈ᵗ)
+_⋈ᵗ (r□◇ f  ) = r□◇ (f ⋈ᵗ)
+_⋈ᵗ (r◇□ f  ) = r◇□ (f ⋈ᵗ)
+_⋈ᵗ (m⁰  f  ) = m₀  (f ⋈ᵗ)
+_⋈ᵗ (m₀  f  ) = m⁰  (f ⋈ᵗ)
+_⋈ᵗ (r⁰₀ f  ) = r₀⁰ (f ⋈ᵗ)
+_⋈ᵗ (r₀⁰ f  ) = r⁰₀ (f ⋈ᵗ)
+_⋈ᵗ (m₁  f  ) = m¹  (f ⋈ᵗ)
+_⋈ᵗ (m¹  f  ) = m₁  (f ⋈ᵗ)
+_⋈ᵗ (r¹₁ f  ) = r₁¹ (f ⋈ᵗ)
+_⋈ᵗ (r₁¹ f  ) = r¹₁ (f ⋈ᵗ)
+_⋈ᵗ (m⊗  f g) = m⊗  (g ⋈ᵗ) (f ⋈ᵗ)
+_⋈ᵗ (m⇒  f g) = m⇐  (g ⋈ᵗ) (f ⋈ᵗ)
+_⋈ᵗ (m⇐  f g) = m⇒  (g ⋈ᵗ) (f ⋈ᵗ)
+_⋈ᵗ (r⇒⊗ f  ) = r⇐⊗ (f ⋈ᵗ)
+_⋈ᵗ (r⊗⇒ f  ) = r⊗⇐ (f ⋈ᵗ)
+_⋈ᵗ (r⇐⊗ f  ) = r⇒⊗ (f ⋈ᵗ)
+_⋈ᵗ (r⊗⇐ f  ) = r⊗⇒ (f ⋈ᵗ)
+_⋈ᵗ (m⊕  f g) = m⊕  (g ⋈ᵗ) (f ⋈ᵗ)
+_⋈ᵗ (m⇛  f g) = m⇚  (g ⋈ᵗ) (f ⋈ᵗ)
+_⋈ᵗ (m⇚  f g) = m⇛  (g ⋈ᵗ) (f ⋈ᵗ)
+_⋈ᵗ (r⇛⊕ f  ) = r⇚⊕ (f ⋈ᵗ)
+_⋈ᵗ (r⊕⇛ f  ) = r⊕⇚ (f ⋈ᵗ)
+_⋈ᵗ (r⊕⇚ f  ) = r⊕⇛ (f ⋈ᵗ)
+_⋈ᵗ (r⇚⊕ f  ) = r⇛⊕ (f ⋈ᵗ)
+_⋈ᵗ (d⇛⇐ f  ) = d⇚⇒ (f ⋈ᵗ)
+_⋈ᵗ (d⇛⇒ f  ) = d⇚⇐ (f ⋈ᵗ)
+_⋈ᵗ (d⇚⇒ f  ) = d⇛⇐ (f ⋈ᵗ)
+_⋈ᵗ (d⇚⇐ f  ) = d⇛⇒ (f ⋈ᵗ)
 
 
-_∞ : ∀ {J} → LG J → LG J ∞ᴶ
-_∞  ax       = ax
-_∞ (m□  f  ) = m◇  (f ∞)
-_∞ (m◇  f  ) = m□  (f ∞)
-_∞ (r□◇ f  ) = r◇□ (f ∞)
-_∞ (r◇□ f  ) = r□◇ (f ∞)
-_∞ (m⁰  f  ) = m₁  (f ∞)
-_∞ (m₀  f  ) = m¹  (f ∞)
-_∞ (r⁰₀ f  ) = r₁¹ (f ∞)
-_∞ (r₀⁰ f  ) = r¹₁ (f ∞)
-_∞ (m₁  f  ) = m⁰  (f ∞)
-_∞ (m¹  f  ) = m₀  (f ∞)
-_∞ (r¹₁ f  ) = r₀⁰ (f ∞)
-_∞ (r₁¹ f  ) = r⁰₀ (f ∞)
-_∞ (m⊗  f g) = m⊕  (g ∞) (f ∞)
-_∞ (m⇒  f g) = m⇚  (g ∞) (f ∞)
-_∞ (m⇐  f g) = m⇛  (g ∞) (f ∞)
-_∞ (r⇒⊗ f  ) = r⇚⊕ (f ∞)
-_∞ (r⊗⇒ f  ) = r⊕⇚ (f ∞)
-_∞ (r⇐⊗ f  ) = r⇛⊕ (f ∞)
-_∞ (r⊗⇐ f  ) = r⊕⇛ (f ∞)
-_∞ (m⊕  f g) = m⊗  (g ∞) (f ∞)
-_∞ (m⇛  f g) = m⇐  (g ∞) (f ∞)
-_∞ (m⇚  f g) = m⇒  (g ∞) (f ∞)
-_∞ (r⇛⊕ f  ) = r⇐⊗ (f ∞)
-_∞ (r⊕⇛ f  ) = r⊗⇐ (f ∞)
-_∞ (r⊕⇚ f  ) = r⊗⇒ (f ∞)
-_∞ (r⇚⊕ f  ) = r⇒⊗ (f ∞)
-_∞ (d⇛⇐ f  ) = d⇛⇐ (f ∞)
-_∞ (d⇛⇒ f  ) = d⇚⇐ (f ∞)
-_∞ (d⇚⇒ f  ) = d⇚⇒ (f ∞)
-_∞ (d⇚⇐ f  ) = d⇛⇒ (f ∞)
+_∞ᵗ : ∀ {J} → LG J → LG J ∞ᴶ
+_∞ᵗ  ax       = ax
+_∞ᵗ (m□  f  ) = m◇  (f ∞ᵗ)
+_∞ᵗ (m◇  f  ) = m□  (f ∞ᵗ)
+_∞ᵗ (r□◇ f  ) = r◇□ (f ∞ᵗ)
+_∞ᵗ (r◇□ f  ) = r□◇ (f ∞ᵗ)
+_∞ᵗ (m⁰  f  ) = m₁  (f ∞ᵗ)
+_∞ᵗ (m₀  f  ) = m¹  (f ∞ᵗ)
+_∞ᵗ (r⁰₀ f  ) = r₁¹ (f ∞ᵗ)
+_∞ᵗ (r₀⁰ f  ) = r¹₁ (f ∞ᵗ)
+_∞ᵗ (m₁  f  ) = m⁰  (f ∞ᵗ)
+_∞ᵗ (m¹  f  ) = m₀  (f ∞ᵗ)
+_∞ᵗ (r¹₁ f  ) = r₀⁰ (f ∞ᵗ)
+_∞ᵗ (r₁¹ f  ) = r⁰₀ (f ∞ᵗ)
+_∞ᵗ (m⊗  f g) = m⊕  (g ∞ᵗ) (f ∞ᵗ)
+_∞ᵗ (m⇒  f g) = m⇚  (g ∞ᵗ) (f ∞ᵗ)
+_∞ᵗ (m⇐  f g) = m⇛  (g ∞ᵗ) (f ∞ᵗ)
+_∞ᵗ (r⇒⊗ f  ) = r⇚⊕ (f ∞ᵗ)
+_∞ᵗ (r⊗⇒ f  ) = r⊕⇚ (f ∞ᵗ)
+_∞ᵗ (r⇐⊗ f  ) = r⇛⊕ (f ∞ᵗ)
+_∞ᵗ (r⊗⇐ f  ) = r⊕⇛ (f ∞ᵗ)
+_∞ᵗ (m⊕  f g) = m⊗  (g ∞ᵗ) (f ∞ᵗ)
+_∞ᵗ (m⇛  f g) = m⇐  (g ∞ᵗ) (f ∞ᵗ)
+_∞ᵗ (m⇚  f g) = m⇒  (g ∞ᵗ) (f ∞ᵗ)
+_∞ᵗ (r⇛⊕ f  ) = r⇐⊗ (f ∞ᵗ)
+_∞ᵗ (r⊕⇛ f  ) = r⊗⇐ (f ∞ᵗ)
+_∞ᵗ (r⊕⇚ f  ) = r⊗⇒ (f ∞ᵗ)
+_∞ᵗ (r⇚⊕ f  ) = r⇒⊗ (f ∞ᵗ)
+_∞ᵗ (d⇛⇐ f  ) = d⇛⇐ (f ∞ᵗ)
+_∞ᵗ (d⇛⇒ f  ) = d⇚⇐ (f ∞ᵗ)
+_∞ᵗ (d⇚⇒ f  ) = d⇚⇒ (f ∞ᵗ)
+_∞ᵗ (d⇚⇐ f  ) = d⇛⇒ (f ∞ᵗ)
 
 
-_⋈⁻¹ : ∀ {J} → LG J ⋈ᴶ → LG J
-_⋈⁻¹ {J} f = P.subst LG_ (⋈ᴶ-inv J) (f ⋈)
+_⋈ᵗ⁻¹ : ∀ {J} → LG J ⋈ᴶ → LG J
+_⋈ᵗ⁻¹ {J} f = P.subst LG_ (⋈ᴶ-inv J) (f ⋈ᵗ)
 
 
-_∞⁻¹ : ∀ {J} → LG J ∞ᴶ → LG J
-_∞⁻¹ {J} f = P.subst LG_ (∞ᴶ-inv J) (f ∞)
+_∞ᵗ⁻¹ : ∀ {J} → LG J ∞ᴶ → LG J
+_∞ᵗ⁻¹ {J} f = P.subst LG_ (∞ᴶ-inv J) (f ∞ᵗ)
 
 
 infix 5 is-ax_ is-ax?_

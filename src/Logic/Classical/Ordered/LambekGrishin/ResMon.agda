@@ -10,4 +10,3 @@ open import Logic.Classical.Ordered.LambekGrishin.Type             Univ public h
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement Univ public hiding (module DecEq)
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base      Univ public
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Trans     Univ public
-X

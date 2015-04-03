@@ -142,10 +142,11 @@ lambdaCMinus = Mapping{..}
   where
     name        = "Lambda C-Minus Calculus"
     blacklist   = [ "⇛"  , "⇐"  , "□"  , "◇"
-                  , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀"
-                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰"
-                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁"
-                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹"
+                  , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
+                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
+                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
+                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" , "<¹"
+                  , "⋈"  , "∞"
                   ]
     textMapping = [ "Ordered"       ==> "Unrestricted"
                   , "Structure"     ==> "List Type"
@@ -169,11 +170,11 @@ nonAssociativeLambek = Mapping{..}
   where
     name        = "Non-associative Lambek Calculus"
     blacklist   = [ "⊕"  , "⇛"  , "⇚"  , "□"   , "◇"
-                  , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀"
-                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰"
-                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁"
-                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹"
-                  , "⁰ᴸ" , "⁰ᴿ" , "¹ᴸ" , "¹ᴿ"
+                  , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
+                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
+                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
+                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" , "<¹"
+                  , "⁰ᴸ" , "⁰ᴿ" , "¹ᴸ" , "¹ᴿ"  , "∞"
                   ]
     textMapping = [ "LambekGrishin" ==> "Lambek"
                   , "LG"            ==> "NL"
@@ -181,6 +182,7 @@ nonAssociativeLambek = Mapping{..}
                   ]
     include     = [srcDir </> "Logic/Classical/Ordered/LambekGrishin//*.agda"]
     exclude     = ["//ToIntuitionisticLinearLambda.agda"]
+
 
 --------------------------------------------------------------------------------
 -- Make: Non-associative Lambek Calculus
@@ -194,9 +196,7 @@ classicalNonAssociativeLambek = Mapping{..}
     textMapping = [ "LambekGrishin" ==> "Lambek"
                   , "LG"            ==> "CNL"    ]
     include     = [srcDir </> "Logic/Classical/Ordered/LambekGrishin//*.agda"]
-    exclude     = []
-
-
+    exclude     = ["//ToClassicalLinearLambekGrishin.agda"]
 
 
 --------------------------------------------------------------------------------
@@ -217,6 +217,21 @@ linearLambekGrishin = Mapping{..}
 
 
 --------------------------------------------------------------------------------
+-- Make: Non-associative Lambek Calculus
+--------------------------------------------------------------------------------
+
+--classicalLinearLambek :: Mapping
+--classicalLineraLambek = Mapping{..}
+--  where
+--    name        = "Classical Linear Lambek Calculus"
+--    blacklist   = [ "d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐" ]
+--    textMapping = [ "LambekGrishin" ==> "Lambek"
+--                  , "LG"            ==> "CNL"    ]
+--    include     = [srcDir </> "Logic/Classical/Linear/LambekGrishin//*.agda"]
+--    exclude     = []
+
+
+--------------------------------------------------------------------------------
 -- Mapping: Lambda Calculus
 --------------------------------------------------------------------------------
 
@@ -226,10 +241,11 @@ lambda = Mapping{..}
   where
     name        = "Lambda Calculus"
     blacklist   = [ "⇐"  , "⊕"  , "⇛"  , "⇚"   , "□"  , "◇"
-                  , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀"
-                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰"
-                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁"
-                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹"
+                  , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
+                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
+                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
+                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" , "<¹"
+                  , "⋈"  , "∞"
                   ]
     textMapping = [ "LG"            ==> "Λ"
                   , "Classical"     ==> "Intuitionistic"
@@ -357,10 +373,15 @@ restrictSource replacements blacklist input = let
   stripMarked  = map snd (filter fst markIllegal')
   stripEnd     = map T.stripEnd stripMarked
 
+  -- Add in a comment stating that the file was generated.
+  comment      = "-- This file was automatically generated." :: Text
+  withComment  = case stripEnd of
+    (fst:snd:rest) -> (fst:snd:comment:rest)
+
   -- We then perform a number of in-place substitutions, which
   -- replace references to the Lambek Grishin calculus with
   -- references to the Lambek calculus.
-  replaced = replaceAll (T.unlines stripEnd)
+  replaced = replaceAll (T.unlines withComment)
 
   in replaced
 
