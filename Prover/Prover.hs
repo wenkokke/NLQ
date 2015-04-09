@@ -1,85 +1,136 @@
-{-# LANGUAGE GADTs, RecordWildCards, FlexibleContexts #-}
-module Prover.Prover where
+{-# LANGUAGE GADTs, TypeSynonymInstances, FlexibleInstances, FlexibleContexts, RankNTypes, MultiParamTypeClasses, OverloadedStrings #-}
+module Prover where
 
 
-import Prover.Base
-import Prover.Unification hiding ((++),null)
+import           Control.Monad.State
+import qualified Data.Map as M
+import           Data.IntMap (IntMap,(!))
+import qualified Data.IntMap as IM
+import           Data.Void (Void)
+import           Data.Data (Fixity (..))
+import           Text.Show (showListWith)
 
-import Data.Maybe (mapMaybe)
-import qualified Data.Set as S
-import Text.Printf (printf)
+
+data Term c v where
+  Var :: ! v               -> Term c v
+  Con :: ! c -> [Term c v] -> Term c v
+  deriving (Eq)
 
 
--- * Proof structures
+class Prec c where
+  prec   :: c -> Int
+  fixity :: c -> Fixity
 
-data Proof where
-  Con :: RuleName -> [Proof] -> Proof
+instance Prec String where
+  prec   _ = 1
+  fixity _ = Prefix
 
-type Proof' f = (Int, [f Int] , [Proof] -> Proof)
 
-mkProof :: Rule f Int -> [Proof] -> [Proof]
-mkProof Rule{..} xs = first : rest
+showSeqWith :: (a -> ShowS) -> [a] -> ShowS
+showSeqWith _  []     = id
+showSeqWith ss (x:xs) = showChar ' ' . ss x . showSeqWith ss xs
+
+
+instance (Show c, Prec c, Show v) => Show (Term c v) where
+  showsPrec _ (Var i   ) = shows i
+  showsPrec _ (Con f []) = shows f
+  showsPrec p (Con f xs) | null (show f)
+    = showSeqWith (showsPrec (prec f)) xs
+  showsPrec p (Con f xs) | fixity f == Prefix
+    = let q = prec f
+      in showParen (p > q) $
+           shows f . showSeqWith (showsPrec q) xs
+  showsPrec p (Con f [x,y]) | fixity f == Infix
+    = let q = prec f
+      in showParen (p > q) $
+           showsPrec q x . showChar ' ' . shows f . showChar ' ' . showsPrec q y
+
+
+type VarId     = String
+type VMap  c   = IntMap (Term c Void)
+type Inst  c a = StateT (VMap c) Maybe a
+
+
+runInst :: Inst c a -> Maybe (a, VMap c)
+runInst x = runStateT x IM.empty
+
+
+inst :: (Eq c) => Term c Void -> Term c Int -> Inst c (Term c Void)
+inst   (Con x xs) (Con y ys) | x == y = liftM (Con x) (instAll xs ys)
+inst x@(Con _ _ ) (Var i   )          = do vm <- get
+                                           case IM.lookup i vm of
+                                            Just y -> return y
+                                            _      -> do put (IM.insert i x vm)
+                                                         return x
+inst _            _                   = fail "cannot instantiate"
+
+
+instAll :: (Eq c) => [Term c Void] -> [Term c Int] -> Inst c [Term c Void]
+instAll    []     []  = return []
+instAll (x:xs) (y:ys) = liftM2 (:) (inst x y) (instAll xs ys)
+instAll  _      _     = fail "cannot instantiate"
+
+
+data Rule r c v = Rule
+  { name       :: ! r
+  , arity      :: ! Int
+  , premises   :: ! [Term c v]
+  , conclusion :: ! (Term c v)
+  }
+  deriving (Eq,Show)
+
+
+infixr 1 ⟶
+
+(⟶) :: [Term c VarId] -> Term c VarId -> r -> Rule r c Int
+(⟶) ps c n = Rule n (length ps) ps' c'
   where
-    arity = length premises
-    first = Con name (take arity xs)
-    rest  = drop arity xs
 
-instance Show Proof where
-  show (Con f []) = f
-  show (Con f xs) = printf "(%s %s)" f (unwords (map show xs))
+    (c' : ps') = evalState (mapM label (c : ps)) (0, M.empty)
 
-
--- * Proof search
+    label (Var x) = do (i, vm) <- get
+                       case M.lookup x vm of
+                        Just j -> return (Var j)
+                        _      -> do put (i + 1, M.insert x i vm); return (Var i)
+    label (Con x xs) = fmap (Con x) (mapM label xs)
 
 
-data Tree a where
-  Leaf ::       a  -> Tree a
-  Node :: [Tree a] -> Tree a
+
+mkProof :: r -> Int -> [Term r Void] -> [Term r Void]
+mkProof n a ts = let (xs,ys) = splitAt a ts in Con n xs : ys
 
 
-solve :: (VarClass f Int, UnifyClass f Int, SubstClass f Int)
-         => Int -> f Int -> [Rule f Int] -> Tree Proof
-solve depth goal = solveAcc depth (goalSize, [goal], head)
-  where
-    goalSize = S.size (allVars goal)
+-- |Apply the given variable map to a given term. Note: the variable
+--  map has to contain a term for every variable used in the given
+--  term. The resulting term will be variable-free.
+apply :: VMap c -> Term c Int -> Term c Void
+apply s = app where
 
-    solveAcc 0                  _  _     = Node []
-    solveAcc _     (_,     [] , p) _     = Leaf (p [])
-    solveAcc depth (n, g : gs , p) rules = Node (mapMaybe step rules)
-      where
-        step r@Rule{..} =
-          case unify g (update (+n) conclusion) of
-            Nothing  -> Nothing
-            Just mgu -> let
-              premises' = map (subst mgu . update (+n)) premises
-              p'        = (n + ruleSize, premises' ++ gs, p . mkProof r)
-              in Just (solveAcc (depth - 1) p' rules)
+  app (Con x xs) = Con x (map app xs)
+  app (Var i   ) = s ! i
 
 
-dfs :: Tree Proof -> [Proof]
-dfs (Leaf x ) = [x]
-dfs (Node xs) = concatMap dfs xs
+-- |Search for proofs of the given goal using the gives rules using
+--  depth-limited depth-first search.
+searchToDepth :: (Eq c) => Int -> Term c Void -> [Rule r c Int] -> [Term r Void]
+searchToDepth d g rs = slv (d + 1) [g] head where
+
+    slv 0        _ _ = []
+    slv _ [      ] p = [p []]
+    slv d (g : gs) p = concatMap step rs where
+
+      step (Rule n a ps c) =
+        case runInst (inst g c) of
+         Just (_, s) -> slv (d - 1) (map (apply s) ps ++ gs) (p . mkProof n a)
+         Nothing     -> []
 
 
-bfs :: Tree a -> [a]
-bfs tree = go [tree]
-  where
-    go :: [Tree a] -> [a]
-    go [] = []
-    go (Leaf x  : xxs) = x : go xxs
-    go (Node xs : xxs) = go (xxs ++ xs)
+-- |Search for proofs of the given goal using the gives rules using
+--  iterative deepening depth-first search.
+search :: (Eq c) => Term c Void -> [Rule r c Int] -> [Term r Void]
+search g rs = sch 1 where
 
+    sch d = if null here then next else here where
 
-dldfs :: Int -> Tree Proof -> [Proof]
-dldfs 0       _   = [ ]
-dldfs d (Leaf x ) = [x]
-dldfs d (Node xs) = concatMap (dldfs (d - 1)) xs
-
-
-iddfs :: Tree Proof -> [Proof]
-iddfs tree = go 5
-  where
-    go :: Int -> [Proof]
-    go d = if null ret then go (d + 1) else ret
-      where
-        ret = dldfs d tree
+        here = searchToDepth d g rs
+        next = sch (d + 1)

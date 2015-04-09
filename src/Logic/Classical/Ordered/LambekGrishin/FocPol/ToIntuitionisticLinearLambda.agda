@@ -7,7 +7,7 @@ open import Algebra                                         using (module Monoid
 open import Function                                        using (_∘_)
 open import Data.List                                       using (List; _++_) renaming (_∷_ to _,_; _∷ʳ_ to _,′_; [] to ∅)
 open import Data.Sum                                        using (_⊎_; inj₁; inj₂)
-open import Data.Product                                    using (∃; _×_; _,_)
+open import Data.Product                                    using (∃; _×_; _,_; proj₁)
 open import Relation.Nullary                                using (Dec; yes; no)
 open import Relation.Nullary.Decidable                      using (True; toWitness)
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_; refl; sym; cong)
@@ -24,10 +24,10 @@ open import Logic.Intuitionistic.Linear.Lambda.Judgement Univ as ΛJ
 open import Logic.Intuitionistic.Linear.Lambda.Base      Univ as ΛB
 open import Logic.Intuitionistic.Linear.Lambda.Permute   Univ as ΛP
 
-open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ          as LGTᴾ
-open import Logic.Classical.Ordered.LambekGrishin.Type                PolarisedUniv as LGT
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised PolarisedUniv as LGS
-open import Logic.Classical.Ordered.LambekGrishin.Judgement           PolarisedUniv as LGJ
+open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      (Polarity × Univ) proj₁ as LGTᴾ
+open import Logic.Classical.Ordered.LambekGrishin.Type                (Polarity × Univ) as LGT
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised (Polarity × Univ) as LGS
+open import Logic.Classical.Ordered.LambekGrishin.Judgement           (Polarity × Univ) as LGJ
 open import Logic.Classical.Ordered.LambekGrishin.FocPol.Base         Univ          as LGB
 
 open Monoid (Data.List.monoid ΛT.Type) using (assoc)
@@ -73,7 +73,8 @@ mutual
 
 
 Positive-≡ : ∀ {A} → Positive A → ⟦ A ⟧⁻ ≡ ¬ ⟦ A ⟧⁺
-Positive-≡ (el  A) = refl
+Positive-≡ (el (+ , A) {{A⁺}}) = refl
+Positive-≡ (el (- , A) {{()}})
 Positive-≡ (◇   A) = refl
 Positive-≡ (₁   A) = refl
 Positive-≡ (A   ¹) = refl
@@ -82,7 +83,8 @@ Positive-≡ (A ⇚ B) = refl
 Positive-≡ (A ⇛ B) = refl
 
 Negative-≡ : ∀ {A} → Negative A → ⟦ A ⟧⁺ ≡ ¬ ⟦ A ⟧⁻
-Negative-≡ (el  A) = refl
+Negative-≡ (el (+ , A) {{()}})
+Negative-≡ (el (- , A) {{A⁻}}) = refl
 Negative-≡ (□   A) = refl
 Negative-≡ (₀   A) = refl
 Negative-≡ (A   ⁰) = refl

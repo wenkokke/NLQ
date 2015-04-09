@@ -4,23 +4,23 @@
 ------------------------------------------------------------------------
 
 
-open import Function                                        using (_∘_)
-open import Data.List                                       using (List; _++_) renaming (_∷_ to _,_; _∷ʳ_ to _,′_; [] to ∅)
-open import Data.Sum                                        using (_⊎_; inj₁; inj₂)
-open import Data.Product                                    using (∃; _×_; _,_)
-open import Relation.Nullary                                using (Dec; yes; no)
-open import Relation.Nullary.Decidable                      using (True; toWitness)
-open import Relation.Binary.PropositionalEquality as PropEq using (_≡_; refl; sym; cong)
+open import Function                                   using (_∘_)
+open import Data.List                                  using (List; _++_) renaming (_∷_ to _,_; _∷ʳ_ to _,′_; [] to ∅)
+open import Data.Sum                                   using (_⊎_; inj₁; inj₂)
+open import Data.Product                               using (∃; _×_; proj₁)
+open import Relation.Nullary                           using (Dec; yes; no)
+open import Relation.Nullary.Decidable                 using (True; toWitness)
+open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym; cong)
 
 
 module Logic.Classical.Ordered.LambekGrishin.FocPol.Base {ℓ} (Univ : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ
-open import Logic.Classical.Ordered.LambekGrishin.Type                PolarisedUniv
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised PolarisedUniv hiding (Polarised)
-open import Logic.Classical.Ordered.LambekGrishin.Judgement           PolarisedUniv
+open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      (Polarity × Univ) proj₁
+open import Logic.Classical.Ordered.LambekGrishin.Type                (Polarity × Univ)
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised (Polarity × Univ) hiding (Polarised)
+open import Logic.Classical.Ordered.LambekGrishin.Judgement           (Polarity × Univ)
 
 
 infix 1 LG_
