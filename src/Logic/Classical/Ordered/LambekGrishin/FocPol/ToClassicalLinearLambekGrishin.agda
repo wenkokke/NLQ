@@ -7,7 +7,7 @@ open import Algebra                                         using (module Monoid
 open import Function                                        using (_∘_)
 open import Data.List                                       using (List; _++_) renaming (_∷_ to _,_; _∷ʳ_ to _,′_; [] to ∅)
 open import Data.Sum                                        using (_⊎_; inj₁; inj₂)
-open import Data.Product                                    using (∃; _×_; _,_)
+open import Data.Product                                    using (∃; _×_; proj₁; _,_)
 open import Data.Unit                                       using (tt)
 open import Relation.Nullary                                using (Dec; yes; no)
 open import Relation.Nullary.Decidable                      using (True; toWitness)
@@ -20,17 +20,17 @@ module Logic.Classical.Ordered.LambekGrishin.FocPol.ToClassicalLinearLambekGrish
 open import Logic.Polarity
 open import Logic.Translation
 
-open import Logic.Classical.Linear.LambekGrishin.Type.Polarised       Univ             as LP
-open import Logic.Classical.Linear.LambekGrishin.Type                 LP.PolarisedUniv as LT
-open import Logic.Classical.Linear.LambekGrishin.Structure.Polarised  LP.PolarisedUniv as LS
-open import Logic.Classical.Linear.LambekGrishin.Judgement            LP.PolarisedUniv as LJ
+open import Logic.Classical.Linear.LambekGrishin.Type.Polarised       (Polarity × Univ) proj₁ as LP
+open import Logic.Classical.Linear.LambekGrishin.Type                 (Polarity × Univ) as LT
+open import Logic.Classical.Linear.LambekGrishin.Structure.Polarised  (Polarity × Univ) as LS
+open import Logic.Classical.Linear.LambekGrishin.Judgement            (Polarity × Univ) as LJ
 open import Logic.Classical.Linear.LambekGrishin.FocPol.Base          Univ             as L
 
-open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      Univ             as OP
-open import Logic.Classical.Ordered.LambekGrishin.Type                OP.PolarisedUniv as OT
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised OP.PolarisedUniv as OS
-open import Logic.Classical.Ordered.LambekGrishin.Judgement           OP.PolarisedUniv as OJ
-open import Logic.Classical.Ordered.LambekGrishin.FocPol.Base         Univ             as O
+open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      (Polarity × Univ) proj₁ as OP
+open import Logic.Classical.Ordered.LambekGrishin.Type                (Polarity × Univ) as OT
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised (Polarity × Univ) as OS
+open import Logic.Classical.Ordered.LambekGrishin.Judgement           (Polarity × Univ) as OJ
+open import Logic.Classical.Ordered.LambekGrishin.FocPol.Base         Univ              as O
 
 
 private

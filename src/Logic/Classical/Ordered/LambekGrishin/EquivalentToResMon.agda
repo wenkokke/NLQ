@@ -249,71 +249,93 @@ trans′ f g = reinflate (from↑ (RM.trans′ (to f) (to g)))
 -- structures.
 ◇ᴸ′ : ∀ {Y A} → LG · ◇ A · ⊢ Y → LG ⟨ · A · ⟩ ⊢ Y
 ◇ᴸ′ f = trans′ (◇ᴿ ax⁺) (↽ f)
+
 □ᴿ′ : ∀ {X A} → LG X ⊢ · □ A · → LG X ⊢ [ · A · ]
 □ᴿ′ f = trans′ (⇁ f) (□ᴸ ax⁻)
+
 ₀ᴿ′ : ∀ {X A} → LG X ⊢ · ₀ A · → LG X ⊢ ₀ · A ·
 ₀ᴿ′ f = trans′ (⇁ f) (₀ᴸ ax⁺)
+
 ⁰ᴿ′ : ∀ {X A} → LG X ⊢ · A ⁰ · → LG X ⊢ · A · ⁰
 ⁰ᴿ′ f = trans′ (⇁ f) (⁰ᴸ ax⁺)
+
 ₁ᴸ′ : ∀ {Y A} → LG · ₁ A · ⊢ Y → LG ₁ · A · ⊢ Y
 ₁ᴸ′ f = trans′ (₁ᴿ ax⁻) (↽ f)
+
 ¹ᴸ′ : ∀ {Y A} → LG · A ¹ · ⊢ Y → LG · A · ¹ ⊢ Y
 ¹ᴸ′ f = trans′ (¹ᴿ ax⁻) (↽ f)
 
 ⊗ᴸ′ : ∀ {Y A B} → LG · A ⊗ B · ⊢ Y → LG · A · ⊗ · B · ⊢ Y
 ⊗ᴸ′ f = trans′ (⊗ᴿ ax⁺ ax⁺) (↽ f)
+
 ⇒ᴿ′ : ∀ {X A B} → LG X ⊢ · A ⇒ B · → LG X ⊢ · A · ⇒ · B ·
 ⇒ᴿ′ f = trans′ (⇁ f) (⇒ᴸ ax⁺ ax⁻)
+
 ⇐ᴿ′ : ∀ {X A B} → LG X ⊢ · B ⇐ A · → LG X ⊢ · B · ⇐ · A ·
 ⇐ᴿ′ f = trans′ (⇁ f) (⇐ᴸ ax⁺ ax⁻)
+
 ⊕ᴿ′ : ∀ {X A B} → LG X ⊢ · B ⊕ A · → LG X ⊢ · B · ⊕ · A ·
 ⊕ᴿ′ f = trans′ (⇁ f) (⊕ᴸ ax⁻ ax⁻)
+
 ⇚ᴸ′ : ∀ {X A B} → LG · A ⇚ B · ⊢ X → LG · A · ⇚ · B · ⊢ X
 ⇚ᴸ′ f = trans′ (⇚ᴿ ax⁺ ax⁻) (↽ f)
+
 ⇛ᴸ′ : ∀ {X A B} → LG · B ⇛ A · ⊢ X → LG · B · ⇛ · A · ⊢ X
 ⇛ᴸ′ f = trans′ (⇛ᴿ ax⁺ ax⁻) (↽ f)
 
 r□◇′ : ∀ {A B} → LG · A · ⊢ · □ B · → LG · ◇ A · ⊢ · B ·
 r□◇′ f = ◇ᴸ (r□◇ (□ᴿ′ f))
+
 r◇□′ : ∀ {A B} → LG · ◇ A · ⊢ · B · → LG · A · ⊢ · □ B ·
 r◇□′ f = □ᴿ (r◇□ (◇ᴸ′ f))
+
 r⁰₀′ : ∀ {A B} → LG · A · ⊢ · B ⁰ · → LG · B · ⊢ · ₀ A ·
 r⁰₀′ f = ₀ᴿ (r⁰₀ (⁰ᴿ′ f))
+
 r₀⁰′ : ∀ {A B} → LG · B · ⊢ · ₀ A · → LG · A · ⊢ · B ⁰ ·
 r₀⁰′ f = ⁰ᴿ (r₀⁰ (₀ᴿ′ f))
+
 r¹₁′ : ∀ {A B} → LG · A ¹ · ⊢ · B · → LG · ₁ B · ⊢ · A ·
 r¹₁′ f = ₁ᴸ (r¹₁ (¹ᴸ′ f))
+
 r₁¹′ : ∀ {A B} → LG · ₁ B · ⊢ · A · → LG · A ¹ · ⊢ · B ·
 r₁¹′ f = ¹ᴸ (r₁¹ (₁ᴸ′ f))
 
 r⇒⊗′ : ∀ {A B C} → LG · B · ⊢ · A ⇒ C · → LG · A ⊗ B · ⊢ · C ·
 r⇒⊗′ f = ⊗ᴸ (r⇒⊗ (⇒ᴿ′ f))
+
 r⊗⇒′ : ∀ {A B C} → LG · A ⊗ B · ⊢ · C · → LG · B · ⊢ · A ⇒ C ·
 r⊗⇒′ f = ⇒ᴿ (r⊗⇒ (⊗ᴸ′ f))
+
 r⇐⊗′ : ∀ {A B C} → LG · A · ⊢ · C ⇐ B · → LG · A ⊗ B · ⊢ · C ·
 r⇐⊗′ f = ⊗ᴸ (r⇐⊗ (⇐ᴿ′ f))
+
 r⊗⇐′ : ∀ {A B C} → LG · A ⊗ B · ⊢ · C · → LG · A · ⊢ · C ⇐ B ·
 r⊗⇐′ f = ⇐ᴿ (r⊗⇐ (⊗ᴸ′ f))
 
 r⇚⊕′ : ∀ {A B C} → LG · C ⇚ A · ⊢ · B · → LG · C · ⊢ · B ⊕ A ·
 r⇚⊕′ f = ⊕ᴿ (r⇚⊕ (⇚ᴸ′ f))
+
 r⊕⇚′ : ∀ {A B C} → LG · C · ⊢ · B ⊕ A · → LG · C ⇚ A · ⊢ · B ·
 r⊕⇚′ f = ⇚ᴸ (r⊕⇚ (⊕ᴿ′ f))
+
 r⇛⊕′ : ∀ {A B C} → LG · B ⇛ C · ⊢ · A · → LG · C · ⊢ · B ⊕ A ·
 r⇛⊕′ f = ⊕ᴿ (r⇛⊕ (⇛ᴸ′ f))
+
 r⊕⇛′ : ∀ {A B C} → LG · C · ⊢ · B ⊕ A · → LG · B ⇛ C · ⊢ · A ·
 r⊕⇛′ f = ⇛ᴸ (r⊕⇛ (⊕ᴿ′ f))
 
 d⇛⇐′ : ∀ {A B C D} → LG · A ⊗ B · ⊢ · C ⊕ D · → LG · C ⇛ A · ⊢ · D ⇐ B ·
 d⇛⇐′ f = ⇐ᴿ (⇛ᴸ (d⇛⇐ (⊗ᴸ′ (⊕ᴿ′ f))))
+
 d⇛⇒′ : ∀ {A B C D} → LG · A ⊗ B · ⊢ · C ⊕ D · → LG · C ⇛ B · ⊢ · A ⇒ D ·
 d⇛⇒′ f = ⇒ᴿ (⇛ᴸ (d⇛⇒ (⊗ᴸ′ (⊕ᴿ′ f))))
+
 d⇚⇒′ : ∀ {A B C D} → LG · A ⊗ B · ⊢ · C ⊕ D · → LG · B ⇚ D · ⊢ · A ⇒ C ·
 d⇚⇒′ f = ⇒ᴿ (⇚ᴸ (d⇚⇒ (⊗ᴸ′ (⊕ᴿ′ f))))
+
 d⇚⇐′ : ∀ {A B C D} → LG · A ⊗ B · ⊢ · C ⊕ D · → LG · A ⇚ D · ⊢ · C ⇐ B ·
 d⇚⇐′ f = ⇐ᴿ (⇚ᴸ (d⇚⇐ (⊗ᴸ′ (⊕ᴿ′ f))))
-
-
 
 from↓ : ∀ {A B} → RM A ⊢ B → LG · A · ⊢ · B ·
 from↓  ax       = ⇀ ax⁺
@@ -347,7 +369,6 @@ from↓ (d⇛⇐ f  ) = d⇛⇐′ (from↓ f)
 from↓ (d⇛⇒ f  ) = d⇛⇒′ (from↓ f)
 from↓ (d⇚⇒ f  ) = d⇚⇒′ (from↓ f)
 from↓ (d⇚⇐ f  ) = d⇚⇐′ (from↓ f)
-
 
 eq↑ : ∀ {A B} → (RM A ⊢ B) ⇔ (LG ⟦ A ⟧⁺ ⊢ ⟦ B ⟧⁻)
 eq↑ = equivalence from↑ (to ∘ deflate)

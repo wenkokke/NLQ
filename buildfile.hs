@@ -53,7 +53,7 @@ main = shakeArgs shakeOptions $ do
 
   make lambdaCMinus
   make linearLambekGrishin
-  make classicalNonAssociativeLambek
+  make unrestrictedLambekGrishin
 
 
   -- Generate: Everything
@@ -94,7 +94,7 @@ main = shakeArgs shakeOptions $ do
 
     clobber lambdaCMinus
     clobber linearLambekGrishin
-    clobber classicalNonAssociativeLambek
+    clobber unrestrictedLambekGrishin
 
     putNormal "Removing generated prover files"
     liftIO $ removeFiles prover
@@ -137,6 +137,7 @@ format = unlines . concatMap fmt
 -- Make: Lambda C-Minus
 --------------------------------------------------------------------------------
 
+
 lambdaCMinus :: Mapping
 lambdaCMinus = Mapping{..}
   where
@@ -161,9 +162,11 @@ lambdaCMinus = Mapping{..}
                   ]
     exclude      = []
 
+
 --------------------------------------------------------------------------------
 -- Make: Non-associative Lambek Calculus
 --------------------------------------------------------------------------------
+
 
 nonAssociativeLambek :: Mapping
 nonAssociativeLambek = Mapping{..}
@@ -174,13 +177,18 @@ nonAssociativeLambek = Mapping{..}
                   , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
                   , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
                   , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" , "<¹"
-                  , "⁰ᴸ" , "⁰ᴿ" , "¹ᴸ" , "¹ᴿ"  , "∞"
+                  , "⁰ᴸ" , "⁰ᴿ" , "¹ᴸ" , "¹ᴿ"
+                  , "∞"
+                  , "d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐"
                   ]
     textMapping = [ "LambekGrishin" ==> "Lambek"
                   , "LG"            ==> "NL"
                   , "Classical"     ==> "Intuitionistic"
                   ]
-    include     = [srcDir </> "Logic/Classical/Ordered/LambekGrishin//*.agda"]
+    include     = [srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type.agda"
+                  ,srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
+                  ,srcDir </> "Logic/Classical/Ordered/LambekGrishin/ResMon//*.agda"
+                  ]
     exclude     = ["//ToIntuitionisticLinearLambda.agda"]
 
 
@@ -188,15 +196,37 @@ nonAssociativeLambek = Mapping{..}
 -- Make: Non-associative Lambek Calculus
 --------------------------------------------------------------------------------
 
-classicalNonAssociativeLambek :: Mapping
-classicalNonAssociativeLambek = Mapping{..}
+
+--classicalNonAssociativeLambek :: Mapping
+--classicalNonAssociativeLambek = Mapping{..}
+--  where
+--    name        = "Classical Non-associative Lambek Calculus"
+--    blacklist   = [ "d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐"
+--                  ]
+--    textMapping = [ "LambekGrishin" ==> "Lambek"
+--                  , "LG"            ==> "CNL"    ]
+--    include     = [srcDir </> "Logic/Classical/Ordered/LambekGrishin//*.agda"]
+--    exclude     = ["//ToClassicalLinearLambekGrishin.agda"]
+
+
+--------------------------------------------------------------------------------
+-- Make: Unrestricted Lambek-Grishin Calculus
+--------------------------------------------------------------------------------
+
+
+unrestrictedLambekGrishin :: Mapping
+unrestrictedLambekGrishin = Mapping{..}
   where
-    name        = "Classical Non-associative Lambek Calculus"
-    blacklist   = [ "d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐" ]
-    textMapping = [ "LambekGrishin" ==> "Lambek"
-                  , "LG"            ==> "CNL"    ]
-    include     = [srcDir </> "Logic/Classical/Ordered/LambekGrishin//*.agda"]
-    exclude     = ["//ToClassicalLinearLambekGrishin.agda"]
+  name        = "Unrestricted Lambek-Grishin Calculus"
+  blacklist   = []
+  textMapping = [ "Ordered" ==> "Unrestricted" ]
+  include     = [ srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type.agda"
+                , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
+                , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Structure.agda"
+                , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Structure//*.agda"
+                , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Judgement.agda"
+                ]
+  exclude     = []
 
 
 --------------------------------------------------------------------------------
@@ -214,21 +244,6 @@ linearLambekGrishin = Mapping{..}
                 , srcDir </> "Logic/Classical/Unrestricted/LambekGrishin/FocPol/Base.agda"
                 ]
   exclude     = []
-
-
---------------------------------------------------------------------------------
--- Make: Non-associative Lambek Calculus
---------------------------------------------------------------------------------
-
---classicalLinearLambek :: Mapping
---classicalLineraLambek = Mapping{..}
---  where
---    name        = "Classical Linear Lambek Calculus"
---    blacklist   = [ "d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐" ]
---    textMapping = [ "LambekGrishin" ==> "Lambek"
---                  , "LG"            ==> "CNL"    ]
---    include     = [srcDir </> "Logic/Classical/Linear/LambekGrishin//*.agda"]
---    exclude     = []
 
 
 --------------------------------------------------------------------------------
