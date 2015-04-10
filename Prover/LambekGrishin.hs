@@ -1,66 +1,37 @@
-{-# LANGUAGE OverloadedStrings #-}
-module Main where
+module LambekGrishin
+       (module Prover
+       ,module LambekGrishin.Base
+       ,module LambekGrishin.Rules
+       ,module LambekGrishin.Parsing
+       ) where
 
 
+import           Control.Arrow (first)
 import           Data.Void (Void)
-import           System.Console.GetOpt (OptDescr(..),ArgDescr(..),ArgOrder(..),usageInfo,getOpt)
-import           System.Environment (getProgName,getArgs)
-import           System.Exit (exitSuccess)
-import           System.IO (hPutStrLn,stderr)
-import           Text.Parsec (parse)
+import           Data.Map (Map)
+import qualified Data.Map as M
 import           Prover hiding (Term)
 import           LambekGrishin.Base
+import           LambekGrishin.DSL ((·⊗·))
 import           LambekGrishin.Rules
 import           LambekGrishin.Printing ()
-import           LambekGrishin.Parsing (judgement,lexicon)
+import           LambekGrishin.Parsing
 
 
-main :: IO ()
-main = do
-
-  args <- getArgs
-
-  let (actions, nonOptions, errors) = getOpt Permute options args
-  opts <- foldl (>>=) (return defaultOptions) actions
-  let Options { optTask    = task
-              , optLexicon = mbLexicon
-              } = opts
-  case task of
-   Nothing          -> return ()
-   Just (Solve str) -> do
-     case parse judgement "" str of
-      Left err -> print err
-      Right tm -> print (search tm rules)
-   Just (Parse str) -> return ()
+--parser :: Map String (Term Void) -> String -> _
+--parser lexicon sentence =
+--  case mapM (`M.lookup` lexicon) (words sentence) of
+--   Just formulas -> brackets (·⊗·) formulas
+--   _             -> _
 
 
+-- | Generates all binary trees with n nodes. The naive algorithm.
+brackets :: (a -> a -> a) -> [a] -> [a]
+brackets op = brack where
 
-data Task = Solve String
-          | Parse String
+  brack [ ] = [ ]
+  brack [x] = [x]
+  brack lst = [l `op` r | (ls,rs) <- split lst, l <- brack ls, r <- brack rs]
 
-data Options = Options
-  { optTask    :: Maybe Task
-  , optLexicon :: Maybe FilePath
-  }
-
-defaultOptions :: Options
-defaultOptions = Options
-  { optTask    = Nothing
-  , optLexicon = Nothing
-  }
-
-options :: [ OptDescr (Options -> IO Options) ]
-options =
-  [ Option [] ["solve"]
-    (ReqArg (\arg opt -> do return opt { optTask = Just (Solve arg) }) "SEQUENT")
-    "Search for proof of a sequent"
-  , Option [] ["parse"]
-    (ReqArg (\arg opt -> do return opt { optTask = Just (Parse arg) }) "SENTENCE")
-    "Parse the given sentence"
-  , Option "h" ["help"]
-    (NoArg  (\_ -> do
-              prg <- getProgName
-              hPutStrLn stderr (usageInfo prg options)
-              exitSuccess))
-    "Show help"
-  ]
+  split [_]    = []
+  split (x:xs) = ([x],xs) : map (first (x:)) (split xs)
