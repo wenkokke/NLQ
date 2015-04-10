@@ -1,49 +1,18 @@
-{-# LANGUAGE GADTs, TypeSynonymInstances, FlexibleInstances, FlexibleContexts, RankNTypes, MultiParamTypeClasses, OverloadedStrings #-}
+{-# LANGUAGE GADTs, FlexibleInstances, FlexibleContexts, MultiParamTypeClasses #-}
 module Prover where
 
 
 import           Control.Monad.State
-import qualified Data.Map as M
 import           Data.IntMap (IntMap,(!))
 import qualified Data.IntMap as IM
+import qualified Data.Map as M
 import           Data.Void (Void)
-import           Data.Data (Fixity (..))
-import           Text.Show (showListWith)
 
 
 data Term c v where
   Var :: ! v               -> Term c v
   Con :: ! c -> [Term c v] -> Term c v
   deriving (Eq)
-
-
-class Prec c where
-  prec   :: c -> Int
-  fixity :: c -> Fixity
-
-instance Prec String where
-  prec   _ = 1
-  fixity _ = Prefix
-
-
-showSeqWith :: (a -> ShowS) -> [a] -> ShowS
-showSeqWith _  []     = id
-showSeqWith ss (x:xs) = showChar ' ' . ss x . showSeqWith ss xs
-
-
-instance (Show c, Prec c, Show v) => Show (Term c v) where
-  showsPrec _ (Var i   ) = shows i
-  showsPrec _ (Con f []) = shows f
-  showsPrec p (Con f xs) | null (show f)
-    = showSeqWith (showsPrec (prec f)) xs
-  showsPrec p (Con f xs) | fixity f == Prefix
-    = let q = prec f
-      in showParen (p > q) $
-           shows f . showSeqWith (showsPrec q) xs
-  showsPrec p (Con f [x,y]) | fixity f == Infix
-    = let q = prec f
-      in showParen (p > q) $
-           showsPrec q x . showChar ' ' . shows f . showChar ' ' . showsPrec q y
 
 
 type VarId     = String
@@ -59,7 +28,9 @@ inst :: (Eq c) => Term c Void -> Term c Int -> Inst c (Term c Void)
 inst   (Con x xs) (Con y ys) | x == y = liftM (Con x) (instAll xs ys)
 inst x@(Con _ _ ) (Var i   )          = do vm <- get
                                            case IM.lookup i vm of
-                                            Just y -> return y
+                                            Just y -> if x == y
+                                                      then return x
+                                                      else fail "cannot instantiate"
                                             _      -> do put (IM.insert i x vm)
                                                          return x
 inst _            _                   = fail "cannot instantiate"
@@ -73,27 +44,30 @@ instAll  _      _     = fail "cannot instantiate"
 
 data Rule r c v = Rule
   { name       :: ! r
+  , guard      :: Term c Void -> Bool
   , arity      :: ! Int
   , premises   :: ! [Term c v]
   , conclusion :: ! (Term c v)
   }
-  deriving (Eq,Show)
 
 
 infixr 1 ⟶
 
 (⟶) :: [Term c VarId] -> Term c VarId -> r -> Rule r c Int
-(⟶) ps c n = Rule n (length ps) ps' c'
+(⟶) ps c n = Rule n (const True) (length ps) ps' c'
   where
 
-    (c' : ps') = evalState (mapM label (c : ps)) (0, M.empty)
+    (c' : ps') = evalState (mapM lbl (c : ps)) (0, M.empty)
 
-    label (Var x) = do (i, vm) <- get
-                       case M.lookup x vm of
-                        Just j -> return (Var j)
-                        _      -> do put (i + 1, M.insert x i vm); return (Var i)
-    label (Con x xs) = fmap (Con x) (mapM label xs)
+    lbl (Var x) = do (i, vm) <- get
+                     case M.lookup x vm of
+                      Just j -> return (Var j)
+                      _      -> do put (i + 1, M.insert x i vm); return (Var i)
+    lbl (Con x xs) = fmap (Con x) (mapM lbl xs)
 
+instance (Show r, Show c, Show v, Show (Term c v)) => Show (Rule r c v) where
+  showsPrec _ (Rule n _ _ ps c) =
+    showParen True (showList ps . showString " ⟶ " . shows c) . showChar ' ' . shows n
 
 
 mkProof :: r -> Int -> [Term r Void] -> [Term r Void]
@@ -119,10 +93,12 @@ searchToDepth d g rs = slv (d + 1) [g] head where
     slv _ [      ] p = [p []]
     slv d (g : gs) p = concatMap step rs where
 
-      step (Rule n a ps c) =
-        case runInst (inst g c) of
-         Just (_, s) -> slv (d - 1) (map (apply s) ps ++ gs) (p . mkProof n a)
-         Nothing     -> []
+      step (Rule n grd a ps c)
+        | grd g =
+            case runInst (inst g c) of
+            Just (_, s) -> slv (d - 1) (map (apply s) ps ++ gs) (p . mkProof n a)
+            Nothing     -> []
+        | otherwise = []
 
 
 -- |Search for proofs of the given goal using the gives rules using

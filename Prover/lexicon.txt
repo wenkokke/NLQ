@@ -1,0 +1,15 @@
+unicorn    : n
+teacher    : n
+nice       : (n ⇐ n)
+old        : (n ⇐ n)
+john       : np
+mary       : np
+bill       : np
+smiles     : (np ⇒ s)
+left       : (np ⇒ s)
+cheats     : (np ⇒ s)
+teases     : ((np ⇒ s) ⇐ np)
+loves      : ((np ⇒ s) ⇐ np)
+thinks     : ((np ⇒ s) ⇐ s)
+everyone   : (((np ⇚ (s ⇛ s)) ⇐ n) ⊗ n)
+someone    : (((np ⇚ (s ⇛ s)) ⇐ n) ⊗ n)
