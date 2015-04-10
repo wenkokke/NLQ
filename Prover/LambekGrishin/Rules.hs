@@ -6,16 +6,19 @@ import LambekGrishin.Base (ConId(..),pos,neg)
 import LambekGrishin.DSL
 
 
-rules :: [Rule String ConId Int]
-rules =
-  axioms       ++ focusing     ++
-  prodAndImpLR ++ plusAndSubLR ++ grishinIV
+lambek :: [Rule String ConId Int]
+lambek =
+  axioms ++ focusing ++ prodAndImpLR
 
 
-polarisedRules :: [Rule String ConId Int]
-polarisedRules =
-  polarisedAxioms ++ polarisedFocusing ++
-  prodAndImpLR ++ plusAndSubLR ++ grishinIV
+lambekGrishin :: [Rule String ConId Int]
+lambekGrishin =
+  axioms ++ focusing ++ prodAndImpLR ++ plusAndSubLR ++ grishinIV
+
+
+polarisedLambekGrishin :: [Rule String ConId Int]
+polarisedLambekGrishin =
+  polarisedAxioms ++ polarisedFocusing ++ prodAndImpLR ++ plusAndSubLR ++ grishinIV
 
 
 polarisedAxioms :: [Rule String ConId Int]
@@ -48,6 +51,7 @@ axioms =
   , ( [] ⟶ [ "A" ] ⊢   "A"   ) "ax⁺"
   ]
 
+
 focusing :: [Rule String ConId Int]
 focusing =
   [ ( [   "X"   ⊢   "B"   ] ⟶   "X"   ⊢ [ "B" ] ) "⇁"
@@ -55,6 +59,7 @@ focusing =
   , ( [   "X"   ⊢ [ "B" ] ] ⟶   "X"   ⊢   "B"   ) "⇀"
   , ( [ [ "A" ] ⊢   "Y"   ] ⟶   "A"   ⊢   "Y"   ) "↼"
   ]
+
 
 prodAndImpLR :: [Rule String ConId Int]
 prodAndImpLR =
@@ -70,6 +75,7 @@ prodAndImpLR =
   , ( [ "X" ·⊗· "Y" ⊢ "Z" ]             ⟶ "X" ⊢ "Z" ·⇐· "Y"           ) "r⊗⇐"
   ]
 
+
 plusAndSubLR :: [Rule String ConId Int]
 plusAndSubLR =
   [ ( [ [ "B" ] ⊢ "Y" , [ "A" ] ⊢ "X" ] ⟶ [ "B" ⊕ "A" ] ⊢ "Y" ⊕ "X"   ) "⊕ᴸ"
@@ -84,6 +90,7 @@ plusAndSubLR =
   , ( [ "Y" ·⇛· "Z" ⊢ "X" ]             ⟶ "Z" ⊢ "Y" ·⊕· "X"           ) "r⇛⊕"
   , ( [ "Z" ⊢ "Y" ·⊕· "X" ]             ⟶ "Y" ·⇛· "Z" ⊢ "X"           ) "r⊕⇛"
   ]
+
 
 grishinIV :: [Rule String ConId Int]
 grishinIV =
