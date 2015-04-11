@@ -27,8 +27,8 @@ polarisedAxioms =
   , (( [] ⟶   "B"   ⊢ [ "B" ] ) "ax⁻") { guard = atomB }
   ]
   where
-    atomA (Con JFocusL [Con (Atom a) [], _]) = isPositiveAtom a; atomA _ = False
-    atomB (Con JFocusR [_, Con (Atom b) []]) = isNegativeAtom b; atomB _ = False
+    atomA (Con JFocusL [Con (Atom a) [], _]) = isNegativeAtom a; atomA _ = False
+    atomB (Con JFocusR [_, Con (Atom b) []]) = isPositiveAtom b; atomB _ = False
 
 
 polarisedFocusing :: [Rule String ConId Int]

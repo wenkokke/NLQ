@@ -11,6 +11,7 @@ import           Data.Maybe (mapMaybe)
 import           Data.Void (Void)
 import           Data.Hashable
 import           GHC.Generics
+import           Text.Printf (printf)
 import           Debug.Trace (trace)
 
 
@@ -94,7 +95,10 @@ subst s = app where
 
 -- |Search for proofs of the given goal using the gives rules using
 --  breadth-first search.
-findAll :: (Hashable c, Ord c) => Term c Void -> [Rule r c Int] -> [Term r Void]
+--  Note: this algorithm performs loop-checking under the assumption
+--  that /unary/ rules may cause loops, and rules of higher arity
+--  make progress.
+findAll :: (Show (Term c Void), Hashable c, Ord c) => Term c Void -> [Rule r c Int] -> [Term r Void]
 findAll goal rules = slv [(S.empty,[goal],head)] []
   where
     slv [                    ] [ ] = []
@@ -104,6 +108,10 @@ findAll goal rules = slv [(S.empty,[goal],head)] []
       | S.member g seen = slv prfs acc
       | otherwise       = slv prfs (mapMaybe step rules ++ acc)
       where
-        step (Rule n grd a ps c) | grd g
-          = fmap (\sb -> (S.insert g seen, map (subst sb) ps ++ gs, prf . build n a)) (execInst (inst g c))
-        step _ = Nothing
+        step (Rule n canApply a ps c)
+          | canApply g = fmap (\sb -> (seen', map (subst sb) ps ++ gs, prf')) (execInst (inst g c))
+          | otherwise  = Nothing
+          where
+            prf'  = prf . build n a
+            seen' | a == 1    = S.insert g seen
+                  | otherwise = S.empty
