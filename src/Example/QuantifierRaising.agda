@@ -181,7 +181,6 @@ everyone_loves_someone₈ : Bool
 everyone_loves_someone₈ = toAgda EVERYONE_LOVES_SOMEONE₈ (everyone¹ , loves′ , someone¹ , ∅) id
 --> existsₑ (λ y → person y ∧ forallₑ (λ x → person x ⊃ (x loves y)))
 
-
 MARY_THINKS_SOMEONE_LEFT₁ : LG · np · ⊗ · ( np ⇒ s⁻ ) ⇐ ( ◇ s⁻ ) · ⊗ ⟨ · ( ₁ np ) ¹ · ⊗ · np ⇒ s⁻ · ⟩ ⊢[ s⁻ ]
 MARY_THINKS_SOMEONE_LEFT₁
   = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ (◇ᴿ

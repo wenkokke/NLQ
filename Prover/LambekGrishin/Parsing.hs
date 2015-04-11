@@ -83,7 +83,8 @@ judgement = do
 
 lexerDef :: LanguageDef st
 lexerDef = haskellStyle
-  { opStart         = opLetter lexerDef
+  { identLetter     = alphaNum <|> oneOf "_'⁻⁺"
+  , opStart         = opLetter lexerDef
   , opLetter        = oneOf "*><+-=|⊗⇐⇒⊕⇚⇛⊢"
   , reservedOpNames = concatMap (\x -> [show x, show (ASCII x)])
                       [FProd, FImpR, FImpL, FPlus, FSubL, FSubR

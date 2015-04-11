@@ -2,7 +2,7 @@ module LambekGrishin.Rules where
 
 
 import Prover hiding (Term)
-import LambekGrishin.Base (ConId(..),pos,neg)
+import LambekGrishin.Base
 import LambekGrishin.DSL
 
 
@@ -23,33 +23,36 @@ polarisedLambekGrishin =
 
 polarisedAxioms :: [Rule String ConId Int]
 polarisedAxioms =
-  [ (( [] ⟶   "A"   ⊢ [ "A" ] ) "ax⁻") { guard = posB }
-  , (( [] ⟶ [ "A" ] ⊢   "A"   ) "ax⁺") { guard = negA }
+  [ (( [] ⟶ [ "A" ] ⊢   "A"   ) "ax⁺") { guard = atomA }
+  , (( [] ⟶   "B"   ⊢ [ "B" ] ) "ax⁻") { guard = atomB }
   ]
   where
-    posB (Con JFocusR [_, b]) = pos b; posB _ = False
-    negA (Con JFocusL [a, _]) = neg a; negA _ = False
+    atomA (Con JFocusL [Con (Atom a) [], _]) = isPositiveAtom a; atomA _ = False
+    atomB (Con JFocusR [_, Con (Atom b) []]) = isNegativeAtom b; atomB _ = False
 
 
 polarisedFocusing :: [Rule String ConId Int]
 polarisedFocusing =
-  [ (( [   "X"   ⊢   "B"   ] ⟶   "X"   ⊢ [ "B" ] ) "⇁") { guard = negB }
-  , (( [   "A"   ⊢   "Y"   ] ⟶ [ "A" ] ⊢   "Y"   ) "↽") { guard = posA }
-  , (( [   "X"   ⊢ [ "B" ] ] ⟶   "X"   ⊢   "B"   ) "⇀") { guard = posB }
+  [ (( [   "A"   ⊢   "Y"   ] ⟶ [ "A" ] ⊢   "Y"   ) "↽") { guard = posA }
+  , (( [   "X"   ⊢   "B"   ] ⟶   "X"   ⊢ [ "B" ] ) "⇁") { guard = negB }
   , (( [ [ "A" ] ⊢   "Y"   ] ⟶   "A"   ⊢   "Y"   ) "↼") { guard = negA }
+  , (( [   "X"   ⊢ [ "B" ] ] ⟶   "X"   ⊢   "B"   ) "⇀") { guard = posB }
   ]
   where
-    negB (Con JFocusR [_, b])            = neg b; negB _ = False
     posA (Con JFocusL [a, _])            = pos a; posA _ = False
-    posB (Con JStruct [_, Con Down [b]]) = pos b; posB _ = False
+    negB (Con JFocusR [_, b])            = neg b; negB _ = False
     negA (Con JStruct [Con Down [a], _]) = neg a; negA _ = False
+    posB (Con JStruct [_, Con Down [b]]) = pos b; posB _ = False
 
 
 axioms :: [Rule String ConId Int]
 axioms =
-  [ ( [] ⟶   "A"   ⊢ [ "A" ] ) "ax⁻"
-  , ( [] ⟶ [ "A" ] ⊢   "A"   ) "ax⁺"
+  [ (( [] ⟶   "B"   ⊢ [ "B" ] ) "ax⁻") { guard = atomB }
+  , (( [] ⟶ [ "A" ] ⊢   "A"   ) "ax⁺") { guard = atomA }
   ]
+  where
+    atomB (Con JFocusR [_, Con (Atom _) []]) = True; atomB _ = False
+    atomA (Con JFocusL [Con (Atom _) [], _]) = True; atomA _ = False
 
 
 focusing :: [Rule String ConId Int]
@@ -84,7 +87,6 @@ plusAndSubLR =
   , ( [ "X" ⊢ [ "A" ] , [ "B" ] ⊢ "Y" ] ⟶ "X" ·⇚· "Y" ⊢ [ "A" ⇚ "B" ] ) "⇚ᴿ"
   , ( [ "B" ·⇛· "A" ⊢ "X" ]             ⟶ "B" ⇛ "A" ⊢ "X"             ) "⇛ᴸ"
   , ( [ "X" ⊢ [ "A" ] , [ "B" ] ⊢ "Y" ] ⟶ "Y" ·⇛· "X" ⊢ [ "B" ⇛ "A" ] ) "⇛ᴿ"
-
   , ( [ "Z" ·⇚· "X" ⊢ "Y" ]             ⟶ "Z" ⊢ "Y" ·⊕· "X"           ) "r⇚⊕"
   , ( [ "Z" ⊢ "Y" ·⊕· "X" ]             ⟶ "Z" ·⇚· "X" ⊢ "Y"           ) "r⊕⇚"
   , ( [ "Y" ·⇛· "Z" ⊢ "X" ]             ⟶ "Z" ⊢ "Y" ·⊕· "X"           ) "r⇛⊕"

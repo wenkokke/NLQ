@@ -1,6 +1,7 @@
 module LambekGrishin
        (module Prover
        ,module LambekGrishin.Base
+       ,module LambekGrishin.DSL
        ,module LambekGrishin.Rules
        ,module LambekGrishin.Parsing
        ) where
@@ -12,7 +13,7 @@ import           Data.Map (Map)
 import qualified Data.Map as M
 import           Prover hiding (Term)
 import           LambekGrishin.Base
-import           LambekGrishin.DSL ((·⊗·))
+import           LambekGrishin.DSL
 import           LambekGrishin.Rules
 import           LambekGrishin.Printing ()
 import           LambekGrishin.Parsing
@@ -23,6 +24,7 @@ import           LambekGrishin.Parsing
 --  case mapM (`M.lookup` lexicon) (words sentence) of
 --   Just formulas -> brackets (·⊗·) formulas
 --   _             -> _
+
 
 
 -- | Generates all binary trees with n nodes. The naive algorithm.
