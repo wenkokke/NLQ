@@ -11,7 +11,6 @@ import System.IO (hPutStrLn,stderr)
 import Text.Parsec (parse)
 import LambekGrishin
 
-
 main :: IO ()
 main = do
 
@@ -24,11 +23,12 @@ main = do
               , optSystem  = system
               } = opts
   case task of
+   Nothing -> putStrLn "Usage: For basic information, try the `--help' option."
 
    Just (Solve str) ->
      case parse judgement "" str of
       Left err -> print err
-      Right tm -> mapM_ print (search tm (rules system))
+      Right tm -> mapM_ print (findAll tm (rules system))
 
    Just (Parse str) ->
      case lexiconFile of
@@ -77,16 +77,16 @@ defaultOptions = Options
 options :: [ OptDescr (Options -> IO Options) ]
 options =
   [ Option [] ["solve"]
-    (ReqArg (\arg opt -> do return opt { optTask = Just (Solve arg) }) "SEQUENT")
+    (ReqArg (\arg opt -> return opt { optTask = Just (Solve arg) }) "SEQUENT")
     "Search for proof of a sequent"
   , Option [] ["parse"]
-    (ReqArg (\arg opt -> do return opt { optTask = Just (Parse arg) }) "SENTENCE")
+    (ReqArg (\arg opt -> return opt { optTask = Just (Parse arg) }) "SENTENCE")
     "Parse the given sentence"
   , Option "l" ["lexicon"]
-    (ReqArg (\arg opt -> do return opt { optLexicon = Just arg }) "LEXICON_FILE")
+    (ReqArg (\arg opt -> return opt { optLexicon = Just arg }) "LEXICON_FILE")
     "Lexicon (for parsing)"
   , Option "s" ["system"]
-    (ReqArg (\arg opt -> do return opt { optSystem = parseSystem arg }) "SYSTEM")
+    (ReqArg (\arg opt -> return opt { optSystem = parseSystem arg }) "SYSTEM")
     "Logical system (NL, LG, fLG)"
   , Option "h" ["help"]
     (NoArg  (\_ -> do

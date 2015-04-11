@@ -1,6 +1,9 @@
+{-# LANGUAGE DeriveGeneric #-}
 module LambekGrishin.Base where
 
 
+import           GHC.Generics
+import           Data.Hashable
 import           Data.Void (Void)
 import           Prover hiding (Term)
 import qualified Prover (Term)
@@ -27,7 +30,9 @@ data ConId
   -- sequents
   | JStruct | JFocusL | JFocusR
 
-  deriving (Eq,Ord)
+  deriving (Eq,Ord,Generic)
+
+instance Hashable ConId
 
 type Term v = Prover.Term ConId v
 type RuleId = String
@@ -67,20 +72,25 @@ isJudgement _                   = False
 
 -- * Polarities
 
-negAtom :: String -> Bool
-negAtom n = let c = last n in c == '⁻' || c == '\''
+isAtom :: Term Void -> Bool
+isAtom (Con (Atom _) _) = True
+isAtom _                = False
+
+isPositiveAtom :: String -> Bool
+isPositiveAtom n = not (isNegativeAtom n)
+
+isNegativeAtom :: String -> Bool
+isNegativeAtom n = let c = last n in c == '⁻' || c == '\''
 
 pos,neg :: Term Void -> Bool
-pos (Con (Atom n) _) = not (negAtom n)
+pos (Con (Atom n) _) = isPositiveAtom n
 pos (Con  FProd   _) = True
 pos (Con  FSubL   _) = True
 pos (Con  FSubR   _) = True
-pos (Con  Down  [x]) = pos x
 pos _                = False
 
-neg (Con (Atom n) _) = negAtom n
+neg (Con (Atom n) _) = isNegativeAtom n
 neg (Con  FPlus   _) = True
 neg (Con  FImpR   _) = True
 neg (Con  FImpL   _) = True
-neg (Con  Down  [x]) = neg x
 neg _                = False
