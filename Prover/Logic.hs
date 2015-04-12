@@ -1,11 +1,4 @@
-module LambekGrishin
-       (tryAll
-       ,module Prover
-       ,module LambekGrishin.Base
-       ,module LambekGrishin.DSL
-       ,module LambekGrishin.Rules
-       ,module LambekGrishin.Parsing
-       ) where
+module Logic (tryAll, module Logic.Base, module Logic.DSL, module Logic.Rules, module Logic.Parsing) where
 
 
 import           Control.Arrow (first)
@@ -13,12 +6,13 @@ import           Control.Parallel.Strategies
 import           Data.Void (Void)
 import           Data.Map (Map)
 import qualified Data.Map as M
+
 import           Prover
-import           LambekGrishin.Base hiding (Term)
-import           LambekGrishin.DSL
-import           LambekGrishin.Rules
-import           LambekGrishin.Printing ()
-import           LambekGrishin.Parsing
+import           Logic.Base hiding (Term)
+import           Logic.DSL
+import           Logic.Rules
+import           Logic.Printing ()
+import           Logic.Parsing
 
 
 tryAll :: (NFData r)
@@ -29,8 +23,9 @@ tryAll :: (NFData r)
           -> [(Term ConId Void,[Term r Void])]
 tryAll lexicon rules sentence y =
   case mapM (`M.lookup` lexicon) (words sentence) of
-   Just formulas -> map (\g -> (g, findAll g rules))
-                    (map (\x -> Con JFocusR [x,y]) (brackets (·⊗·) formulas))
+   Just formulas -> map ((\g -> (g, findAll g rules))
+                        .(\x -> Con JFocusR [x,y]))
+                    (brackets (·⊗·) formulas)
                     `using` parList rdeepseq
    _             -> []
 

@@ -1,10 +1,10 @@
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
-module LambekGrishin.Printing where
+module Logic.Printing where
 
 
 import           Prover hiding (Term)
 import qualified Prover
-import           LambekGrishin.Base
+import           Logic.Base
 
 
 newtype ASCII a = ASCII a

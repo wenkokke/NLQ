@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
-module LambekGrishin.Base where
+module Logic.Base where
 
 
 import           Control.DeepSeq
@@ -39,6 +39,7 @@ instance Hashable ConId
 instance NFData   ConId
 
 
+type VarId  = String
 type Term v = Prover.Term ConId v
 type RuleId = String
 type Proof  = Prover.Term RuleId Void

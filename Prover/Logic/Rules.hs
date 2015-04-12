@@ -1,31 +1,59 @@
-module LambekGrishin.Rules where
+module Logic.Rules where
 
 
 import Prover hiding (Term)
-import LambekGrishin.Base
-import LambekGrishin.DSL
+import Logic.Base
+import Logic.DSL
 
 
+-- |Inference rules for the non-associative Lambek calculus.
 lambek :: [Rule String ConId Int]
 lambek =
   axioms ++ focusing ++ prodAndImpLR
 
 
+-- |Inference rules for the polarised non-associative Lambek calculus.
 polarisedLambek :: [Rule String ConId Int]
 polarisedLambek =
   polarisedAxioms ++ polarisedFocusing ++ prodAndImpLR
 
 
+-- |Inference rules for the classical non-associative Lambek calculus.
+classicalLambek :: [Rule String ConId Int]
+classicalLambek =
+  axioms ++ focusing ++ prodAndImpLR ++ plusAndSubLR
+
+
+-- |Inference rules for the polarised classical non-associative Lambek calculus.
+polarisedClassicalLambek :: [Rule String ConId Int]
+polarisedClassicalLambek =
+  polarisedAxioms ++ polarisedFocusing ++ prodAndImpLR ++ plusAndSubLR
+
+
+-- |Inference rules for the Lambek-Grishin calculus.
 lambekGrishin :: [Rule String ConId Int]
 lambekGrishin =
   axioms ++ focusing ++ prodAndImpLR ++ plusAndSubLR ++ grishinIV
 
 
+-- |Inference rules for the polarised Lambek-Grishin calculus.
 polarisedLambekGrishin :: [Rule String ConId Int]
 polarisedLambekGrishin =
   polarisedAxioms ++ polarisedFocusing ++ prodAndImpLR ++ plusAndSubLR ++ grishinIV
 
 
+
+-- |Inference rules for axioms.
+axioms :: [Rule String ConId Int]
+axioms =
+  [ (( [] ⟶ [ "A" ] ⊢   "A"   ) "ax⁻") { guard = atomA }
+  , (( [] ⟶   "B"   ⊢ [ "B" ] ) "ax⁺") { guard = atomB }
+  ]
+  where
+    atomA (Con JFocusL [Con (Atom _) [], _]) = True; atomA _ = False
+    atomB (Con JFocusR [_, Con (Atom _) []]) = True; atomB _ = False
+
+-- |Polarised inference rules for axioms.
 polarisedAxioms :: [Rule String ConId Int]
 polarisedAxioms =
   [ (( [] ⟶ [ "A" ] ⊢   "A"   ) "ax⁻") { guard = atomA }
@@ -36,6 +64,17 @@ polarisedAxioms =
     atomB (Con JFocusR [_, Con (Atom b) []]) = isPositiveAtom b; atomB _ = False
 
 
+
+-- |Inference rules for focusing and unfocusing.
+focusing :: [Rule String ConId Int]
+focusing =
+  [ ( [   "X"   ⊢   "B"   ] ⟶   "X"   ⊢ [ "B" ] ) "⇁"
+  , ( [   "A"   ⊢   "Y"   ] ⟶ [ "A" ] ⊢   "Y"   ) "↽"
+  , ( [   "X"   ⊢ [ "B" ] ] ⟶   "X"   ⊢   "B"   ) "⇀"
+  , ( [ [ "A" ] ⊢   "Y"   ] ⟶   "A"   ⊢   "Y"   ) "↼"
+  ]
+
+-- |Polarised inference rules for focusing and unfocusing.
 polarisedFocusing :: [Rule String ConId Int]
 polarisedFocusing =
   [ (( [   "X"   ⊢   "B"   ] ⟶   "X"   ⊢ [ "B" ] ) "⇁") { guard = negB }
@@ -50,25 +89,7 @@ polarisedFocusing =
     posB (Con JStruct [_, Con Down [b]]) = pos b; posB _ = False
 
 
-axioms :: [Rule String ConId Int]
-axioms =
-  [ (( [] ⟶ [ "A" ] ⊢   "A"   ) "ax⁻") { guard = atomA }
-  , (( [] ⟶   "B"   ⊢ [ "B" ] ) "ax⁺") { guard = atomB }
-  ]
-  where
-    atomA (Con JFocusL [Con (Atom _) [], _]) = True; atomA _ = False
-    atomB (Con JFocusR [_, Con (Atom _) []]) = True; atomB _ = False
-
-
-focusing :: [Rule String ConId Int]
-focusing =
-  [ ( [   "X"   ⊢   "B"   ] ⟶   "X"   ⊢ [ "B" ] ) "⇁"
-  , ( [   "A"   ⊢   "Y"   ] ⟶ [ "A" ] ⊢   "Y"   ) "↽"
-  , ( [   "X"   ⊢ [ "B" ] ] ⟶   "X"   ⊢   "B"   ) "⇀"
-  , ( [ [ "A" ] ⊢   "Y"   ] ⟶   "A"   ⊢   "Y"   ) "↼"
-  ]
-
-
+-- |Residuation and monotonicity rules for (⇐, ⊗, ⇒)
 prodAndImpLR :: [Rule String ConId Int]
 prodAndImpLR =
   [ ( [ "A" ·⊗· "B" ⊢ "Y" ]             ⟶ "A" ⊗ "B" ⊢ "Y"             ) "⊗ᴸ"
@@ -84,7 +105,7 @@ prodAndImpLR =
   , ( [ "X" ·⊗· "Y" ⊢ "Z" ]             ⟶ "X" ⊢ "Z" ·⇐· "Y"           ) "r⊗⇐"
   ]
 
-
+-- |Residuation and monotonicity rules for (⇚, ⊕, ⇛)
 plusAndSubLR :: [Rule String ConId Int]
 plusAndSubLR =
   [ ( [ [ "B" ] ⊢ "Y" , [ "A" ] ⊢ "X" ] ⟶ [ "B" ⊕ "A" ] ⊢ "Y" ⊕ "X"   ) "⊕ᴸ"
@@ -101,6 +122,7 @@ plusAndSubLR =
   ]
 
 
+-- |Grishin interaction postulates IV.
 grishinIV :: [Rule String ConId Int]
 grishinIV =
   [ ( [ "X" ·⊗· "Y" ⊢ "Z" ·⊕· "W" ]     ⟶ "Z" ·⇛· "X" ⊢ "W" ·⇐· "Y"   ) "d⇛⇐"
