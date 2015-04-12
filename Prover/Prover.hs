@@ -1,20 +1,18 @@
 {-# LANGUAGE GADTs, FlexibleInstances, FlexibleContexts, MultiParamTypeClasses, DeriveGeneric #-}
-module Prover where
+module Prover (Term(..),Rule(..),(⟶),findAll) where
 
 
-import           Control.Monad (zipWithM_)
-import           Control.Applicative ((<$>))
 import           Control.DeepSeq (NFData)
 import           Control.Monad.State
 import qualified Data.HashSet as S
 import           Data.IntMap (IntMap,(!))
 import qualified Data.IntMap as IM
-import           Data.Map (Map)
 import qualified Data.Map as M
 import           Data.Maybe (mapMaybe)
 import           Data.Void (Void)
 import           Data.Hashable
 import           GHC.Generics
+
 
 data Term c v where
   Var :: ! v               -> Term c v
@@ -120,8 +118,12 @@ findAll goal rules = slv [(S.empty,[goal],head)] []
                   | otherwise = S.empty
 
 
-
-verify :: (Show (Term c Void), Show (Term c Int), Eq c) => [Rule String c Int] -> Term c Void -> Term String Void -> IO ()
+-- |Verify if a given proof can indeed be build up using the given rules.
+verify :: (Show (Term c Void), Show (Term c Int), Eq c)
+          => [Rule String c Int]
+          -> Term c Void
+          -> Term String Void
+          -> IO ()
 verify rules = vrf
   where
     rmp = M.fromList (zip (map name rules) rules)

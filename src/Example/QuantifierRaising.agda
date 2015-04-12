@@ -24,6 +24,7 @@ true  ⊃ true  = true
 true  ⊃ false = false
 false ⊃ _     = true
 
+
 ------------------------------------------------------------------------
 -- These quantifier interpretations below are simply *beautiful*, they
 -- are exactly what we want. Therefore, I would *love* to be able to

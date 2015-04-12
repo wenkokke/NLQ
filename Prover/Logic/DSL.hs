@@ -1,10 +1,10 @@
 {-# LANGUAGE FunctionalDependencies, FlexibleInstances, TypeSynonymInstances #-}
-module LambekGrishin.DSL where
+module Logic.DSL where
 
 
-import           Prover hiding (Term)
-import           LambekGrishin.Base
-import           LambekGrishin.Printing ()
+import Prover hiding (Term)
+import Logic.Base
+import Logic.Printing ()
 
 
 infixr 7  ⊗

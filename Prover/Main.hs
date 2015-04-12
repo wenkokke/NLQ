@@ -9,7 +9,9 @@ import System.Environment (getProgName,getArgs)
 import System.Exit (exitSuccess)
 import System.IO (hPutStrLn,stderr)
 import Text.Parsec (parse)
-import LambekGrishin
+
+import Logic
+import Prover
 
 main :: IO ()
 main = do
@@ -48,7 +50,7 @@ main = do
                Right lexicon -> mapM_ printResult (tryAll lexicon rules str target)
                  where
                    printResult (g,[]) = return ()
-                   printResult (g,ps) = do print g; mapM_ (\p -> do verify rules g p; print p) ps
+                   printResult (g,ps) = do print g; mapM_ print ps
 
 
 getRules :: String -> [Rule String ConId Int]
@@ -96,7 +98,7 @@ options =
     "Lexicon (for parsing)"
   , Option "s" ["system"]
     (ReqArg (\arg opt -> return opt { optSystem = arg }) "SYSTEM")
-    "Logical system (NL, LG, fLG)"
+    "Logical system (NL, fNL, LG, fLG)"
   , Option "t" ["target"]
     (ReqArg (\arg opt -> return opt { optTarget = Just arg }) "TARGET")
     "Target formula (n,np,s⁻)"

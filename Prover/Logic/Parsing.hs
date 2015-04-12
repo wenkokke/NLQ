@@ -1,5 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
-module LambekGrishin.Parsing where
+module Logic.Parsing where
 
 
 import           Data.Map (Map)
@@ -12,9 +12,9 @@ import           Text.Parsec.Token (TokenParser,GenTokenParser(..),GenLanguageDe
 import qualified Text.Parsec.Token as P
 
 import           Prover hiding (Term)
-import           LambekGrishin.Base
-import           LambekGrishin.Printing
-import           LambekGrishin.DSL (down,fbin,sbin)
+import           Logic.Base
+import           Logic.Printing
+import           Logic.DSL (down,fbin,sbin)
 
 
 -- * Parsing formulas
