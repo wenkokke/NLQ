@@ -2,9 +2,11 @@
 module LambekGrishin.Base where
 
 
-import           GHC.Generics
+import           Control.DeepSeq
 import           Data.Hashable
 import           Data.Void (Void)
+import           GHC.Generics
+
 import           Prover hiding (Term)
 import qualified Prover (Term)
 
@@ -32,7 +34,10 @@ data ConId
 
   deriving (Eq,Ord,Generic)
 
+
 instance Hashable ConId
+instance NFData   ConId
+
 
 type Term v = Prover.Term ConId v
 type RuleId = String

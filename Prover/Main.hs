@@ -2,7 +2,7 @@
 module Main where
 
 
-import Data.Char (toUpper)
+import Data.Char (toLower)
 import Data.Void (Void)
 import System.Console.GetOpt (OptDescr(..),ArgDescr(..),ArgOrder(..),usageInfo,getOpt)
 import System.Environment (getProgName,getArgs)
@@ -19,37 +19,44 @@ main = do
   let (actions, nonOptions, errors) = getOpt Permute options args
   opts <- foldl (>>=) (return defaultOptions) actions
   let Options { optTask    = task
-              , optLexicon = lexiconFile
+              , optLexicon = mbLexiconFile
               , optSystem  = system
+              , optTarget  = mbTarget
               } = opts
+  let rules = getRules system
   case task of
    Nothing -> putStrLn "Usage: For basic information, try the `--help' option."
 
    Just (Solve str) ->
      case parse judgement "" str of
       Left err -> print err
-      Right tm -> mapM_ print (findAll tm (rules system))
+      Right tm -> mapM_ print (findAll tm rules)
 
    Just (Parse str) ->
-     case lexiconFile of
-      Nothing          -> putStrLn ("no lexicon given")
-      Just lexiconFile -> do
-        lexiconContent <- readFile lexiconFile
-        case parse lexicon lexiconFile lexiconContent of
-         Left  err     -> print err
-         Right lexicon -> return ()
+     case mbTarget of
+      Nothing     -> putStrLn "no target formula given"
+      Just targetStr ->
+        case parse formula "" targetStr of
+         Left err     -> print err
+         Right target ->
+           case mbLexiconFile of
+            Nothing          -> putStrLn "no lexicon given"
+            Just lexiconFile -> do
+              lexiconContent <- readFile lexiconFile
+              case parse lexicon lexiconFile lexiconContent of
+               Left  err     -> print err
+               Right lexicon -> mapM_ printResult (tryAll lexicon rules str target)
+                 where
+                   printResult (g,[]) = return ()
+                   printResult (g,ps) = do print g; mapM_ (\p -> do verify rules g p; print p) ps
 
 
-rules :: System -> [Rule String ConId Int]
-rules Lambek                 = lambek
-rules LambekGrishin          = lambekGrishin
-rules PolarisedLambekGrishin = polarisedLambekGrishin
-
-
-parseSystem :: String -> System
-parseSystem (map toUpper ->  "NL") = Lambek
-parseSystem (map toUpper ->  "LG") = LambekGrishin
-parseSystem (map toUpper -> "FLG") = PolarisedLambekGrishin
+getRules :: String -> [Rule String ConId Int]
+getRules (map toLower ->  "nl") = lambek
+getRules (map toLower -> "fnl") = polarisedLambek
+getRules (map toLower ->  "lg") = lambekGrishin
+getRules (map toLower -> "flg") = polarisedLambekGrishin
+getRules str = error ("unknown system '"++str++"'")
 
 
 data Task
@@ -64,14 +71,16 @@ data System
 data Options = Options
   { optTask    :: Maybe Task
   , optLexicon :: Maybe FilePath
-  , optSystem  :: System
+  , optSystem  :: String
+  , optTarget  :: Maybe String
   }
 
 defaultOptions :: Options
 defaultOptions = Options
   { optTask    = Nothing
   , optLexicon = Nothing
-  , optSystem  = Lambek
+  , optSystem  = "nl"
+  , optTarget  = Just "s⁻"
   }
 
 options :: [ OptDescr (Options -> IO Options) ]
@@ -86,8 +95,11 @@ options =
     (ReqArg (\arg opt -> return opt { optLexicon = Just arg }) "LEXICON_FILE")
     "Lexicon (for parsing)"
   , Option "s" ["system"]
-    (ReqArg (\arg opt -> return opt { optSystem = parseSystem arg }) "SYSTEM")
+    (ReqArg (\arg opt -> return opt { optSystem = arg }) "SYSTEM")
     "Logical system (NL, LG, fLG)"
+  , Option "t" ["target"]
+    (ReqArg (\arg opt -> return opt { optTarget = Just arg }) "TARGET")
+    "Target formula (n,np,s⁻)"
   , Option "h" ["help"]
     (NoArg  (\_ -> do
               prg <- getProgName
