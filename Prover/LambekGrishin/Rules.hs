@@ -11,6 +11,11 @@ lambek =
   axioms ++ focusing ++ prodAndImpLR
 
 
+polarisedLambek :: [Rule String ConId Int]
+polarisedLambek =
+  polarisedAxioms ++ polarisedFocusing ++ prodAndImpLR
+
+
 lambekGrishin :: [Rule String ConId Int]
 lambekGrishin =
   axioms ++ focusing ++ prodAndImpLR ++ plusAndSubLR ++ grishinIV
@@ -23,8 +28,8 @@ polarisedLambekGrishin =
 
 polarisedAxioms :: [Rule String ConId Int]
 polarisedAxioms =
-  [ (( [] ⟶ [ "A" ] ⊢   "A"   ) "ax⁺") { guard = atomA }
-  , (( [] ⟶   "B"   ⊢ [ "B" ] ) "ax⁻") { guard = atomB }
+  [ (( [] ⟶ [ "A" ] ⊢   "A"   ) "ax⁻") { guard = atomA }
+  , (( [] ⟶   "B"   ⊢ [ "B" ] ) "ax⁺") { guard = atomB }
   ]
   where
     atomA (Con JFocusL [Con (Atom a) [], _]) = isNegativeAtom a; atomA _ = False
@@ -33,10 +38,10 @@ polarisedAxioms =
 
 polarisedFocusing :: [Rule String ConId Int]
 polarisedFocusing =
-  [ (( [   "A"   ⊢   "Y"   ] ⟶ [ "A" ] ⊢   "Y"   ) "↽") { guard = posA }
-  , (( [   "X"   ⊢   "B"   ] ⟶   "X"   ⊢ [ "B" ] ) "⇁") { guard = negB }
-  , (( [ [ "A" ] ⊢   "Y"   ] ⟶   "A"   ⊢   "Y"   ) "↼") { guard = negA }
+  [ (( [   "X"   ⊢   "B"   ] ⟶   "X"   ⊢ [ "B" ] ) "⇁") { guard = negB }
+  , (( [   "A"   ⊢   "Y"   ] ⟶ [ "A" ] ⊢   "Y"   ) "↽") { guard = posA }
   , (( [   "X"   ⊢ [ "B" ] ] ⟶   "X"   ⊢   "B"   ) "⇀") { guard = posB }
+  , (( [ [ "A" ] ⊢   "Y"   ] ⟶   "A"   ⊢   "Y"   ) "↼") { guard = negA }
   ]
   where
     posA (Con JFocusL [a, _])            = pos a; posA _ = False
@@ -47,12 +52,12 @@ polarisedFocusing =
 
 axioms :: [Rule String ConId Int]
 axioms =
-  [ (( [] ⟶   "B"   ⊢ [ "B" ] ) "ax⁻") { guard = atomB }
-  , (( [] ⟶ [ "A" ] ⊢   "A"   ) "ax⁺") { guard = atomA }
+  [ (( [] ⟶ [ "A" ] ⊢   "A"   ) "ax⁻") { guard = atomA }
+  , (( [] ⟶   "B"   ⊢ [ "B" ] ) "ax⁺") { guard = atomB }
   ]
   where
-    atomB (Con JFocusR [_, Con (Atom _) []]) = True; atomB _ = False
     atomA (Con JFocusL [Con (Atom _) [], _]) = True; atomA _ = False
+    atomB (Con JFocusR [_, Con (Atom _) []]) = True; atomB _ = False
 
 
 focusing :: [Rule String ConId Int]
@@ -72,6 +77,7 @@ prodAndImpLR =
   , ( [ "X" ⊢ "A" ·⇒· "B" ]             ⟶ "X" ⊢ "A" ⇒ "B"             ) "⇒ᴿ"
   , ( [ "X" ⊢ [ "A" ] , [ "B" ] ⊢ "Y" ] ⟶ [ "B" ⇐ "A" ] ⊢ "Y" ·⇐· "X" ) "⇐ᴸ"
   , ( [ "X" ⊢ "B" ·⇐· "A" ]             ⟶ "X" ⊢ "B" ⇐ "A"             ) "⇐ᴿ"
+
   , ( [ "Y" ⊢ "X" ·⇒· "Z" ]             ⟶ "X" ·⊗· "Y" ⊢ "Z"           ) "r⇒⊗"
   , ( [ "X" ·⊗· "Y" ⊢ "Z" ]             ⟶ "Y" ⊢ "X" ·⇒· "Z"           ) "r⊗⇒"
   , ( [ "X" ⊢ "Z" ·⇐· "Y" ]             ⟶ "X" ·⊗· "Y" ⊢ "Z"           ) "r⇐⊗"
@@ -87,6 +93,7 @@ plusAndSubLR =
   , ( [ "X" ⊢ [ "A" ] , [ "B" ] ⊢ "Y" ] ⟶ "X" ·⇚· "Y" ⊢ [ "A" ⇚ "B" ] ) "⇚ᴿ"
   , ( [ "B" ·⇛· "A" ⊢ "X" ]             ⟶ "B" ⇛ "A" ⊢ "X"             ) "⇛ᴸ"
   , ( [ "X" ⊢ [ "A" ] , [ "B" ] ⊢ "Y" ] ⟶ "Y" ·⇛· "X" ⊢ [ "B" ⇛ "A" ] ) "⇛ᴿ"
+
   , ( [ "Z" ·⇚· "X" ⊢ "Y" ]             ⟶ "Z" ⊢ "Y" ·⊕· "X"           ) "r⇚⊕"
   , ( [ "Z" ⊢ "Y" ·⊕· "X" ]             ⟶ "Z" ·⇚· "X" ⊢ "Y"           ) "r⊕⇚"
   , ( [ "Y" ·⇛· "Z" ⊢ "X" ]             ⟶ "Z" ⊢ "Y" ·⊕· "X"           ) "r⇛⊕"

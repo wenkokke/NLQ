@@ -2,18 +2,19 @@
 module Prover where
 
 
+import           Control.Monad (zipWithM_)
+import           Control.Applicative ((<$>))
+import           Control.DeepSeq (NFData)
 import           Control.Monad.State
 import qualified Data.HashSet as S
 import           Data.IntMap (IntMap,(!))
 import qualified Data.IntMap as IM
+import           Data.Map (Map)
 import qualified Data.Map as M
 import           Data.Maybe (mapMaybe)
 import           Data.Void (Void)
 import           Data.Hashable
 import           GHC.Generics
-import           Text.Printf (printf)
-import           Debug.Trace (trace)
-
 
 data Term c v where
   Var :: ! v               -> Term c v
@@ -22,6 +23,7 @@ data Term c v where
 
 
 instance (Hashable c, Hashable v) => Hashable (Term c v)
+instance (NFData   c, NFData   v) => NFData (Term c v)
 
 
 type VarId     = String
@@ -79,6 +81,7 @@ instance (Show r, Show c, Show v, Show (Term c v)) => Show (Rule r c v) where
     showParen True (showList ps . showString " ⟶ " . shows c) . showChar ' ' . shows n
 
 
+-- TODO: perhaps `xs` has to be reversed
 build :: r -> Int -> [Term r Void] -> [Term r Void]
 build n a ts = let (xs,ys) = splitAt a ts in Con n xs : ys
 
@@ -98,7 +101,7 @@ subst s = app where
 --  Note: this algorithm performs loop-checking under the assumption
 --  that /unary/ rules may cause loops, and rules of higher arity
 --  make progress.
-findAll :: (Show (Term c Void), Hashable c, Ord c) => Term c Void -> [Rule r c Int] -> [Term r Void]
+findAll :: (Hashable c, Ord c) => Term c Void -> [Rule r c Int] -> [Term r Void]
 findAll goal rules = slv [(S.empty,[goal],head)] []
   where
     slv [                    ] [ ] = []
@@ -109,9 +112,28 @@ findAll goal rules = slv [(S.empty,[goal],head)] []
       | otherwise       = slv prfs (mapMaybe step rules ++ acc)
       where
         step (Rule n canApply a ps c)
-          | canApply g = fmap (\sb -> (seen', map (subst sb) ps ++ gs, prf')) (execInst (inst g c))
+          | canApply g = (\sb -> (seen', map (subst sb) ps ++ gs, prf')) <$> execInst (inst g c)
           | otherwise  = Nothing
           where
             prf'  = prf . build n a
             seen' | a == 1    = S.insert g seen
                   | otherwise = S.empty
+
+
+
+verify :: (Show (Term c Void), Show (Term c Int), Eq c) => [Rule String c Int] -> Term c Void -> Term String Void -> IO ()
+verify rules = vrf
+  where
+    rmp = M.fromList (zip (map name rules) rules)
+    vrf goal (Con n args) =
+      case M.lookup n rmp of
+       Nothing -> error ("verify: no rule named '"++n++"'")
+       Just (Rule _ canApply a ps c) ->
+         if not (canApply goal)
+         then error ("verify: '"++n++"' cannot apply to '"++show goal++"'")
+         else case execInst (inst goal c) of
+               Nothing -> error ("verify: cannot instantiate '"++show c++"' to '"++show goal++"'")
+               Just sb ->
+                 if a /= length ps
+                 then error ("verify: wrong number of arguments")
+                 else zipWithM_ vrf (map (subst sb) ps) args
