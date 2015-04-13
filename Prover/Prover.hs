@@ -24,7 +24,16 @@ instance (Hashable c, Hashable v) => Hashable (Term c v)
 instance (NFData   c, NFData   v) => NFData (Term c v)
 
 
-type VarId     = String
+instance (Show v) => Show (Term String v) where
+  showsPrec _ (Var i)    = shows i
+  showsPrec _ (Con f []) = showString f
+  showsPrec p (Con f xs) =
+    showParen (p >= 1) $ showString f . showSeq (showsPrec 1) xs
+    where
+      showSeq _  []     = id
+      showSeq ss (x:xs) = showChar ' ' . ss x . showSeq ss xs
+
+
 type VMap  c   = IntMap (Term c Void)
 type Inst  c a = StateT (VMap c) Maybe a
 
@@ -62,7 +71,7 @@ data Rule r c v = Rule
 
 infixr 1 ⟶
 
-(⟶) :: [Term c VarId] -> Term c VarId -> r -> Rule r c Int
+(⟶) :: [Term c String] -> Term c String -> r -> Rule r c Int
 (⟶) ps c n = Rule n (const True) (length ps) ps' c'
   where
 
@@ -74,12 +83,12 @@ infixr 1 ⟶
                       _      -> do put (i + 1, M.insert x i vm); return (Var i)
     lbl (Con x xs) = fmap (Con x) (mapM lbl xs)
 
+
 instance (Show r, Show c, Show v, Show (Term c v)) => Show (Rule r c v) where
   showsPrec _ (Rule n _ _ ps c) =
     showParen True (showList ps . showString " ⟶ " . shows c) . showChar ' ' . shows n
 
 
--- TODO: perhaps `xs` has to be reversed
 build :: r -> Int -> [Term r Void] -> [Term r Void]
 build n a ts = let (xs,ys) = splitAt a ts in Con n xs : ys
 

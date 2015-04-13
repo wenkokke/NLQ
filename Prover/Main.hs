@@ -1,8 +1,9 @@
-{-# LANGUAGE OverloadedStrings, ViewPatterns #-}
+{-# LANGUAGE OverloadedStrings, FlexibleContexts, PartialTypeSignatures #-}
 module Main where
 
 
 import Data.Char (toLower)
+import Data.Map (Map)
 import Data.Void (Void)
 import System.Console.GetOpt (OptDescr(..),ArgDescr(..),ArgOrder(..),usageInfo,getOpt)
 import System.Environment (getProgName,getArgs)
@@ -10,8 +11,10 @@ import System.Exit (exitSuccess)
 import System.IO (hPutStrLn,stderr)
 import Text.Parsec (parse)
 
+
 import Logic
 import Prover
+
 
 main :: IO ()
 main = do
@@ -21,9 +24,10 @@ main = do
   let (actions, nonOptions, errors) = getOpt Permute options args
   opts <- foldl (>>=) (return defaultOptions) actions
   let Options { optTask    = task
-              , optLexicon = mbLexiconFile
+              , optLexicon = mbLexicon
               , optSystem  = system
-              , optTarget  = mbTarget
+              , optTarget  = tgt
+              , optModule  = modName
               } = opts
   let rules = getRules system
   case task of
@@ -34,55 +38,45 @@ main = do
       Left err -> print err
       Right tm -> mapM_ print (findAll tm rules)
 
-   Just (Parse str) ->
-     case mbTarget of
-      Nothing     -> putStrLn "no target formula given"
-      Just targetStr ->
-        case parse formula "" targetStr of
-         Left err     -> print err
-         Right target ->
-           case mbLexiconFile of
-            Nothing          -> putStrLn "no lexicon given"
-            Just lexiconFile -> do
-              lexiconContent <- readFile lexiconFile
-              case parse lexicon lexiconFile lexiconContent of
-               Left  err     -> print err
-               Right lexicon -> mapM_ printResult (tryAll lexicon rules str target)
-                 where
-                   printResult (g,[]) = return ()
-                   printResult (g,ps) = do print g; mapM_ print ps
+   Just (Parse sent) ->
+     case mbLexicon of
+      Nothing      -> putStrLn "Error: No lexicon file given."
+      Just lexicon -> putStr (toAgdaFile modName sent system (tryAll lexicon rules sent tgt) tgt)
 
 
-getRules :: String -> [Rule String ConId Int]
-getRules (map toLower ->  "nl") = lambek
-getRules (map toLower -> "fnl") = polarisedLambek
-getRules (map toLower ->  "lg") = lambekGrishin
-getRules (map toLower -> "flg") = polarisedLambekGrishin
-getRules str = error ("unknown system '"++str++"'")
+parseTarget :: String -> IO (Term ConId Void)
+parseTarget str = case parse formula "" str of
+  Left err -> fail ("Error: Could not parse target formula `"++show str++"'\n"++show err)
+  Right tm -> return tm
+
+
+parseLexicon :: FilePath -> IO (Map String (Term ConId Void))
+parseLexicon lexiconFile = do
+  lexiconContent <- readFile lexiconFile
+  case parse lexicon lexiconFile lexiconContent of
+   Left  err     -> fail ("Error: Could not parse lexicon.\n"++show err)
+   Right lexicon -> return lexicon
 
 
 data Task
   = Solve String
   | Parse String
 
-data System
-  = Lambek
-  | LambekGrishin
-  | PolarisedLambekGrishin
-
 data Options = Options
   { optTask    :: Maybe Task
-  , optLexicon :: Maybe FilePath
-  , optSystem  :: String
-  , optTarget  :: Maybe String
+  , optLexicon :: Maybe (Map String (Term ConId Void))
+  , optSystem  :: System
+  , optTarget  :: Term ConId Void
+  , optModule  :: String
   }
 
 defaultOptions :: Options
 defaultOptions = Options
   { optTask    = Nothing
   , optLexicon = Nothing
-  , optSystem  = "nl"
-  , optTarget  = Just "s⁻"
+  , optSystem  = NL
+  , optTarget  = Con (Atom "s⁻") []
+  , optModule  = "Main"
   }
 
 options :: [ OptDescr (Options -> IO Options) ]
@@ -94,13 +88,18 @@ options =
     (ReqArg (\arg opt -> return opt { optTask = Just (Parse arg) }) "SENTENCE")
     "Parse the given sentence"
   , Option "l" ["lexicon"]
-    (ReqArg (\arg opt -> return opt { optLexicon = Just arg }) "LEXICON_FILE")
+    (ReqArg (\arg opt -> do lex <- parseLexicon arg
+                            return opt { optLexicon = Just lex }) "LEXICON_FILE")
     "Lexicon (for parsing)"
+  , Option "m" ["module"]
+    (ReqArg (\arg opt -> return opt { optModule = arg }) "MODULE_NAME")
+    "The module name for the generated Agda file"
   , Option "s" ["system"]
-    (ReqArg (\arg opt -> return opt { optSystem = arg }) "SYSTEM")
-    "Logical system (NL, fNL, LG, fLG)"
+    (ReqArg (\arg opt -> return opt { optSystem = parseSystem arg }) "SYSTEM")
+    "Logical system (NL, fNL, CNL, fCNL, LG, fLG)"
   , Option "t" ["target"]
-    (ReqArg (\arg opt -> return opt { optTarget = Just arg }) "TARGET")
+    (ReqArg (\arg opt -> do tgt <- parseTarget arg
+                            return opt { optTarget = tgt }) "TARGET")
     "Target formula (n,np,s⁻)"
   , Option "h" ["help"]
     (NoArg  (\_ -> do

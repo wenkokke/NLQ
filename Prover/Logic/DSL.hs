@@ -4,15 +4,19 @@ module Logic.DSL where
 
 import Prover hiding (Term)
 import Logic.Base
-import Logic.Printing ()
+import Logic.Printing (Agda(..))
 
 
-infixr 7  ⊗
-infixl 7  ⊕
-infixr 6  ⇒
-infixl 6  ⇐
-infixl 6  ⇚
-infixr 6  ⇛
+infixr 9  ◇
+infixr 9  □
+infixr 8  ⊗
+infixl 8  ⊕
+infixr 7  ⇒
+infixl 7  ⇐
+infixl 7  ⇚
+infixr 7  ⇛
+infixr 6  ◇·
+infixr 6  □·
 infixr 5 ·⊗·
 infixl 5 ·⊕·
 infixr 4 ·⇒·
@@ -39,9 +43,9 @@ class IsJudgement t1 t2 v | t1 t2 -> v where (⊢)  :: t1 -> t2 -> Term v
 instance (Show v) => IsFormula (Term v) v where
   asFormula t
     | isFormula t = t
-    | otherwise   = error ("invalid formula '"++show t++"'")
+    | otherwise   = error ("invalid formula '"++show (Agda t)++"'")
 
-instance IsFormula VarId VarId where
+instance IsFormula String String where
   asFormula n
     | n `elem` ["A","B","C","D"] = Var n
     | otherwise                  = Con (Atom n) []
@@ -50,52 +54,62 @@ instance (Show v) => IsStructure (Term v) v where
   asStructure t
     | isStructure t = t
     | isFormula   t = Con Down [asFormula t]
-    | otherwise     = error ("invalid structure '"++show t++"'")
+    | otherwise     = error ("invalid structure '"++show (Agda t)++"'")
 
-instance IsStructure VarId VarId where
+instance IsStructure String String where
   asStructure n
     | n `elem` ["X","Y","Z","W"] = Var n
     | otherwise                  = Con Down [asFormula n]
 
 
 instance (Show v) => IsJudgement (Term v) (Term v) v where x ⊢ y = sbin JStruct x y
-instance IsJudgement       VarId (Term VarId) VarId  where x ⊢ y = sbin JStruct x y
-instance IsJudgement (Term VarId)      VarId  VarId  where x ⊢ y = sbin JStruct x y
-instance IsJudgement       VarId       VarId  VarId  where x ⊢ y = sbin JStruct x y
+instance IsJudgement       String (Term String) String  where x ⊢ y = sbin JStruct x y
+instance IsJudgement (Term String)      String  String  where x ⊢ y = sbin JStruct x y
+instance IsJudgement       String       String  String  where x ⊢ y = sbin JStruct x y
 
 
 instance (Show v) => IsJudgement [Term v] (Term v) v where
   [a] ⊢ y = Con JFocusL [asFormula a, asStructure y]
-instance IsJudgement [VarId] (Term VarId) VarId where
+instance IsJudgement [String] (Term String) String where
   [a] ⊢ y = Con JFocusL [asFormula a, asStructure y]
-instance IsJudgement [Term VarId] (VarId) VarId where
+instance IsJudgement [Term String] (String) String where
   [a] ⊢ y = Con JFocusL [asFormula a, asStructure y]
-instance IsJudgement [VarId] (VarId) VarId where
+instance IsJudgement [String] (String) String where
   [a] ⊢ y = Con JFocusL [asFormula a, asStructure y]
 
 
 instance (Show v) => IsJudgement (Term v) [Term v] v where
   x ⊢ [b] = Con JFocusR [asStructure x, asFormula b]
-instance IsJudgement (VarId) [Term VarId] VarId where
+instance IsJudgement (String) [Term String] String where
   x ⊢ [b] = Con JFocusR [asStructure x, asFormula b]
-instance IsJudgement (Term VarId) [VarId] VarId where
+instance IsJudgement (Term String) [String] String where
   x ⊢ [b] = Con JFocusR [asStructure x, asFormula b]
-instance IsJudgement (VarId) [VarId] VarId where
+instance IsJudgement (String) [String] String where
   x ⊢ [b] = Con JFocusR [asStructure x, asFormula b]
 
 
-(⊗), (⇒), (⇐), (⊕), (⇚), (⇛) :: (IsFormula t1 v, IsFormula t2 v) => t1 -> t2 -> Term v
+(◇), (□) :: IsFormula t v => t -> Term v
+(◇) x = Con FDia [asFormula x]
+(□) x = Con FBox [asFormula x]
+
+(⊗), (⇒), (⇐) :: (IsFormula t1 v, IsFormula t2 v) => t1 -> t2 -> Term v
 (⊗) = fbin FProd
 (⇒) = fbin FImpR
 (⇐) = fbin FImpL
+(⊕), (⇚), (⇛) :: (IsFormula t1 v, IsFormula t2 v) => t1 -> t2 -> Term v
 (⊕) = fbin FPlus
 (⇚) = fbin FSubL
 (⇛) = fbin FSubR
 
-(·⊗·), (·⇒·), (·⇐·), (·⊕·), (·⇚·), (·⇛·) :: (IsStructure t1 v, IsStructure t2 v) => t1 -> t2 -> Term v
+(◇·), (□·) :: IsStructure t v => t -> Term v
+(◇·) x = Con SDia [asStructure x]
+(□·) x = Con SBox [asStructure x]
+
+(·⊗·), (·⇒·), (·⇐·) :: (IsStructure t1 v, IsStructure t2 v) => t1 -> t2 -> Term v
 (·⊗·) = sbin SProd
 (·⇒·) = sbin SImpR
 (·⇐·) = sbin SImpL
+(·⊕·), (·⇚·), (·⇛·) :: (IsStructure t1 v, IsStructure t2 v) => t1 -> t2 -> Term v
 (·⊕·) = sbin SPlus
 (·⇚·) = sbin SSubL
 (·⇛·) = sbin SSubR
