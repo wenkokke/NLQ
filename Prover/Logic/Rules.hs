@@ -7,40 +7,36 @@ import Logic.DSL
 
 
 -- |Inference rules for the non-associative Lambek calculus.
-lambek :: [Rule String ConId Int]
-lambek =
-  axioms ++ focusing ++ prodAndImpLR
+nl :: [Rule String ConId Int]
+nl = axioms ++ focusing ++ prodAndImpLR
 
 
 -- |Inference rules for the polarised non-associative Lambek calculus.
-polarisedLambek :: [Rule String ConId Int]
-polarisedLambek =
-  polarisedAxioms ++ polarisedFocusing ++ prodAndImpLR
+fnl :: [Rule String ConId Int]
+fnl = polarisedAxioms ++ polarisedFocusing ++ prodAndImpLR
 
 
 -- |Inference rules for the classical non-associative Lambek calculus.
-classicalLambek :: [Rule String ConId Int]
-classicalLambek =
-  axioms ++ focusing ++ prodAndImpLR ++ plusAndSubLR
+cnl :: [Rule String ConId Int]
+cnl = axioms ++ focusing ++ boxAndDia ++ prodAndImpLR ++ plusAndSubLR
 
 
 -- |Inference rules for the polarised classical non-associative Lambek calculus.
-polarisedClassicalLambek :: [Rule String ConId Int]
-polarisedClassicalLambek =
-  polarisedAxioms ++ polarisedFocusing ++ prodAndImpLR ++ plusAndSubLR
+fcnl :: [Rule String ConId Int]
+fcnl = polarisedAxioms ++ polarisedFocusing ++ boxAndDia ++ prodAndImpLR
+       ++ plusAndSubLR
 
 
 -- |Inference rules for the Lambek-Grishin calculus.
-lambekGrishin :: [Rule String ConId Int]
-lambekGrishin =
-  axioms ++ focusing ++ prodAndImpLR ++ plusAndSubLR ++ grishinIV
+lg :: [Rule String ConId Int]
+lg = axioms ++ focusing ++ boxAndDia ++ prodAndImpLR ++ plusAndSubLR
+     ++ grishinIV
 
 
 -- |Inference rules for the polarised Lambek-Grishin calculus.
-polarisedLambekGrishin :: [Rule String ConId Int]
-polarisedLambekGrishin =
-  polarisedAxioms ++ polarisedFocusing ++ prodAndImpLR ++ plusAndSubLR ++ grishinIV
-
+flg :: [Rule String ConId Int]
+flg = polarisedAxioms ++ polarisedFocusing ++ boxAndDia ++ prodAndImpLR
+      ++ plusAndSubLR ++ grishinIV
 
 
 -- |Inference rules for axioms.
@@ -87,6 +83,41 @@ polarisedFocusing =
     negB (Con JFocusR [_, b])            = neg b; negB _ = False
     negA (Con JStruct [Con Down [a], _]) = neg a; negA _ = False
     posB (Con JStruct [_, Con Down [b]]) = pos b; posB _ = False
+
+
+-- |Residuation and monotonicity rules for (□ , ◇)
+island :: [Rule String ConId Int]
+island =
+  [ ([  ◇· "A"   ⊢    "Y"   ] ⟶   ◇  "A"   ⊢     "Y"   ) "◇ᴸ"
+  , ([     "X"   ⊢  [ "B" ] ] ⟶   ◇· "X"   ⊢ [ ◇  "B" ]) "◇ᴿ"
+  ]
+
+
+-- |Residuation and monotonicity rules for (□ , ◇)
+boxAndDia :: [Rule String ConId Int]
+boxAndDia =
+  [ ([  ◇· "A"   ⊢    "Y"   ] ⟶   ◇  "A"   ⊢     "Y"   ) "◇ᴸ"
+  , ([     "X"   ⊢  [ "B" ] ] ⟶   ◇· "X"   ⊢ [ ◇  "B" ]) "◇ᴿ"
+  , ([   [ "A" ] ⊢    "Y"   ] ⟶ [ □  "A" ] ⊢   □· "Y"  ) "□ᴸ"
+  , ([     "X"   ⊢ □· "A"   ] ⟶      "X"   ⊢   □  "A"  ) "□ᴿ"
+  , ([     "X"   ⊢ □· "Y"   ] ⟶   ◇· "X"   ⊢      "Y"  ) "r□◇"
+  , ([  ◇· "X"   ⊢    "Y"   ] ⟶      "X"   ⊢   □· "Y"  ) "r□◇"
+  ]
+
+
+  --  rules for (₀ , ⁰ , ₁ , ¹)
+  -- ₀ᴸ  : ∀ {X A}     → LG X ⊢[ A ] → LG [ ₀ A ]⊢ ₀ X
+  -- ₀ᴿ  : ∀ {X A}     → LG X ⊢ ₀ · A · → LG X ⊢ · ₀ A ·
+  -- ⁰ᴸ  : ∀ {X A}     → LG X ⊢[ A ] → LG [ A ⁰ ]⊢ X ⁰
+  -- ⁰ᴿ  : ∀ {X A}     → LG X ⊢ · A · ⁰ → LG X ⊢ · A ⁰ ·
+  -- ₁ᴸ  : ∀ {Y A}     → LG ₁ · A · ⊢ Y → LG · ₁ A · ⊢ Y
+  -- ₁ᴿ  : ∀ {Y A}     → LG [ A ]⊢ Y → LG ₁ Y ⊢[ ₁ A ]
+  -- ¹ᴸ  : ∀ {Y A}     → LG · A · ¹ ⊢ Y → LG · A ¹ · ⊢ Y
+  -- ¹ᴿ  : ∀ {Y A}     → LG [ A ]⊢ Y → LG Y ¹ ⊢[ A ¹ ]
+  -- r⁰₀ : ∀ {X Y}     → LG X ⊢ Y ⁰ → LG Y ⊢ ₀ X
+  -- r₀⁰ : ∀ {X Y}     → LG Y ⊢ ₀ X → LG X ⊢ Y ⁰
+  -- r¹₁ : ∀ {X Y}     → LG X ¹ ⊢ Y → LG ₁ Y ⊢ X
+  -- r₁¹ : ∀ {X Y}     → LG ₁ Y ⊢ X → LG X ¹ ⊢ Y
 
 
 -- |Residuation and monotonicity rules for (⇐, ⊗, ⇒)

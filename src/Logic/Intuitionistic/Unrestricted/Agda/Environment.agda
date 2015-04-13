@@ -14,6 +14,9 @@ module Logic.Intuitionistic.Unrestricted.Agda.Environment {ℓ} where
 open import Logic.Index hiding (exchange)
 
 
+infixr 5 _,_
+
+
 data Env : List (Set ℓ) → Set (lsuc ℓ) where
   ∅   : Env ∅
   _,_ : {A : Set ℓ} {Γ : List (Set ℓ)} → A → Env Γ → Env (A , Γ)
