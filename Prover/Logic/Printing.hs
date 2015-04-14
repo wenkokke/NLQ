@@ -58,6 +58,12 @@ instance (Show v) => Show (Agda (Term v)) where
     . shows (Agda x)
     . showChar ' '
     . shows (Agda Down)
+  showsPrec _ (Agda (Con f@JForm [a,b]))
+    = showsPrec 3 (Agda a)
+    . showChar ' '
+    . shows (Agda f)
+    . showChar ' '
+    . showsPrec 3 (Agda b)
   showsPrec _ (Agda (Con f@JStruct [x,y]))
     = showsPrec 3 (Agda x)
     . showChar ' '
@@ -107,6 +113,45 @@ instance (Show v) => Show (Agda (Term v)) where
        . showsPrec q (Agda y)
 
 
+-- * Barker & Shan notation
+
+newtype BS a = BS a
+
+instance Show (BS ConId) where
+  show (BS F0L)   = "₀"; show (BS F0R)   = "⁰"; show (BS FBox)  = "□"
+  show (BS F1L)   = "₁"; show (BS F1R)   = "¹"; show (BS FDia)  = "◇"
+  show (BS FProd) = "∙"; show (BS FImpR) = "⇒"; show (BS FImpL) = "⇐"
+  show (BS SProd) = "⊗"; show (BS SImpR) = "⇒"; show (BS SImpL) = "⇐"
+  show (BS FPlus) = "∘"; show (BS FSubL) = "⇚"; show (BS FSubR) = "⇛"
+  show (BS SPlus) = "⊕"; show (BS SSubL) = "⇚"; show (BS SSubR) = "⇛"
+  show (BS S0L)   = "₀"; show (BS S0R)   = "⁰"
+  show (BS S1L)   = "₁"; show (BS S1R)   = "¹"
+  show (BS JForm)   = "⊢"; show (BS JStruct) = "⊢"
+  show (BS JFocusL) = "⊢"; show (BS JFocusR) = "⊢"
+  show (BS Down)    = "·"
+
+instance (Show v) => Show (BS (Term v)) where
+  showsPrec _ (BS (Var i)) = shows i
+  showsPrec _ (BS (Con (Atom x) []))
+    = showNegAtom x
+  showsPrec _ (BS (Con f@JForm [a,b]))
+    = showsPrec 3 (BS a)
+    . showChar ' '
+    . shows (BS f)
+    . showChar ' '
+    . showsPrec 3 (BS b)
+  showsPrec p (BS (Con f [x,y]))
+    | fix f == Infix
+    = let q = prec f in
+       showParen (p >= q)
+       $ showsPrec q (BS x)
+       . showChar ' '
+       . shows (BS f)
+       . showChar ' '
+       . showsPrec q (BS y)
+
+
+
 -- * ASCII representation
 
 newtype ASCII a = ASCII a
@@ -136,6 +181,12 @@ instance (Show v) => Show (ASCII (Term v)) where
       . shows (ASCII x)
       . showChar ' '
       . shows (ASCII Down)
+  showsPrec _ (ASCII (Con f@JForm [a,b]))
+    = showsPrec 3 (ASCII a)
+    . showChar ' '
+    . shows (ASCII f)
+    . showChar ' '
+    . showsPrec 3 (ASCII b)
   showsPrec _ (ASCII (Con f@JStruct [x,y]))
     = showsPrec 3 (ASCII x)
     . showChar ' '
