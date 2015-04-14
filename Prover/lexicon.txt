@@ -11,5 +11,8 @@ cheats     : (np ⇒ s⁻)
 teases     : ((np ⇒ s⁻) ⇐ np)
 loves      : ((np ⇒ s⁻) ⇐ np)
 thinks     : ((np ⇒ s⁻) ⇐ s⁻)
+thinks'    : ((np ⇒ s⁻) ⇐ ◇ s⁻)
 everyone   : ((np ⇐ n) ⊗ n)
 someone    : ((np ⇐ n) ⊗ n)
+everyone1  : (₁ np) ¹
+someone1   : (₁ np) ¹

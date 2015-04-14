@@ -161,8 +161,17 @@ loves = tv _LOVES_
 thinks : ⟦ (np ⇒ s⁻) ⇐ s⁻ ⟧ᵀ
 thinks ((x , k) , y) = k (THINKS x (y id))
 
+thinks' : ⟦ (np ⇒ s⁻) ⇐ ◇ s⁻ ⟧ᵀ
+thinks' ((x , k) , y) = k (THINKS x (y id))
+
 everyone : ⟦ (np ⇐ n) ⊗ n ⟧ᵀ
 everyone = gq forAll _⊃_ , PERSON
 
 someone : ⟦ (np ⇐ n) ⊗ n ⟧ᵀ
 someone = gq exists _∧_ , PERSON
+
+everyone1 : ⟦ (₁ np) ¹ ⟧ᵀ
+everyone1 = forAll
+
+someone1 : ⟦ (₁ np) ¹ ⟧ᵀ
+someone1 = exists

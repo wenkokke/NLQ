@@ -4,7 +4,7 @@ module Logic.Base where
 
 import           Control.DeepSeq
 import           Data.Hashable
-import           Data.Void (Void)
+import           Data.Void (Void,absurd)
 import           GHC.Generics
 
 import           Prover hiding (Term)
@@ -61,41 +61,54 @@ type Proof  = Prover.Term RuleId Void
 
 -- * Well-Formed Terms
 
-isFormula :: Term v -> Bool
-isFormula (Var          _) = True
-isFormula (Con (Atom _) _) = True
-isFormula (Con FProd args) = all isFormula args
-isFormula (Con FImpR args) = all isFormula args
-isFormula (Con FImpL args) = all isFormula args
-isFormula (Con FPlus args) = all isFormula args
-isFormula (Con FSubL args) = all isFormula args
-isFormula (Con FSubR args) = all isFormula args
-isFormula (Con F0L   args) = all isFormula args
-isFormula (Con F0R   args) = all isFormula args
-isFormula (Con FBox  args) = all isFormula args
-isFormula (Con F1L   args) = all isFormula args
-isFormula (Con F1R   args) = all isFormula args
-isFormula (Con FDia  args) = all isFormula args
-isFormula (Con _     _   ) = False
+class IsVar v where
+  forFormula   :: v -> Bool
+  forStructure :: v -> Bool
 
-isStructure :: Term v -> Bool
-isStructure (Var          _) = True
-isStructure (Con SProd args) = all isStructure args
-isStructure (Con SImpR args) = all isStructure args
-isStructure (Con SImpL args) = all isStructure args
-isStructure (Con SPlus args) = all isStructure args
-isStructure (Con SSubL args) = all isStructure args
-isStructure (Con SSubR args) = all isStructure args
-isStructure (Con S0L   args) = all isStructure args
-isStructure (Con S0R   args) = all isStructure args
-isStructure (Con SBox  args) = all isStructure args
-isStructure (Con S1L   args) = all isStructure args
-isStructure (Con S1R   args) = all isStructure args
-isStructure (Con SDia  args) = all isStructure args
-isStructure (Con Down  [fm]) = isFormula fm
-isStructure (Con _     _   ) = False
+instance IsVar Void where
+  forFormula   = absurd
+  forStructure = absurd
 
-isJudgement :: Term v -> Bool
+instance IsVar String where
+  forFormula   n = n `elem` ["A","B","C","D"]
+  forStructure n = n `elem` ["X","Y","Z","W"]
+
+
+isFormula :: (IsVar v) => Term v -> Bool
+isFormula (Var          n) = forFormula n
+isFormula (Con (Atom  _) _) = True
+isFormula (Con  FProd args) = all isFormula args
+isFormula (Con  FImpR args) = all isFormula args
+isFormula (Con  FImpL args) = all isFormula args
+isFormula (Con  FPlus args) = all isFormula args
+isFormula (Con  FSubL args) = all isFormula args
+isFormula (Con  FSubR args) = all isFormula args
+isFormula (Con  F0L   args) = all isFormula args
+isFormula (Con  F0R   args) = all isFormula args
+isFormula (Con  FBox  args) = all isFormula args
+isFormula (Con  F1L   args) = all isFormula args
+isFormula (Con  F1R   args) = all isFormula args
+isFormula (Con  FDia  args) = all isFormula args
+isFormula (Con  _     _   ) = False
+
+isStructure :: (IsVar v) => Term v -> Bool
+isStructure (Var           n) = forStructure n
+isStructure (Con  SProd args) = all isStructure args
+isStructure (Con  SImpR args) = all isStructure args
+isStructure (Con  SImpL args) = all isStructure args
+isStructure (Con  SPlus args) = all isStructure args
+isStructure (Con  SSubL args) = all isStructure args
+isStructure (Con  SSubR args) = all isStructure args
+isStructure (Con  S0L   args) = all isStructure args
+isStructure (Con  S0R   args) = all isStructure args
+isStructure (Con  SBox  args) = all isStructure args
+isStructure (Con  S1L   args) = all isStructure args
+isStructure (Con  S1R   args) = all isStructure args
+isStructure (Con  SDia  args) = all isStructure args
+isStructure (Con  Down  [fm]) = isFormula fm
+isStructure (Con  _     _   ) = False
+
+isJudgement :: (IsVar v) => Term v -> Bool
 isJudgement (Con JForm   [a,b]) = isFormula   a && isFormula   b
 isJudgement (Con JStruct [x,y]) = isStructure x && isStructure y
 isJudgement (Con JFocusL [a,y]) = isFormula   a && isStructure y

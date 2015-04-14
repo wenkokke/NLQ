@@ -1,11 +1,11 @@
-{-# LANGUAGE GADTs, FlexibleInstances, FlexibleContexts, MultiParamTypeClasses, DeriveGeneric #-}
-module Prover (Term(..),Rule(..),(⟶),findAll) where
+{-# LANGUAGE GADTs, FlexibleInstances, FlexibleContexts, MultiParamTypeClasses, UndecidableInstances, DeriveGeneric #-}
+module Prover (Term(..),Rule(..),mkRule,findAll) where
 
 
 import           Control.DeepSeq (NFData)
 import           Control.Monad.State
 import qualified Data.HashSet as S
-import           Data.IntMap (IntMap,(!))
+import           Data.IntMap (IntMap)
 import qualified Data.IntMap as IM
 import qualified Data.Map as M
 import           Data.Maybe (mapMaybe)
@@ -60,19 +60,18 @@ instAll (x:xs) (y:ys) = liftM2 (:) (inst x y) (instAll xs ys)
 instAll  _      _     = fail "cannot instantiate"
 
 
-data Rule r c v = Rule
-  { name       :: ! r
+type RuleId = String
+
+data Rule c v = Rule
+  { name       :: ! RuleId
   , guard      :: Term c Void -> Bool
   , arity      :: ! Int
   , premises   :: ! [Term c v]
   , conclusion :: ! (Term c v)
   }
 
-
-infixr 1 ⟶
-
-(⟶) :: [Term c String] -> Term c String -> r -> Rule r c Int
-(⟶) ps c n = Rule n (const True) (length ps) ps' c'
+mkRule :: [Term c String] -> Term c String -> RuleId -> Rule c Int
+mkRule ps c n = Rule n (const True) (length ps) ps' c'
   where
 
     (c' : ps') = evalState (mapM lbl (c : ps)) (0, M.empty)
@@ -84,9 +83,9 @@ infixr 1 ⟶
     lbl (Con x xs) = fmap (Con x) (mapM lbl xs)
 
 
-instance (Show r, Show c, Show v, Show (Term c v)) => Show (Rule r c v) where
+instance (Show c, Show v, Show (Term c v)) => Show (Rule c v) where
   showsPrec _ (Rule n _ _ ps c) =
-    showParen True (showList ps . showString " ⟶ " . shows c) . showChar ' ' . shows n
+    showParen True (showList ps . showString " ⟶ " . shows c) . showChar ' ' . showString n
 
 
 build :: r -> Int -> [Term r Void] -> [Term r Void]
@@ -96,11 +95,11 @@ build n a ts = let (xs,ys) = splitAt a ts in Con n xs : ys
 -- |Apply the given variable map to a given term. Note: the variable
 --  map has to contain a term for every variable used in the given
 --  term. The resulting term will be variable-free.
-subst :: VMap c -> Term c Int -> Term c Void
+subst :: VMap c -> Term c Int -> Maybe (Term c Void)
 subst s = app where
 
-  app (Con x xs) = Con x (map app xs)
-  app (Var i   ) = s ! i
+  app (Con x xs) = Con x <$> mapM app xs
+  app (Var i   ) = IM.lookup i s
 
 
 -- |Search for proofs of the given goal using the gives rules using
@@ -108,7 +107,7 @@ subst s = app where
 --  Note: this algorithm performs loop-checking under the assumption
 --  that /unary/ rules may cause loops, and rules of higher arity
 --  make progress.
-findAll :: (Hashable c, Ord c) => Term c Void -> [Rule r c Int] -> [Term r Void]
+findAll :: (Hashable c, Ord c) => Term c Void -> [Rule c Int] -> [Term String Void]
 findAll goal rules = slv [(S.empty,[goal],head)] []
   where
     slv [                    ] [ ] = []
@@ -118,18 +117,22 @@ findAll goal rules = slv [(S.empty,[goal],head)] []
       | S.member g seen = slv prfs acc
       | otherwise       = slv prfs (mapMaybe step rules ++ acc)
       where
-        step (Rule n canApply a ps c)
-          | canApply g = (\sb -> (seen', map (subst sb) ps ++ gs, prf')) <$> execInst (inst g c)
-          | otherwise  = Nothing
-          where
-            prf'  = prf . build n a
-            seen' | a == 1    = S.insert g seen
-                  | otherwise = S.empty
+        step (Rule n canApply a ps c) =
+          if canApply g
+          then do sb <- execInst (inst g c)
+                  let prf'  = prf . build n a
+                  let seen' | a == 1    = S.insert g seen
+                            | otherwise = S.empty
+                  case mapM (subst sb) ps of
+                   Just ps' -> return (seen', ps' ++ gs, prf')
+                   Nothing  -> error ("Free variable in substitution for rule `"++n++"'.")
+          else fail ("Cannot apply rule `"++n++"'")
 
 
 -- |Verify if a given proof can indeed be build up using the given rules.
+{-
 verify :: (Show (Term c Void), Show (Term c Int), Eq c)
-          => [Rule String c Int]
+          => [Rule c Int]
           -> Term c Void
           -> Term String Void
           -> IO ()
@@ -147,4 +150,5 @@ verify rules = vrf
                Just sb ->
                  if a /= length ps
                  then error ("verify: wrong number of arguments")
-                 else zipWithM_ vrf (map (subst sb) ps) args
+                 else zipWithM_ vrf (mapM (subst sb) ps) args
+-}

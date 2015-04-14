@@ -35,22 +35,22 @@ sbin :: (IsStructure t1 v, IsStructure t2 v) => ConId -> t1 -> t2 -> Term v
 sbin f x y = Con f [asStructure x, asStructure y]
 
 
-class IsFormula   t     v | t     -> v where asFormula   :: t -> Term v
-class IsStructure t     v | t     -> v where asStructure :: t -> Term v
-class IsJudgement t1 t2 v | t1 t2 -> v where (⊢)  :: t1 -> t2 -> Term v
+class IsVar v => IsFormula   t     v | t     -> v where asFormula   :: t -> Term v
+class IsVar v => IsStructure t     v | t     -> v where asStructure :: t -> Term v
+class IsVar v => IsJudgement t1 t2 v | t1 t2 -> v where (⊢)  :: t1 -> t2 -> Term v
 
 
-instance (Show v) => IsFormula (Term v) v where
+instance (IsVar v, Show v) => IsFormula (Term v) v where
   asFormula t
     | isFormula t = t
     | otherwise   = error ("invalid formula '"++show (Agda t)++"'")
 
 instance IsFormula String String where
   asFormula n
-    | n `elem` ["A","B","C","D"] = Var n
-    | otherwise                  = Con (Atom n) []
+    | forFormula n = Var n
+    | otherwise    = Con (Atom n) []
 
-instance (Show v) => IsStructure (Term v) v where
+instance (IsVar v, Show v) => IsStructure (Term v) v where
   asStructure t
     | isStructure t = t
     | isFormula   t = Con Down [asFormula t]
@@ -58,17 +58,16 @@ instance (Show v) => IsStructure (Term v) v where
 
 instance IsStructure String String where
   asStructure n
-    | n `elem` ["X","Y","Z","W"] = Var n
-    | otherwise                  = Con Down [asFormula n]
+    | forStructure n = Var n
+    | otherwise      = Con Down [asFormula n]
 
 
-instance (Show v) => IsJudgement (Term v) (Term v) v where x ⊢ y = sbin JStruct x y
+instance (IsVar v, Show v) => IsJudgement (Term v) (Term v) v where x ⊢ y = sbin JStruct x y
 instance IsJudgement       String (Term String) String  where x ⊢ y = sbin JStruct x y
 instance IsJudgement (Term String)      String  String  where x ⊢ y = sbin JStruct x y
 instance IsJudgement       String       String  String  where x ⊢ y = sbin JStruct x y
 
-
-instance (Show v) => IsJudgement [Term v] (Term v) v where
+instance (IsVar v, Show v) => IsJudgement [Term v] (Term v) v where
   [a] ⊢ y = Con JFocusL [asFormula a, asStructure y]
 instance IsJudgement [String] (Term String) String where
   [a] ⊢ y = Con JFocusL [asFormula a, asStructure y]
@@ -77,8 +76,7 @@ instance IsJudgement [Term String] (String) String where
 instance IsJudgement [String] (String) String where
   [a] ⊢ y = Con JFocusL [asFormula a, asStructure y]
 
-
-instance (Show v) => IsJudgement (Term v) [Term v] v where
+instance (IsVar v, Show v) => IsJudgement (Term v) [Term v] v where
   x ⊢ [b] = Con JFocusR [asStructure x, asFormula b]
 instance IsJudgement (String) [Term String] String where
   x ⊢ [b] = Con JFocusR [asStructure x, asFormula b]
