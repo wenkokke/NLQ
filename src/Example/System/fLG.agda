@@ -14,23 +14,10 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 module Example.System.fLG where
 
 
--- * setup basic entities
-
-data Entity : Set where
-  john  : Entity
-  mary  : Entity
-  bill  : Entity
-
-abstract
-  forAll : (Entity → Bool) → Bool
-  forAll p = foldr (λ x b → b ∧ p x) true (john ∷ mary ∷ bill ∷ [])
-
-  exists : (Entity → Bool) → Bool
-  exists p = foldr (λ x b → b ∨ p x) false (john ∷ mary ∷ bill ∷ [])
+open import Example.System.Base
 
 
 -- * setup atomic formulas
-
 data Univ : Set where
   N  : Univ
   NP : Univ
@@ -54,8 +41,14 @@ S  ≟-Univ S  = yes refl
 
 
 -- * import focused Lambek-Grishin calculus
+open import Logic.Translation
 open import Logic.Polarity public
-open import Logic.Classical.Ordered.LambekGrishin.FocPol Univ ⟦_⟧ᵁ S public
+open import Logic.Classical.Ordered.LambekGrishin.FocPol Univ public
+open import Logic.Classical.Ordered.LambekGrishin.FocPol.ToIntuitionisticLinearLambda Univ S using (LG→LL)
+open import Logic.Intuitionistic.Linear.Lambda.ToUnrestricted Univ using (LL→Λ)
+open import Logic.Intuitionistic.Unrestricted.Lambda.ToAgda Univ ⟦_⟧ᵁ using (Λ→ΛΠ)
+open import Logic.Intuitionistic.Unrestricted.Agda.Environment public
+open Translation (Λ→ΛΠ ◇ LL→Λ ◇ LG→LL) public renaming ([_] to [_]ᵀ)
 
 
 -- * create aliases for polarised types
@@ -69,7 +62,6 @@ s⁻  = el (- , S)
 
 
 -- * setup helper functions
-
 infixr 4 _⊃_
 
 _⊃_ : Bool → Bool → Bool

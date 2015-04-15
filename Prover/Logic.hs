@@ -1,3 +1,4 @@
+{-# LANGUAGE TupleSections #-}
 module Logic (tryAll, module X) where
 
 
@@ -27,22 +28,31 @@ import           Logic.ToAgda   as X
 --  structures paired with their proofs.
 --  Note: the resulting list may contain pairs for structures for
 --  which no proofs were found.
-tryAll :: Map String (Term ConId Void)           -- ^ Lexicon
-       -> System                                 -- ^ Inference system
-       -> String                                 -- ^ Sentence
-       -> Term ConId Void                        -- ^ Goal formula
-       -> [(Term ConId Void,[Term RuleId Void])]
-tryAll lex sys sent g =
-  case mapM (`M.lookup` lex) (words sent) of
-   Nothing       -> []
-   Just formulas -> pars
-     where
-       (un, bn, dn, jg) = getSetup sys
-       atoms = maybe formulas (\f -> map (unary f) formulas) dn
-       lhs   = brackets (unary <$> un) (binary bn) atoms
-       seqs  = map (\x -> binary jg x g) lhs
-       prfs  = map (\j -> (j, findAll j (getRules sys))) seqs
-       pars  = prfs `using` parList rdeepseq
+tryAll :: Int                          -- ^ Search depth
+       -> Map String (Term ConId Void) -- ^ Lexicon
+       -> System                       -- ^ Inference system
+       -> String                       -- ^ Sentence
+       -> Term ConId Void              -- ^ Goal formula
+       -> [(Term ConId Void,Term RuleId Void)]
+tryAll d lex sys sent g = if fin then finPrfs else infPrfs
+  where
+    (SysDescr un bn dn jg rs fin) = getSysDescr sys
+
+    formulas = lookupAll lex (words sent)
+    atoms    = maybe formulas (\f -> map (unary f) formulas) dn
+    lhs      = brackets (unary <$> un) (binary bn) atoms
+    seqs     = map (\x -> binary jg x g) lhs
+    finPrfs  = concatMap (\j -> map (j,) (findAll j rs)) seqs `using` parList rdeepseq
+    infPrfs  = findFirst d seqs rs `using` parList rdeepseq
+
+
+lookupAll :: Map String (Term ConId Void) -- ^ Lexicon
+          -> [String]                     -- ^ Sentence
+          -> [Term ConId Void]
+lookupAll _   [    ] = []
+lookupAll lex (w:ws) = case M.lookup w lex of
+  Just tm -> tm : lookupAll lex ws
+  Nothing -> error ("Cannot find `"++w++"' in the lexicon.")
 
 
 -- |Generate all binary trees with n nodes, formed by applications of

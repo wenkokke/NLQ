@@ -1,5 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
-module Logic.Parsing where
+module Logic.Parsing (lexicon,judgement,judgementVar,structure,structureVar,formula,formulaVar)where
 
 
 import           Data.List (nub)
@@ -14,76 +14,96 @@ import qualified Text.Parsec.Token as P
 
 import           Prover hiding (Term)
 import           Logic.Base
-import           Logic.Printing (Agda(..),ASCII(..),BS(..))
+import           Logic.Printing (Agda(..),ASCII(..))
+
+
+-- * Export-ready parsers
+
+
+-- |Parse a formula using (A,B,C,D) as variables.
+formulaVar   :: Parsec String () (Term String)
+formulaVar   = formula' varForFormula
+
+-- |Parse a formula without variables.
+formula      :: Parsec String () (Term Void)
+formula      = formula' void
+
+-- |Parse a structure using (A,B,C,D) and (X,Y,Z,W) as variables.
+structureVar :: Parsec String () (Term String)
+structureVar = structure' varForFormula varForStructure
+
+-- |Parse a structure without variables.
+structure    :: Parsec String () (Term Void)
+structure    = structure' void void
+
+-- |Parse a judgement using (A,B,C,D) and (X,Y,Z,W) as variables.
+judgementVar :: Parsec String () (Term String)
+judgementVar = judgement' varForFormula varForStructure
+
+-- |Parse a judgement without variables.
+judgement    :: Parsec String () (Term Void)
+judgement    = judgement' void void
+
 
 
 -- * Parsing formulas
-
-atom :: Parsec String () (Term v)
-atom = (nullary . Atom) <$> identifier <?> "atomic formulas"
-  where
-    TokenParser{..} = lexer
-
 
 void :: Parsec String () Void
 void = unexpected "Variables A,B,C,D and X,Y,Z,W are not allowed."
 
 
-nullary :: ConId -> Term v
-nullary c = Con c []
-
-unary   :: ConId -> Term v -> Term v
-unary   c x = Con c [x]
-
-binary  :: ConId -> Term v -> Term v -> Term v
-binary  c x y = Con c [x,y]
-
-
 con :: ConId -> Parsec String () ()
-con c = reservedOp (show (Agda c))
-        <|> reservedOp (show (ASCII c))
-        <|> reservedOp (show (BS c))
+con c = reservedOp (show (Agda c)) <|> reservedOp (show (ASCII c))
   where TokenParser{..} = lexer
 
 
 lexicon :: Parsec String () (Map String (Term Void))
 lexicon = M.fromList <$> many1 entry
+
+entry :: Parsec String () (String, Term Void)
+entry = (,) <$> identifier <* symbol ":" <*> formula
   where
     TokenParser{..} = lexer
-    entry = (,) <$> identifier <* symbol ":" <*> formula void
 
 
-formula :: (IsVar v) => Parsec String () v -> Parsec String () (Term v)
-formula fv = buildExpressionParser table
-           $ parens (formula fv) <|> (Var <$> fv) <|> atom
+formula' :: (IsVar v) => Parsec String () v -> Parsec String () (Term v)
+formula' fv =
+  buildExpressionParser table (parens form <|> (Var <$> fv) <|> atom)
   where
     TokenParser{..} = lexer
+    form   = formula' fv                     <?> "formula"
+    atom   = (nullary . Atom) <$> identifier
+
     op   c = Infix   (con c >> return (binary c))
     pre  c = Prefix  (con c >> return (unary c))
     post c = Postfix (con c >> return (unary c))
-
 
     table =
       [ [pre F0L , post F0R , pre F1L , post F1R
         ,pre FBox           , pre FDia           ]
       , [op FSubL AssocLeft , op FSubR AssocRight
-        ,op FImpR AssocRight, op FImpL AssocLeft ]
-      , [op FProd AssocRight, op FPlus AssocLeft ]
+        ,op FImpR AssocRight, op FImpL AssocLeft
+        ,op HImpR AssocRight, op HImpL AssocLeft ]
+      , [op FProd AssocRight, op FPlus AssocLeft
+        ,op HProd AssocRight                     ]
       ]
 
 
-structure :: (IsVar v) => Parsec String () v -> Parsec String () v -> Parsec String () (Term v)
-structure fv sv = buildExpressionParser table
-                $ parens (structure fv sv) <|> sdia <|> sbox <|> (Var <$> sv) <|> form
+structure' :: (IsVar v) => Parsec String () v -> Parsec String () v -> Parsec String () (Term v)
+structure' fv sv =
+  buildExpressionParser table (parens struct <|> sdia <|> sbox <|> var <|> form)
   where
     TokenParser{..} = lexer
+    struct = structure' fv sv                               <?> "structure"
+    form   = unary Down <$> between cdot cdot (formula' fv) <?> "formula"
+    var    = Var <$> sv                                     <?> "variable"
+
     op   c = Infix   (con c >> return (binary c))
     pre  c = Prefix  (con c >> return (unary c))
     post c = Postfix (con c >> return (unary c))
 
-    form   = unary Down <$> between cdot cdot (formula fv)
-    sdia   = unary SDia <$> (angles (structure fv sv) <|> between ropen rclose (structure fv sv))
-    sbox   = unary SBox <$> brackets (structure fv sv)
+    sdia   = unary SDia <$> (angles struct <|> between ropen rclose struct)
+    sbox   = unary SBox <$> brackets struct
 
     cdot   = symbol "." <|> symbol "·"
     ropen  = symbol "⟨"
@@ -97,15 +117,13 @@ structure fv sv = buildExpressionParser table
       ]
 
 
-judgementVar :: Parsec String () (Term String)
-judgementVar = judgement formulaVar structureVar
-
-judgement :: (IsVar v) => Parsec String () v -> Parsec String () v -> Parsec String () (Term v)
-judgement fv sv = spaces *> (try (try jstruct <|> (try jfocusl <|> jfocusr)) <|> jform)
+judgement' :: (IsVar v) => Parsec String () v -> Parsec String () v -> Parsec String () (Term v)
+judgement' fv sv =
+  spaces *> (try (try jstruct <|> (try jfocusl <|> jfocusr)) <|> jform)
   where
     TokenParser{..} = lexer
-    form   = formula   fv
-    struct = structure fv sv
+    form   = formula'   fv
+    struct = structure' fv sv
 
     jstruct = binary JStruct <$> struct        <* con JStruct <*> struct
     jfocusl = binary JFocusL <$> brackets form <* con JFocusL <*> struct
@@ -117,12 +135,13 @@ lexerDef :: LanguageDef st
 lexerDef = haskellStyle
   { identLetter     = alphaNum <|> oneOf "_'⁻⁺"
   , opStart         = opLetter lexerDef
-  , opLetter        = oneOf "*><+-=|⊗⇐⇒⊕⇚⇛⊢∙∘"
-  , reservedOpNames = nub $ concatMap (\x -> [show (Agda x), show (ASCII x), show (BS x)])
+  , opLetter        = oneOf "*><+-~=|⊗⇐⇒⊕⇚⇛⊢∘⇨⇦"
+  , reservedOpNames = nub $ concatMap (\x -> [show (Agda x), show (ASCII x)])
                       [FProd, FImpR, FImpL, FPlus, FSubL, FSubR
                       ,SProd, SImpR, SImpL, SPlus, SSubL, SSubR
+                      ,HProd, HImpR, HImpL
                       ,F0L  , F0R  , FBox , F1L  , F1R  , FDia
-                      ,JStruct]
+                      ,JForm, JStruct, JFocusL, JFocusR]
   }
 
 
@@ -130,25 +149,8 @@ lexer :: TokenParser st
 lexer = P.makeTokenParser lexerDef
 
 
--- TODO: passing these parsers as arguments along the tree is a bit
---       of an ugly solution; perhaps I should restructure the code
-formulaVar :: Parsec String () String
-formulaVar = lexeme lexer ((:[]) <$> oneOf "ABCD")
+varForFormula :: Parsec String () String
+varForFormula = lexeme lexer ((:[]) <$> oneOf "ABCD")
 
-structureVar :: Parsec String () String
-structureVar = lexeme lexer ((:[]) <$> oneOf "XYZW")
-
-
--- TODO: defining this operator here feels a bit out of place, even
---       though this is the earliest position where it can be defined
---       perhaps I should move it to `Rules.hs'
-infixr 1 ⟶
-
-(⟶) :: [String] -> String -> RuleId -> Rule ConId Int
-(⟶) ps c n = let j = judgement formulaVar structureVar in
-    case mapM (parse j "Rules.hs") ps of
-     Left err  -> error ("Cannot parse premises of rule `"++n++"' in `Rules.hs'.\n"++show err)
-     Right ps' ->
-       case parse j "Rules.hs" c of
-        Left err -> error ("Cannot parse conclusion of rule `"++n++"' in `Rules.hs'.\n"++show err)
-        Right c' -> mkRule ps' c' n
+varForStructure :: Parsec String () String
+varForStructure = lexeme lexer ((:[]) <$> oneOf "XYZW")

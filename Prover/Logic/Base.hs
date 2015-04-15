@@ -33,6 +33,9 @@ data ConId
   | S0L   | S0R   | SBox
   | S1L   | S1R   | SDia
 
+  -- hollow product and slashes
+  | HProd | HImpR | HImpL
+
   -- sequents
   | JForm   | JStruct
   | JFocusL | JFocusR
@@ -59,6 +62,18 @@ type RuleId = String
 type Proof  = Prover.Term RuleId Void
 
 
+-- * Utility constructors
+
+nullary :: ConId -> Term v
+nullary c = Con c []
+
+unary   :: ConId -> Term v -> Term v
+unary   c x = Con c [x]
+
+binary  :: ConId -> Term v -> Term v -> Term v
+binary  c x y = Con c [x,y]
+
+
 -- * Well-Formed Terms
 
 class IsVar v where
@@ -83,6 +98,9 @@ isFormula (Con  FImpL args) = all isFormula args
 isFormula (Con  FPlus args) = all isFormula args
 isFormula (Con  FSubL args) = all isFormula args
 isFormula (Con  FSubR args) = all isFormula args
+isFormula (Con  HProd args) = all isFormula args
+isFormula (Con  HImpR args) = all isFormula args
+isFormula (Con  HImpL args) = all isFormula args
 isFormula (Con  F0L   args) = all isFormula args
 isFormula (Con  F0R   args) = all isFormula args
 isFormula (Con  FBox  args) = all isFormula args
@@ -133,6 +151,7 @@ pos (Con (Atom n) _) = isPositiveAtom n
 pos (Con  FProd   _) = True
 pos (Con  FSubL   _) = True
 pos (Con  FSubR   _) = True
+pos (Con  HProd   _) = True
 pos (Con  F1L     _) = True
 pos (Con  F1R     _) = True
 pos (Con  FDia    _) = True
@@ -142,6 +161,8 @@ neg (Con (Atom n) _) = isNegativeAtom n
 neg (Con  FPlus   _) = True
 neg (Con  FImpR   _) = True
 neg (Con  FImpL   _) = True
+neg (Con  HImpR   _) = True
+neg (Con  HImpL   _) = True
 neg (Con  F0L     _) = True
 neg (Con  F0R     _) = True
 neg (Con  FBox    _) = True

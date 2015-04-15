@@ -13,6 +13,7 @@ prec F0L   = 9; prec F0R   = 9; prec FBox  = 9
 prec F1L   = 9; prec F1R   = 9; prec FDia  = 9
 prec FProd = 8; prec FImpR = 7; prec FImpL = 7
 prec FPlus = 8; prec FSubL = 7; prec FSubR = 7
+prec HProd = 8; prec HImpR = 7; prec HImpL = 7
 prec S0L   = 6; prec S0R   = 6; prec SBox  = 6
 prec S1L   = 6; prec S1R   = 6; prec SDia  = 6
 prec SProd = 5; prec SImpR = 4; prec SImpL = 4
@@ -25,10 +26,7 @@ data Fixity = Prefix | Suffix | Infix deriving (Eq)
 fix :: ConId -> Fixity
 fix F0L   = Prefix; fix F0R   = Suffix; fix FBox  = Prefix
 fix F1L   = Prefix; fix F1R   = Suffix; fix FDia  = Prefix
-fix FProd = Infix ; fix FImpR = Infix ; fix FImpL = Infix
-fix FPlus = Infix ; fix FSubL = Infix ; fix FSubR = Infix
-fix SProd = Infix ; fix SImpR = Infix ; fix SImpL = Infix
-fix SPlus = Infix ; fix SSubL = Infix ; fix SSubR = Infix
+fix _     = Infix
 
 
 -- * Agda representation
@@ -40,6 +38,7 @@ instance Show (Agda ConId) where
   show (Agda F1L)   = "₁"; show (Agda F1R)   = "¹"; show (Agda FDia)  = "◇"
   show (Agda FProd) = "⊗"; show (Agda FImpR) = "⇒"; show (Agda FImpL) = "⇐"
   show (Agda SProd) = "⊗"; show (Agda SImpR) = "⇒"; show (Agda SImpL) = "⇐"
+  show (Agda HProd) = "∘"; show (Agda HImpR) = "⇨"; show (Agda HImpL) = "⇦"
   show (Agda FPlus) = "⊕"; show (Agda FSubL) = "⇚"; show (Agda FSubR) = "⇛"
   show (Agda SPlus) = "⊕"; show (Agda SSubL) = "⇚"; show (Agda SSubR) = "⇛"
   show (Agda S0L)   = "₀"; show (Agda S0R)   = "⁰"
@@ -113,45 +112,6 @@ instance (Show v) => Show (Agda (Term v)) where
        . showsPrec q (Agda y)
 
 
--- * Barker & Shan notation
-
-newtype BS a = BS a
-
-instance Show (BS ConId) where
-  show (BS F0L)   = "₀"; show (BS F0R)   = "⁰"; show (BS FBox)  = "□"
-  show (BS F1L)   = "₁"; show (BS F1R)   = "¹"; show (BS FDia)  = "◇"
-  show (BS FProd) = "∙"; show (BS FImpR) = "⇒"; show (BS FImpL) = "⇐"
-  show (BS SProd) = "⊗"; show (BS SImpR) = "⇒"; show (BS SImpL) = "⇐"
-  show (BS FPlus) = "∘"; show (BS FSubL) = "⇚"; show (BS FSubR) = "⇛"
-  show (BS SPlus) = "⊕"; show (BS SSubL) = "⇚"; show (BS SSubR) = "⇛"
-  show (BS S0L)   = "₀"; show (BS S0R)   = "⁰"
-  show (BS S1L)   = "₁"; show (BS S1R)   = "¹"
-  show (BS JForm)   = "⊢"; show (BS JStruct) = "⊢"
-  show (BS JFocusL) = "⊢"; show (BS JFocusR) = "⊢"
-  show (BS Down)    = "·"
-
-instance (Show v) => Show (BS (Term v)) where
-  showsPrec _ (BS (Var i)) = shows i
-  showsPrec _ (BS (Con (Atom x) []))
-    = showNegAtom x
-  showsPrec _ (BS (Con f@JForm [a,b]))
-    = showsPrec 3 (BS a)
-    . showChar ' '
-    . shows (BS f)
-    . showChar ' '
-    . showsPrec 3 (BS b)
-  showsPrec p (BS (Con f [x,y]))
-    | fix f == Infix
-    = let q = prec f in
-       showParen (p >= q)
-       $ showsPrec q (BS x)
-       . showChar ' '
-       . shows (BS f)
-       . showChar ' '
-       . showsPrec q (BS y)
-
-
-
 -- * ASCII representation
 
 newtype ASCII a = ASCII a
@@ -161,6 +121,7 @@ instance Show (ASCII ConId) where
   show (ASCII F1L)   = "1"; show (ASCII F1R)   = "1" ; show (ASCII FDia) = "<>"
   show (ASCII FProd) = "*"; show (ASCII FImpR) = "->"; show (ASCII FImpL) = "<-"
   show (ASCII SProd) = "*"; show (ASCII SImpR) = "->"; show (ASCII SImpL) = "<-"
+  show (ASCII HProd) = "~"; show (ASCII HImpR) = "~>"; show (ASCII HImpL) = "<~"
   show (ASCII FPlus) = "+"; show (ASCII FSubL) = "<="; show (ASCII FSubR) = "=>"
   show (ASCII SPlus) = "+"; show (ASCII SSubL) = "<="; show (ASCII SSubR) = "=>"
   show (ASCII S0L)   = "0"; show (ASCII S0R)   = "0"
@@ -234,7 +195,6 @@ instance (Show v) => Show (ASCII (Term v)) where
        . shows (ASCII f)
        . showChar ' '
        . showsPrec q (ASCII y)
-
 
 
 -- |Show negative atoms, replacing any occurrence of @'@ with @⁻@.

@@ -27,5 +27,5 @@ private
   [ L.eᴸ  Γ₁ Γ₂ Γ₃ Γ₄ f   ] = U.eᴸ  Γ₁ Γ₂ Γ₃ Γ₄ [ f ]
 
 
-Lin→Un : Translation Type Type L.Λ_ U.Λ_
-Lin→Un = record { ⟦_⟧ᵀ = id ; ⟦_⟧ᴶ = id ; [_] = [_] }
+LL→Λ : Translation Type Type L.Λ_ U.Λ_
+LL→Λ = record { ⟦_⟧ᵀ = id ; ⟦_⟧ᴶ = id ; [_] = [_] }
