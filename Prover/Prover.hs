@@ -1,5 +1,5 @@
 {-# LANGUAGE GADTs, FlexibleInstances, FlexibleContexts, MultiParamTypeClasses, UndecidableInstances, DeriveGeneric #-}
-module Prover (Term(..),Rule(..),mkRule,findAll) where
+module Prover (Term(..),Rule(..),mkRule,findAll,findFirst) where
 
 
 import           Control.DeepSeq (NFData)
@@ -12,6 +12,7 @@ import           Data.Maybe (mapMaybe)
 import           Data.Void (Void)
 import           Data.Hashable
 import           GHC.Generics
+import           Debug.Trace (trace)
 
 
 data Term c v where
@@ -105,7 +106,7 @@ subst s = app where
 -- |Search for proofs of the given goal using the gives rules using
 --  breadth-first search.
 --  Note: this algorithm performs loop-checking under the assumption
---  that /unary/ rules may cause loops, and rules of higher arity
+--  that /unary/ rules may cause loops, and rules of other arities
 --  make progress.
 findAll :: (Hashable c, Ord c) => Term c Void -> [Rule c Int] -> [Term String Void]
 findAll goal rules = slv [(S.empty,[goal],head)] []
@@ -129,26 +130,33 @@ findAll goal rules = slv [(S.empty,[goal],head)] []
           else fail ("Cannot apply rule `"++n++"'")
 
 
--- |Verify if a given proof can indeed be build up using the given rules.
-{-
-verify :: (Show (Term c Void), Show (Term c Int), Eq c)
-          => [Rule c Int]
-          -> Term c Void
-          -> Term String Void
-          -> IO ()
-verify rules = vrf
+-- |Search for proofs of the given goal using the gives rules using
+--  depth-limited breadth-first search.
+--  Note: this algorithm performs loop-checking under the assumption
+--  that /unary/ rules may cause loops, and rules of other arities
+--  make progress.
+findFirst :: (Hashable c, Ord c)
+          => Int           -- ^ Search Depth
+          -> [Term c Void] -- ^ Goal Terms
+          -> [Rule c Int]  -- ^ Inference rules
+          -> [(Term c Void, Term String Void)]
+findFirst d goals rules = slv d (map (\g -> (S.empty,g,[g],head)) goals) []
   where
-    rmp = M.fromList (zip (map name rules) rules)
-    vrf goal (Con n args) =
-      case M.lookup n rmp of
-       Nothing -> error ("verify: no rule named '"++n++"'")
-       Just (Rule _ canApply a ps c) ->
-         if not (canApply goal)
-         then error ("verify: '"++n++"' cannot apply to '"++show goal++"'")
-         else case execInst (inst goal c) of
-               Nothing -> error ("verify: cannot instantiate '"++show c++"' to '"++show goal++"'")
-               Just sb ->
-                 if a /= length ps
-                 then error ("verify: wrong number of arguments")
-                 else zipWithM_ vrf (mapM (subst sb) ps) args
--}
+    slv 0                        _   _ = []
+    slv d [                      ] [ ] = []
+    slv d [                      ] acc = slv (d - 1) (reverse acc) []
+    slv d ((_   ,o,  [],prf):_   ) _   = [(o, prf [])]
+    slv d ((seen,o,g:gs,prf):prfs) acc
+      | S.member g seen = slv d prfs acc
+      | otherwise       = slv d prfs (mapMaybe step rules ++ acc)
+      where
+        step (Rule n canApply a ps c) =
+          if canApply g
+          then do sb <- execInst (inst g c)
+                  let prf'  = prf . build n a
+                  let seen' | a == 1    = S.insert g seen
+                            | otherwise = S.empty
+                  case mapM (subst sb) ps of
+                   Just ps' -> return (seen', o, ps' ++ gs, prf')
+                   Nothing  -> error ("Free variable in substitution for rule `"++n++"'.")
+          else fail ("Cannot apply rule `"++n++"'")

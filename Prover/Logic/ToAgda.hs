@@ -16,35 +16,39 @@ import Logic.System (System(..))
 -- |Return the Agda data type name associated with given a logical
 --  system.
 toAgdaDataType :: System -> String
-toAgdaDataType NL   = "NL"
-toAgdaDataType FNL  = "LG"
-toAgdaDataType CNL  = "CNL"
-toAgdaDataType FCNL = "LG"
-toAgdaDataType LG   = "LG"
-toAgdaDataType FLG  = "LG"
-toAgdaDataType EXP  = "LG"
+toAgdaDataType    NL   = "NL"
+toAgdaDataType    FNL  = "LG"
+toAgdaDataType    CNL  = "CNL"
+toAgdaDataType    FCNL = "LG"
+toAgdaDataType    LG   = "LG"
+toAgdaDataType    FLG  = "LG"
+toAgdaDataType    EXP  = "LG"
+toAgdaDataType AlgNL   = "NL"
+toAgdaDataType AlgNLCL = "NLCL"
 
 
 -- |Return the Agda module associated with given a logical system.
 toAgdaModule :: System -> String
-toAgdaModule NL   = error "Error: NL is not yet implemented in Agda."
-toAgdaModule NLCL = error "Error: NLCL is not yet implemented in Agda."
-toAgdaModule FNL  = "Example.System.fLG"
-toAgdaModule CNL  = error "Error: CNL is not yet implemented in Agda."
-toAgdaModule FCNL = "Example.System.fLG"
-toAgdaModule LG   = error "Error: LG is not yet implemented in Agda."
-toAgdaModule FLG  = "Example.System.fLG"
-toAgdaModule EXP  = "Example.System.fLG"
+toAgdaModule    NL   = error "Error: NL is not yet implemented in Agda."
+toAgdaModule    FNL  = "Example.System.fLG"
+toAgdaModule    CNL  = error "Error: CNL is not yet implemented in Agda."
+toAgdaModule    FCNL = "Example.System.fLG"
+toAgdaModule    LG   = error "Error: LG is not yet implemented in Agda."
+toAgdaModule    FLG  = "Example.System.fLG"
+toAgdaModule    EXP  = "Example.System.fLG"
+toAgdaModule AlgNL   = error "Error: AlgNL is not yet implemented in Agda."
+toAgdaModule AlgNLCL = error "Error: AlgNLCL is not yet implemented in Agda."
 
 
 -- |Return a valid Agda file given a sequence of proofs.
 toAgdaFile :: String
            -> String
            -> System
-           -> [(Term ConId Void, [Term String Void])]
+           -> [(Term ConId Void, Term String Void)]
            -> Term ConId Void
            -> String
-toAgdaFile moduleName sent sys prfs tgt = unlines (comment ++ [importStmts, "", moduleStmt, ""] ++ proofStmts)
+toAgdaFile moduleName sent sys prfs tgt =
+  unlines (comment ++ [importStmts, "", moduleStmt, "", proofStmts])
   where
     comment      =
       [ "------------------------------------------------------------------------"
@@ -55,19 +59,17 @@ toAgdaFile moduleName sent sys prfs tgt = unlines (comment ++ [importStmts, "", 
     moduleStmt   = unlines ["module Example."++moduleName++" where"]
     importStmts  = unlines ["open import "++toAgdaModule sys]
     dataTypeName = toAgdaDataType sys
-    proofStmts   = evalState (concat <$> mapM showProofs prfs) 0
+    proofStmts   = evalState (concat <$> mapM showProof prfs) 0
       where
-        showProofs (g,ps) = mapM (showProof g) ps
-          where
-            showProof g p = do
-              n <- get; put (n + 1)
-              let subn = sub n
-              return $ unlines
-                [ synBaseName++subn++" : "++dataTypeName++" "++show (Agda g)
-                , synBaseName++subn++" = "++show p
-                , semBaseName++subn++" : ⟦ "++show (Agda tgt)++" ⟧ᵀ"
-                , semBaseName++subn++" = [ "++synBaseName++subn++" ]ᵀ ("++semCtxt++")"
-                ]
+        showProof (g,p) = do
+          n <- get; put (n + 1)
+          let subn = sub n
+          return $ unlines
+            [ synBaseName++subn++" : "++dataTypeName++" "++show (Agda g)
+            , synBaseName++subn++" = "++show p
+            , semBaseName++subn++" : ⟦ "++show (Agda tgt)++" ⟧ᵀ"
+            , semBaseName++subn++" = [ "++synBaseName++subn++" ]ᵀ ("++semCtxt++")"
+            ]
 
     semCtxt = unwords (intersperse "," (words sent ++ ["∅"]))
     semBaseName = map toLower synBaseName

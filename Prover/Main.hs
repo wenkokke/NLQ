@@ -3,9 +3,7 @@ module Main where
 
 
 import Prelude hiding (lex)
-import Data.Char (toUpper)
 import Data.Map (Map)
-import Data.Maybe (maybe)
 import Data.Void (Void)
 import System.Console.GetOpt (OptDescr(..),ArgDescr(..),ArgOrder(..),usageInfo,getOpt)
 import System.Environment (getProgName,getArgs)
@@ -26,17 +24,18 @@ main = do
 
   let (actions, _, _) = getOpt Permute options args
   opts <- foldl (>>=) (return defaultOptions) actions
-  let Options { optTask       = task
-              , optLexicon    = mbLexicon
-              , optSystem     = sys
-              , optTarget     = tgt
-              , optGoal       = g
+  let Options { optTask    = task
+              , optLexicon = mbLexicon
+              , optSystem  = sys
+              , optTarget  = tgt
+              , optGoal    = g
+              , optDepth   = d
               } = opts
   case task of
    Nothing -> putStrLn "Usage: For basic information, try the `--help' option."
 
    Just (Solve str) ->
-     case parse (judgement void void) "" str of
+     case parse judgement "" str of
       Left err -> print err
       Right tm -> mapM_ print (findAll tm (getRules sys))
 
@@ -45,14 +44,12 @@ main = do
       Nothing  -> putStrLn "Error: No lexicon file given."
       Just lex -> let
 
-        prfs        = tryAll lex sys sent g
-        puts (g,[]) = do print (Agda g); putStrLn "No proof."
-        puts (g,ps) = do print (Agda g); mapM_ print ps
+        prfs = tryAll d lex sys sent g
 
         in case tgt of
-            StdOut             -> mapM_ puts prfs
+            StdOut             -> mapM_ print prfs
             AgdaFile  Nothing  -> putStr $ toAgdaFile "Main" sent sys prfs g
-            AgdaFile (Just fn) -> writeFile fn $ toAgdaFile (takeBaseName fn) sent sys prfs g
+            AgdaFile (Just fn) -> return ()
 
 data Task
   = Solve String
@@ -68,6 +65,7 @@ data Options = Options
   , optSystem     :: System
   , optTarget     :: Target
   , optGoal       :: Term ConId Void
+  , optDepth      :: Int
   }
 
 defaultOptions :: Options
@@ -77,6 +75,7 @@ defaultOptions    = Options
   , optSystem     = NL
   , optTarget     = StdOut
   , optGoal       = Con (Atom "s⁻") []
+  , optDepth      = 5
   }
 
 options :: [ OptDescr (Options -> IO Options) ]
@@ -99,6 +98,9 @@ options =
   , Option [] ["to-agda"]
     (OptArg (\arg opt -> return opt { optTarget = AgdaFile arg }) "AGDA_FILE")
     "Target Agda file."
+  , Option "d" ["depth"]
+    (ReqArg (\arg opt -> return opt { optDepth = read arg }) "SEARCH_DEPTH")
+    "Search depth (for systems with infinite search spaces)"
   , Option "h" ["help"]
     (NoArg  (\_ -> do
               prg <- getProgName
@@ -110,7 +112,7 @@ options =
 
 
 parseGoal :: String -> IO (Term ConId Void)
-parseGoal str = case parse (formula void) "" str of
+parseGoal str = case parse formula "" str of
   Left err -> fail ("Could not parse goal formula `"++show str++"'.\n"++show err)
   Right tm -> return tm
 

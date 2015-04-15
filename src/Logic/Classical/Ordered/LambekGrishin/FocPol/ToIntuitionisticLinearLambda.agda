@@ -169,5 +169,5 @@ private
     [ d⇚⇐ {X} {Y} {Z} {W} f ]ᵀ = XYZW→XWZY ⟦ X ⟧ˢ ⟦ Y ⟧ˢ ⟦ Z ⟧ˢ ⟦ W ⟧ˢ [ f ]ᵀ
 
 
-Ord→Lin : Translation LGT.Type ΛT.Type LGB.LG_ ΛB.Λ_
-Ord→Lin = record { ⟦_⟧ᵀ = ⟦_⟧⁺ ; ⟦_⟧ᴶ = ⟦_⟧ᴶ ; [_] = [_]ᵀ }
+LG→LL : Translation LGT.Type ΛT.Type LGB.LG_ ΛB.Λ_
+LG→LL = record { ⟦_⟧ᵀ = ⟦_⟧⁺ ; ⟦_⟧ᴶ = ⟦_⟧ᴶ ; [_] = [_]ᵀ }

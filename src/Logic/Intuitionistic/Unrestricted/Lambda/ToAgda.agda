@@ -42,5 +42,5 @@ private
   [ eᴸ Γ₁ Γ₂ Γ₃ Γ₄ f ]      e  = [ f ] (exchange Γ₁ Γ₃ Γ₂ Γ₄ e)
 
 
-Un→Agda : Translation Type (Set ℓ₂) Λ_ λΠ_
-Un→Agda = record { ⟦_⟧ᵀ = ⟦_⟧ᵀ ; ⟦_⟧ᴶ = ⟦_⟧ᴶ ; [_] = [_] }
+Λ→ΛΠ : Translation Type (Set ℓ₂) Λ_ λΠ_
+Λ→ΛΠ = record { ⟦_⟧ᵀ = ⟦_⟧ᵀ ; ⟦_⟧ᴶ = ⟦_⟧ᴶ ; [_] = [_] }
