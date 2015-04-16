@@ -13,7 +13,7 @@ import           Data.List (nub)
 import           Data.Void (Void)
 
 
-import           Prover
+import           Logic.Prover   as X
 import           Logic.Base     as X hiding (Term)
 import           Logic.Rules    as X
 import           Logic.Printing as X (Agda(..),ASCII(..))

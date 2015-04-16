@@ -12,7 +12,6 @@ import           Text.Parsec.Language (LanguageDef,haskellStyle)
 import           Text.Parsec.Token (TokenParser,GenTokenParser(..),GenLanguageDef(..))
 import qualified Text.Parsec.Token as P
 
-import           Prover hiding (Term)
 import           Logic.Base
 import           Logic.Printing (Agda(..),ASCII(..))
 

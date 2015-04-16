@@ -7,8 +7,7 @@ import Data.Char (toUpper,toLower)
 import Data.List (intersperse)
 import Data.Void (Void)
 
-import Prover
-import Logic.Base (ConId(..))
+import Logic.Base
 import Logic.Printing (Agda(..))
 import Logic.System (System(..))
 
@@ -37,15 +36,15 @@ toAgdaModule    LG   = error "Error: LG is not yet implemented in Agda."
 toAgdaModule    FLG  = "Example.System.fLG"
 toAgdaModule    EXP  = "Example.System.fLG"
 toAgdaModule AlgNL   = error "Error: AlgNL is not yet implemented in Agda."
-toAgdaModule AlgNLCL = error "Error: AlgNLCL is not yet implemented in Agda."
+toAgdaModule AlgNLCL = "Example.System.NLCL"
 
 
 -- |Return a valid Agda file given a sequence of proofs.
 toAgdaFile :: String
            -> String
            -> System
-           -> [(Term ConId Void, Term String Void)]
-           -> Term ConId Void
+           -> [(Term Void, Proof)]
+           -> Term Void
            -> String
 toAgdaFile moduleName sent sys prfs tgt =
   unlines (comment ++ [importStmts, "", moduleStmt, "", proofStmts])

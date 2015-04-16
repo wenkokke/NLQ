@@ -14,7 +14,6 @@ import Text.Parsec (parse)
 
 
 import Logic
-import Prover
 
 
 main :: IO ()

@@ -14,30 +14,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 module Example.System.fLG where
 
 
-open import Example.System.Base
-
-
--- * setup atomic formulas
-data Univ : Set where
-  N  : Univ
-  NP : Univ
-  S  : Univ
-
-_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)
-N  ≟-Univ N  = yes refl
-N  ≟-Univ NP = no (λ ())
-N  ≟-Univ S  = no (λ ())
-NP ≟-Univ N  = no (λ ())
-NP ≟-Univ NP = yes refl
-NP ≟-Univ S  = no (λ ())
-S  ≟-Univ N  = no (λ ())
-S  ≟-Univ NP = no (λ ())
-S  ≟-Univ S  = yes refl
-
-⟦_⟧ᵁ : Univ → Set
-⟦ N  ⟧ᵁ = Entity → Bool
-⟦ NP ⟧ᵁ = Entity
-⟦ S  ⟧ᵁ = Bool
+open import Example.System.Base public
 
 
 -- * import focused Lambek-Grishin calculus
@@ -62,13 +39,6 @@ s⁻  = el (- , S)
 
 
 -- * setup helper functions
-infixr 4 _⊃_
-
-_⊃_ : Bool → Bool → Bool
-true  ⊃ true  = true
-true  ⊃ false = false
-false ⊃ _     = true
-
 im : (Entity → Bool) → ⟦ n ⇐ n ⟧ᵀ
 im p₁ (k , p₂) = k (λ x → p₂ x ∧ p₁ x)
 
@@ -83,57 +53,11 @@ gq q _⊙_ (p₁ , p₂) = q (λ x → p₂ x ⊙ p₁ x)
 
 
 -- * setup lexicon
+dutch : ⟦ n ⇐ n ⟧ᵀ
+dutch = im DUTCH
 
-abstract
-  NICE   : Entity → Bool
-  NICE _ = true
-
-  OLD      : Entity → Bool
-  OLD john = true
-  OLD _    = false
-
-  SMILES      : Entity → Bool
-  SMILES mary = true
-  SMILES john = true
-  SMILES _    = false
-
-  LEFT      : Entity → Bool
-  LEFT bill = true
-  LEFT _    = false
-
-  CHEATS : Entity → Bool
-  CHEATS john = true
-  CHEATS _    = false
-
-  _TEASES_ : Entity → Entity → Bool
-  mary TEASES bill = true
-  _    TEASES _    = false
-
-  _LOVES_ : Entity → Entity → Bool
-  john LOVES bill = true
-  bill LOVES john = true
-  mary LOVES john = true
-  john LOVES mary = true
-  _    LOVES _    = false
-
-  UNICORN   : ⟦ n ⟧ᵀ
-  UNICORN _ = false
-
-  PERSON : ⟦ n ⟧ᵀ
-  PERSON _ = true
-
-  TEACHER       : ⟦ n ⟧ᵀ
-  TEACHER bill  = true
-  TEACHER _     = false
-
-postulate
-  THINKS : Entity → Bool → Bool
-
-nice : ⟦ n ⇐ n ⟧ᵀ
-nice = im NICE
-
-old : ⟦ n ⇐ n ⟧ᵀ
-old = im OLD
+english : ⟦ n ⇐ n ⟧ᵀ
+english = im ENGLISH
 
 smiles : ⟦ np ⇒ s⁻ ⟧ᵀ
 smiles = iv SMILES
@@ -163,7 +87,7 @@ someone : ⟦ (np ⇐ n) ⊗ n ⟧ᵀ
 someone = gq exists _∧_ , PERSON
 
 everyone1 : ⟦ (₁ np) ¹ ⟧ᵀ
-everyone1 = forAll
+everyone1 p = forAll (λ x → PERSON x ⊃ p x)
 
 someone1 : ⟦ (₁ np) ¹ ⟧ᵀ
-someone1 = exists
+someone1 p = exists (λ x → PERSON x ∧ p x)

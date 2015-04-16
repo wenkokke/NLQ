@@ -3,11 +3,10 @@
 ------------------------------------------------------------------------
 
 
-module Logic.Intuitionistic.Ordered.NLCL {ℓ} (Univ : Set ℓ) (I L R : Univ) where
+module Logic.Intuitionistic.Ordered.NLCL {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Polarity
-open import Logic.Intuitionistic.Ordered.NLCL.Type                   Univ
-open import Logic.Intuitionistic.Ordered.NLCL.Type.Context.Polarised Univ
-open import Logic.Intuitionistic.Ordered.NLCL.Judgement              Univ
-open import Logic.Intuitionistic.Ordered.NLCL.Base                   Univ
+open import Logic.Intuitionistic.Ordered.NLCL.Type                   Univ public
+open import Logic.Intuitionistic.Ordered.NLCL.Type.Context.Polarised Univ public
+open import Logic.Intuitionistic.Ordered.NLCL.Judgement              Univ public
+open import Logic.Intuitionistic.Ordered.NLCL.Base                   Univ public
