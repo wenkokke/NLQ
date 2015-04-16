@@ -41,12 +41,12 @@ data NL_ : Judgement → Set ℓ where
   mL  : NL L ⊢ L
   mR  : NL R ⊢ R
 
-  Iᵢ  : ∀ {A B}     → NL A ⊢ B → NL A ∘ I ⊢ B
-  Iₑ  : ∀ {A B}     → NL A ∘ I ⊢ B → NL A ⊢ B
-  Lᵢ  : ∀ {A B C D} → NL A ⊗ (B ∘ C) ⊢ D → NL B ∘ ((L ⊗ A) ⊗ C) ⊢ D
-  Lₑ  : ∀ {A B C D} → NL B ∘ ((L ⊗ A) ⊗ C) ⊢ D → NL A ⊗ (B ∘ C) ⊢ D
-  Rᵢ  : ∀ {A B C D} → NL (A ∘ B) ⊗ C ⊢ D → NL A ∘ ((R ⊗ B) ⊗ C) ⊢ D
-  Rₑ  : ∀ {A B C D} → NL A ∘ ((R ⊗ B) ⊗ C) ⊢ D → NL (A ∘ B) ⊗ C ⊢ D
+  Iᵢ  : ∀ {A B}     → NL A ∘ I ⊢ B → NL A ⊢ B
+  Iₑ  : ∀ {A B}     → NL A ⊢ B → NL A ∘ I ⊢ B
+  Lᵢ  : ∀ {A B C D} → NL B ∘ ((L ⊗ A) ⊗ C) ⊢ D → NL A ⊗ (B ∘ C) ⊢ D
+  Lₑ  : ∀ {A B C D} → NL A ⊗ (B ∘ C) ⊢ D → NL B ∘ ((L ⊗ A) ⊗ C) ⊢ D
+  Rᵢ  : ∀ {A B C D} → NL A ∘ ((R ⊗ B) ⊗ C) ⊢ D → NL (A ∘ B) ⊗ C ⊢ D
+  Rₑ  : ∀ {A B C D} → NL (A ∘ B) ⊗ C ⊢ D → NL A ∘ ((R ⊗ B) ⊗ C) ⊢ D
 
 
 -- Derive logical rules given in Barker and Shan (2014).
@@ -102,42 +102,42 @@ ax′ {R}     = mR
 ⇦ᴿ′ : ∀ {Γ A B} → NL Γ ∘ A ⊢ B → NL Γ ⊢ B ⇦ A
 ⇦ᴿ′ f = r∘⇦ f
 
-Iᵢ′ : ∀ (Σ : Context +) {A B} → NL Σ [ A ] ⊢ B → NL Σ [ A ∘ I ] ⊢ B
+Iᵢ′ : ∀ (Σ : Context +) {A B} → NL Σ [ A ] ∘ I ⊢ B → NL Σ [ A ] ⊢ B
 Iᵢ′ [] f = Iᵢ f
-Iᵢ′ (_ ⊗> Σ) f = r⇒⊗ (Iᵢ′ Σ (r⊗⇒ f))
-Iᵢ′ (_ ∘> Σ) f = r⇨∘ (Iᵢ′ Σ (r∘⇨ f))
-Iᵢ′ (Σ <⊗ _) f = r⇐⊗ (Iᵢ′ Σ (r⊗⇐ f))
-Iᵢ′ (Σ <∘ _) f = r⇦∘ (Iᵢ′ Σ (r∘⇦ f))
+Iᵢ′ (_ ⊗> Σ) f = Iᵢ f
+Iᵢ′ (_ ∘> Σ) f = Iᵢ f
+Iᵢ′ (Σ <⊗ _) f = Iᵢ f
+Iᵢ′ (Σ <∘ _) f = Iᵢ f
 
-Iₑ′ : ∀ (Σ : Context +) {A B} → NL Σ [ A ] ∘ I ⊢ B → NL Σ [ A ] ⊢ B
+Iₑ′ : ∀ (Σ : Context +) {A B} → NL Σ [ A ] ⊢ B → NL Σ [ A ∘ I ] ⊢ B
 Iₑ′ [] f = Iₑ f
-Iₑ′ (_ ⊗> Σ) f = Iₑ f
-Iₑ′ (_ ∘> Σ) f = Iₑ f
-Iₑ′ (Σ <⊗ _) f = Iₑ f
-Iₑ′ (Σ <∘ _) f = Iₑ f
+Iₑ′ (_ ⊗> Σ) f = r⇒⊗ (Iₑ′ Σ (r⊗⇒ f))
+Iₑ′ (_ ∘> Σ) f = r⇨∘ (Iₑ′ Σ (r∘⇨ f))
+Iₑ′ (Σ <⊗ _) f = r⇐⊗ (Iₑ′ Σ (r⊗⇐ f))
+Iₑ′ (Σ <∘ _) f = r⇦∘ (Iₑ′ Σ (r∘⇦ f))
 
-Lᵢ′ : ∀ (Σ : Context +) {A B C D} → NL Σ [ A ⊗ (B ∘ C) ] ⊢ D → NL Σ [ B ∘ ((L ⊗ A) ⊗ C) ] ⊢ D
+Lᵢ′ : ∀ (Σ : Context +) {A B C D} → NL Σ [ B ∘ ((L ⊗ A) ⊗ C) ] ⊢ D → NL Σ [ A ⊗ (B ∘ C) ] ⊢ D
 Lᵢ′ [] f = Lᵢ f
 Lᵢ′ (_ ⊗> Σ) f = r⇒⊗ (Lᵢ′ Σ (r⊗⇒ f))
 Lᵢ′ (_ ∘> Σ) f = r⇨∘ (Lᵢ′ Σ (r∘⇨ f))
 Lᵢ′ (Σ <⊗ _) f = r⇐⊗ (Lᵢ′ Σ (r⊗⇐ f))
 Lᵢ′ (Σ <∘ _) f = r⇦∘ (Lᵢ′ Σ (r∘⇦ f))
 
-Lₑ′ : ∀ (Σ : Context +) {A B C D} → NL Σ [ B ∘ ((L ⊗ A) ⊗ C) ] ⊢ D → NL Σ [ A ⊗ (B ∘ C) ] ⊢ D
+Lₑ′ : ∀ (Σ : Context +) {A B C D} → NL Σ [ A ⊗ (B ∘ C) ] ⊢ D → NL Σ [ B ∘ ((L ⊗ A) ⊗ C) ] ⊢ D
 Lₑ′ [] f = Lₑ f
 Lₑ′ (_ ⊗> Σ) f = r⇒⊗ (Lₑ′ Σ (r⊗⇒ f))
 Lₑ′ (_ ∘> Σ) f = r⇨∘ (Lₑ′ Σ (r∘⇨ f))
 Lₑ′ (Σ <⊗ _) f = r⇐⊗ (Lₑ′ Σ (r⊗⇐ f))
 Lₑ′ (Σ <∘ _) f = r⇦∘ (Lₑ′ Σ (r∘⇦ f))
 
-Rᵢ′ : ∀ (Σ : Context +) {A B C D} → NL Σ [ (A ∘ B) ⊗ C ] ⊢ D → NL Σ [ A ∘ ((R ⊗ B) ⊗ C) ] ⊢ D
+Rᵢ′ : ∀ (Σ : Context +) {A B C D} → NL Σ [ A ∘ ((R ⊗ B) ⊗ C) ] ⊢ D → NL Σ [ (A ∘ B) ⊗ C ] ⊢ D
 Rᵢ′ [] f = Rᵢ f
 Rᵢ′ (_ ⊗> Σ) f = r⇒⊗ (Rᵢ′ Σ (r⊗⇒ f))
 Rᵢ′ (_ ∘> Σ) f = r⇨∘ (Rᵢ′ Σ (r∘⇨ f))
 Rᵢ′ (Σ <⊗ _) f = r⇐⊗ (Rᵢ′ Σ (r⊗⇐ f))
 Rᵢ′ (Σ <∘ _) f = r⇦∘ (Rᵢ′ Σ (r∘⇦ f))
 
-Rₑ′ : ∀ (Σ : Context +) {A B C D} → NL Σ [ A ∘ ((R ⊗ B) ⊗ C) ] ⊢ D → NL Σ [ (A ∘ B) ⊗ C ] ⊢ D
+Rₑ′ : ∀ (Σ : Context +) {A B C D} → NL Σ [ (A ∘ B) ⊗ C ] ⊢ D → NL Σ [ A ∘ ((R ⊗ B) ⊗ C) ] ⊢ D
 Rₑ′ [] f = Rₑ f
 Rₑ′ (_ ⊗> Σ) f = r⇒⊗ (Rₑ′ Σ (r⊗⇒ f))
 Rₑ′ (_ ∘> Σ) f = r⇨∘ (Rₑ′ Σ (r∘⇨ f))

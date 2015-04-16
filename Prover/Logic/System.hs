@@ -5,8 +5,7 @@ module Logic.System where
 import Prelude hiding (exp)
 import Data.Char (toUpper)
 
-import Prover
-import Logic.Base (ConId(..))
+import Logic.Base
 import Logic.Rules
 
 -- |Enumeration representing all supported logical systems.

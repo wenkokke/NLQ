@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveGeneric, TypeSynonymInstances, FlexibleInstances #-}
-module Logic.Base where
+module Logic.Base (Term,ConId(..),RuleId,Proof,nullary,unary,binary,IsVar(..),pos,neg,posAtom,negAtom,module X) where
 
 
 import           Control.DeepSeq
@@ -7,8 +7,8 @@ import           Data.Hashable
 import           Data.Void (Void,absurd)
 import           GHC.Generics
 
-import           Prover hiding (Term)
-import qualified Prover (Term)
+import           Logic.Prover as X hiding (Term)
+import qualified Logic.Prover as Y (Term)
 
 
 -- * Terms, Variables, Constructors
@@ -57,9 +57,9 @@ instance Hashable ConId
 instance NFData   ConId
 
 
-type Term v = Prover.Term ConId v
+type Term v = Y.Term ConId v
 type RuleId = String
-type Proof  = Prover.Term RuleId Void
+type Proof  = Y.Term RuleId Void
 
 
 -- * Utility constructors
@@ -140,14 +140,14 @@ isAtom :: Term Void -> Bool
 isAtom (Con (Atom _) _) = True
 isAtom _                = False
 
-isPositiveAtom :: String -> Bool
-isPositiveAtom n = not (isNegativeAtom n)
+posAtom :: String -> Bool
+posAtom n = not (negAtom n)
 
-isNegativeAtom :: String -> Bool
-isNegativeAtom n = let c = last n in c == '⁻' || c == '\''
+negAtom :: String -> Bool
+negAtom n = let c = last n in c == '⁻' || c == '\''
 
 pos,neg :: Term Void -> Bool
-pos (Con (Atom n) _) = isPositiveAtom n
+pos (Con (Atom n) _) = posAtom n
 pos (Con  FProd   _) = True
 pos (Con  FSubL   _) = True
 pos (Con  FSubR   _) = True
@@ -157,7 +157,7 @@ pos (Con  F1R     _) = True
 pos (Con  FDia    _) = True
 pos _                = False
 
-neg (Con (Atom n) _) = isNegativeAtom n
+neg (Con (Atom n) _) = negAtom n
 neg (Con  FPlus   _) = True
 neg (Con  FImpR   _) = True
 neg (Con  FImpL   _) = True

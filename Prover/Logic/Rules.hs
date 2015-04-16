@@ -1,7 +1,6 @@
 module Logic.Rules where
 
 
-import Prover hiding (Term)
 import Logic.Base
 import Logic.Parsing
 import Text.Parsec (parse)
@@ -64,8 +63,8 @@ strPolAxioms =
   , (([] ⟶ ". B . ⊢ [ B ]") "ax⁺") { guard = atomB }
   ]
   where
-    atomA (Con JFocusL [Con (Atom a) [], _]) = isNegativeAtom a; atomA _ = False
-    atomB (Con JFocusR [_, Con (Atom b) []]) = isPositiveAtom b; atomB _ = False
+    atomA (Con JFocusL [Con (Atom a) [], _]) = negAtom a; atomA _ = False
+    atomB (Con JFocusR [_, Con (Atom b) []]) = posAtom b; atomB _ = False
 
 
 
@@ -206,13 +205,16 @@ algHollowProdAndImpLR =
 --  Barker & Shan (2014).
 algConst :: [Rule ConId Int]
 algConst =
-  [ (["A ⊢ B"]                 ⟶ "A ∘ I ⊢ B"            ) "Iᵢ"
-  , (["A ∘ I ⊢ B"]             ⟶ "A ⊢ B"                ) "Iₑ"
-  , (["A ⊗ (B ∘ C) ⊢ D"]       ⟶ "B ∘ ((L ⊗ A) ⊗ C) ⊢ D") "Lᵢ"
-  , (["B ∘ ((L ⊗ A) ⊗ C) ⊢ D"] ⟶ "A ⊗ (B ∘ C) ⊢ D"      ) "Lₑ"
-  , (["(A ∘ B) ⊗ C ⊢ D"]       ⟶ "A ∘ ((R ⊗ B) ⊗ C) ⊢ D") "Rᵢ"
-  , (["A ∘ ((R ⊗ B) ⊗ C) ⊢ D"] ⟶ "(A ∘ B) ⊗ C ⊢ D"      ) "Rₑ"
+  [ ((["A ∘ I ⊢ B"]             ⟶ "A ⊢ B"                ) "Iᵢ") { guard = noProdI }
+  ,  (["A ⊢ B"]                 ⟶ "A ∘ I ⊢ B"            ) "Iₑ"
+  ,  (["B ∘ ((L ⊗ A) ⊗ C) ⊢ D"] ⟶ "A ⊗ (B ∘ C) ⊢ D"      ) "Lᵢ"
+  ,  (["A ⊗ (B ∘ C) ⊢ D"]       ⟶ "B ∘ ((L ⊗ A) ⊗ C) ⊢ D") "Lₑ"
+  ,  (["A ∘ ((R ⊗ B) ⊗ C) ⊢ D"] ⟶ "(A ∘ B) ⊗ C ⊢ D"      ) "Rᵢ"
+  ,  (["(A ∘ B) ⊗ C ⊢ D"]       ⟶ "A ∘ ((R ⊗ B) ⊗ C) ⊢ D") "Rₑ"
   ]
+  where
+    -- prevent the endless recursive application of Iᵢ
+    noProdI (Con JForm [Con HProd [_,Con (Atom "I") []],_]) = False; noProdI _ = True
 
 
 infixr 1 ⟶

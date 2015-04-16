@@ -2,9 +2,7 @@
 module Logic.Printing where
 
 
-import           Prover hiding (Term)
-import qualified Prover ()
-import           Logic.Base
+import Logic.Base
 
 
 -- |Return the precedence for the constructors.

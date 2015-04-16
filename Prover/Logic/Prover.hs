@@ -1,5 +1,5 @@
 {-# LANGUAGE GADTs, FlexibleInstances, FlexibleContexts, MultiParamTypeClasses, UndecidableInstances, DeriveGeneric #-}
-module Prover (Term(..),Rule(..),mkRule,findAll,findFirst) where
+module Logic.Prover (Term(..),Rule(..),mkRule,findAll,findFirst) where
 
 
 import           Control.DeepSeq (NFData)

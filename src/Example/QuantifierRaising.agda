@@ -31,47 +31,48 @@ someone1_loves_mary₀ : ⟦ s⁻ ⟧ᵀ
 someone1_loves_mary₀ = [ SOMEONE1_LOVES_MARY₀ ]ᵀ (someone1 , loves , mary , ∅)
 --> exists (λ x → x LOVES mary)
 
+
 EVERYONE1_LOVES_SOMEONE1₀ : LG · (₁ np) ¹ · ⊗ (· (np ⇒ s⁻) ⇐ np · ⊗ · (₁ np) ¹ ·) ⊢[ s⁻ ]
 EVERYONE1_LOVES_SOMEONE1₀ =
   ⇁ (r⇐⊗ (¹ᴸ  (r₁¹ (⇀ (₁ᴿ  (↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (¹ᴸ  (r₁¹ (⇀ (₁ᴿ  (↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))
 everyone1_loves_someone1₀ : ⟦ s⁻ ⟧ᵀ
 everyone1_loves_someone1₀ = [ EVERYONE1_LOVES_SOMEONE1₀ ]ᵀ (everyone1 , loves , someone1 , ∅)
---> forAll (λ x → exists (λ y → x LOVES y))
+--> forAll (λ x → PERSON x ⊃ exists (λ x₁ → PERSON x₁ ∧ x LOVES x₁))
 
 EVERYONE1_LOVES_SOMEONE1₁ : LG · (₁ np) ¹ · ⊗ (· (np ⇒ s⁻) ⇐ np · ⊗ · (₁ np) ¹ ·) ⊢[ s⁻ ]
 EVERYONE1_LOVES_SOMEONE1₁ =
   ⇁ (r⇒⊗ (r⇒⊗ (¹ᴸ  (r₁¹ (⇀ (₁ᴿ  (↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (¹ᴸ  (r₁¹ (⇀ (₁ᴿ  (↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))
 everyone1_loves_someone1₁ : ⟦ s⁻ ⟧ᵀ
 everyone1_loves_someone1₁ = [ EVERYONE1_LOVES_SOMEONE1₁ ]ᵀ (everyone1 , loves , someone1 , ∅)
---> exists (λ x → forAll (λ y → y LOVES x))
+--> exists (λ x → PERSON x ∧ forAll (λ x₁ → PERSON x₁ ⊃ x₁ LOVES x))
 
 EVERYONE1_LOVES_SOMEONE1₂ : LG · (₁ np) ¹ · ⊗ (· (np ⇒ s⁻) ⇐ np · ⊗ · (₁ np) ¹ ·) ⊢[ s⁻ ]
 EVERYONE1_LOVES_SOMEONE1₂ =
   ⇁ (r⇐⊗ (¹ᴸ  (r⊗⇐ (r⇒⊗ (r⇒⊗ (¹ᴸ  (r₁¹ (⇀ (₁ᴿ  (↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (r₁¹ (⇀ (₁ᴿ  (↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))
 everyone1_loves_someone1₂ : ⟦ s⁻ ⟧ᵀ
 everyone1_loves_someone1₂ = [ EVERYONE1_LOVES_SOMEONE1₂ ]ᵀ (everyone1 , loves , someone1 , ∅)
---> exists (λ x → forAll (λ y → y LOVES x))
+--> exists (λ x → PERSON x ∧ forAll (λ x₁ → PERSON x₁ ⊃ x₁ LOVES x))
 
 EVERYONE1_LOVES_SOMEONE1₃ : LG · (₁ np) ¹ · ⊗ (· (np ⇒ s⁻) ⇐ np · ⊗ · (₁ np) ¹ ·) ⊢[ s⁻ ]
 EVERYONE1_LOVES_SOMEONE1₃ =
   ⇁ (r⇒⊗ (r⇒⊗ (¹ᴸ  (r⊗⇒ (r⊗⇒ (r⇐⊗ (¹ᴸ  (r₁¹ (⇀ (₁ᴿ  (↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (r₁¹ (⇀ (₁ᴿ  (↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))
 everyone1_loves_someone1₃ : ⟦ s⁻ ⟧ᵀ
 everyone1_loves_someone1₃ = [ EVERYONE1_LOVES_SOMEONE1₃ ]ᵀ (everyone1 , loves , someone1 , ∅)
---> forAll (λ x → exists (λ y → x LOVES y))
+--> forAll (λ x → PERSON x ⊃ exists (λ x₁ → PERSON x₁ ∧ x LOVES x₁))
 
 EVERYONE1_LOVES_SOMEONE1₄ : LG · (₁ np) ¹ · ⊗ (· (np ⇒ s⁻) ⇐ np · ⊗ · (₁ np) ¹ ·) ⊢[ s⁻ ]
 EVERYONE1_LOVES_SOMEONE1₄ =
   ⇁ (r⇐⊗ (¹ᴸ  (r⊗⇐ (r⇒⊗ (r⇒⊗ (¹ᴸ  (r⊗⇒ (r⊗⇒ (r⇐⊗ (r₁¹ (⇀ (₁ᴿ  (↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (r₁¹ (⇀ (₁ᴿ  (↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))
 everyone1_loves_someone1₄ : ⟦ s⁻ ⟧ᵀ
 everyone1_loves_someone1₄ = [ EVERYONE1_LOVES_SOMEONE1₄ ]ᵀ (everyone1 , loves , someone1 , ∅)
---> forAll (λ x → exists (λ y → x LOVES y))
+--> forAll (λ x → PERSON x ⊃ exists (λ x₁ → PERSON x₁ ∧ x LOVES x₁))
 
 EVERYONE1_LOVES_SOMEONE1₅ : LG · (₁ np) ¹ · ⊗ (· (np ⇒ s⁻) ⇐ np · ⊗ · (₁ np) ¹ ·) ⊢[ s⁻ ]
 EVERYONE1_LOVES_SOMEONE1₅ =
   ⇁ (r⇒⊗ (r⇒⊗ (¹ᴸ  (r⊗⇒ (r⊗⇒ (r⇐⊗ (¹ᴸ  (r⊗⇐ (r⇒⊗ (r⇒⊗ (r₁¹ (⇀ (₁ᴿ  (↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (r₁¹ (⇀ (₁ᴿ  (↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))))))))))))))))
 everyone1_loves_someone1₅ : ⟦ s⁻ ⟧ᵀ
 everyone1_loves_someone1₅ = [ EVERYONE1_LOVES_SOMEONE1₅ ]ᵀ (everyone1 , loves , someone1 , ∅)
---> exists (λ x → forAll (λ y → y LOVES x))
+--> exists (λ x → PERSON x ∧ forAll (λ x₁ → PERSON x₁ ⊃ x₁ LOVES x))
 
 
 SOMEONE_LOVES_MARY₀ : LG · (np ⇐ n) ⊗ n · ⊗ (· (np ⇒ s⁻) ⇐ np · ⊗ · np ·) ⊢[ s⁻ ]
