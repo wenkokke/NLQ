@@ -63,3 +63,5 @@ prover/proof.pdf
 prover/proof.pl
 prover/proof.tex
 QUESTIONS.pdf
+Prover/main
+Prover/Logic/flycheck_Rules.hs

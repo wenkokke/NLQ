@@ -34,11 +34,9 @@ data LG_ : Judgement → Set ℓ where
   ax⁺ : ∀ {A}       → LG · A · ⊢[ A ]
   ax⁻ : ∀ {A}       → LG [ A ]⊢ · A ·
 
-  -- focus right and left
+  -- (de)focus right and left
   ⇁   : ∀ {X A}     → LG X ⊢ · A · → LG X ⊢[ A ]
   ↽   : ∀ {X A}     → LG · A · ⊢ X → LG [ A ]⊢ X
-
-  -- defocus right and left
   ⇀   : ∀ {X A}     → LG X ⊢[ A ] → LG X ⊢ · A ·
   ↼   : ∀ {X A}     → LG [ A ]⊢ X → LG · A · ⊢ X
 

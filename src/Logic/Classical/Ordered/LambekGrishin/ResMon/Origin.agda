@@ -19,8 +19,8 @@
 ------------------------------------------------------------------------
 
 
-open import Function                                   using (id; flip; _∘_)
-open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym; subst)
+open import Function                              using (id; flip; _∘_)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst)
 
 
 module Logic.Classical.Ordered.LambekGrishin.ResMon.Origin {ℓ} (Univ : Set ℓ) where

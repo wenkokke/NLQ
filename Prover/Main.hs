@@ -28,7 +28,7 @@ main = do
               , optSystem  = sys
               , optTarget  = tgt
               , optGoal    = g
-              , optDepth   = d
+              , optDepth   = dl
               } = opts
   case task of
    Nothing -> putStrLn "Usage: For basic information, try the `--help' option."
@@ -46,7 +46,7 @@ main = do
         prfs = tryAll d lex sys sent g
 
         in case tgt of
-            StdOut             -> mapM_ print prfs
+            StdOut             -> mapM_ (\(j,p) -> do print (Agda j); print p) prfs
             AgdaFile  Nothing  -> putStr $ toAgdaFile "Main" sent sys prfs g
             AgdaFile (Just fn) -> return ()
 
