@@ -28,7 +28,7 @@ main = do
               , optSystem  = sys
               , optTarget  = tgt
               , optGoal    = g
-              , optDepth   = dl
+              , optDepth   = d
               } = opts
   case task of
    Nothing -> putStrLn "Usage: For basic information, try the `--help' option."

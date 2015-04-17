@@ -9,8 +9,8 @@ import Logic.Base
 import Logic.Rules
 
 -- |Enumeration representing all supported logical systems.
-data System = NL | CNL | LG | FNL | FCNL | FLG | EXP
-            | AlgNL | AlgNLCL
+data System = NL | CNL | LG | FNL | FCNL | FLG
+            | AlgEXP | AlgNL | AlgNLCL
             deriving (Eq,Show)
 
 data SysDescr = SysDescr
@@ -30,7 +30,7 @@ parseSystem (map toUpper -> "LG")      = LG
 parseSystem (map toUpper -> "FNL")     = FNL
 parseSystem (map toUpper -> "FCNL")    = FCNL
 parseSystem (map toUpper -> "FLG")     = FLG
-parseSystem (map toUpper -> "EXP")     = EXP
+parseSystem (map toUpper -> "ALGEXP")  = AlgEXP
 parseSystem (map toUpper -> "ALGNL")   = AlgNL
 parseSystem (map toUpper -> "ALGNLCL") = AlgNLCL
 parseSystem str = error ("Error: Unknown logical system `"++str++"'.")
@@ -43,12 +43,13 @@ getRules    CNL  = cnl
 getRules    FCNL = fcnl
 getRules    LG   = lg
 getRules    FLG  = flg
-getRules    EXP  = exp
+getRules AlgEXP  = exp
 getRules AlgNL   = algnl
 getRules AlgNLCL = algnlcl
 
 -- |Return the sequent that corresponds to this logical system.
 getSysDescr :: System -> SysDescr
-getSysDescr AlgNL   = SysDescr Nothing FProd Nothing JForm algnl   True
+getSysDescr AlgNL   = SysDescr Nothing FProd Nothing JForm algnl True
+getSysDescr AlgEXP  = SysDescr (Just FDia) FProd Nothing JForm exp True
 getSysDescr AlgNLCL = SysDescr Nothing FProd Nothing JForm algnlcl False
 getSysDescr sys     = SysDescr (Just SDia) SProd (Just Down) JFocusR (getRules sys) True

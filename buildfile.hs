@@ -48,6 +48,7 @@ mappings =
   ,nonAssociativeLambek
   ,lambdaCMinus
   ,classicalNonAssociativeLambek
+  ,experimentalExtendedLambek
   ]
 
 
@@ -172,7 +173,9 @@ nonAssociativeLambek = Mapping{..}
                   ,"LG"            ==> "NL"
                   ,"Classical"     ==> "Intuitionistic"
                   ]
-    include     = ["Logic/Classical/Ordered/LambekGrishin//*.agda"
+    include     = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/ResMon//*.agda"
                   ]
     exclude     = ["//To*.agda"]
 
@@ -191,6 +194,25 @@ classicalNonAssociativeLambek = Mapping{..}
                   ]
     include     = ["Logic/Classical/Ordered/LambekGrishin//*.agda"]
     exclude     = ["//To*.agda"]
+
+--------------------------------------------------------------------------------
+-- Make: Experimental Extended Lambek
+--------------------------------------------------------------------------------
+
+experimentalExtendedLambek :: Mapping
+experimentalExtendedLambek = Mapping{..}
+  where
+    name        = "Classical Non-associative Lambek Calculus"
+    blacklist   = ["d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐" , "r□◇" , "r◇□"
+                  ]
+    textMapping = ["LambekGrishin" ==> "Experimental"
+                  ,"LG"            ==> "EXP"
+                  ]
+    include     = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/ResMon//*.agda"
+                  ]
+    exclude     = ["//To*.agda","//Trans.agda"]
 
 --------------------------------------------------------------------------------
 -- Make: Unrestricted Lambek-Grishin Calculus

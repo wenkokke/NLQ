@@ -35,7 +35,7 @@ flg = concat [ strPolAxioms, strPolFocus, strBoxAndDia, strZero, strOne
 
 -- |Inference rules for an experimental version of the Lambek calculus.
 exp :: [Rule ConId Int]
-exp = concat [ strPolAxioms, strPolFocus, strProdAndImpLR, strIsland ]
+exp = concat [ algAxiom, algProdAndImpLR, algIsland ]
 
 -- |Inference rules for the non-associative Lambek calculus.
 algnl :: [Rule ConId Int]
@@ -187,6 +187,12 @@ algProdAndImpLR =
   , (["A ⊗ B ⊢ C"]      ⟶ "B ⊢ A ⇒ C"    ) "r⊗⇒"
   , (["A ⊢ C ⇐ B"]      ⟶ "A ⊗ B ⊢ C"    ) "r⇐⊗"
   , (["A ⊗ B ⊢ C"]      ⟶ "A ⊢ C ⇐ B"    ) "r⊗⇐"
+  ]
+
+-- |Structural left- and right rules for island constraints.
+algIsland :: [Rule ConId Int]
+algIsland =
+  [ (["A ⊢ B"] ⟶ "◇ A ⊢ ◇ B") "m◇"
   ]
 
 -- |Algebraic residuation and monotonicity rules for (⇦, ∘, ⇨).
