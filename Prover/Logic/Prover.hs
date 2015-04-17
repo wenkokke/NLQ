@@ -140,7 +140,7 @@ findFirst :: (Hashable c, Ord c)
           -> [Term c Void] -- ^ Goal Terms
           -> [Rule c Int]  -- ^ Inference rules
           -> [(Term c Void, Term String Void)]
-findFirst d goals rules = slv d (map (\g -> (S.empty,g,[g],head)) goals) []
+findFirst d goals rules = slv (d + 1) (map (\g -> (S.empty,g,[g],head)) goals) []
   where
     slv 0                        _   _ = []
     slv d [                      ] [ ] = []

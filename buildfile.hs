@@ -2,7 +2,6 @@
 
 {-# LANGUAGE PatternGuards, OverloadedStrings, RecordWildCards #-}
 
-import           Control.Applicative ((<$>))
 import           Control.Monad (when)
 import           Data.Attoparsec.Text (Parser)
 import qualified Data.Attoparsec.Text as P
@@ -10,14 +9,13 @@ import           Data.Char (isSpace)
 import           Data.Either (isRight)
 import qualified Data.List as L
 import           Data.List.Split (splitWhen)
-import qualified Data.Maybe as M
 import           Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import           Data.Tuple (swap)
 import           Development.Shake hiding ((*>))
 import           Development.Shake.FilePath
-import           System.IO (hPutStr,hSetEncoding,hGetContents,utf8,IOMode(..),openFile,withFile)
+import           System.IO (hSetEncoding,hGetContents,utf8,IOMode(..),openFile)
 
 
 srcDir, stdlib, catlib, prover :: FilePath
@@ -43,32 +41,37 @@ data Mapping =
 -- Makefile
 -------------------------------------------------------------------------------
 
+mappings :: [Mapping]
+mappings =
+  [lambda
+  ,linearLambda
+  ,nonAssociativeLambek
+  ,lambdaCMinus
+  ,classicalNonAssociativeLambek
+  ]
+
+
 main :: IO ()
 main = shakeArgs shakeOptions $ do
 
+  -- Generate: Mappings
+  mapM_ make mappings
 
-  make lambda
-  make linearLambda
-  make nonAssociativeLambek
-
-  make lambdaCMinus
-  make linearLambekGrishin
-  make unrestrictedLambekGrishin
-
-
-  -- Generate: Everything
+  -- Generate: Everything.agda
   want [srcDir </> "Everything.agda"]
   srcDir </> "Everything.agda" %> \out -> do
 
-    liftIO (removeFiles srcDir ["Everything.agda"])
+    modules1 <- fmap (srcDir </>) . filter ("//*.agda"?==) . concat
+                <$> mapM makeFileList mappings
+    modules2 <- fmap (srcDir </>) . filter (/="Everything.agda")
+                <$> getDirectoryFiles srcDir ["//*.agda","//*.lagda"]
+    let modules = L.sort (L.nub (modules1 ++ modules2))
 
-    modules <- L.sort . fmap (srcDir </>) . filter (not . (=="Everything.agda"))
-            <$> getDirectoryFiles srcDir ["//*.agda","//*.lagda"]
-    need ("Header" : modules)
+    need ("Header" : modules1)
+
     header  <- readFile' "Header"
     headers <- mapM (liftIO . extractHeader) modules
-    writeFile' out $
-      header ++ format (zip modules headers)
+    writeFile' out $ header ++ format (zip modules headers)
 
   -- Generate: Listings
   phony "listings" $ do
@@ -81,26 +84,13 @@ main = shakeArgs shakeOptions $ do
         ,"src/Everything.agda"
         ,"-v0"]
 
-  -- Clobber: Clean up after various tasks
+
+  -- Clobber
   "clobber" ~> do
-
     putNormal "Removing Everything.agda"
-    liftIO $ removeFiles srcDir ["Everything.agda"]
+    liftIO (removeFiles srcDir ["Everything.agda"])
+    mapM_ clobber mappings
 
-
-    clobber lambda
-    clobber linearLambda
-    clobber nonAssociativeLambek
-
-    clobber lambdaCMinus
-    clobber linearLambekGrishin
-    clobber unrestrictedLambekGrishin
-
-    putNormal "Removing generated prover files"
-    liftIO $ removeFiles prover
-      [ "proof.agda" , "proof.aux" , "proof.log" , "proof.out"
-      , "proof.pdf"  , "proof.pl"  , "proof.tex" , "prover"
-      ]
 
 
 
@@ -109,7 +99,7 @@ main = shakeArgs shakeOptions $ do
 -------------------------------------------------------------------------------
 
 extractHeader :: FilePath -> IO [String]
-extractHeader file = fmap (extract . lines) $ readFileUTF8 file
+extractHeader file = extract . lines <$> readFileUTF8 file
   where
     isDelimiter = all (== '-')
     strip       = reverse. dropWhile isDelimiter . reverse . dropWhile isDelimiter
@@ -137,144 +127,135 @@ format = unlines . concatMap fmt
 -- Make: Lambda C-Minus
 --------------------------------------------------------------------------------
 
-
 lambdaCMinus :: Mapping
 lambdaCMinus = Mapping{..}
   where
     name        = "Lambda C-Minus Calculus"
-    blacklist   = [ "⇛"  , "⇐"  , "□"  , "◇"
-                  , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
-                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
-                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
-                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" , "<¹"
-                  , "⋈"  , "∞"
+    blacklist   = ["⇛"  , "⇐"  , "□"  , "◇"
+                  ," ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
+                  ,"⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
+                  ," ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
+                  ,"¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" , "<¹"
+                  ,"⋈"  , "∞"
                   ]
-    textMapping = [ "Ordered"       ==> "Unrestricted"
-                  , "Structure"     ==> "List Type"
-                  , "LambekGrishin" ==> "LambdaCMinus"
+    textMapping = ["Ordered"       ==> "Unrestricted"
+                  ,"Structure"     ==> "List Type"
+                  ,"LambekGrishin" ==> "LambdaCMinus"
                   ]
-    include     = [ srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type.agda"
-                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Complexity.agda"
-                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Context.agda"
-                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Context/Polarised.agda"
-                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Polarised.agda"
-                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Subtype.agda"
+    include     = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Complexity.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Context.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Context/Polarised.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Polarised.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Subtype.agda"
                   ]
-    exclude      = []
-
+    exclude      = ["//To*.agda"]
 
 --------------------------------------------------------------------------------
 -- Make: Non-associative Lambek Calculus
 --------------------------------------------------------------------------------
-
 
 nonAssociativeLambek :: Mapping
 nonAssociativeLambek = Mapping{..}
   where
     name        = "Non-associative Lambek Calculus"
-    blacklist   = [ "⊕"  , "⇛"  , "⇚"  , "□"   , "◇"
-                  , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
-                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
-                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
-                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" , "<¹"
-                  , "⁰ᴸ" , "⁰ᴿ" , "¹ᴸ" , "¹ᴿ"
-                  , "∞"
-                  , "d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐"
+    blacklist   = ["⊕"  , "⇛"  , "⇚"  , "□"   , "◇"
+                  ," ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
+                  ,"⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
+                  ," ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
+                  ,"¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" , "<¹"
+                  ,"⁰ᴸ" , "⁰ᴿ" , "¹ᴸ" , "¹ᴿ"
+                  ,"∞"
+                  ,"d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐"
                   ]
-    textMapping = [ "LambekGrishin" ==> "Lambek"
-                  , "LG"            ==> "NL"
-                  , "Classical"     ==> "Intuitionistic"
+    textMapping = ["LambekGrishin" ==> "Lambek"
+                  ,"LG"            ==> "NL"
+                  ,"Classical"     ==> "Intuitionistic"
                   ]
-    include     = [srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type.agda"
-                  ,srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
-                  ,srcDir </> "Logic/Classical/Ordered/LambekGrishin/ResMon//*.agda"
+    include     = ["Logic/Classical/Ordered/LambekGrishin//*.agda"
                   ]
-    exclude     = ["//ToIntuitionisticLinearLambda.agda"]
-
+    exclude     = ["//To*.agda"]
 
 --------------------------------------------------------------------------------
 -- Make: Non-associative Lambek Calculus
 --------------------------------------------------------------------------------
 
-
---classicalNonAssociativeLambek :: Mapping
---classicalNonAssociativeLambek = Mapping{..}
---  where
---    name        = "Classical Non-associative Lambek Calculus"
---    blacklist   = [ "d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐"
---                  ]
---    textMapping = [ "LambekGrishin" ==> "Lambek"
---                  , "LG"            ==> "CNL"    ]
---    include     = [srcDir </> "Logic/Classical/Ordered/LambekGrishin//*.agda"]
---    exclude     = ["//ToClassicalLinearLambekGrishin.agda"]
-
+classicalNonAssociativeLambek :: Mapping
+classicalNonAssociativeLambek = Mapping{..}
+  where
+    name        = "Classical Non-associative Lambek Calculus"
+    blacklist   = ["d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐"
+                  ]
+    textMapping = ["LambekGrishin" ==> "Lambek"
+                  ,"LG"            ==> "CNL"
+                  ]
+    include     = ["Logic/Classical/Ordered/LambekGrishin//*.agda"]
+    exclude     = ["//To*.agda"]
 
 --------------------------------------------------------------------------------
 -- Make: Unrestricted Lambek-Grishin Calculus
 --------------------------------------------------------------------------------
-
-
-unrestrictedLambekGrishin :: Mapping
-unrestrictedLambekGrishin = Mapping{..}
-  where
-  name        = "Unrestricted Lambek-Grishin Calculus"
-  blacklist   = []
-  textMapping = [ "Ordered" ==> "Unrestricted" ]
-  include     = [ srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type.agda"
-                , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
-                , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Structure.agda"
-                , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Structure//*.agda"
-                , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Judgement.agda"
-                ]
-  exclude     = []
-
-
+--
+--unrestrictedLambekGrishin :: Mapping
+--unrestrictedLambekGrishin = Mapping{..}
+--  where
+--  name        = "Unrestricted Lambek-Grishin Calculus"
+--  blacklist   = []
+--  textMapping = ["Ordered" ==> "Unrestricted"
+--                ]
+--  include     = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
+--                ,"Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
+--                ,"Logic/Classical/Ordered/LambekGrishin/Structure.agda"
+--                ,"Logic/Classical/Ordered/LambekGrishin/Structure//*.agda"
+--                ,"Logic/Classical/Ordered/LambekGrishin/Judgement.agda"
+--                ]
+--  exclude     = ["//To*.agda"]
+--
 --------------------------------------------------------------------------------
 -- Make: Linear Lambek-Grishin Calculus
 --------------------------------------------------------------------------------
-
-
-linearLambekGrishin :: Mapping
-linearLambekGrishin = Mapping{..}
-  where
-  name        = "Linear Lambek-Grishin Calculus"
-  blacklist   = [ "⊗ᶜ" , "⊕ᶜ"  , "⊗ʷ" , "⊕ʷ" ]
-  textMapping = [ "Unrestricted" ==> "Linear" ]
-  include     = [ srcDir </> "Logic/Classical/Unrestricted/LambekGrishin/Base.agda"
-                , srcDir </> "Logic/Classical/Unrestricted/LambekGrishin/FocPol/Base.agda"
-                ]
-  exclude     = []
-
-
+--
+--linearLambekGrishin :: Mapping
+--linearLambekGrishin = Mapping{..}
+--  where
+--  name        = "Linear Lambek-Grishin Calculus"
+--  blacklist   = ["⊗ᶜ" , "⊕ᶜ"  , "⊗ʷ" , "⊕ʷ"
+--                ]
+--  textMapping = ["Unrestricted" ==> "Linear"
+--                ]
+--  include     = ["Logic/Classical/Unrestricted/LambekGrishin/Base.agda"
+--                ,"Logic/Classical/Unrestricted/LambekGrishin/FocPol/Base.agda"
+--                ]
+--  exclude     = ["//To*.agda"]
+--
 --------------------------------------------------------------------------------
 -- Mapping: Lambda Calculus
 --------------------------------------------------------------------------------
-
 
 lambda :: Mapping
 lambda = Mapping{..}
   where
     name        = "Lambda Calculus"
-    blacklist   = [ "⇐"  , "⊕"  , "⇛"  , "⇚"   , "□"  , "◇"
-                  , " ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
-                  , "⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
-                  , " ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
-                  , "¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" , "<¹"
-                  , "⋈"  , "∞"
+    blacklist   = ["⇐"  , "⊕"  , "⇛"  , "⇚"   , "□"  , "◇"
+                  ," ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
+                  ,"⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
+                  ," ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
+                  ,"¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" , "<¹"
+                  ,"⋈"  , "∞"
                   ]
     textMapping = [ "LG"            ==> "Λ"
                   , "Classical"     ==> "Intuitionistic"
                   , "Ordered"       ==> "Unrestricted"
                   , "LambekGrishin" ==> "Lambda"
                   ]
-    include     = [ srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type.agda"
-                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Complexity.agda"
-                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Context.agda"
-                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Context/Polarised.agda"
-                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Polarised.agda"
-                  , srcDir </> "Logic/Classical/Ordered/LambekGrishin/Type/Subtype.agda"
+    include     = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Complexity.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Context.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Context/Polarised.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Polarised.agda"
+                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Subtype.agda"
                   ]
-    exclude     = []
+    exclude     = ["//To*.agda"]
 
 --------------------------------------------------------------------------------
 -- Mapping: Linear Lambda Calculus
@@ -284,14 +265,14 @@ linearLambda :: Mapping
 linearLambda = Mapping{..}
   where
     name        = "Linear Lambda Calculus"
-    blacklist   = [ "wᴸ₁" , "wᴸ" , "cᴸ₁" , "cᴸ" ]
-    textMapping = [ "Unrestricted" ==> "Linear"
+    blacklist   = ["wᴸ₁" , "wᴸ" , "cᴸ₁" , "cᴸ"
                   ]
-    include     = [ srcDir </> "Logic/Intuitionistic/Unrestricted/Lambda/Base.agda"
-                  , srcDir </> "Logic/Intuitionistic/Unrestricted/Lambda/Permute.agda"
+    textMapping = ["Unrestricted" ==> "Linear"
                   ]
-    exclude     = []
-
+    include     = ["Logic/Intuitionistic/Unrestricted/Lambda/Base.agda"
+                  ,"Logic/Intuitionistic/Unrestricted/Lambda/Permute.agda"
+                  ]
+    exclude     = ["//To*.agda"]
 
 -------------------------------------------------------------------------------
 -- Utility: generate files from other files by restricting the allowed symbols
@@ -300,9 +281,10 @@ linearLambda = Mapping{..}
 
 
 clobber :: Mapping -> Action ()
-clobber Mapping{..} = do
+clobber m@Mapping{..} = do
   putNormal $ "Removing generated files for " ++ name
-  liftIO . removeFiles "." =<< map (apply textMapping) <$> getDirectoryFiles "." include
+  fileList <- makeFileList m
+  liftIO (removeFiles srcDir fileList)
 
 
 apply :: [(Text, Text)] -> FilePath -> FilePath
@@ -313,29 +295,35 @@ apply mapping = T.unpack . go mapping . T.pack
     go ((from,to):rest) = T.replace from to . go rest
 
 
+makeFileList :: Mapping -> Action [FilePath]
+makeFileList Mapping{..} = do
+  included <- getDirectoryFiles srcDir include
+  let excluded = filter (\src -> not (any (?== src) exclude)) included
+  let mapped   = apply textMapping <$> excluded
+  return mapped
+
+
 make :: Mapping -> Rules ()
-make Mapping{..} = do
+make m@Mapping{..} = do
 
   -- compute the destination pattern
-  let dstPattern = apply textMapping <$> include
-  let revMapping = map swap textMapping
+  let patn = fmap ((srcDir </>) . apply textMapping) include
+  let rev  = map swap textMapping
 
-  -- require all files that match any of the file patterns
-  action $ need =<< map (apply textMapping)
-                <$> filter (\src -> not (any (?== src) exclude))
-                <$> getDirectoryFiles "." include
+  -- require files
+  action (need . (map (srcDir </>)) =<< makeFileList m)
 
   -- define a rule that builds
-  dstPattern |%> \dst -> do
+  patn |%> \out -> do
 
-    let src = apply revMapping dst
+    let src = apply rev out
 
     need [src]
 
-    putQuiet $ "Generating " ++ dst
+    putQuiet $ "Generating " ++ out
 
     liftIO $
-      T.writeFile dst . restrictSource textMapping blacklist =<< T.readFile src
+      T.writeFile out . restrictSource textMapping blacklist =<< T.readFile src
 
 
 -- |Parse a file and remove all groups which contain illegal symbols.
@@ -345,9 +333,9 @@ restrictSource replacements blacklist input = let
   -- The algorithm to remove illegal lines is as follows:
   -- First we divide the text up by lines, and group the lines that
   -- are separated by one or more blank lines.
-  lines   = T.lines input
-  groups  = splitWhen isBlank lines
-  groups' = map (filter (not . isBlank)) groups
+  inputLines = T.lines input
+  groups     = splitWhen isBlank inputLines
+  groups'    = map (filter (not . isBlank)) groups
 
   -- Then we scan over all the groups, and remove those which have a
   -- type signature which mentions one of the blacklisted characters.
@@ -391,7 +379,7 @@ restrictSource replacements blacklist input = let
   -- Add in a comment stating that the file was generated.
   comment      = "-- This file was automatically generated." :: Text
   withComment  = case stripEnd of
-    (fst:snd:rest) -> (fst:snd:comment:rest)
+    (x:y:rest) -> x:y:comment:rest
 
   -- We then perform a number of in-place substitutions, which
   -- replace references to the Lambek Grishin calculus with
@@ -459,9 +447,3 @@ readFileUTF8 f = do
   h <- openFile f ReadMode
   hSetEncoding h utf8
   hGetContents h
-
--- | A variant of 'writeFile' which uses the 'utf8' encoding.
-writeFileUTF8 :: FilePath -> String -> IO ()
-writeFileUTF8 f s = withFile f WriteMode $ \h -> do
-  hSetEncoding h utf8
-  hPutStr h s
