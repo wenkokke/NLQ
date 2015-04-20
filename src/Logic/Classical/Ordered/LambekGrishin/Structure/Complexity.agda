@@ -4,10 +4,7 @@
 ------------------------------------------------------------------------
 
 
-open import Data.Nat as Nat using (ℕ; suc; zero; _+_; _<_; _≮_; _≥_; s≤s; z≤n)
-open import Data.Nat.Properties as NatProps using ()
-open import Relation.Binary using (module StrictTotalOrder)
-open import Relation.Binary.PropositionalEquality using (_≡_; _≢_; refl; cong)
+open import Data.Nat using (ℕ; suc; _+_)
 
 
 module Logic.Classical.Ordered.LambekGrishin.Structure.Complexity {ℓ} (Univ : Set ℓ) where
@@ -15,7 +12,6 @@ module Logic.Classical.Ordered.LambekGrishin.Structure.Complexity {ℓ} (Univ : 
 
 import Logic.Classical.Ordered.LambekGrishin.Type.Complexity Univ as T
 open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Univ
-open StrictTotalOrder NatProps.strictTotalOrder using (irrefl)
 
 
 infix 10 ⌈_⌉ ⌊_⌋
