@@ -14,7 +14,7 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 module Logic.Classical.Ordered.LambekGrishin.Type {ℓ} (Univ : Set ℓ) where
 
-
+infix  10 □_ ◇_ ₀_ _⁰ ₁_ _¹
 infixr 20 _⇒_
 infixl 20 _⇐_
 infixl 25 _⇚_
