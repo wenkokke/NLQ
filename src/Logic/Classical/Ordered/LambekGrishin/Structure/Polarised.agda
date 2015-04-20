@@ -2,11 +2,9 @@
 -- The Lambek Calculus in Agda
 ------------------------------------------------------------------------
 
-open import Function                                   using (_∘_)
-open import Data.Product                               using (∃; ∃₂; _×_; _,_; proj₁; proj₂)
-open import Relation.Nullary                           using (Dec; yes; no)
-open import Relation.Binary                            using (DecSetoid)
-open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
+
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+
 
 module Logic.Classical.Ordered.LambekGrishin.Structure.Polarised {ℓ} (Univ : Set ℓ) where
 

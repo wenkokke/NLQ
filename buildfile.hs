@@ -208,11 +208,14 @@ experimentalExtendedLambek = Mapping{..}
     textMapping = ["LambekGrishin" ==> "Experimental"
                   ,"LG"            ==> "EXP"
                   ]
-    include     = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/ResMon//*.agda"
+    include     = ["Logic/Classical/Ordered/LambekGrishin//*.agda"
                   ]
-    exclude     = ["//To*.agda","//Trans.agda"]
+    exclude     = ["//To*.agda"
+                  ,"//Trans.agda"
+                  ,"//FocPol.agda"
+                  ,"//FocPol//*.agda"
+                  ,"//EquivalentTo*.agda"
+                  ]
 
 --------------------------------------------------------------------------------
 -- Make: Unrestricted Lambek-Grishin Calculus
