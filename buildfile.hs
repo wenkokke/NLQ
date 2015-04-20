@@ -150,7 +150,7 @@ lambdaCMinus = Mapping{..}
                   ,"Logic/Classical/Ordered/LambekGrishin/Type/Polarised.agda"
                   ,"Logic/Classical/Ordered/LambekGrishin/Type/Subtype.agda"
                   ]
-    exclude      = ["//To*.agda"]
+    exclude      = []
 
 --------------------------------------------------------------------------------
 -- Make: Non-associative Lambek Calculus
@@ -177,7 +177,7 @@ nonAssociativeLambek = Mapping{..}
                   ,"Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
                   ,"Logic/Classical/Ordered/LambekGrishin/ResMon//*.agda"
                   ]
-    exclude     = ["//To*.agda"]
+    exclude     = ["//ToIntuitionisticLinearLambda.agda"]
 
 --------------------------------------------------------------------------------
 -- Make: Non-associative Lambek Calculus
@@ -193,7 +193,7 @@ classicalNonAssociativeLambek = Mapping{..}
                   ,"LG"            ==> "CNL"
                   ]
     include     = ["Logic/Classical/Ordered/LambekGrishin//*.agda"]
-    exclude     = ["//To*.agda"]
+    exclude     = ["//ToIntuitionisticLinearLambda.agda"]
 
 --------------------------------------------------------------------------------
 -- Make: Experimental Extended Lambek
@@ -210,49 +210,14 @@ experimentalExtendedLambek = Mapping{..}
                   ]
     include     = ["Logic/Classical/Ordered/LambekGrishin//*.agda"
                   ]
-    exclude     = ["//To*.agda"
+    exclude     = ["//ToIntuitionisticLinearLambda.agda"
                   ,"//Trans.agda"
                   ,"//FocPol.agda"
                   ,"//FocPol//*.agda"
-                  ,"//EquivalentTo*.agda"
+                  ,"//EquivalentToFocPol.agda"
+                  ,"//EquivalentToResMon.agda"
                   ]
 
---------------------------------------------------------------------------------
--- Make: Unrestricted Lambek-Grishin Calculus
---------------------------------------------------------------------------------
---
---unrestrictedLambekGrishin :: Mapping
---unrestrictedLambekGrishin = Mapping{..}
---  where
---  name        = "Unrestricted Lambek-Grishin Calculus"
---  blacklist   = []
---  textMapping = ["Ordered" ==> "Unrestricted"
---                ]
---  include     = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
---                ,"Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
---                ,"Logic/Classical/Ordered/LambekGrishin/Structure.agda"
---                ,"Logic/Classical/Ordered/LambekGrishin/Structure//*.agda"
---                ,"Logic/Classical/Ordered/LambekGrishin/Judgement.agda"
---                ]
---  exclude     = ["//To*.agda"]
---
---------------------------------------------------------------------------------
--- Make: Linear Lambek-Grishin Calculus
---------------------------------------------------------------------------------
---
---linearLambekGrishin :: Mapping
---linearLambekGrishin = Mapping{..}
---  where
---  name        = "Linear Lambek-Grishin Calculus"
---  blacklist   = ["⊗ᶜ" , "⊕ᶜ"  , "⊗ʷ" , "⊕ʷ"
---                ]
---  textMapping = ["Unrestricted" ==> "Linear"
---                ]
---  include     = ["Logic/Classical/Unrestricted/LambekGrishin/Base.agda"
---                ,"Logic/Classical/Unrestricted/LambekGrishin/FocPol/Base.agda"
---                ]
---  exclude     = ["//To*.agda"]
---
 --------------------------------------------------------------------------------
 -- Mapping: Lambda Calculus
 --------------------------------------------------------------------------------
@@ -280,7 +245,7 @@ lambda = Mapping{..}
                   ,"Logic/Classical/Ordered/LambekGrishin/Type/Polarised.agda"
                   ,"Logic/Classical/Ordered/LambekGrishin/Type/Subtype.agda"
                   ]
-    exclude     = ["//To*.agda"]
+    exclude     = []
 
 --------------------------------------------------------------------------------
 -- Mapping: Linear Lambda Calculus
@@ -297,7 +262,7 @@ linearLambda = Mapping{..}
     include     = ["Logic/Intuitionistic/Unrestricted/Lambda/Base.agda"
                   ,"Logic/Intuitionistic/Unrestricted/Lambda/Permute.agda"
                   ]
-    exclude     = ["//To*.agda"]
+    exclude     = []
 
 -------------------------------------------------------------------------------
 -- Utility: generate files from other files by restricting the allowed symbols
