@@ -32,6 +32,7 @@ data ConId
   | SPlus | SSubL | SSubR
   | S0L   | S0R   | SBox
   | S1L   | S1R   | SDia
+  | Comma
 
   -- hollow product and slashes
   | HProd | HImpR | HImpL

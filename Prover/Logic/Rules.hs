@@ -7,43 +7,43 @@ import Text.Parsec (parse)
 
 
 -- |Inference rules for the non-associative Lambek calculus.
-nl :: [Rule ConId Int]
-nl = concat [ strAxioms, strFocus, strProdAndImpLR ]
-
--- |Inference rules for the polarised non-associative Lambek calculus.
-fnl :: [Rule ConId Int]
-fnl = concat [ strPolAxioms, strPolFocus, strProdAndImpLR ]
+strNL :: [Rule ConId Int]
+strNL = concat [ strAxioms, strFocus, strProdAndImpLR ]
 
 -- |Inference rules for the classical non-associative Lambek calculus.
-cnl :: [Rule ConId Int]
-cnl = concat [ strAxioms, strFocus, strProdAndImpLR, strPlusAndSubLR ]
-
--- |Inference rules for the polarised classical non-associative Lambek calculus.
-fcnl :: [Rule ConId Int]
-fcnl = concat [ strPolAxioms, strPolFocus, strBoxAndDia, strZero, strOne
-              , strProdAndImpLR, strPlusAndSubLR ]
+strCNL :: [Rule ConId Int]
+strCNL = concat [ strAxioms, strFocus, strProdAndImpLR, strPlusAndSubLR ]
 
 -- |Inference rules for the Lambek-Grishin calculus.
-lg :: [Rule ConId Int]
-lg = concat [ strAxioms, strFocus, strBoxAndDia, strZero, strOne
+strLG :: [Rule ConId Int]
+strLG = concat [ strAxioms, strFocus, strBoxAndDia, strZero, strOne
             , strProdAndImpLR, strPlusAndSubLR, strGrishinIV ]
 
+-- |Inference rules for the polarised non-associative Lambek calculus.
+polNL :: [Rule ConId Int]
+polNL = concat [ polAxioms, polFocus, strProdAndImpLR ]
+
+-- |Inference rules for the polarised classical non-associative Lambek calculus.
+polCNL :: [Rule ConId Int]
+polCNL = concat [ polAxioms, polFocus, strBoxAndDia, strZero, strOne
+              , strProdAndImpLR, strPlusAndSubLR ]
+
 -- |Inference rules for the polarised Lambek-Grishin calculus.
-flg :: [Rule ConId Int]
-flg = concat [ strPolAxioms, strPolFocus, strBoxAndDia, strZero, strOne
+polLG :: [Rule ConId Int]
+polLG = concat [ polAxioms, polFocus, strBoxAndDia, strZero, strOne
              , strProdAndImpLR, strPlusAndSubLR, strGrishinIV ]
 
+-- |Inference rules for the non-associative Lambek calculus.
+algNL :: [Rule ConId Int]
+algNL = concat [ algAxiom, algProdAndImpLR ]
+
+-- |Inference rules for the non-associative Lambek calculus.
+algNLCL :: [Rule ConId Int]
+algNLCL = concat [ algAxiom, algProdAndImpLR, algHollowProdAndImpLR, algConst]
+
 -- |Inference rules for an experimental version of the Lambek calculus.
-exp :: [Rule ConId Int]
-exp = concat [ algAxiom, algProdAndImpLR, algIsland ]
-
--- |Inference rules for the non-associative Lambek calculus.
-algnl :: [Rule ConId Int]
-algnl = concat [ algAxiom, algProdAndImpLR ]
-
--- |Inference rules for the non-associative Lambek calculus.
-algnlcl :: [Rule ConId Int]
-algnlcl = concat [ algAxiom, algProdAndImpLR, algHollowProdAndImpLR, algConst]
+algEXP :: [Rule ConId Int]
+algEXP = concat [ algAxiom, algProdAndImpLR, algIsland ]
 
 
 -- |Inference rules for axioms.
@@ -57,8 +57,8 @@ strAxioms =
     atomB (Con JFocusR [_, Con (Atom _) []]) = True; atomB _ = False
 
 -- |Structural, polarised inference rules for axioms.
-strPolAxioms :: [Rule ConId Int]
-strPolAxioms =
+polAxioms :: [Rule ConId Int]
+polAxioms =
   [ (([] ⟶ "[ A ] ⊢ . A .") "ax⁻") { guard = atomA }
   , (([] ⟶ ". B . ⊢ [ B ]") "ax⁺") { guard = atomB }
   ]
@@ -78,8 +78,8 @@ strFocus =
   ]
 
 -- |Structural, polarised inference rules for focusing and unfocusing.
-strPolFocus :: [Rule ConId Int]
-strPolFocus =
+polFocus :: [Rule ConId Int]
+polFocus =
   [ ((["  X   ⊢ . B ."] ⟶ "  X   ⊢ [ B ]") "⇁") { guard = negB }
   , (([". A . ⊢   Y  "] ⟶ "[ A ] ⊢   Y  ") "↽") { guard = posA }
   , ((["  X   ⊢ [ B ]"] ⟶ "  X   ⊢ . B .") "⇀") { guard = posB }

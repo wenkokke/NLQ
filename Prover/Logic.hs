@@ -1,4 +1,4 @@
-{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE RecordWildCards, TupleSections #-}
 module Logic (tryAll, module X) where
 
 
@@ -34,16 +34,17 @@ tryAll :: Int                          -- ^ Search depth
        -> String                       -- ^ Sentence
        -> Term ConId Void              -- ^ Goal formula
        -> [(Term ConId Void,Term RuleId Void)]
-tryAll d lex sys sent g = if fin then finPrfs else infPrfs
+tryAll d lex sys sent g =
+  (if isFinite then finiteProofs else infiniteProofs) `using` parList rdeepseq
   where
-    (SysDescr un bn dn jg rs fin) = getSysDescr sys
+    SysDescr{..} = getSysDescr sys
 
-    formulas = lookupAll lex (words sent)
-    atoms    = maybe formulas (\f -> map (unary f) formulas) dn
-    lhs      = brackets (unary <$> un) (binary bn) atoms
-    seqs     = map (\x -> binary jg x g) lhs
-    finPrfs  = concatMap (\j -> map (j,) (findAll j rs)) seqs `using` parList rdeepseq
-    infPrfs  = findFirst d seqs rs `using` parList rdeepseq
+    baseFormulas   = lookupAll lex (words sent)
+    baseStructures = maybe baseFormulas (\f -> map (unary f) baseFormulas) downOp
+    leftHandSides  = brackets (unary <$> unaryOp) (binary binaryOp) baseStructures
+    judgements     = map (\x -> binary sequent x g) leftHandSides
+    finiteProofs   = concatMap (\j -> map (j,) (findAll j rules)) judgements
+    infiniteProofs = findFirst d judgements rules
 
 
 lookupAll :: Map String (Term ConId Void) -- ^ Lexicon
