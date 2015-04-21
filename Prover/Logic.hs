@@ -37,7 +37,7 @@ tryAll :: Int                          -- ^ Search depth
 tryAll d lex sys sent g =
   (if isFinite then finiteProofs else infiniteProofs) `using` parList rdeepseq
   where
-    SysDescr{..} = getSysDescr sys
+    SysInfo{..} = getSysInfo sys
 
     baseFormulas   = lookupAll lex (words sent)
     baseStructures = maybe baseFormulas (\f -> map (unary f) baseFormulas) downOp

@@ -223,6 +223,20 @@ algConst =
     noProdI (Con JForm [Con HProd [_,Con (Atom "I") []],_]) = False; noProdI _ = True
 
 
+-- |Cyclic polarised rules for the classical non-associative Lambek calculus.
+--cycCNL :: [Rule ConId Int]
+--cycCNL =
+--  [ ([]                        ⟶ "· P · ⊢[ P ⁺ ]") "ax"
+--  , (["Γ , Δ ⊢ ⊥"]             ⟶ "Δ , Γ ⊢ ⊥") "dp₁"
+--  , (["Γ ∙ Δ , Θ ⊢ ⊥"]         ⟶ "Γ , Δ ∙ Θ ⊢ ⊥") "dp₂"
+--  , (["Γ , Δ ∙ Θ ⊢ ⊥"]         ⟶ "Γ ∙ Δ , Θ ⊢ ⊥") "dp₃"
+--  , (["Γ ⊢[ N ]"]              ⟶ "Γ , · ↓ N · ⊢ ⊥") "↓ᵢ"
+--  , (["Γ , · P · ⊢ ⊥"]         ⟶ "Γ ⊢[ ↑ P ]") "↑ᵢ"
+--  , (["Γ ⊢[ M ]" , "Δ ⊢[ N ]"] ⟶ "Δ ∙ Γ ⊢[ M ⊕ N ]") "⊕ᵢ"
+--  , (["Γ , · P · ∙ · Q · ⊢ ⊥"] ⟶ "Γ , · P ⊗ Q · ⊢ ⊥")⊗ᵢ"
+--  ]
+
+
 infixr 1 ⟶
 
 (⟶) :: [String] -> String -> RuleId -> Rule ConId Int

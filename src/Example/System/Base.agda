@@ -4,8 +4,10 @@
 
 
 open import Data.Bool                             using (Bool; true; false; _∧_; _∨_)
-open import Data.List                             using (List; _∷_; []; map; foldr)
+open import Data.List                             using (List; _∷_; []; map; foldr; any)
+open import Reflection                            using (Term; _≟_)
 open import Relation.Nullary                      using (Dec; yes; no)
+open import Relation.Nullary.Decidable            using (⌊_⌋)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
 
@@ -59,46 +61,29 @@ S  ≟-Univ S  = yes refl
 
 
 -- * setup abstract lexicon
-abstract
-  DUTCH   : Entity → Bool
-  DUTCH _ = false
-
-  ENGLISH   : Entity → Bool
-  ENGLISH _ = true
-
-  SMILES      : Entity → Bool
-  SMILES mary = true
-  SMILES john = true
-  SMILES _    = false
-
-  LEFT      : Entity → Bool
-  LEFT bill = true
-  LEFT _    = false
-
-  CHEATS : Entity → Bool
-  CHEATS john = true
-  CHEATS _    = false
-
-  _TEASES_ : Entity → Entity → Bool
-  mary TEASES bill = true
-  _    TEASES _    = false
-
-  _LOVES_ : Entity → Entity → Bool
-  john LOVES bill = true
-  bill LOVES john = true
-  mary LOVES john = true
-  john LOVES mary = true
-  _    LOVES _    = false
-
-  UNICORN   : Entity → Bool
-  UNICORN _ = false
-
-  PERSON : Entity → Bool
-  PERSON _ = true
-
-  TEACHER       : Entity → Bool
-  TEACHER bill  = true
-  TEACHER _     = false
-
 postulate
-  THINKS : Entity → Bool → Bool
+  DUTCH   : Entity → Bool
+  ENGLISH : Entity → Bool
+  SMILES  : Entity → Bool
+  LEFT    : Entity → Bool
+  CHEATS  : Entity → Bool
+  TEASES  : Entity → Entity → Bool
+  LOVES   : Entity → Entity → Bool
+  UNICORN : Entity → Bool
+  PERSON  : Entity → Bool
+  TEACHER : Entity → Bool
+  THINKS  : Entity → Bool → Bool
+
+
+-- * setup tests
+infix 1 Assert_
+
+data   TestFailure : Set where
+record TestSuccess : Set where
+
+Assert_ : Bool → Set
+Assert true  = TestSuccess
+Assert false = TestFailure
+
+_∈_ : Term → List Term → Bool
+y ∈ xs = any (λ x → ⌊ x ≟ y ⌋) xs
