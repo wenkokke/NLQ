@@ -1,9 +1,10 @@
 {-# LANGUAGE ViewPatterns #-}
-module Logic.System (System(..),SysDescr(..),parseSystem,getRules,getSysDescr)where
+module Logic.System (System(..),SysInfo(..),desc,descAll,parseSystem,getRules,getSysInfo)where
 
 
 import Prelude hiding (exp)
-import Data.Char (toUpper)
+import Data.Char (toUpper,toLower)
+import Text.Printf (printf)
 
 import Logic.Base
 import Logic.Rules
@@ -21,9 +22,28 @@ data System
   | POLNL   -- ^ polarised non-associative Lambek calculus (extracted from FLG)
   | POLCNL  -- ^ polarised classical non-associative Lambek calculus (extracted from FLG)
   | POLLG   -- ^ polarised Lambek-Grishin calculus
-  deriving (Eq,Read,Show)
+  deriving (Eq,Read,Show,Enum,Bounded)
 
-data SysDescr = SysDescr
+
+desc :: System -> String
+desc ALGNL   = "Algebraic non-associative Lambek calculus."
+desc ALGNLCL = "Algebraic Lambek calculus (by Barker & Shan)."
+desc ALGEXP  = "Algebraic experimental Lambek calculus (with 'reset')."
+desc STRNL   = "Structured non-associative Lambek calculus."
+desc STRCNL  = "Structured classical non-associative Lambek calculus."
+desc STRLG   = "Structured Lambek-Grishin."
+desc POLNL   = "Polarised non-associative Lambek calculus (extracted from polarised LG)."
+desc POLCNL  = "Polarised classical non-associative Lambek calculus (extracted from polarised LG)."
+desc POLLG   = "Polarised Lambek-Grishin calculus."
+
+
+descAll :: String
+descAll = unlines ("":"Available Systems":"": map descLine [minBound..maxBound])
+  where
+    descLine sys = printf "  %-17s%s" (map toLower $ show sys) (desc sys)
+
+
+data SysInfo = SysInfo
   { unaryOp  :: Maybe ConId
   , binaryOp :: ConId
   , downOp   :: Maybe ConId
@@ -53,22 +73,22 @@ getRules POLCNL  = polCNL
 getRules POLLG   = polLG
 
 
-finite :: SysDescr -> SysDescr
+finite :: SysInfo -> SysInfo
 finite sysdescr = sysdescr  { isFinite = True }
 
-algebraic :: System -> ConId -> SysDescr
-algebraic sys op = SysDescr Nothing op Nothing JForm (getRules sys) False
+algebraic :: System -> ConId -> SysInfo
+algebraic sys op = SysInfo Nothing op Nothing JForm (getRules sys) False
 
-structural :: System -> ConId -> SysDescr
+structural :: System -> ConId -> SysInfo
 structural sys op = (algebraic sys op) { downOp = Just Down, sequent = JFocusR  }
 
-withUnary :: ConId -> SysDescr -> SysDescr
+withUnary :: ConId -> SysInfo -> SysInfo
 withUnary op sysdescr = sysdescr { unaryOp = Just op }
 
 
 -- |Return the sequent that corresponds to this logical system.
-getSysDescr :: System -> SysDescr
-getSysDescr ALGNL   = SysDescr Nothing FProd Nothing JForm algNL True
-getSysDescr ALGNLCL = SysDescr Nothing FProd Nothing JForm algNLCL False
-getSysDescr ALGEXP  = SysDescr (Just FDia) FProd Nothing JForm algEXP True
-getSysDescr sys     = SysDescr (Just SDia) SProd (Just Down) JFocusR (getRules sys) True
+getSysInfo :: System -> SysInfo
+getSysInfo ALGNL   = SysInfo Nothing FProd Nothing JForm algNL True
+getSysInfo ALGNLCL = SysInfo Nothing FProd Nothing JForm algNLCL False
+getSysInfo ALGEXP  = SysInfo (Just FDia) FProd Nothing JForm algEXP True
+getSysInfo sys     = SysInfo (Just SDia) SProd (Just Down) JFocusR (getRules sys) True

@@ -69,15 +69,15 @@ cheats : ⟦ np ⇒ s⁻ ⟧ᵀ
 cheats = iv CHEATS
 
 teases : ⟦ (np ⇒ s⁻) ⇐ np ⟧ᵀ
-teases = tv _TEASES_
+teases = tv TEASES
 
 loves : ⟦ (np ⇒ s⁻) ⇐ np ⟧ᵀ
-loves = tv _LOVES_
+loves = tv LOVES
 
 thinks : ⟦ (np ⇒ s⁻) ⇐ s⁻ ⟧ᵀ
 thinks ((x , k) , y) = k (THINKS x (y id))
 
-thinks' : ⟦ (np ⇒ s⁻) ⇐ ◇ s⁻ ⟧ᵀ
+thinks' : ⟦ (np ⇒ s⁻) ⇐ (◇ s⁻) ⟧ᵀ
 thinks' ((x , k) , y) = k (THINKS x (y id))
 
 everyone : ⟦ (np ⇐ n) ⊗ n ⟧ᵀ

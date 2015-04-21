@@ -1,18 +1,24 @@
 {-# LANGUAGE FlexibleContexts #-}
-module Logic.ToAgda (toAgdaFile) where
+module Logic.ToAgda (Result(..),toAgdaFile) where
 
 
 import           Control.Monad.State (State,get,put,evalState)
-import           Data.Char (toUpper,toLower)
-import           Data.List (intersperse)
+import           Data.Char (isSpace,toUpper,toLower)
+import           Data.List (intersperse,intercalate)
 import           Data.Map (Map)
 import qualified Data.Map as M
 import           Data.Maybe (fromMaybe)
 import           Data.Void (Void)
+import           Text.Printf (printf)
 
 import           Logic.Base
 import           Logic.Printing (Agda(..))
 import           Logic.System (System(..))
+
+
+data Result
+  = Solved                 (Term Void) Proof
+  | Parsed String [String] (Term Void) Proof
 
 
 -- |Return the Agda data type name associated with given a logical
@@ -41,7 +47,6 @@ toAgdaModule POLNL   = "Example.System.fLG"
 toAgdaModule POLCNL  = "Example.System.fLG"
 toAgdaModule POLLG   = "Example.System.fLG"
 
-
 toCtxt :: System -> String -> String
 toCtxt sys sent = case sys of
   ALGNL   -> useProd
@@ -52,19 +57,68 @@ toCtxt sys sent = case sys of
     useEnv  = unwords (intersperse "," (words sent ++ ["∅"]))
     useProd = unwords (intersperse "," (words sent))
 
+getBaseName :: Result -> String
+getBaseName (Solved     g _) = defaultName g
+getBaseName (Parsed s _ _ _) = map toLower (sanitise s)
+  where
+    sanitise [] = []
+    sanitise (' ':' ': xs) = sanitise (' ':xs)
+    sanitise (' '    : xs) = '_' : sanitise xs
+    sanitise ('.'    : xs) = sanitise xs
+    sanitise (':'    : xs) = sanitise xs
+    sanitise ( c     : xs) = toUpper c : sanitise xs
 
-next :: String -> State (Map String Int) Int
-next s = do m <- get
-            let n = fromMaybe 0 (M.lookup s m)
-            put (M.insert s (n + 1) m)
-            return n
+defaultName :: Term Void -> String
+defaultName = map repl . filter (not . isSpace) . show . Agda
+  where
+    repl '(' = '['
+    repl ')' = ']'
+    repl  c  =  c
+
+withType :: Term Void -> String -> String
+withType = printf "id {A = ⟦ %s ⟧ᵀ} (%s)" . show . Agda
+
+agdaList :: [String] -> String
+agdaList = unwords . intersperse "∷" . (++["[]"])
+
+toAgdaDefn :: System -> Term Void -> Result -> State (Map String Int) String
+toAgdaDefn sys tgt ret = case ret of
+  (Solved     g p) ->
+    return $ unlines
+      [ baseName++" : "++dataTypeName++" "++show (Agda g)
+      , baseName++" = "++show p
+      , ""
+      ]
+  (Parsed s e g p) -> do
+    n <- next s; let subn = sub n
+    return . unlines $
+      [ synBaseName++subn++" : "++dataTypeName++" "++show (Agda g)
+      , synBaseName++subn++" = "++show p
+      , semBaseName++subn++" : ⟦ "++show (Agda tgt)++" ⟧ᵀ"
+      , semBaseName++subn++" = [ "++synBaseName++subn++" ]ᵀ ("++toCtxt sys s++")"
+      , ""
+      ]
+      ++
+      (if null e then [] else
+      [ listBaseName++subn++" : List Term"
+      , listBaseName++subn++" = "++agdaList (map (\x -> "quoteTerm ("++withType tgt x++")") e)
+      , testBaseName++subn++" : Assert (quoteTerm "++semBaseName++subn++" ∈ "++listBaseName++subn++")"
+      , testBaseName++subn++" = _"
+      , ""
+      ])
+      ++
+      [""]
+  where
+    baseName     = getBaseName ret
+    synBaseName  = map toUpper baseName
+    semBaseName  = map toLower baseName
+    listBaseName = "LIST_"++baseName
+    testBaseName = "TEST_"++baseName
+    dataTypeName = toAgdaDataType sys
+
 
 -- |Return a valid Agda file given a sequence of proofs.
-toAgdaFile :: String
-           -> System
-           -> [(String, (Term Void, Proof))]
-           -> Term Void
-           -> String
+toAgdaFile :: String -> System -> [Result] -> Term Void -> String
 toAgdaFile moduleName sys prfs tgt =
   unlines (comment ++ [importStmts, "", moduleStmt, "", proofStmts])
   where
@@ -75,31 +129,22 @@ toAgdaFile moduleName sys prfs tgt =
       , ""
       ]
     moduleStmt   = unlines ["module Example."++moduleName++" where"]
-    importStmts  = unlines ["open import "++toAgdaModule sys]
-    dataTypeName = toAgdaDataType sys
-    proofStmts   = evalState (concat <$> mapM showProof prfs) M.empty
-      where
-        showProof (sent,(g,p)) = do
-          n <- next sent
-          let subn = sub n
-          return $ unlines
-            [ synBaseName++subn++" : "++dataTypeName++" "++show (Agda g)
-            , synBaseName++subn++" = "++show p
-            , semBaseName++subn++" : ⟦ "++show (Agda tgt)++" ⟧ᵀ"
-            , semBaseName++subn++" = [ "++synBaseName++subn++" ]ᵀ ("++semCtxt++")"
-            , ""
-            ]
-          where
-            semCtxt     = toCtxt sys sent
-            semBaseName = map toLower synBaseName
-            synBaseName = sanitise sent
-              where
-                sanitise [] = []
-                sanitise (' ':' ': xs) = sanitise (' ':xs)
-                sanitise (' '    : xs) = '_' : sanitise xs
-                sanitise ('.'    : xs) = sanitise xs
-                sanitise (':'    : xs) = sanitise xs
-                sanitise ( c     : xs) = toUpper c : sanitise xs
+    importStmts  = unlines
+      [ "open import Data.Bool using (Bool; true; false; _∧_; _∨_)"
+      , "open import Data.List using (List; _∷_; [])"
+      , "open import Function using (id)"
+      , "open import Reflection using (Term)"
+      , "open import "++toAgdaModule sys
+      ]
+    proofStmts   = evalState (concat <$> mapM (toAgdaDefn sys tgt) prfs) M.empty
+
+
+-- |Compute the next number for this String.
+next :: String -> State (Map String Int) Int
+next s = do m <- get
+            let n = fromMaybe 0 (M.lookup s m)
+            put (M.insert s (n + 1) m)
+            return n
 
 
 -- |Show a number in subscript.
