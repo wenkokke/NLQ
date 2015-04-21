@@ -1,15 +1,19 @@
-{-# LANGUAGE OverloadedStrings, ViewPatterns, FlexibleContexts, PartialTypeSignatures #-}
+{-# LANGUAGE OverloadedStrings, ViewPatterns, FlexibleContexts, PartialTypeSignatures, TupleSections, RecordWildCards #-}
 module Main where
 
 
 import Prelude hiding (lex)
+import Control.Monad (when,unless)
+import Data.Char (isSpace)
 import Data.Map (Map)
+import Data.Maybe (fromMaybe)
 import Data.Void (Void)
 import System.Console.GetOpt (OptDescr(..),ArgDescr(..),ArgOrder(..),usageInfo,getOpt)
+import System.Directory (doesFileExist)
 import System.Environment (getProgName,getArgs)
 import System.Exit (exitSuccess)
 import System.FilePath (takeBaseName)
-import System.IO (hPutStrLn,stderr)
+import System.IO
 import Text.Parsec (parse)
 
 
@@ -23,32 +27,73 @@ main = do
 
   let (actions, _, _) = getOpt Permute options args
   opts <- foldl (>>=) (return defaultOptions) actions
-  let Options { optTask    = task
+  let Options { optTasks   = tasks
               , optLexicon = mbLexicon
               , optSystem  = sys
               , optTarget  = tgt
               , optGoal    = g
               , optDepth   = d
               } = opts
-  case task of
-   Nothing -> putStrLn "Usage: For basic information, try the `--help' option."
 
-   Just (Solve str) ->
-     case parse judgement "" str of
-      Left err -> print err
-      Right tm -> mapM_ print (findAll tm (getRules sys))
+  when (null tasks)
+       (putStrLn "Usage: For basic information, try the `--help' option.")
 
-   Just (Parse sent) ->
-     case mbLexicon of
-      Nothing  -> putStrLn "Error: No lexicon file given."
-      Just lex -> let
+  let
+    handle :: Task -> IO [(Maybe String, (Term ConId Void, Proof))]
+    handle (Solve str) = case parse judgement "" str of
+      Left  m -> error (show m)
+      Right g -> return $ map ((Nothing,) . (g,)) (findAll g (getRules sys))
+    handle (Parse sent) = case mbLexicon of
+      Nothing  -> error "No lexicon file given."
+      Just lex -> return $ map (Just sent,) (tryAll d lex sys sent g)
 
-        prfs = tryAll d lex sys sent g
+  proofs <- concat <$> mapM handle tasks
 
-        in case tgt of
-            StdOut             -> mapM_ (\(j,p) -> do print (Agda j); print p) prfs
-            AgdaFile  Nothing  -> putStr $ toAgdaFile "Main" sent sys prfs g
-            AgdaFile (Just fn) -> return ()
+  let agdaFile modName = toAgdaFile modName sys (map setDefaultName proofs) g
+
+  case tgt of
+    StdOut             -> mapM_ printResult proofs
+    AgdaFile  Nothing  -> putStr (agdaFile "Main")
+    AgdaFile (Just fn) -> do checkFile fn; writeFile fn (agdaFile (takeBaseName fn))
+
+
+checkFile :: FilePath -> IO ()
+checkFile fn = do
+  fileExists <- doesFileExist fn
+  unless fileExists $ do
+    hSetBuffering stdout NoBuffering
+    putStr (fn ++ " exists. Overwrite? (y/n) ")
+    hSetBuffering stdin NoBuffering
+    hSetEcho stdin False
+    hFlushInput stdin
+    answer <- yorn
+    when (answer == 'Y') exitSuccess
+  where
+    hFlushInput hdl = do
+      r <- hReady hdl
+      when r (hGetChar hdl >> hFlushInput hdl)
+
+    yorn = do
+      c <- getChar
+      if c == 'Y' || c == 'N' then return c
+      else if c == 'y' then return 'Y'
+      else if c == 'n' then return 'N'
+      else yorn
+
+printResult :: (Maybe String, (Term ConId Void, Proof)) -> IO ()
+printResult (Nothing  , (g, p)) = do print (Agda g); print p
+printResult (Just sent, (g, p)) = do putStrLn sent; print (Agda g); print p
+
+setDefaultName :: (Maybe String, (Term ConId Void, Proof)) -> (String, (Term ConId Void, Proof))
+setDefaultName (m,(g,p)) = (fromMaybe (defaultName g) m, (g,p))
+
+defaultName :: Term ConId Void -> String
+defaultName = map repl . filter (not . isSpace) . show . Agda
+  where
+    repl '(' = '['
+    repl ')' = ']'
+    repl  c  =  c
+
 
 data Task
   = Solve String
@@ -59,7 +104,7 @@ data Target
   | AgdaFile (Maybe FilePath)
 
 data Options = Options
-  { optTask       :: Maybe Task
+  { optTasks      :: [Task]
   , optLexicon    :: Maybe (Map String (Term ConId Void))
   , optSystem     :: System
   , optTarget     :: Target
@@ -69,9 +114,9 @@ data Options = Options
 
 defaultOptions :: Options
 defaultOptions    = Options
-  { optTask       = Nothing
+  { optTasks      = []
   , optLexicon    = Nothing
-  , optSystem     = NL
+  , optSystem     = POLNL
   , optTarget     = StdOut
   , optGoal       = Con (Atom "s⁻") []
   , optDepth      = 5
@@ -80,10 +125,10 @@ defaultOptions    = Options
 options :: [ OptDescr (Options -> IO Options) ]
 options =
   [ Option [] ["solve"]
-    (ReqArg (\arg opt -> return opt { optTask = Just (Solve arg) }) "SEQUENT")
+    (ReqArg (\arg opt -> return opt { optTasks = optTasks opt ++ [Solve arg] }) "SEQUENT")
     "Search for proof of a sequent."
   , Option [] ["parse"]
-    (ReqArg (\arg opt -> return opt { optTask = Just (Parse arg) }) "SENTENCE")
+    (ReqArg (\arg opt -> return opt { optTasks = optTasks opt ++ [Parse arg] }) "SENTENCE")
     "Parse the given sentence."
   , Option "l" ["lexicon"]
     (ReqArg (\arg opt -> do lex <- parseLex arg; return opt { optLexicon = Just lex }) "LEXICON_FILE")
@@ -107,8 +152,6 @@ options =
               exitSuccess))
     "Show help."
   ]
-
-
 
 parseGoal :: String -> IO (Term ConId Void)
 parseGoal str = case parse formula "" str of

@@ -113,6 +113,7 @@ structure' fv sv =
       , [op SSubL AssocLeft , op SSubR AssocRight
         ,op SImpR AssocRight, op SImpL AssocLeft ]
       , [op SProd AssocRight, op SPlus AssocLeft ]
+      , [op Comma AssocRight]
       ]
 
 
@@ -132,12 +133,14 @@ judgement' fv sv =
 
 lexerDef :: LanguageDef st
 lexerDef = haskellStyle
-  { identLetter     = alphaNum <|> oneOf "_'⁻⁺"
+  { identStart      = letter <|> oneOf "⊥"
+  , identLetter     = alphaNum <|> oneOf "_'⁻⁺⊥"
   , opStart         = opLetter lexerDef
-  , opLetter        = oneOf "*><+-~=|⊗⇐⇒⊕⇚⇛⊢∘⇨⇦"
+  , opLetter        = oneOf "*><+-~=|⊗⇐⇒⊕⇚⇛⊢∘⇨⇦,"
   , reservedOpNames = nub $ concatMap (\x -> [show (Agda x), show (ASCII x)])
                       [FProd, FImpR, FImpL, FPlus, FSubL, FSubR
                       ,SProd, SImpR, SImpL, SPlus, SSubL, SSubR
+                      ,Comma
                       ,HProd, HImpR, HImpL
                       ,F0L  , F0R  , FBox , F1L  , F1R  , FDia
                       ,JForm, JStruct, JFocusL, JFocusR]

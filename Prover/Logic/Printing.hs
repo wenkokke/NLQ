@@ -16,6 +16,7 @@ prec S0L   = 6; prec S0R   = 6; prec SBox  = 6
 prec S1L   = 6; prec S1R   = 6; prec SDia  = 6
 prec SProd = 5; prec SImpR = 4; prec SImpL = 4
 prec SPlus = 5; prec SSubL = 4; prec SSubR = 4
+prec Comma = 3
 
 
 data Fixity = Prefix | Suffix | Infix deriving (Eq)
@@ -43,7 +44,7 @@ instance Show (Agda ConId) where
   show (Agda S1L)   = "₁"; show (Agda S1R)   = "¹"
   show (Agda JForm)   = "⊢"; show (Agda JStruct) = "⊢"
   show (Agda JFocusL) = "⊢"; show (Agda JFocusR) = "⊢"
-  show (Agda Down)    = "·"
+  show (Agda Down)    = "·"; show (Agda Comma)   = ","
 
 instance (Show v) => Show (Agda (Term v)) where
   showsPrec _ (Agda (Var i)) = shows i
@@ -124,11 +125,9 @@ instance Show (ASCII ConId) where
   show (ASCII SPlus) = "+"; show (ASCII SSubL) = "<="; show (ASCII SSubR) = "=>"
   show (ASCII S0L)   = "0"; show (ASCII S0R)   = "0"
   show (ASCII S1L)   = "1"; show (ASCII S1R)   = "1"
-  show (ASCII JForm)   = "|-"
-  show (ASCII JStruct) = "|-"
-  show (ASCII JFocusL) = "|-"
-  show (ASCII JFocusR) = "|-"
-  show (ASCII Down)    = "."
+  show (ASCII JForm)   = "|-"; show (ASCII JStruct) = "|-";
+  show (ASCII JFocusL) = "|-"; show (ASCII JFocusR) = "|-"
+  show (ASCII Down)    = "." ; show (ASCII Comma)   = ","
 
 instance (Show v) => Show (ASCII (Term v)) where
   showsPrec _ (ASCII (Var i)) = shows i

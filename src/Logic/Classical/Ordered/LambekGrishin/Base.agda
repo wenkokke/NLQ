@@ -20,7 +20,6 @@ open import Function using (_∘_)
 module Logic.Classical.Ordered.LambekGrishin.Base {ℓ} (Univ : Set ℓ) where
 
 
-open import Logic.Polarity
 open import Logic.Classical.Ordered.LambekGrishin.Type                Univ
 open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Univ
 open import Logic.Classical.Ordered.LambekGrishin.Judgement           Univ
