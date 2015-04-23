@@ -33,12 +33,10 @@ from (⊗ᴿ      f g) = ⊗ᵢ (from f) (from g)
 from (eᴸ Γ₁ Γ₂ Γ₃ Γ₄ f) = eᴸ Γ₁ Γ₂ Γ₃ Γ₄ (from f)
 
 
-to : ∀ {J} → Λ J → ILL J
-to ax                 = ax
-to (⇒ᵢ     f)         = ⇒ᴿ (to f)
-to (⇒ₑ {Γ} f g)       = ILL.sᴸ Γ (cut (to g) {!to f!})
--- to f : Γ₁ ⊢ A ⇒ B
--- to g : Γ₂ ⊢ A
-to (⊗ᵢ     f g)       = ⊗ᴿ (to f) (to g)
-to (⊗ₑ     f g)       = cut (to f) (⊗ᴸ (to g))
-to (eᴸ Γ₁ Γ₂ Γ₃ Γ₄ f) = eᴸ Γ₁ Γ₂ Γ₃ Γ₄ (to f)
+-- to : ∀ {J} → Λ J → ILL J
+-- to ax                 = ax
+-- to (⇒ᵢ     f)         = ⇒ᴿ (to f)
+-- to (⇒ₑ {Γ} f g)       = ILL.sᴸ Γ (cut (to g) {!⇒ᴸ ? ?!})
+-- to (⊗ᵢ     f g)       = ⊗ᴿ (to f) (to g)
+-- to (⊗ₑ     f g)       = cut (to f) (⊗ᴸ (to g))
+-- to (eᴸ Γ₁ Γ₂ Γ₃ Γ₄ f) = eᴸ Γ₁ Γ₂ Γ₃ Γ₄ (to f)
