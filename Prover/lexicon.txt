@@ -18,3 +18,8 @@ everyone1  : (₁ np) ¹
 someone1   : (₁ np) ¹
 everyone2  : s⁻ ⇚ (np ⇛ s⁻)
 someone2   : s⁻ ⇚ (np ⇛ s⁻)
+everyone3  : np ⇚ (s⁻ ⇛ s⁻)
+someone3   : np ⇚ (s⁻ ⇛ s⁻)
+he         : np ⇚ ((np ⇒ s⁻) ⇛ s⁻)
+she        : np ⇚ ((np ⇒ s⁻) ⇛ s⁻)
+they       : np ⇚ ((np ⇒ s⁻) ⇛ s⁻)

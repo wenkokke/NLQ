@@ -79,7 +79,7 @@ withType :: Term Void -> String -> String
 withType = printf "id {A = ⟦ %s ⟧ᵀ} (%s)" . show . Agda
 
 agdaList :: [String] -> String
-agdaList = unwords . intersperse "∷" . (++["[]"])
+agdaList = unwords . intersperse "\n  ∷" . (++["[]"])
 
 toAgdaDefn :: System -> Term Void -> Result -> State (Map String Int) String
 toAgdaDefn sys tgt ret = case ret of
@@ -93,15 +93,15 @@ toAgdaDefn sys tgt ret = case ret of
     n <- next s; let subn = sub n
     return . unlines $
       [ synBaseName++subn++" : "++dataTypeName++" "++show (Agda g)
-      , synBaseName++subn++" = "++show p
+      , synBaseName++subn++" \n  = "++show p
       , semBaseName++subn++" : ⟦ "++show (Agda tgt)++" ⟧ᵀ"
-      , semBaseName++subn++" = [ "++synBaseName++subn++" ]ᵀ ("++toCtxt sys s++")"
+      , semBaseName++subn++" \n  = [ "++synBaseName++subn++" ]ᵀ ("++toCtxt sys s++")"
       , ""
       ]
       ++
       (if null e then [] else
       [ listBaseName++subn++" : List Term"
-      , listBaseName++subn++" = "++agdaList (map (\x -> "quoteTerm ("++withType tgt x++")") e)
+      , listBaseName++subn++" \n  = "++agdaList (map (\x -> "quoteTerm ("++withType tgt x++")") e)
       , testBaseName++subn++" : Assert (quoteTerm "++semBaseName++subn++" ∈ "++listBaseName++subn++")"
       , testBaseName++subn++" = _"
       , ""
