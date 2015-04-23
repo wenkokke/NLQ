@@ -203,7 +203,11 @@ experimentalExtendedLambek :: Mapping
 experimentalExtendedLambek = Mapping{..}
   where
     name        = "Classical Non-associative Lambek Calculus"
-    blacklist   = ["d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐" , "r□◇" , "r◇□"
+    blacklist   = ["r□◇" , "r◇□"
+                  ," ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
+                  ,"⁰ " , "⁰}" , "(⁰" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
+                  ," ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
+                  ,"¹ " , "¹}" , "(¹" , "¹)" , "r¹₁" , "m¹" , "<¹"
                   ]
     textMapping = ["LambekGrishin" ==> "Experimental"
                   ,"LG"            ==> "EXP"

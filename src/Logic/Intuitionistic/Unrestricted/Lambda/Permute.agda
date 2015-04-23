@@ -4,11 +4,11 @@
 ------------------------------------------------------------------------
 
 
-open import Algebra                                         using (module Monoid)
-open import Data.List                                       using (List; _++_) renaming ([] to ∅; _∷_ to _,_; _∷ʳ_ to _,′_)
-open import Data.Product                                    using (proj₁; proj₂)
-open import Relation.Nullary                                using (Dec)
-open import Relation.Binary.PropositionalEquality as PropEq using (_≡_; refl; cong; sym)
+open import Algebra                               using (module Monoid)
+open import Data.List                             using (List; _++_) renaming ([] to ∅; _∷_ to _,_; _∷ʳ_ to _,′_)
+open import Data.Product                          using (proj₁; proj₂)
+open import Relation.Nullary                      using (Dec)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst)
 
 
 -- A quick overview of the functions implemented in this module:
@@ -87,7 +87,7 @@ Y[XZ]→X[YZ] {A} X Y Z t = eᴸ ∅ X Y Z t
     lem₂ : Λ (X ++ Y) ++ Z ++ ∅ ⊢ A
     lem₂ = eᴸ X Y Z ∅ lem₁
     lem₃ : Λ (X ++ Y) ++ Z ⊢ A
-    lem₃ = PropEq.subst (λ Z → Λ (X ++ Y) ++ Z ⊢ A) (proj₂ identity Z) lem₂
+    lem₃ = subst (λ Z → Λ (X ++ Y) ++ Z ⊢ A) (proj₂ identity Z) lem₂
 
 
 X[ZY]→X[YZ] : ∀ {A} X Y Z → Λ X ++ (Z ++ Y) ⊢ A → Λ X ++ (Y ++ Z) ⊢ A
@@ -146,16 +146,20 @@ XYZW→ZYXW {A} X Y Z W t = lem₃
 
 
 ⊗ₑᴸ₁ : ∀ {X A B C} → Λ A , B , X ⊢ C → Λ A ⊗ B , X ⊢ C
-⊗ₑᴸ₁ t = ⊗ₑ ax t
-
+⊗ₑᴸ₁ f = ⊗ₑ ax f
 
 ⊗ₑᴸ₂ : ∀ X {A B C} → Λ X ++ (A , B , ∅) ⊢ C → Λ X ,′ A ⊗ B ⊢ C
-⊗ₑᴸ₂ X {A} {B} {C} = lem₃
+⊗ₑᴸ₂ X {A} {B} f = sᴸ X (⊗ₑᴸ₁ (sᴸ (A , B , ∅) f))
+
+⊗ᵢᴸ₁ : ∀ {X A B C} → Λ A ⊗ B , X ⊢ C → Λ A , B , X ⊢ C
+⊗ᵢᴸ₁ {X} {A} {B} {C} f = sᴸ (A , B , ∅) lem₂
   where
-    lem₁ : Λ X ,′ A ,′ B ⊢ C → Λ X ,′ A ⊗ B ⊢ C
-    lem₁ t = AX→XA (⊗ₑᴸ₁ (XA→AX {B , X} {A} (XA→AX {X ,′ A} {B} t)))
-    lem₂ : ∀ {a} {A : Set a} xs (y z : A) → xs ,′ y ,′ z  ≡ xs ++ (y , z , ∅)
-    lem₂ ∅ y z = refl
-    lem₂ (x , xs) y z = cong (_,_ x) (lem₂ xs y z)
-    lem₃ : Λ X ++ (A , B , ∅) ⊢ C → Λ X ,′ A ⊗ B ⊢ C
-    lem₃ rewrite sym (lem₂ X A B) = lem₁
+    lem₀ : Λ A ⊗ B ⇒ C , ∅ ⊢ A ⇒ B ⇒ C
+    lem₀ = ⇒ᵢ (⇒ᵢ (eᴸ₂ (⇒ₑ ax (eᴸ₁ (⊗ᵢ ax ax)))))
+    lem₁ : Λ (X ++ A , ∅) ++ B , ∅ ⊢ C
+    lem₁ = ⇒ₑ (⇒ₑ {X} (⇒ₑ (⇒ᵢ lem₀) (⇒ᵢ f)) ax) ax
+    lem₂ : Λ X ++ A , B , ∅ ⊢ C
+    lem₂ rewrite sym (assoc X (A , ∅) (B , ∅)) = lem₁
+
+⊗ᵢᴸ₂ : ∀ {X A B C} → Λ X ++ A ⊗ B , ∅ ⊢ C → Λ X ++ A , B , ∅ ⊢ C
+⊗ᵢᴸ₂ {X} {A} {B} f = sᴸ X (⊗ᵢᴸ₁ (sᴸ (A ⊗ B , ∅) f))
