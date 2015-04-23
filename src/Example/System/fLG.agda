@@ -51,10 +51,6 @@ tv p ((x , k) , y) = k (p x y)
 gq : ((Entity → Bool) → Bool) → (Bool → Bool → Bool) → ⟦ np ⇐ n ⟧ᵀ
 gq q _⊙_ (p₁ , p₂) = q (λ x → p₂ x ⊙ p₁ x)
 
-an : ⟦ ⟧ᵀ
-an = {!!} , {!!}
-
-
 -- * setup lexicon
 dutch : ⟦ n ⇐ n ⟧ᵀ
 dutch = im DUTCH

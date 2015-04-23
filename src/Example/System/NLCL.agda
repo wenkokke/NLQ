@@ -45,10 +45,10 @@ cheats : ⟦ dp ⇒ s ⟧ᵀ
 cheats = CHEATS
 
 teases : ⟦ (dp ⇒ s) ⇐ dp ⟧ᵀ
-teases = flip _TEASES_
+teases = flip TEASES
 
 loves : ⟦ (dp ⇒ s) ⇐ dp ⟧ᵀ
-loves = flip _LOVES_
+loves = flip LOVES
 
 thinks : ⟦ (dp ⇒ s) ⇐ s ⟧ᵀ
 thinks = flip THINKS
