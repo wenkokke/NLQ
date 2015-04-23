@@ -11,6 +11,9 @@ open import Example.System.fLG
 module Example.QuantifierRaising where
 
 
+HE_LEFT₀ : LG · np ⇚ ((np ⇒ s⁻) ⇛ s⁻) · ⊗ · np ⇒ s⁻ · ⊢[ np ⇒ s⁻ ]
+HE_LEFT₀ = ⇁ (r⇐⊗ (⇚ᴸ (d⇚⇐ (r⇛⊕ (⇀ (⇛ᴿ (⇁ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))) ax⁻))))))
+
 JOHN_LOVES_BILL₀ : LG · np · ⊗ (· (np ⇒ s⁻) ⇐ np · ⊗ · np ·) ⊢[ s⁻ ]
 JOHN_LOVES_BILL₀
   = ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))
