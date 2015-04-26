@@ -53,8 +53,14 @@ strAxioms =
   , (([] ⟶ ". B . ⊢ [ B ]") "ax⁺") { guard = atomB }
   ]
   where
-    atomA (Con JFocusL [Con (Atom _) [], _]) = True; atomA _ = False
-    atomB (Con JFocusR [_, Con (Atom _) []]) = True; atomB _ = False
+    atomA (Con JFocusL [Con (Atom _) [], _]) = True
+    atomA (Con JFocusL [Var _, _])           = True
+    atomA (Var _)                            = True
+    atomA _                                  = False
+    atomB (Con JFocusR [_, Con (Atom _) []]) = True
+    atomB (Con JFocusR [_, Var _])           = True
+    atomB (Var _)                            = True
+    atomB _                                  = False
 
 -- |Structural, polarised inference rules for axioms.
 polAxioms :: [Rule ConId Int]
@@ -63,9 +69,14 @@ polAxioms =
   , (([] ⟶ ". B . ⊢ [ B ]") "ax⁺") { guard = atomB }
   ]
   where
-    atomA (Con JFocusL [Con (Atom a) [], _]) = negAtom a; atomA _ = False
-    atomB (Con JFocusR [_, Con (Atom b) []]) = posAtom b; atomB _ = False
-
+    atomA (Con JFocusL [Con (Atom a) [], _]) = negAtom a
+    atomA (Con JFocusL [Var _, _])           = True
+    atomA (Var _)                            = True
+    atomA _                                  = False
+    atomB (Con JFocusR [_, Con (Atom b) []]) = posAtom b
+    atomB (Con JFocusR [_, Var _])           = True
+    atomB (Var _)                            = True
+    atomB _                                  = False
 
 
 -- |Structural inference rules for focusing and unfocusing.
@@ -86,10 +97,20 @@ polFocus =
   , ((["[ A ] ⊢   Y  "] ⟶ ". A . ⊢   Y  ") "↼") { guard = negA }
   ]
   where
-    posA (Con JFocusL [a, _])            = pos a; posA _ = False
-    negB (Con JFocusR [_, b])            = neg b; negB _ = False
-    negA (Con JStruct [Con Down [a], _]) = neg a; negA _ = False
-    posB (Con JStruct [_, Con Down [b]]) = pos b; posB _ = False
+    posA (Con JFocusL [a, _])            = pos a
+    posA (Var _)                         = True
+    posA _                               = False
+    negB (Con JFocusR [_, b])            = neg b
+    negB (Var _)                         = True
+    negB _                               = False
+    negA (Con JStruct [Con Down [a], _]) = neg a
+    negA (Con JStruct [Var _, _])        = True
+    negA (Var _)                         = True
+    negA _                               = False
+    posB (Con JStruct [_, Con Down [b]]) = pos b
+    posB (Con JStruct [_, Var _])        = True
+    posB (Var _)                         = True
+    posB _                               = False
 
 -- |Structural left- and right rules for island constraints.
 strIsland :: [Rule ConId Int]
@@ -219,23 +240,8 @@ algConst =
   ,  (["(A ∘ B) ⊗ C ⊢ D"]       ⟶ "A ∘ ((R ⊗ B) ⊗ C) ⊢ D") "Rₑ"
   ]
   where
-    -- prevent the endless recursive application of Iᵢ
-    noProdI (Con JForm [Con HProd [_,Con (Atom "I") []],_]) = False; noProdI _ = True
-
-
--- |Cyclic polarised rules for the classical non-associative Lambek calculus.
---cycCNL :: [Rule ConId Int]
---cycCNL =
---  [ ([]                        ⟶ "· P · ⊢[ P ⁺ ]") "ax"
---  , (["Γ , Δ ⊢ ⊥"]             ⟶ "Δ , Γ ⊢ ⊥") "dp₁"
---  , (["Γ ∙ Δ , Θ ⊢ ⊥"]         ⟶ "Γ , Δ ∙ Θ ⊢ ⊥") "dp₂"
---  , (["Γ , Δ ∙ Θ ⊢ ⊥"]         ⟶ "Γ ∙ Δ , Θ ⊢ ⊥") "dp₃"
---  , (["Γ ⊢[ N ]"]              ⟶ "Γ , · ↓ N · ⊢ ⊥") "↓ᵢ"
---  , (["Γ , · P · ⊢ ⊥"]         ⟶ "Γ ⊢[ ↑ P ]") "↑ᵢ"
---  , (["Γ ⊢[ M ]" , "Δ ⊢[ N ]"] ⟶ "Δ ∙ Γ ⊢[ M ⊕ N ]") "⊕ᵢ"
---  , (["Γ , · P · ∙ · Q · ⊢ ⊥"] ⟶ "Γ , · P ⊗ Q · ⊢ ⊥")⊗ᵢ"
---  ]
-
+    noProdI (Con JForm [Con HProd [_,Con (Atom "I") []],_]) = False
+    noProdI _                                               = True
 
 infixr 1 ⟶
 

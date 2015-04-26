@@ -13,12 +13,12 @@ import           Text.Printf (printf)
 
 import           Logic.Base
 import           Logic.Printing (Agda(..))
-import           Logic.System (System(..))
+import           Logic.System (System(..),SysInfo(..),getSysInfo)
 
 
 data Result
-  = Solved                 (Term Void) Proof
-  | Parsed String [String] (Term Void) Proof
+  = Solved                 (Term Int) Proof
+  | Parsed String [String] (Term Int) Proof
 
 
 -- |Return the Agda data type name associated with given a logical
@@ -68,21 +68,21 @@ getBaseName (Parsed s _ _ _) = map toLower (sanitise s)
     sanitise (':'    : xs) = sanitise xs
     sanitise ( c     : xs) = toUpper c : sanitise xs
 
-defaultName :: Term Void -> String
+defaultName :: (Show v) => Term v -> String
 defaultName = map repl . filter (not . isSpace) . show . Agda
   where
     repl '(' = '['
     repl ')' = ']'
     repl  c  =  c
 
-withType :: Term Void -> String -> String
+withType :: (Show v) => Term v -> String -> String
 withType = printf "id {A = ⟦ %s ⟧ᵀ} (%s)" . show . Agda
 
 agdaList :: [String] -> String
 agdaList = unwords . intersperse "\n  ∷" . (++["[]"])
 
-toAgdaDefn :: System -> Term Void -> Result -> State (Map String Int) String
-toAgdaDefn sys tgt ret = case ret of
+toAgdaDefn :: System -> Result -> State (Map String Int) String
+toAgdaDefn sys ret = case ret of
   (Solved     g p) ->
     return $ unlines
       [ baseName++" : "++dataTypeName++" "++show (Agda g)
@@ -90,7 +90,9 @@ toAgdaDefn sys tgt ret = case ret of
       , ""
       ]
   (Parsed s e g p) -> do
-    n <- next s; let subn = sub n
+    n <- next s
+    let subn = sub n
+    let tgt  = getGoalType sys g
     return . unlines $
       [ synBaseName++subn++" : "++dataTypeName++" "++show (Agda g)
       , synBaseName++subn++" \n  = "++show p
@@ -117,9 +119,17 @@ toAgdaDefn sys tgt ret = case ret of
     dataTypeName = toAgdaDataType sys
 
 
+-- TODO: this messy, it should just be passed down somehow
+getGoalType :: (Show v) => System -> Term v -> Term v
+getGoalType sys = go (sequent (getSysInfo sys))
+  where
+    go JFocusR (Con JFocusR [_,g]) = g
+    go JForm   (Con JForm   [_,g]) = g
+
+
 -- |Return a valid Agda file given a sequence of proofs.
-toAgdaFile :: String -> System -> [Result] -> Term Void -> String
-toAgdaFile moduleName sys prfs tgt =
+toAgdaFile :: String -> System -> [Result] -> String
+toAgdaFile moduleName sys prfs =
   unlines (comment ++ [importStmts, "", moduleStmt, "", proofStmts])
   where
     comment      =
@@ -136,7 +146,7 @@ toAgdaFile moduleName sys prfs tgt =
       , "open import Reflection using (Term)"
       , "open import "++toAgdaModule sys
       ]
-    proofStmts   = evalState (concat <$> mapM (toAgdaDefn sys tgt) prfs) M.empty
+    proofStmts   = evalState (concat <$> mapM (toAgdaDefn sys) prfs) M.empty
 
 
 -- |Compute the next number for this String.

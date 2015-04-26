@@ -1,14 +1,14 @@
 {-# LANGUAGE DeriveGeneric, TypeSynonymInstances, FlexibleInstances #-}
-module Logic.Base (Term,ConId(..),RuleId,Proof,nullary,unary,binary,IsVar(..),pos,neg,posAtom,negAtom,module X) where
+module Logic.Base (Term,ConId(..),Proof,nullary,unary,binary,IsVar(..),pos,neg,posAtom,negAtom,module X) where
 
 
-import           Control.DeepSeq
-import           Data.Hashable
+import           Control.DeepSeq (NFData)
+import           Data.Hashable (Hashable)
 import           Data.Void (Void,absurd)
-import           GHC.Generics
+import           GHC.Generics (Generic)
 
 import           Logic.Prover as X hiding (Term)
-import qualified Logic.Prover as Y (Term)
+import qualified Logic.Prover as Prover (Term)
 
 
 -- * Terms, Variables, Constructors
@@ -58,9 +58,8 @@ instance Hashable ConId
 instance NFData   ConId
 
 
-type Term v = Y.Term ConId v
-type RuleId = String
-type Proof  = Y.Term RuleId Void
+type Term v = Prover.Term ConId v
+type Proof  = Prover.Term RuleId Void
 
 
 -- * Utility constructors
@@ -90,56 +89,7 @@ instance IsVar String where
   forStructure n = n `elem` ["X","Y","Z","W"]
 
 
-isFormula :: (IsVar v) => Term v -> Bool
-isFormula (Var          n) = forFormula n
-isFormula (Con (Atom  _) _) = True
-isFormula (Con  FProd args) = all isFormula args
-isFormula (Con  FImpR args) = all isFormula args
-isFormula (Con  FImpL args) = all isFormula args
-isFormula (Con  FPlus args) = all isFormula args
-isFormula (Con  FSubL args) = all isFormula args
-isFormula (Con  FSubR args) = all isFormula args
-isFormula (Con  HProd args) = all isFormula args
-isFormula (Con  HImpR args) = all isFormula args
-isFormula (Con  HImpL args) = all isFormula args
-isFormula (Con  F0L   args) = all isFormula args
-isFormula (Con  F0R   args) = all isFormula args
-isFormula (Con  FBox  args) = all isFormula args
-isFormula (Con  F1L   args) = all isFormula args
-isFormula (Con  F1R   args) = all isFormula args
-isFormula (Con  FDia  args) = all isFormula args
-isFormula (Con  _     _   ) = False
-
-isStructure :: (IsVar v) => Term v -> Bool
-isStructure (Var           n) = forStructure n
-isStructure (Con  SProd args) = all isStructure args
-isStructure (Con  SImpR args) = all isStructure args
-isStructure (Con  SImpL args) = all isStructure args
-isStructure (Con  SPlus args) = all isStructure args
-isStructure (Con  SSubL args) = all isStructure args
-isStructure (Con  SSubR args) = all isStructure args
-isStructure (Con  S0L   args) = all isStructure args
-isStructure (Con  S0R   args) = all isStructure args
-isStructure (Con  SBox  args) = all isStructure args
-isStructure (Con  S1L   args) = all isStructure args
-isStructure (Con  S1R   args) = all isStructure args
-isStructure (Con  SDia  args) = all isStructure args
-isStructure (Con  Down  [fm]) = isFormula fm
-isStructure (Con  _     _   ) = False
-
-isJudgement :: (IsVar v) => Term v -> Bool
-isJudgement (Con JForm   [a,b]) = isFormula   a && isFormula   b
-isJudgement (Con JStruct [x,y]) = isStructure x && isStructure y
-isJudgement (Con JFocusL [a,y]) = isFormula   a && isStructure y
-isJudgement (Con JFocusR [x,b]) = isStructure x && isFormula   b
-isJudgement _                   = False
-
-
 -- * Polarities
-
-isAtom :: Term Void -> Bool
-isAtom (Con (Atom _) _) = True
-isAtom _                = False
 
 posAtom :: String -> Bool
 posAtom n = not (negAtom n)
@@ -147,7 +97,8 @@ posAtom n = not (negAtom n)
 negAtom :: String -> Bool
 negAtom n = let c = last n in c == '⁻' || c == '\''
 
-pos,neg :: Term Void -> Bool
+pos,neg :: Term v -> Bool
+pos (Var          _) = True
 pos (Con (Atom n) _) = posAtom n
 pos (Con  FProd   _) = True
 pos (Con  FSubL   _) = True
@@ -159,6 +110,7 @@ pos (Con  FDia    _) = True
 pos _                = False
 
 neg (Con (Atom n) _) = negAtom n
+neg (Var          _) = True
 neg (Con  FPlus   _) = True
 neg (Con  FImpR   _) = True
 neg (Con  FImpL   _) = True

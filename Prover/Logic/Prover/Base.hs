@@ -1,4 +1,4 @@
-{-# LANGUAGE GADTs, FlexibleInstances, FlexibleContexts, UndecidableInstances, DeriveGeneric #-}
+{-# LANGUAGE GADTs, RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DeriveGeneric #-}
 module Logic.Prover.Base where
 
 import Control.Monad.State (MonadState(..),evalState)
@@ -6,8 +6,8 @@ import Control.DeepSeq (NFData)
 import Data.Hashable (Hashable)
 import Data.IntMap as IM (IntMap,lookup)
 import Data.Map as M (lookup,empty,insert)
-import Data.Maybe (mapMaybe)
-import Data.Void (Void)
+import Data.Void (Void,absurd)
+import Data.Void.Unsafe (unsafeVacuous)
 import GHC.Generics
 
 
@@ -18,14 +18,20 @@ data Term c v where
   Con :: ! c -> [Term c v] -> Term c v
   deriving (Eq,Ord,Generic)
 
-maxVar :: Term c Int -> Int
-maxVar (Var i   ) = i
-maxVar (Con _ xs) =
-  let vs = map maxVar xs in if null vs then 0 else maximum vs
 
-mapVar :: (v1 -> v2) -> Term c v1 -> Term c v2
-mapVar f (Con x xs) = Con x (map (mapVar f) xs)
-mapVar f (Var i   ) = Var (f i)
+instance Functor (Term c) where
+  fmap f (Var i)    = Var (f i)
+  fmap f (Con x xs) = Con x (map (fmap f) xs)
+
+
+upperBound :: Term c Int -> Int
+upperBound (Var i   ) = i
+upperBound (Con _ xs) =
+  let vs = map upperBound xs in if null vs then 0 else maximum vs
+
+
+castVar :: Term c Void -> Term c v
+castVar = unsafeVacuous
 
 
 instance (Hashable c, Hashable v) => Hashable (Term c v)
@@ -48,7 +54,7 @@ type RuleId = String
 
 data Rule c v = Rule
   { name       :: ! RuleId
-  , guard      :: Term c Void -> Bool
+  , guard      :: forall v'. Term c v' -> Bool
   , arity      :: ! Int
   , numVars    :: ! Int
   , premises   :: ! [Term c v]
@@ -57,7 +63,7 @@ data Rule c v = Rule
 
 
 mkRule :: [Term c String] -> Term c String -> RuleId -> Rule c Int
-mkRule ps c n = Rule n (const True) (length ps) (maxVar c') ps' c'
+mkRule ps c n = Rule n (const True) (length ps) (upperBound c') ps' c'
   where
 
     (c' : ps') = evalState (mapM lbl (c : ps)) (0, M.empty)
