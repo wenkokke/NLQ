@@ -29,7 +29,7 @@ main = do
               , optLexicon = mbLexicon
               , optSystem  = sys
               , optTarget  = tgt
-              , optGoal    = g
+              , optGoal    = mbGoal
               , optDepth   = d
               } = opts
 
@@ -40,14 +40,15 @@ main = do
     handle :: Task -> IO [Result]
     handle (Solve str) = case parse judgement "" str of
       Left  m -> error (show m)
-      Right g -> return $ map (Solved g) (findAll g (getRules sys))
+      Right g -> return $ map (Solved (castVar g)) (findAll g (getRules sys))
     handle (Parse sent expr) = case mbLexicon of
-      Nothing  -> error "No lexicon file given."
-      Just lex -> return $ map (uncurry $ Parsed sent expr) (tryAll d lex sys sent g)
+      Just lex -> return (map (uncurry $ Parsed sent expr) (tryAll d lex sys sent mbGoal))
+      _        -> error "No lexicon file given."
+
 
   proofs <- concat <$> mapM handle tasks
 
-  let agdaFile modName = toAgdaFile modName sys proofs g
+  let agdaFile modName = toAgdaFile modName sys proofs
 
   case tgt of
     StdOut             -> mapM_ printResult proofs
@@ -90,18 +91,21 @@ data Task
   = Solve String
   | Parse String [String]
 
+
 data Target
   = StdOut
   | AgdaFile (Maybe FilePath)
+
 
 data Options = Options
   { optTasks      :: [Task]
   , optLexicon    :: Maybe (Map String (Term ConId Void))
   , optSystem     :: System
   , optTarget     :: Target
-  , optGoal       :: Term ConId Void
+  , optGoal       :: Maybe (Term ConId Void)
   , optDepth      :: Int
   }
+
 
 defaultOptions :: Options
 defaultOptions    = Options
@@ -109,9 +113,10 @@ defaultOptions    = Options
   , optLexicon    = Nothing
   , optSystem     = POLNL
   , optTarget     = StdOut
-  , optGoal       = Con (Atom "s⁻") []
+  , optGoal       = Nothing
   , optDepth      = 5
   }
+
 
 options :: [ OptDescr (Options -> IO Options) ]
 options =
@@ -136,7 +141,7 @@ options =
     "Logical system (see below)."
 
   , Option "g" ["goal"]
-    (ReqArg (\arg opt -> do g <- parseGoal arg; return opt { optGoal = g }) "GOAL_FORMULA")
+    (ReqArg (\arg opt -> do g <- parseGoal arg; return opt { optGoal = Just g }) "GOAL_FORMULA")
     "Goal formula (n, np, s⁻, etc)."
 
   , Option [] ["to-agda"]
