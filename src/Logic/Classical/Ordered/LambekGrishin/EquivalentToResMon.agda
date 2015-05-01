@@ -189,26 +189,37 @@ trans′ f g = inflate (from↑ (AT.trans′ (to f) (to g)))
 -- invertable structural rules, which reintroduce structures.
 ◇ᴸ′ : ∀ {Y A} → Str · ◇ A · ⊢ Y → Str ⟨ · A · ⟩ ⊢ Y
 ◇ᴸ′ f = trans′ (◇ᴿ ax⁺) (↽ f)
+
 □ᴿ′ : ∀ {X A} → Str X ⊢ · □ A · → Str X ⊢ [ · A · ]
 □ᴿ′ f = trans′ (⇁ f) (□ᴸ ax⁻)
+
 ₀ᴿ′ : ∀ {X A} → Str X ⊢ · ₀ A · → Str X ⊢ ₀ · A ·
 ₀ᴿ′ f = trans′ (⇁ f) (₀ᴸ ax⁺)
+
 ⁰ᴿ′ : ∀ {X A} → Str X ⊢ · A ⁰ · → Str X ⊢ · A · ⁰
 ⁰ᴿ′ f = trans′ (⇁ f) (⁰ᴸ ax⁺)
+
 ₁ᴸ′ : ∀ {Y A} → Str · ₁ A · ⊢ Y → Str ₁ · A · ⊢ Y
 ₁ᴸ′ f = trans′ (₁ᴿ ax⁻) (↽ f)
+
 ¹ᴸ′ : ∀ {Y A} → Str · A ¹ · ⊢ Y → Str · A · ¹ ⊢ Y
 ¹ᴸ′ f = trans′ (¹ᴿ ax⁻) (↽ f)
+
 ⊗ᴸ′ : ∀ {Y A B} → Str · A ⊗ B · ⊢ Y → Str · A · ⊗ · B · ⊢ Y
 ⊗ᴸ′ f = trans′ (⊗ᴿ ax⁺ ax⁺) (↽ f)
+
 ⇒ᴿ′ : ∀ {X A B} → Str X ⊢ · A ⇒ B · → Str X ⊢ · A · ⇒ · B ·
 ⇒ᴿ′ f = trans′ (⇁ f) (⇒ᴸ ax⁺ ax⁻)
+
 ⇐ᴿ′ : ∀ {X A B} → Str X ⊢ · B ⇐ A · → Str X ⊢ · B · ⇐ · A ·
 ⇐ᴿ′ f = trans′ (⇁ f) (⇐ᴸ ax⁺ ax⁻)
+
 ⊕ᴿ′ : ∀ {X A B} → Str X ⊢ · B ⊕ A · → Str X ⊢ · B · ⊕ · A ·
 ⊕ᴿ′ f = trans′ (⇁ f) (⊕ᴸ ax⁻ ax⁻)
+
 ⇚ᴸ′ : ∀ {X A B} → Str · A ⇚ B · ⊢ X → Str · A · ⇚ · B · ⊢ X
 ⇚ᴸ′ f = trans′ (⇚ᴿ ax⁺ ax⁻) (↽ f)
+
 ⇛ᴸ′ : ∀ {X A B} → Str · B ⇛ A · ⊢ X → Str · B · ⇛ · A · ⊢ X
 ⇛ᴸ′ f = trans′ (⇛ᴿ ax⁺ ax⁻) (↽ f)
 
@@ -218,38 +229,55 @@ trans′ f g = inflate (from↑ (AT.trans′ (to f) (to g)))
 -- rules--i.e. those which work on elementary structures.
 r□◇′ : ∀ {A B} → Str · A · ⊢ · □ B · → Str · ◇ A · ⊢ · B ·
 r□◇′ f = ◇ᴸ (r□◇ (□ᴿ′ f))
+
 r◇□′ : ∀ {A B} → Str · ◇ A · ⊢ · B · → Str · A · ⊢ · □ B ·
 r◇□′ f = □ᴿ (r◇□ (◇ᴸ′ f))
+
 r⁰₀′ : ∀ {A B} → Str · A · ⊢ · B ⁰ · → Str · B · ⊢ · ₀ A ·
 r⁰₀′ f = ₀ᴿ (r⁰₀ (⁰ᴿ′ f))
+
 r₀⁰′ : ∀ {A B} → Str · B · ⊢ · ₀ A · → Str · A · ⊢ · B ⁰ ·
 r₀⁰′ f = ⁰ᴿ (r₀⁰ (₀ᴿ′ f))
+
 r¹₁′ : ∀ {A B} → Str · A ¹ · ⊢ · B · → Str · ₁ B · ⊢ · A ·
 r¹₁′ f = ₁ᴸ (r¹₁ (¹ᴸ′ f))
+
 r₁¹′ : ∀ {A B} → Str · ₁ B · ⊢ · A · → Str · A ¹ · ⊢ · B ·
 r₁¹′ f = ¹ᴸ (r₁¹ (₁ᴸ′ f))
+
 r⇒⊗′ : ∀ {A B C} → Str · B · ⊢ · A ⇒ C · → Str · A ⊗ B · ⊢ · C ·
 r⇒⊗′ f = ⊗ᴸ (r⇒⊗ (⇒ᴿ′ f))
+
 r⊗⇒′ : ∀ {A B C} → Str · A ⊗ B · ⊢ · C · → Str · B · ⊢ · A ⇒ C ·
 r⊗⇒′ f = ⇒ᴿ (r⊗⇒ (⊗ᴸ′ f))
+
 r⇐⊗′ : ∀ {A B C} → Str · A · ⊢ · C ⇐ B · → Str · A ⊗ B · ⊢ · C ·
 r⇐⊗′ f = ⊗ᴸ (r⇐⊗ (⇐ᴿ′ f))
+
 r⊗⇐′ : ∀ {A B C} → Str · A ⊗ B · ⊢ · C · → Str · A · ⊢ · C ⇐ B ·
 r⊗⇐′ f = ⇐ᴿ (r⊗⇐ (⊗ᴸ′ f))
+
 r⇚⊕′ : ∀ {A B C} → Str · C ⇚ A · ⊢ · B · → Str · C · ⊢ · B ⊕ A ·
 r⇚⊕′ f = ⊕ᴿ (r⇚⊕ (⇚ᴸ′ f))
+
 r⊕⇚′ : ∀ {A B C} → Str · C · ⊢ · B ⊕ A · → Str · C ⇚ A · ⊢ · B ·
 r⊕⇚′ f = ⇚ᴸ (r⊕⇚ (⊕ᴿ′ f))
+
 r⇛⊕′ : ∀ {A B C} → Str · B ⇛ C · ⊢ · A · → Str · C · ⊢ · B ⊕ A ·
 r⇛⊕′ f = ⊕ᴿ (r⇛⊕ (⇛ᴸ′ f))
+
 r⊕⇛′ : ∀ {A B C} → Str · C · ⊢ · B ⊕ A · → Str · B ⇛ C · ⊢ · A ·
 r⊕⇛′ f = ⇛ᴸ (r⊕⇛ (⊕ᴿ′ f))
+
 d⇛⇐′ : ∀ {A B C D} → Str · A ⊗ B · ⊢ · C ⊕ D · → Str · C ⇛ A · ⊢ · D ⇐ B ·
 d⇛⇐′ f = ⇐ᴿ (⇛ᴸ (d⇛⇐ (⊗ᴸ′ (⊕ᴿ′ f))))
+
 d⇛⇒′ : ∀ {A B C D} → Str · A ⊗ B · ⊢ · C ⊕ D · → Str · C ⇛ B · ⊢ · A ⇒ D ·
 d⇛⇒′ f = ⇒ᴿ (⇛ᴸ (d⇛⇒ (⊗ᴸ′ (⊕ᴿ′ f))))
+
 d⇚⇒′ : ∀ {A B C D} → Str · A ⊗ B · ⊢ · C ⊕ D · → Str · B ⇚ D · ⊢ · A ⇒ C ·
 d⇚⇒′ f = ⇒ᴿ (⇚ᴸ (d⇚⇒ (⊗ᴸ′ (⊕ᴿ′ f))))
+
 d⇚⇐′ : ∀ {A B C D} → Str · A ⊗ B · ⊢ · C ⊕ D · → Str · A ⇚ D · ⊢ · C ⇐ B ·
 d⇚⇐′ f = ⇐ᴿ (⇚ᴸ (d⇚⇐ (⊗ᴸ′ (⊕ᴿ′ f))))
 

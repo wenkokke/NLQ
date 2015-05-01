@@ -7,6 +7,7 @@ open import Function                              using (id; const)
 open import Data.Bool                             using (Bool; true; false; not; _∧_; _∨_)
 open import Data.List                             using (List; _∷_; []; map; foldr)
 open import Data.Product                          using (_×_; proj₁; _,_)
+open import Data.String                           using (String)
 open import Relation.Nullary                      using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
@@ -20,12 +21,19 @@ open import Example.System.Base public
 -- * import focused Lambek-Grishin calculus
 open import Logic.Translation
 open import Logic.Polarity public
+open import Logic.Polarity.ToLaTeX Univ using (PolarisedUnivToLaTeX) public
+open import Logic.ToLaTeX using (module ToLaTeX)
 open import Logic.Classical.Ordered.LambekGrishin.FocPol Univ public
+open import Logic.Classical.Ordered.LambekGrishin.FocPol.ToLaTeX Univ public
 open import Logic.Classical.Ordered.LambekGrishin.FocPol.ToIntuitionisticLinearLambda Univ S using (LG→LL)
 open import Logic.Intuitionistic.Linear.Lambda.ToUnrestricted Univ using (LL→Λ)
 open import Logic.Intuitionistic.Unrestricted.Lambda.ToAgda Univ ⟦_⟧ᵁ using (Λ→ΛΠ)
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment public
 open Translation (Λ→ΛΠ ◇ LL→Λ ◇ LG→LL) public renaming ([_] to [_]ᵀ)
+
+toLaTeX : ∀ {J} (f : LG J) → String
+toLaTeX {J} = ToLaTeX.toLaTeX (PolarisedLambekGrishinToLaTeX {J} {{UnivToLaTeX}})
+
 
 
 -- * create aliases for polarised types

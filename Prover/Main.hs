@@ -28,8 +28,8 @@ main = do
   let Options { optTasks   = tasks
               , optLexicon = mbLexicon
               , optSystem  = sys
-              , optTarget  = tgt
-              , optGoal    = mbGoal
+              , optOutput  = out
+              , optGoal    = g
               , optDepth   = d
               } = opts
 
@@ -42,15 +42,14 @@ main = do
       Left  m -> error (show m)
       Right g -> return $ map (Solved (castVar g)) (findAll g (getRules sys))
     handle (Parse sent expr) = case mbLexicon of
-      Just lex -> return (map (uncurry $ Parsed sent expr) (tryAll d lex sys sent mbGoal))
+      Just lex -> return (map (uncurry $ Parsed sent expr) (tryAll d lex sys sent g))
       _        -> error "No lexicon file given."
-
 
   proofs <- concat <$> mapM handle tasks
 
-  let agdaFile modName = toAgdaFile modName sys proofs
+  let agdaFile modName = toAgdaFile modName sys proofs g
 
-  case tgt of
+  case out of
     StdOut             -> mapM_ printResult proofs
     AgdaFile  Nothing  -> putStr (agdaFile "Main")
     AgdaFile (Just fn) -> do checkFile fn; writeFile fn (agdaFile (takeBaseName fn))
@@ -92,7 +91,7 @@ data Task
   | Parse String [String]
 
 
-data Target
+data Output
   = StdOut
   | AgdaFile (Maybe FilePath)
 
@@ -101,8 +100,8 @@ data Options = Options
   { optTasks      :: [Task]
   , optLexicon    :: Maybe (Map String (Term ConId Void))
   , optSystem     :: System
-  , optTarget     :: Target
-  , optGoal       :: Maybe (Term ConId Void)
+  , optOutput     :: Output
+  , optGoal       :: Term ConId Void
   , optDepth      :: Int
   }
 
@@ -112,8 +111,8 @@ defaultOptions    = Options
   { optTasks      = []
   , optLexicon    = Nothing
   , optSystem     = POLNL
-  , optTarget     = StdOut
-  , optGoal       = Nothing
+  , optOutput     = StdOut
+  , optGoal       = Con (Atom "s⁻") []
   , optDepth      = 5
   }
 
@@ -141,11 +140,11 @@ options =
     "Logical system (see below)."
 
   , Option "g" ["goal"]
-    (ReqArg (\arg opt -> do g <- parseGoal arg; return opt { optGoal = Just g }) "GOAL_FORMULA")
+    (ReqArg (\arg opt -> do g <- parseGoal arg; return opt { optGoal = g }) "GOAL_FORMULA")
     "Goal formula (n, np, s⁻, etc)."
 
   , Option [] ["to-agda"]
-    (OptArg (\arg opt -> return opt { optTarget = AgdaFile arg }) "AGDA_FILE")
+    (OptArg (\arg opt -> return opt { optOutput = AgdaFile arg }) "AGDA_FILE")
     "Produce an Agda module, and write it to the given file (or stdout)."
 
   , Option "d" ["depth"]

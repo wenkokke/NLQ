@@ -31,65 +31,65 @@ data LG_ : Judgement → Set ℓ where
 
   -- axioms
   ax⁺ : ∀ {A}       → LG · A · ⊢[ A ]
-  ax⁻ : ∀ {A}       → LG [ A ]⊢ · A ·
+  ax⁻ : ∀ {B}       → LG [ B ]⊢ · B ·
 
   -- (de)focus right and left
-  ⇁   : ∀ {X A}     → LG X ⊢ · A · → LG X ⊢[ A ]
-  ↽   : ∀ {X A}     → LG · A · ⊢ X → LG [ A ]⊢ X
-  ⇀   : ∀ {X A}     → LG X ⊢[ A ] → LG X ⊢ · A ·
-  ↼   : ∀ {X A}     → LG [ A ]⊢ X → LG · A · ⊢ X
+  ⇁   : ∀ {X B}     → LG X ⊢ · B · → LG X ⊢[ B ]
+  ↽   : ∀ {A Y}     → LG · A · ⊢ Y → LG [ A ]⊢ Y
+  ⇀   : ∀ {X B}     → LG X ⊢[ B ] → LG X ⊢ · B ·
+  ↼   : ∀ {A Y}     → LG [ A ]⊢ Y → LG · A · ⊢ Y
 
   -- rules for (□ , ◇)
-  ◇ᴸ  : ∀ {Y A}     → LG ⟨ · A · ⟩ ⊢ Y → LG · ◇ A · ⊢ Y
+  ◇ᴸ  : ∀ {A Y}     → LG ⟨ · A · ⟩ ⊢ Y → LG · ◇ A · ⊢ Y
   ◇ᴿ  : ∀ {X B}     → LG X ⊢[ B ] → LG ⟨ X ⟩ ⊢[ ◇ B ]
   □ᴸ  : ∀ {A Y}     → LG [ A ]⊢ Y → LG [ □ A ]⊢ [ Y ]
-  □ᴿ  : ∀ {X A}     → LG X ⊢ [ · A · ] → LG X ⊢ · □ A ·
+  □ᴿ  : ∀ {X B}     → LG X ⊢ [ · B · ] → LG X ⊢ · □ B ·
   r□◇ : ∀ {X Y}     → LG X ⊢ [ Y ] → LG ⟨ X ⟩ ⊢ Y
   r◇□ : ∀ {X Y}     → LG ⟨ X ⟩ ⊢ Y → LG X ⊢ [ Y ]
 
   --  rules for (₀ , ⁰ , ₁ , ¹)
-  ₀ᴸ  : ∀ {X A}     → LG X ⊢[ A ] → LG [ ₀ A ]⊢ ₀ X
-  ₀ᴿ  : ∀ {X A}     → LG X ⊢ ₀ · A · → LG X ⊢ · ₀ A ·
-  ⁰ᴸ  : ∀ {X A}     → LG X ⊢[ A ] → LG [ A ⁰ ]⊢ X ⁰
-  ⁰ᴿ  : ∀ {X A}     → LG X ⊢ · A · ⁰ → LG X ⊢ · A ⁰ ·
-  ₁ᴸ  : ∀ {Y A}     → LG ₁ · A · ⊢ Y → LG · ₁ A · ⊢ Y
-  ₁ᴿ  : ∀ {Y A}     → LG [ A ]⊢ Y → LG ₁ Y ⊢[ ₁ A ]
-  ¹ᴸ  : ∀ {Y A}     → LG · A · ¹ ⊢ Y → LG · A ¹ · ⊢ Y
-  ¹ᴿ  : ∀ {Y A}     → LG [ A ]⊢ Y → LG Y ¹ ⊢[ A ¹ ]
-  r⁰₀ : ∀ {X Y}     → LG X ⊢ Y ⁰ → LG Y ⊢ ₀ X
+  ₀ᴸ  : ∀ {A Y}     → LG Y ⊢[ A ] → LG [ ₀ A ]⊢ ₀ Y
+  ₀ᴿ  : ∀ {X B}     → LG X ⊢ ₀ · B · → LG X ⊢ · ₀ B ·
+  ⁰ᴸ  : ∀ {A Y}     → LG Y ⊢[ A ] → LG [ A ⁰ ]⊢ Y ⁰
+  ⁰ᴿ  : ∀ {X B}     → LG X ⊢ · B · ⁰ → LG X ⊢ · B ⁰ ·
+  ₁ᴸ  : ∀ {A Y}     → LG ₁ · A · ⊢ Y → LG · ₁ A · ⊢ Y
+  ₁ᴿ  : ∀ {X B}     → LG [ B ]⊢ X → LG ₁ X ⊢[ ₁ B ]
+  ¹ᴸ  : ∀ {A Y}     → LG · A · ¹ ⊢ Y → LG · A ¹ · ⊢ Y
+  ¹ᴿ  : ∀ {X B}     → LG [ B ]⊢ X → LG X ¹ ⊢[ B ¹ ]
+  r⁰₀ : ∀ {X Y}     → LG Y ⊢ X ⁰ → LG X ⊢ ₀ Y
   r₀⁰ : ∀ {X Y}     → LG Y ⊢ ₀ X → LG X ⊢ Y ⁰
-  r¹₁ : ∀ {X Y}     → LG X ¹ ⊢ Y → LG ₁ Y ⊢ X
+  r¹₁ : ∀ {X Y}     → LG Y ¹ ⊢ X → LG ₁ X ⊢ Y
   r₁¹ : ∀ {X Y}     → LG ₁ Y ⊢ X → LG X ¹ ⊢ Y
 
   -- rules for (⇐ , ⊗ , ⇒)
-  ⊗ᴸ  : ∀ {Y A B}   → LG · A · ⊗ · B · ⊢ Y → LG · A ⊗ B · ⊢ Y
+  ⊗ᴸ  : ∀ {A B Y}   → LG · A · ⊗ · B · ⊢ Y → LG · A ⊗ B · ⊢ Y
   ⊗ᴿ  : ∀ {X Y A B} → LG X ⊢[ A ] → LG Y ⊢[ B ] → LG X ⊗ Y ⊢[ A ⊗ B ]
-  ⇒ᴸ  : ∀ {X Y A B} → LG X ⊢[ A ] → LG [ B ]⊢ Y → LG [ A ⇒ B ]⊢ X ⇒ Y
+  ⇒ᴸ  : ∀ {A B X Y} → LG X ⊢[ A ] → LG [ B ]⊢ Y → LG [ A ⇒ B ]⊢ X ⇒ Y
   ⇒ᴿ  : ∀ {X A B}   → LG X ⊢ · A · ⇒ · B · → LG X ⊢ · A ⇒ B ·
-  ⇐ᴸ  : ∀ {X Y A B} → LG X ⊢[ A ] → LG [ B ]⊢ Y → LG [ B ⇐ A ]⊢ Y ⇐ X
-  ⇐ᴿ  : ∀ {X A B}   → LG X ⊢ · B · ⇐ · A · → LG X ⊢ · B ⇐ A ·
+  ⇐ᴸ  : ∀ {B A Y X} → LG X ⊢[ A ] → LG [ B ]⊢ Y → LG [ B ⇐ A ]⊢ Y ⇐ X
+  ⇐ᴿ  : ∀ {X B A}   → LG X ⊢ · B · ⇐ · A · → LG X ⊢ · B ⇐ A ·
   r⇒⊗ : ∀ {X Y Z}   → LG Y ⊢ X ⇒ Z → LG X ⊗ Y ⊢ Z
-  r⊗⇒ : ∀ {X Y Z}   → LG X ⊗ Y ⊢ Z → LG Y ⊢ X ⇒ Z
+  r⊗⇒ : ∀ {Y X Z}   → LG X ⊗ Y ⊢ Z → LG Y ⊢ X ⇒ Z
   r⇐⊗ : ∀ {X Y Z}   → LG X ⊢ Z ⇐ Y → LG X ⊗ Y ⊢ Z
-  r⊗⇐ : ∀ {X Y Z}   → LG X ⊗ Y ⊢ Z → LG X ⊢ Z ⇐ Y
+  r⊗⇐ : ∀ {X Z Y}   → LG X ⊗ Y ⊢ Z → LG X ⊢ Z ⇐ Y
 
   -- rules for (⇚ , ⊕ , ⇛)
-  ⊕ᴸ  : ∀ {X Y A B} → LG [ B ]⊢ Y → LG [ A ]⊢ X → LG [ B ⊕ A ]⊢ Y ⊕ X
-  ⊕ᴿ  : ∀ {X A B}   → LG X ⊢ · B · ⊕ · A · → LG X ⊢ · B ⊕ A ·
-  ⇚ᴸ  : ∀ {X A B}   → LG · A · ⇚ · B · ⊢ X → LG · A ⇚ B · ⊢ X
+  ⊕ᴸ  : ∀ {B A Y X} → LG [ B ]⊢ Y → LG [ A ]⊢ X → LG [ B ⊕ A ]⊢ Y ⊕ X
+  ⊕ᴿ  : ∀ {X B A}   → LG X ⊢ · B · ⊕ · A · → LG X ⊢ · B ⊕ A ·
+  ⇚ᴸ  : ∀ {A B X}   → LG · A · ⇚ · B · ⊢ X → LG · A ⇚ B · ⊢ X
   ⇚ᴿ  : ∀ {X Y A B} → LG X ⊢[ A ] → LG [ B ]⊢ Y → LG X ⇚ Y ⊢[ A ⇚ B ]
-  ⇛ᴸ  : ∀ {X A B}   → LG · B · ⇛ · A · ⊢ X → LG · B ⇛ A · ⊢ X
-  ⇛ᴿ  : ∀ {X Y A B} → LG X ⊢[ A ] → LG [ B ]⊢ Y → LG Y ⇛ X ⊢[ B ⇛ A ]
-  r⇚⊕ : ∀ {X Y Z}   → LG Z ⇚ X ⊢ Y → LG Z ⊢ Y ⊕ X
-  r⊕⇚ : ∀ {X Y Z}   → LG Z ⊢ Y ⊕ X → LG Z ⇚ X ⊢ Y
-  r⇛⊕ : ∀ {X Y Z}   → LG Y ⇛ Z ⊢ X → LG Z ⊢ Y ⊕ X
-  r⊕⇛ : ∀ {X Y Z}   → LG Z ⊢ Y ⊕ X → LG Y ⇛ Z ⊢ X
+  ⇛ᴸ  : ∀ {B A X}   → LG · B · ⇛ · A · ⊢ X → LG · B ⇛ A · ⊢ X
+  ⇛ᴿ  : ∀ {Y X B A} → LG X ⊢[ A ] → LG [ B ]⊢ Y → LG Y ⇛ X ⊢[ B ⇛ A ]
+  r⇚⊕ : ∀ {Z Y X}   → LG Z ⇚ X ⊢ Y → LG Z ⊢ Y ⊕ X
+  r⊕⇚ : ∀ {Z X Y}   → LG Z ⊢ Y ⊕ X → LG Z ⇚ X ⊢ Y
+  r⇛⊕ : ∀ {Z Y X}   → LG Y ⇛ Z ⊢ X → LG Z ⊢ Y ⊕ X
+  r⊕⇛ : ∀ {Y Z X}   → LG Z ⊢ Y ⊕ X → LG Y ⇛ Z ⊢ X
 
   -- grishin interaction principes
-  d⇛⇐ : ∀ {X Y Z W} → LG X ⊗ Y ⊢ Z ⊕ W → LG Z ⇛ X ⊢ W ⇐ Y
-  d⇛⇒ : ∀ {X Y Z W} → LG X ⊗ Y ⊢ Z ⊕ W → LG Z ⇛ Y ⊢ X ⇒ W
-  d⇚⇒ : ∀ {X Y Z W} → LG X ⊗ Y ⊢ Z ⊕ W → LG Y ⇚ W ⊢ X ⇒ Z
-  d⇚⇐ : ∀ {X Y Z W} → LG X ⊗ Y ⊢ Z ⊕ W → LG X ⇚ W ⊢ Z ⇐ Y
+  d⇛⇐ : ∀ {Z X W Y} → LG X ⊗ Y ⊢ Z ⊕ W → LG Z ⇛ X ⊢ W ⇐ Y
+  d⇛⇒ : ∀ {Z Y X W} → LG X ⊗ Y ⊢ Z ⊕ W → LG Z ⇛ Y ⊢ X ⇒ W
+  d⇚⇒ : ∀ {Y W X Z} → LG X ⊗ Y ⊢ Z ⊕ W → LG Y ⇚ W ⊢ X ⇒ Z
+  d⇚⇐ : ∀ {X W Z Y} → LG X ⊗ Y ⊢ Z ⊕ W → LG X ⇚ W ⊢ Z ⇐ Y
 
 
 

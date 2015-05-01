@@ -7,7 +7,7 @@
 
 \title{Formalising type-logical grammars in Agda}%
 \author{Pepijn Kokke}%
-\institute{Utrecht University}%
+\institute{Utrecht University}%1
 \maketitle
 
 \begin{abstract}

@@ -17,12 +17,10 @@ import           Development.Shake hiding ((*>))
 import           Development.Shake.FilePath
 import           System.IO (hSetEncoding,hGetContents,utf8,IOMode(..),openFile)
 
-
-srcDir, stdlib, catlib, prover :: FilePath
+srcDir, stdlib, catlib :: FilePath
 srcDir = "src"
 stdlib = "/Users/pepijn/Projects/agda-stdlib/src"
 catlib = "/Users/pepijn/Projects/Categories"
-prover = "prover"
 
 
 -------------------------------------------------------------------------------
@@ -30,12 +28,23 @@ prover = "prover"
 -------------------------------------------------------------------------------
 
 data Mapping =
-     Mapping { name        :: String
-             , blacklist   :: [Text]
-             , textMapping :: [(Text, Text)]
-             , include     :: [FilePattern]
-             , exclude     :: [FilePattern]
+     Mapping { name           :: String
+             , blacklistChar  :: [Text]
+             , blacklistToken :: [Text]
+             , textMapping    :: [(Text, Text)]
+             , include        :: [FilePattern]
+             , exclude        :: [FilePattern]
              }
+
+mkMapping :: String -> Mapping
+mkMapping name = Mapping
+  { name           = name
+  , blacklistChar  = []
+  , blacklistToken = []
+  , textMapping    = []
+  , include        = []
+  , exclude        = []
+  }
 
 -------------------------------------------------------------------------------
 -- Makefile
@@ -129,144 +138,146 @@ format = unlines . concatMap fmt
 --------------------------------------------------------------------------------
 
 lambdaCMinus :: Mapping
-lambdaCMinus = Mapping{..}
-  where
-    name        = "Lambda C-Minus Calculus"
-    blacklist   = ["⇛"  , "⇐"  , "□"  , "◇"
-                  ," ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
-                  ,"⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
-                  ," ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
-                  ,"¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" , "<¹"
-                  ,"⋈"  , "∞"
-                  ]
-    textMapping = ["Ordered"       ==> "Unrestricted"
-                  ,"Structure"     ==> "List Type"
-                  ,"LambekGrishin" ==> "LambdaCMinus"
-                  ]
-    include     = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Complexity.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Context.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Context/Polarised.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Polarised.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Subtype.agda"
-                  ]
-    exclude      = []
+lambdaCMinus =
+  (mkMapping "Lambda C-Minus Calculus")
+  { blacklistChar  = ["⇛"  , "⇐"  , "□"  , "◇" , "⋈"  , "∞"
+                     ]
+  , blacklistToken = ["₀", "₀_", "r₀⁰" , "m₀" , "₀>", "₀>_" , "₀ᴸ" , "₀ᴿ" , "₀-injective"
+                     ,"⁰", "_⁰", "r⁰₀" , "m⁰" , "<⁰", "_<⁰" , "⁰ᴸ" , "⁰ᴿ" , "⁰-injective"
+                     ,"₁", "₁_", "r₁¹" , "m₁" , "₁>", "₁>_" , "₁ᴸ" , "₁ᴿ" , "₁-injective"
+                     ,"¹", "_¹", "r¹₁" , "m¹" , "<¹", "_<¹" , "¹ᴸ" , "¹ᴿ" , "¹-injective"
+                     ]
+  , textMapping    = ["Ordered"       ==> "Unrestricted"
+                     ,"Structure"     ==> "List Type"
+                     ,"LambekGrishin" ==> "LambdaCMinus"
+                     ]
+  , include        = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/Type/Complexity.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/Type/Context.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/Type/Context/Polarised.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/Type/Polarised.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/Type/Subtype.agda"
+                     ]
+  }
 
 --------------------------------------------------------------------------------
 -- Make: Non-associative Lambek Calculus
 --------------------------------------------------------------------------------
 
 nonAssociativeLambek :: Mapping
-nonAssociativeLambek = Mapping{..}
-  where
-    name        = "Non-associative Lambek Calculus"
-    blacklist   = ["⊕"  , "⇛"  , "⇚"  , "□"   , "◇"
-                  ," ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
-                  ,"⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
-                  ," ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
-                  ,"¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" , "<¹"
-                  ,"⁰ᴸ" , "⁰ᴿ" , "¹ᴸ" , "¹ᴿ"
-                  ,"∞"
-                  ,"d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐"
-                  ]
-    textMapping = ["LambekGrishin" ==> "Lambek"
-                  ,"LG"            ==> "NL"
-                  ,"Classical"     ==> "Intuitionistic"
-                  ]
-    include     = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/ResMon//*.agda"
-                  ]
-    exclude     = ["//ToIntuitionisticLinearLambda.agda"]
+nonAssociativeLambek =
+  (mkMapping "Non-associative Lambek Calculus")
+  { blacklistChar  = ["⊕" , "⇛" , "⇚" , "□" , "◇" , "∞"
+                     ]
+  , blacklistToken = ["₀", "₀_", "r₀⁰" , "m₀" , "₀>", "₀>_" , "₀ᴸ" , "₀ᴿ" , "₀-injective"
+                     ,"⁰", "_⁰", "r⁰₀" , "m⁰" , "<⁰", "_<⁰" , "⁰ᴸ" , "⁰ᴿ" , "⁰-injective"
+                     ,"₁", "₁_", "r₁¹" , "m₁" , "₁>", "₁>_" , "₁ᴸ" , "₁ᴿ" , "₁-injective"
+                     ,"¹", "_¹", "r¹₁" , "m¹" , "<¹", "_<¹" , "¹ᴸ" , "¹ᴿ" , "¹-injective"
+                     ]
+  , textMapping    = ["LambekGrishin" ==> "Lambek"
+                     ,"LG"            ==> "NL"
+                     ,"Classical"     ==> "Intuitionistic"
+                     ]
+  , include        = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/ResMon//*.agda"
+                     ]
+  , exclude        = ["//ToIntuitionisticLinearLambda.agda"
+                     ]
+  }
 
 --------------------------------------------------------------------------------
 -- Make: Non-associative Lambek Calculus
 --------------------------------------------------------------------------------
 
 classicalNonAssociativeLambek :: Mapping
-classicalNonAssociativeLambek = Mapping{..}
-  where
-    name        = "Classical Non-associative Lambek Calculus"
-    blacklist   = ["d⇛⇐", "d⇛⇒", "d⇚⇒", "d⇚⇐"
-                  ]
-    textMapping = ["LambekGrishin" ==> "Lambek"
-                  ,"LG"            ==> "CNL"
-                  ]
-    include     = ["Logic/Classical/Ordered/LambekGrishin//*.agda"]
-    exclude     = ["//ToIntuitionisticLinearLambda.agda"]
+classicalNonAssociativeLambek =
+  (mkMapping "Classical Non-associative Lambek Calculus")
+  { blacklistToken = ["d⇛⇐" , "d⇛⇒" , "d⇚⇒" , "d⇚⇐"
+                     ,"d⇛⇐′", "d⇛⇒′", "d⇚⇒′", "d⇚⇐′"
+                     ]
+  , textMapping    = ["LambekGrishin" ==> "Lambek"
+                     ,"LG"            ==> "CNL"
+                     ]
+  , include        = ["Logic/Classical/Ordered/LambekGrishin//*.agda"
+                     ]
+  , exclude        = ["//ToIntuitionisticLinearLambda.agda"
+                     ]
+  }
+
 
 --------------------------------------------------------------------------------
 -- Make: Experimental Extended Lambek
 --------------------------------------------------------------------------------
 
 experimentalExtendedLambek :: Mapping
-experimentalExtendedLambek = Mapping{..}
-  where
-    name        = "Classical Non-associative Lambek Calculus"
-    blacklist   = ["r□◇" , "r◇□"
-                  ," ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
-                  ,"⁰ " , "⁰}" , "(⁰" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
-                  ," ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
-                  ,"¹ " , "¹}" , "(¹" , "¹)" , "r¹₁" , "m¹" , "<¹"
-                  ]
-    textMapping = ["LambekGrishin" ==> "Experimental"
-                  ,"LG"            ==> "EXP"
-                  ]
-    include     = ["Logic/Classical/Ordered/LambekGrishin//*.agda"
-                  ]
-    exclude     = ["//ToIntuitionisticLinearLambda.agda"
-                  ,"//Trans.agda"
-                  ,"//FocPol.agda"
-                  ,"//FocPol//*.agda"
-                  ,"//EquivalentToFocPol.agda"
-                  ,"//EquivalentToResMon.agda"
-                  ]
+experimentalExtendedLambek =
+  (mkMapping "Classical Non-associative Lambek Calculus")
+  { blacklistToken = ["r□◇" , "r◇□"
+                     ,"₀", "₀_", "r₀⁰" , "m₀" , "₀>", "₀>_" , "₀ᴸ" , "₀ᴿ" , "₀-injective"
+                     ,"⁰", "_⁰", "r⁰₀" , "m⁰" , "<⁰", "_<⁰" , "⁰ᴸ" , "⁰ᴿ" , "⁰-injective"
+                     ,"₁", "₁_", "r₁¹" , "m₁" , "₁>", "₁>_" , "₁ᴸ" , "₁ᴿ" , "₁-injective"
+                     ,"¹", "_¹", "r¹₁" , "m¹" , "<¹", "_<¹" , "¹ᴸ" , "¹ᴿ" , "¹-injective"
+                     ]
+  , textMapping    = ["LambekGrishin" ==> "Experimental"
+                     ,"LG"            ==> "EXP"
+                     ]
+  , include        = ["Logic/Classical/Ordered/LambekGrishin//*.agda"
+                     ]
+  , exclude        = ["//ToIntuitionisticLinearLambda.agda"
+                     ,"//Trans.agda"
+                     ,"//FocPol.agda"
+                     ,"//FocPol//*.agda"
+                     ,"//EquivalentToFocPol.agda"
+                     ,"//EquivalentToResMon.agda"
+                     ]
+  }
+
 
 --------------------------------------------------------------------------------
 -- Mapping: Lambda Calculus
 --------------------------------------------------------------------------------
 
 lambda :: Mapping
-lambda = Mapping{..}
-  where
-    name        = "Lambda Calculus"
-    blacklist   = ["⇐"  , "⊕"  , "⇛"  , "⇚"   , "□"  , "◇"
-                  ," ₀" , "{₀" , "(₀" , "r₀⁰" , "m₀" , "₀>"
-                  ,"⁰ " , "⁰}" , "⁰)" , "r⁰₀" , "m⁰" , "<⁰"
-                  ," ₁" , "{₁" , "(₁" , "r₁¹" , "m₁" , "₁>"
-                  ,"¹ " , "¹}" , "¹)" , "r¹₁" , "m¹" , "<¹"
-                  ,"⋈"  , "∞"
-                  ]
-    textMapping = [ "LG"            ==> "Λ"
-                  , "Classical"     ==> "Intuitionistic"
-                  , "Ordered"       ==> "Unrestricted"
-                  , "LambekGrishin" ==> "Lambda"
-                  ]
-    include     = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Complexity.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Context.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Context/Polarised.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Polarised.agda"
-                  ,"Logic/Classical/Ordered/LambekGrishin/Type/Subtype.agda"
-                  ]
-    exclude     = []
+lambda =
+  (mkMapping "Lambda Calculus")
+  { blacklistChar  = ["⇐"  , "⊕" , "⇛" , "⇚" , "□" , "◇" , "⋈" , "∞"]
+  , blacklistToken = ["₀", "₀_", "r₀⁰" , "m₀" , "₀>", "₀>_" , "₀ᴸ" , "₀ᴿ" , "₀-injective"
+                     ,"⁰", "_⁰", "r⁰₀" , "m⁰" , "<⁰", "_<⁰" , "⁰ᴸ" , "⁰ᴿ" , "⁰-injective"
+                     ,"₁", "₁_", "r₁¹" , "m₁" , "₁>", "₁>_" , "₁ᴸ" , "₁ᴿ" , "₁-injective"
+                     ,"¹", "_¹", "r¹₁" , "m¹" , "<¹", "_<¹" , "¹ᴸ" , "¹ᴿ" , "¹-injective"
+                     ]
+  , textMapping    = [ "LG"            ==> "Λ"
+                     , "Classical"     ==> "Intuitionistic"
+                     , "Ordered"       ==> "Unrestricted"
+                     , "LambekGrishin" ==> "Lambda"
+                     ]
+  , include        = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/Type/Complexity.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/Type/Context.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/Type/Context/Polarised.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/Type/Polarised.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/Type/Subtype.agda"
+                     ]
+  }
+
 
 --------------------------------------------------------------------------------
 -- Mapping: Linear Lambda Calculus
 --------------------------------------------------------------------------------
 
 linearLambda :: Mapping
-linearLambda = Mapping{..}
-  where
-    name        = "Linear Lambda Calculus"
-    blacklist   = ["wᴸ₁" , "wᴸ" , "cᴸ₁" , "cᴸ"
-                  ]
-    textMapping = ["Unrestricted" ==> "Linear"
-                  ]
-    include     = ["Logic/Intuitionistic/Unrestricted/Lambda/Base.agda"
-                  ,"Logic/Intuitionistic/Unrestricted/Lambda/Permute.agda"
-                  ]
-    exclude     = []
+linearLambda =
+  (mkMapping "Linear Lambda Calculus")
+  { blacklistToken = ["wᴸ₁" , "wᴸ" , "cᴸ₁" , "cᴸ"
+                     ]
+  , textMapping    = ["Unrestricted" ==> "Linear"
+                     ]
+  , include        = ["Logic/Intuitionistic/Unrestricted/Lambda/Base.agda"
+                     ,"Logic/Intuitionistic/Unrestricted/Lambda/Permute.agda"
+                     ]
+  }
+
 
 -------------------------------------------------------------------------------
 -- Utility: generate files from other files by restricting the allowed symbols
@@ -305,7 +316,7 @@ make m@Mapping{..} = do
   let rev  = map swap textMapping
 
   -- require files
-  action (need . (map (srcDir </>)) =<< makeFileList m)
+  action (need . map (srcDir </>) =<< makeFileList m)
 
   -- define a rule that builds
   patn |%> \out -> do
@@ -317,12 +328,12 @@ make m@Mapping{..} = do
     putQuiet $ "Generating " ++ out
 
     liftIO $
-      T.writeFile out . restrictSource textMapping blacklist =<< T.readFile src
+      T.writeFile out . restrictSource textMapping blacklistToken blacklistChar =<< T.readFile src
 
 
 -- |Parse a file and remove all groups which contain illegal symbols.
-restrictSource :: [(Text, Text)] -> [Text] -> Text -> Text
-restrictSource replacements blacklist input = let
+restrictSource :: [(Text, Text)] -> [Text] -> [Text] -> Text -> Text
+restrictSource replacements blacklistToken blacklistChar input = let
 
   -- The algorithm to remove illegal lines is as follows:
   -- First we divide the text up by lines, and group the lines that
@@ -349,6 +360,7 @@ restrictSource replacements blacklist input = let
   -- an accumulating parameter which keeps track of the status of the
   -- previous line. If the previous line was marked as illegal, but
   -- the current line isn't, we check if:
+  --
   --   a. the current line is a with statement, in which case it'd be
   --      the continuation of the previous line, or;
   --   b. the current line is more deeply indented than the previous
@@ -367,6 +379,7 @@ restrictSource replacements blacklist input = let
               legal         = notDeeper && notWithClause
               notDeeper     = iX >= indent lnY
               notWithClause = "..." /= T.take 3 (T.stripStart lnY)
+              --           && "|" `notElem` takeWhile (`notElem` ["with","rewrite"]) (T.words lnY)
   stripMarked  = map snd (filter fst markIllegal')
   stripEnd     = map T.stripEnd stripMarked
 
@@ -374,6 +387,7 @@ restrictSource replacements blacklist input = let
   comment      = "-- This file was automatically generated." :: Text
   withComment  = case stripEnd of
     (x:y:rest) -> x:y:comment:rest
+
 
   -- We then perform a number of in-place substitutions, which
   -- replace references to the Lambek Grishin calculus with
@@ -386,7 +400,11 @@ restrictSource replacements blacklist input = let
 
   -- |Check if text contains any blacklisted items.
   isLegal :: Text -> Bool
-  isLegal  = not . foldr (\x f y -> f y || x `T.isInfixOf` y) (const False) blacklist
+  isLegal ln = noBlacklistChar && noBlacklistToken
+    where
+      noBlacklistChar  = not (any (`T.isInfixOf` ln) blacklistChar)
+      noBlacklistToken = all (`notElem` tokens) blacklistToken
+      tokens           = T.split (`elem` (" (){}" :: String)) ln
 
   -- |Check if text is a type signature containing blacklisted items.
   isIllegalTS :: Text -> Bool
