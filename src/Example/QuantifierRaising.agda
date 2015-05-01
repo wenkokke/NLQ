@@ -3,9 +3,11 @@
 ------------------------------------------------------------------------
 
 
-open import Function using (id)
 open import Data.Bool
+open import Data.Unit using (⊤)
 open import Example.System.fLG
+open import Foreign.Haskell using (Unit)
+open import IO
 
 
 module Example.QuantifierRaising where
@@ -134,3 +136,7 @@ EVERYONE_LOVES_SOMEONE₅ =
 everyone_loves_someone₅ : ⟦ s⁻ ⟧ᵀ
 everyone_loves_someone₅ = [ EVERYONE_LOVES_SOMEONE₅ ]ᵀ (everyone , loves , someone , ∅)
 --> exists (λ y → PERSON y ∧ forAll (λ x → PERSON x ⊃ x LOVES y))
+
+
+main : _
+main = run (putStr (toLaTeX EVERYONE_LOVES_SOMEONE₅))

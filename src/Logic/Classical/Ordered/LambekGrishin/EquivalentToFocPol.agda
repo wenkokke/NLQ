@@ -26,9 +26,6 @@ open import Logic.Classical.Ordered.LambekGrishin.Base                (Polarity 
 open import Logic.Classical.Ordered.LambekGrishin.FocPol.Base         Univ renaming (LG_ to LGᴾᴼᴸ_)
 
 
-
-
-
 from : ∀ {J} → LGᴾᴼᴸ J → LG J
 from ax⁺       = ax⁺
 from ax⁻       = ax⁻

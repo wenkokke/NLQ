@@ -5,6 +5,8 @@
 
 open import Data.Bool                             using (Bool; true; false; _∧_; _∨_)
 open import Data.List                             using (List; _∷_; []; map; foldr; any)
+open import Data.String                           using (String)
+open import Logic.ToLaTeX                         using (module ToLaTeX; ToLaTeX)
 open import Reflection                            using (Term; _≟_)
 open import Relation.Nullary                      using (Dec; yes; no)
 open import Relation.Nullary.Decidable            using (⌊_⌋)
@@ -58,6 +60,14 @@ S  ≟-Univ S  = yes refl
 ⟦ N  ⟧ᵁ = Entity → Bool
 ⟦ NP ⟧ᵁ = Entity
 ⟦ S  ⟧ᵁ = Bool
+
+UnivToLaTeX : ToLaTeX Univ
+UnivToLaTeX = record { toLaTeXPrec = λ _ → toLaTeX }
+  where
+    toLaTeX : Univ → String
+    toLaTeX N  = "n"
+    toLaTeX NP = "np"
+    toLaTeX S  = "s"
 
 
 -- * setup abstract lexicon

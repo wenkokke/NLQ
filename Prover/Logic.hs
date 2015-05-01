@@ -32,32 +32,18 @@ tryAll :: Int                          -- ^ Search depth
        -> Map String (Term ConId Void) -- ^ Lexicon
        -> System                       -- ^ Inference system
        -> String                       -- ^ Sentence
-       -> Maybe (Term ConId Void)      -- ^ Goal formula
-       -> [(Term ConId Int,Term RuleId Void)]
-tryAll d lex sys sent mbGoal = case mbGoal of
-  Just g -> let
-
-    judgements     = map (\x -> binary sequent x g) leftHandSides
-    finiteProofs   = concatMap (\j -> map (castVar j,) (findAll j rules)) judgements
-    infiniteProofs = map (first castVar) (findFirst d judgements rules)
-    resultList     = if isFinite then finiteProofs else infiniteProofs
-
-    in resultList `using` parList rdeepseq
-
-  _      -> let
-
-    judgements     = map (\x -> binary sequent (castVar x) (Var 0)) leftHandSides
-    finiteProofs   = concatMap (flip findAll' rules) judgements
-    infiniteProofs = error "Search with unification in infinite spaces is not yet implemented."
-    resultList     = if isFinite then finiteProofs else infiniteProofs
-
-    in resultList `using` parList rdeepseq
-
+       -> Term ConId Void              -- ^ Goal formula
+       -> [(Term ConId Void,Term RuleId Void)]
+tryAll d lex sys sent g = resultList `using` parList rdeepseq
   where
     SysInfo{..}    = getSysInfo sys
     baseFormulas   = lookupAll lex (words sent)
     baseStructures = maybe baseFormulas (\f -> map (unary f) baseFormulas) downOp
     leftHandSides  = brackets (unary <$> unaryOp) (binary binaryOp) baseStructures
+    judgements     = map (\x -> binary sequent x g) leftHandSides
+    finiteProofs   = concatMap (\j -> map (castVar j,) (findAll j rules)) judgements
+    infiniteProofs = map (first castVar) (findFirst d judgements rules)
+    resultList     = if isFinite then finiteProofs else infiniteProofs
 
 
 

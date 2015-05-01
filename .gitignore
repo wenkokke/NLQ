@@ -54,3 +54,5 @@ src/Logic/Classical/Ordered/Experimental/Structure/
 src/Logic/Classical/Ordered/Experimental/ToResMon.agda
 src/Logic/Classical/Ordered/Experimental/Type.agda
 src/Logic/Classical/Ordered/Experimental/Type/
+src/MAlonzo/
+src/QuantifierRaising

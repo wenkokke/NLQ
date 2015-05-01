@@ -13,12 +13,12 @@ import           Text.Printf (printf)
 
 import           Logic.Base
 import           Logic.Printing (Agda(..))
-import           Logic.System (System(..),SysInfo(..),getSysInfo)
+import           Logic.System (System(..))
 
 
 data Result
-  = Solved                 (Term Int) Proof
-  | Parsed String [String] (Term Int) Proof
+  = Solved                 (Term Void) Proof
+  | Parsed String [String] (Term Void) Proof
 
 
 -- |Return the Agda data type name associated with given a logical
@@ -81,8 +81,8 @@ withType = printf "id {A = ⟦ %s ⟧ᵀ} (%s)" . show . Agda
 agdaList :: [String] -> String
 agdaList = unwords . intersperse "\n  ∷" . (++["[]"])
 
-toAgdaDefn :: System -> Result -> State (Map String Int) String
-toAgdaDefn sys ret = case ret of
+toAgdaDefn :: System -> Term Void -> Result -> State (Map String Int) String
+toAgdaDefn sys goalType ret = case ret of
   (Solved     g p) ->
     return $ unlines
       [ baseName++" : "++dataTypeName++" "++show (Agda g)
@@ -90,20 +90,18 @@ toAgdaDefn sys ret = case ret of
       , ""
       ]
   (Parsed s e g p) -> do
-    n <- next s
-    let subn = sub n
-    let tgt  = getGoalType sys g
+    n <- next s; let subn = sub n
     return . unlines $
       [ synBaseName++subn++" : "++dataTypeName++" "++show (Agda g)
       , synBaseName++subn++" \n  = "++show p
-      , semBaseName++subn++" : ⟦ "++show (Agda tgt)++" ⟧ᵀ"
+      , semBaseName++subn++" : ⟦ "++show (Agda goalType)++" ⟧ᵀ"
       , semBaseName++subn++" \n  = [ "++synBaseName++subn++" ]ᵀ ("++toCtxt sys s++")"
       , ""
       ]
       ++
       (if null e then [] else
       [ listBaseName++subn++" : List Term"
-      , listBaseName++subn++" \n  = "++agdaList (map (\x -> "quoteTerm ("++withType tgt x++")") e)
+      , listBaseName++subn++" \n  = "++agdaList (map (\x -> "quoteTerm ("++withType goalType x++")") e)
       , testBaseName++subn++" : Assert (quoteTerm "++semBaseName++subn++" ∈ "++listBaseName++subn++")"
       , testBaseName++subn++" = _"
       , ""
@@ -119,17 +117,9 @@ toAgdaDefn sys ret = case ret of
     dataTypeName = toAgdaDataType sys
 
 
--- TODO: this messy, it should just be passed down somehow
-getGoalType :: (Show v) => System -> Term v -> Term v
-getGoalType sys = go (sequent (getSysInfo sys))
-  where
-    go JFocusR (Con JFocusR [_,g]) = g
-    go JForm   (Con JForm   [_,g]) = g
-
-
 -- |Return a valid Agda file given a sequence of proofs.
-toAgdaFile :: String -> System -> [Result] -> String
-toAgdaFile moduleName sys prfs =
+toAgdaFile :: String -> System -> [Result] -> Term Void -> String
+toAgdaFile moduleName sys prfs goalType =
   unlines (comment ++ [importStmts, "", moduleStmt, "", proofStmts])
   where
     comment      =
@@ -146,7 +136,7 @@ toAgdaFile moduleName sys prfs =
       , "open import Reflection using (Term)"
       , "open import "++toAgdaModule sys
       ]
-    proofStmts   = evalState (concat <$> mapM (toAgdaDefn sys) prfs) M.empty
+    proofStmts   = evalState (concat <$> mapM (toAgdaDefn sys goalType) prfs) M.empty
 
 
 -- |Compute the next number for this String.
