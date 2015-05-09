@@ -24,6 +24,9 @@ open import Logic.Intuitionistic.Linear.Lambda.Permute   Univ
 open Monoid (monoid Λ.Type) using (assoc)
 
 
+
+-- * Intuitionistic Linear Negation
+
 infixr 50 ¬_
 
 ¬_ : Λ.Type → Λ.Type
@@ -36,13 +39,80 @@ infixr 50 ¬_
 ¬¬ᵢ : ∀ {Γ B} → Λ Γ ⊢ ¬ ¬ ¬ B → Λ Γ ⊢ ¬ B
 ¬¬ᵢ f = ⇒ᵢ (sᴸ (_ , ∅) (⇒ₑ f (¬¬ₑ ax)))
 
-¬¬ˢ : ∀ {A B} → Λ A , ∅ ⊢ B → Λ ¬ B , ∅ ⊢ ¬ A
-¬¬ˢ f = ⇒ᵢ (eᴸ₁ (⇒ₑ ax f))
+¬¬-swap : ∀ {A B} → Λ A , ∅ ⊢ B → Λ ¬ B , ∅ ⊢ ¬ A
+¬¬-swap f = ⇒ᵢ (eᴸ₁ (⇒ₑ ax f))
 
-¬¬-over-⊗ : ∀ {Γ A B} → Λ Γ ⊢ ¬ ¬ A ⊗ ¬ ¬ B → Λ Γ ⊢ ¬ ¬ (A ⊗ B)
-¬¬-over-⊗ =
-  ⇒ₑ (⇒ᵢ (⊗ₑᴸ₁ (⇒ᵢ (eᴸ₁ (⇒ₑ ax (⇒ᵢ (eᴸ₂ (⇒ₑ ax (⇒ᵢ (eᴸ₂ (⇒ₑ ax (eᴸ₁ (⊗ᵢ ax ax)))))))))))))
+¬¬A⊗¬¬B⊢¬¬[A⊗B] : ∀ {A B} → Λ ¬ ¬ A ⊗ ¬ ¬ B , ∅ ⊢ ¬ ¬ (A ⊗ B)
+¬¬A⊗¬¬B⊢¬¬[A⊗B] =
+  ⊗ₑ ax (⇒ᵢ (eᴸ₁ (⇒ₑ ax (⇒ᵢ (eᴸ₂ (⇒ₑ ax (⇒ᵢ (eᴸ₂ (⇒ₑ ax (eᴸ₁ (⊗ᵢ ax ax)))))))))))
 
+¬¬[A⊗B]⊢¬¬A⊗¬¬B : ∀ {A B} → Λ ¬ ¬ (A ⊗ B) , ∅ ⊢ ¬ ¬ A ⊗ ¬ ¬ B
+¬¬[A⊗B]⊢¬¬A⊗¬¬B {A} {B} = {!!}
+
+¬¬-resp-⊗₁ : ∀ {Γ A B} → Λ Γ ⊢ ¬ ¬ A ⊗ ¬ ¬ B → Λ Γ ⊢ ¬ ¬ (A ⊗ B)
+¬¬-resp-⊗₁ = ⇒ₑ (⇒ᵢ ¬¬A⊗¬¬B⊢¬¬[A⊗B])
+
+
+-- * Call-by-Value Translation
+
+⌈_⌉ : LG.Type → Λ.Type
+⌈ el  A ⌉ = el A
+⌈ A ⊗ B ⌉ =      ⌈ A ⌉ ⊗   ⌈ B ⌉
+⌈ A ⇒ B ⌉ = ¬ (  ⌈ A ⌉ ⊗ ¬ ⌈ B ⌉)
+⌈ B ⇐ A ⌉ = ¬ (¬ ⌈ B ⌉ ⊗   ⌈ A ⌉)
+⌈ B ⊕ A ⌉ =    ¬ ⌈ B ⌉ ⊗ ¬ ⌈ A ⌉
+⌈ B ⇚ A ⌉ =      ⌈ B ⌉ ⊗ ¬ ⌈ A ⌉
+⌈ A ⇛ B ⌉ =    ¬ ⌈ A ⌉ ⊗   ⌈ B ⌉
+⌈ _     ⌉ = {!!}
+
+
+mutual
+  cbvᴸ : ∀ {A B} → LG A ⊢ B → Λ ¬ ⌈ B ⌉ , ∅  ⊢ ¬ ⌈ A ⌉
+  cbvᴸ  ax       = ¬¬-swap ax
+  cbvᴸ (m⊗  f g) = ⇒ᵢ (⇒ₑ (¬¬-resp-⊗₁ (⊗ₑᴸ₁ (⊗ᵢ (cbvᴿ f) (cbvᴿ g)))) ax)
+  cbvᴸ (m⇒  f g) = ⇒ᵢ (eᴸ₁ (⇒ₑ ax (⇒ᵢ (⇒ₑ (¬¬-resp-⊗₁ (⊗ₑᴸ₁ (⊗ᵢ (cbvᴿ f) (¬¬ₑ (cbvᴸ g))))) ax))))
+  cbvᴸ (m⇐  f g) = ⇒ᵢ (eᴸ₁ (⇒ₑ ax (⇒ᵢ (⇒ₑ (¬¬-resp-⊗₁ (⊗ₑᴸ₁ (⊗ᵢ (¬¬ₑ (cbvᴸ f)) (cbvᴿ g)))) ax))))
+  cbvᴸ (r⇒⊗ f)   = {!!}
+  cbvᴸ (r⊗⇒ f)   = {!!}
+  cbvᴸ (r⇐⊗ f)   = {!!}
+  cbvᴸ (r⊗⇐ f)   = {!!}
+  cbvᴸ (m⊕  f g) = {!!}
+  cbvᴸ (m⇛  f g) = {!!}
+  cbvᴸ (m⇚  f g) = {!!}
+  cbvᴸ (r⇛⊕ f)   = {!!}
+  cbvᴸ (r⊕⇛ f)   = {!!}
+  cbvᴸ (r⊕⇚ f)   = {!!}
+  cbvᴸ (r⇚⊕ f)   = {!!}
+  cbvᴸ (d⇛⇐ f)   = {!!}
+  cbvᴸ (d⇛⇒ f)   = {!!}
+  cbvᴸ (d⇚⇒ f)   = {!!}
+  cbvᴸ (d⇚⇐ f)   = {!!}
+  cbvᴸ _         = {!!}
+
+  cbvᴿ : ∀ {A B} → LG A ⊢ B → Λ ⌈ A ⌉ , ∅  ⊢ ¬ ¬ ⌈ B ⌉
+  cbvᴿ  ax       = {!!}
+  cbvᴿ (m⊗  f g) = {!!}
+  cbvᴿ (m⇒  f g) = {!!}
+  cbvᴿ (m⇐  f g) = {!!}
+  cbvᴿ (r⇒⊗ f)   = {!!}
+  cbvᴿ (r⊗⇒ f)   = {!!}
+  cbvᴿ (r⇐⊗ f)   = {!!}
+  cbvᴿ (r⊗⇐ f)   = {!!}
+  cbvᴿ (m⊕  f g) = {!!}
+  cbvᴿ (m⇛  f g) = {!!}
+  cbvᴿ (m⇚  f g) = {!!}
+  cbvᴿ (r⇛⊕ f)   = {!!}
+  cbvᴿ (r⊕⇛ f)   = {!!}
+  cbvᴿ (r⊕⇚ f)   = {!!}
+  cbvᴿ (r⇚⊕ f)   = {!!}
+  cbvᴿ (d⇛⇐ f)   = {!!}
+  cbvᴿ (d⇛⇒ f)   = {!!}
+  cbvᴿ (d⇚⇒ f)   = {!!}
+  cbvᴿ (d⇚⇐ f)   = {!!}
+  cbvᴿ _         = {!!}
+
+
+-- * Call-by-Name Translation
 
 ⌊_⌋ : LG.Type → Λ.Type
 ⌊ el  A ⌋ = ¬ (el A)
@@ -57,8 +127,8 @@ infixr 50 ¬_
 
 mutual
   cbnᴸ : ∀ {A B} → LG A ⊢ B → Λ ¬ ¬ ⌊ B ⌋ , ∅ ⊢ ¬ ¬ ⌊ A ⌋
-  cbnᴸ  ax       = ¬¬ˢ (¬¬ˢ (¬¬ˢ ax))
-  cbnᴸ (m⊗  f g) = ⇒ᵢ (⇒ₑ ax (⇒ᵢ (eᴸ₁ (⇒ₑ ax (¬¬-over-⊗ (⊗ₑᴸ₁ (⊗ᵢ (cbnᴿ f) (cbnᴿ g))))))))
+  cbnᴸ  ax       = ¬¬-swap (¬¬-swap (¬¬-swap ax))
+  cbnᴸ (m⊗  f g) = ⇒ᵢ (⇒ₑ ax (⇒ᵢ (eᴸ₁ (⇒ₑ ax (¬¬-resp-⊗₁ (⊗ₑ ax (⊗ᵢ (cbnᴿ f) (cbnᴿ g))))))))
   cbnᴸ (m⇒  f g) = {!!}
   cbnᴸ (m⇐  f g) = {!!}
   cbnᴸ (r⇒⊗ f)   = {!!}
@@ -79,7 +149,7 @@ mutual
   cbnᴸ _         = {!!}
 
   cbnᴿ : ∀ {A B} → LG A ⊢ B → Λ ¬ ⌊ A ⌋ , ∅ ⊢ ¬ ¬ ¬ ⌊ B ⌋
-  cbnᴿ  ax       = ¬¬ˢ (¬¬ˢ (¬¬ₑ ax))
+  cbnᴿ  ax       = ¬¬-swap (¬¬-swap (¬¬ₑ ax))
   cbnᴿ (m⊗  f g) = {!!}
   cbnᴿ (m⇒  f g) = {!!}
   cbnᴿ (m⇐  f g) = {!!}
