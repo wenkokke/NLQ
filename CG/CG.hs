@@ -12,7 +12,7 @@ import           System.Environment (getProgName,getArgs)
 import           System.Exit (exitSuccess, exitFailure)
 import           System.FilePath (takeBaseName)
 import           System.IO
-import           Text.Parsec (parse)
+import qualified Text.Parsec as P (parse)
 
 import           CG.Prover
 import           CG.Parser
@@ -118,15 +118,15 @@ main = do
        (putStrLn "Usage: For basic information, try the `--help' option.")
 
   let
-    handle :: Task -> IO [Result]
-    handle (Solve str) = case parse judgement "" str of
-      Left  m -> error (show m)
-      Right g -> return $ map (Solved g) (findAll g rules)
-    handle (Parse sent expr) = case mbLexicon of
-      Just lex -> return (map (uncurry $ Parsed sent expr) (tryAll d lex sys sent g))
-      _        -> error "No lexicon file given."
+    runTask :: Task -> IO [Result]
+    runTask (Solve str) = case P.parse judgement "" str of
+      Left  e -> error (show e)
+      Right g -> return $ map (uncurry Solved) (solve sys d [g])
+    runTask (Parse sent expr) = case mbLexicon of
+      Just lx -> return (map (uncurry $ Parsed sent expr) (parse sys d lx sent g))
+      _       -> error "No lexicon file given."
 
-  proofs <- concat <$> mapM handle tasks
+  proofs <- concat <$> mapM runTask tasks
 
   let agdaFile modName = toAgdaFile modName sys proofs g
 

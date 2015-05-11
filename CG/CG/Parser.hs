@@ -1,5 +1,5 @@
 {-# LANGUAGE TupleSections, RecordWildCards #-}
-module CG.Parser (tryAll) where
+module CG.Parser (parse) where
 
 
 import           Prelude hiding (lex)
@@ -21,13 +21,13 @@ import           Debug.Trace (traceShow)
 --  structures paired with their proofs.
 --  Note: the resulting list may contain pairs for structures for
 --  which no proofs were found.
-tryAll :: Int                          -- ^ Search depth
+parse :: System ConId                 -- ^ Inference system
+       -> Int                          -- ^ Search depth
        -> Map String (Term ConId Void) -- ^ Lexicon
-       -> System ConId                 -- ^ Inference system
        -> String                       -- ^ Sentence
        -> Term ConId Void              -- ^ Goal formula
        -> [(Term ConId Void,Term RuleId Void)]
-tryAll d lex sys@System{..} sent g =
+parse sys@System{..} d lex sent g =
   solve sys d judgements `using` parList rdeepseq
   where
     -- read the entries from the lexicon, wrapping them in a

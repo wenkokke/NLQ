@@ -61,8 +61,12 @@ instance Operator String where
 instance (Operator c, ToString v) => Show (Term c v) where
   showsPrec _ (Var i)    =
     showString (toString i)
-  showsPrec p (Con x xs) = let q = prec x in
-    showParen (p > 0 && q > 0 && p >= q) (template x (map (showsPrec q) xs))
+  showsPrec p (Con x xs)
+    | p > 0 && q > 0 && p >= q = showString "( " . ret . showString ") "
+    | otherwise                = ret
+    where
+      q   = prec x
+      ret = template x (map (showsPrec q) xs)
 
 
 -- * Guards

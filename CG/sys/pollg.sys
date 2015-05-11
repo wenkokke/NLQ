@@ -12,11 +12,13 @@ set agda_module = Example.System.fLG
 ax⁻  :  [ A ] ⊢ · A ·  where atomic A and negative A
 ax⁺  :  · B · ⊢ [ B ]  where atomic B and positive B
 
+
 -- Focusing and defocusing rules.
 ⇁    :    X   ⊢ · B · →    X   ⊢ [ B ]  where negative B
 ↽    :  · A · ⊢   Y   →  [ A ] ⊢   Y    where positive A
 ⇀    :    X   ⊢ [ B ] →    X   ⊢ · B ·  where positive B
 ↼    :  [ A ] ⊢   Y   →  · A · ⊢   Y    where negative A
+
 
 -- Rules for (□ , ◇).
 ◇ᴸ   :  ⟨ · A · ⟩ ⊢     Y      →  · ◇ A · ⊢     Y
@@ -43,9 +45,9 @@ r₁¹  :  ₁   Y     ⊢     X      →      X ¹   ⊢     Y
 
 
 -- Rules for (⇐ , ⊗ , ⇒)
-⊗ᴸ   :  · A · ⊗ · B · ⊢       Y        →  · A ⊗ B · ⊢     Y
-⇒ᴿ   :        X       ⊢ · A · ⇒ · B ·  →      X     ⊢ · A ⇒ B ·
-⇐ᴿ   :        X       ⊢ · B · ⇐ · A ·  →      X     ⊢ · B ⇐ A ·
+⊗ᴸ   :  · A · ⊗ · B · ⊢ Y  →  · A ⊗ B · ⊢ Y
+⇒ᴿ   :  X ⊢ · A · ⇒ · B ·  →  X ⊢ · A ⇒ B ·
+⇐ᴿ   :  X ⊢ · B · ⇐ · A ·  →  X ⊢ · B ⇐ A ·
 
 ⊗ᴿ   : X ⊢ [ A ]  →    Y   ⊢ [ B ]  →    X ⊗ Y   ⊢ [ A ⊗ B ]
 ⇒ᴸ   : X ⊢ [ A ]  →  [ B ] ⊢   Y    →  [ A ⇒ B ] ⊢   X ⇒ Y
@@ -56,10 +58,11 @@ r⊗⇒  :  X ⊗ Y ⊢ Z  →  Y ⊢ X ⇒ Z
 r⇐⊗  :  X ⊢ Z ⇐ Y  →  X ⊗ Y ⊢ Z
 r⊗⇐  :  X ⊗ Y ⊢ Z  →  X ⊢ Z ⇐ Y
 
+
 -- Rules for (⇚ , ⊕ , ⇛)
-⊕ᴿ   :        X       ⊢ · B · ⊕ · A ·  →      X     ⊢ · B ⊕ A ·
-⇚ᴸ   :  · A · ⇚ · B · ⊢       X        →  · A ⇚ B · ⊢     X
-⇛ᴸ   :  · B · ⇛ · A · ⊢       X        →  · B ⇛ A · ⊢     X
+⊕ᴿ   :  X ⊢ · B · ⊕ · A ·  →  X ⊢ · B ⊕ A ·
+⇚ᴸ   :  · A · ⇚ · B · ⊢ X  →  · A ⇚ B · ⊢ X
+⇛ᴸ   :  · B · ⇛ · A · ⊢ X  →  · B ⇛ A · ⊢ X
 
 ⊕ᴸ   :  [ B ] ⊢   Y    →  [ A ] ⊢ X  →  [ B ⊕ A ] ⊢  Y ⊕ X
 ⇚ᴿ   :    X   ⊢ [ A ]  →  [ B ] ⊢ Y  →    X ⇚ Y   ⊢[ A ⇚ B ]
@@ -69,6 +72,7 @@ r⇚⊕  :  Z ⇚ X ⊢ Y  →  Z ⊢ Y ⊕ X
 r⊕⇚  :  Z ⊢ Y ⊕ X  →  Z ⇚ X ⊢ Y
 r⇛⊕  :  Y ⇛ Z ⊢ X  →  Z ⊢ Y ⊕ X
 r⊕⇛  :  Z ⊢ Y ⊕ X  →  Y ⇛ Z ⊢ X
+
 
 -- Grishin Distributives.
 d⇛⇐  :  X ⊗ Y ⊢ Z ⊕ W  →  Z ⇛ X ⊢ W ⇐ Y
