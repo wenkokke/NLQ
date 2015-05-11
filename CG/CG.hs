@@ -21,83 +21,6 @@ import           CG.Parsing
 import           CG.ToAgda
 
 
--- * Options
-
-data Task
-  = Solve String
-  | Parse String [String]
-
-
-data Output
-  = StdOut
-  | AgdaFile (Maybe FilePath)
-
-
-data Options = Options
-  { optTasks      :: [Task]
-  , optLexicon    :: Maybe (Map String (Term ConId Void))
-  , optSystem     :: System ConId
-  , optOutput     :: Output
-  , optGoal       :: Term ConId Void
-  , optDepth      :: Int
-  }
-
-
-defaultOptions :: Options
-defaultOptions    = Options
-  { optTasks      = []
-  , optLexicon    = Nothing
-  , optSystem     = error "System must be specified."
-  , optOutput     = StdOut
-  , optGoal       = Con (NegAtom "s") []
-  , optDepth      = 5
-  }
-
-
-options :: [ OptDescr (Options -> IO Options) ]
-options =
-  [ Option [] ["solve"]
-    (ReqArg (\arg opt -> return opt { optTasks = optTasks opt ++ [Solve arg] }) "SEQUENT")
-    "Search for proof of a sequent."
-
-  , Option [] ["parse"]
-    (ReqArg (\arg opt -> return opt { optTasks = optTasks opt ++ [Parse arg []] }) "SENTENCE")
-    "Parse the given sentence."
-
-  , Option [] ["to","or"]
-    (ReqArg addResult "EXPRESSION")
-    "Generate check if the previous test results in this expression."
-
-  , Option "l" ["lexicon"]
-    (ReqArg (\arg opt -> do lex <- parseLexicon arg; return opt { optLexicon = Just lex }) "LEXICON_FILE")
-    "Lexicon used in parsing."
-
-  , Option "s" ["system"]
-    (ReqArg (\arg opt -> do sys <- parseSystem arg; return opt { optSystem = sys }) "SYSTEM")
-    "Logical system (see below)."
-
-  , Option "g" ["goal"]
-    (ReqArg (\arg opt -> do g <- parseGoal arg; return opt { optGoal = g }) "GOAL_FORMULA")
-    "Goal formula (n, np, s⁻, etc)."
-
-  , Option [] ["to-agda"]
-    (OptArg (\arg opt -> return opt { optOutput = AgdaFile arg }) "AGDA_FILE")
-    "Produce an Agda module, and write it to the given file (or stdout)."
-
-  , Option "d" ["depth"]
-    (ReqArg (\arg opt -> return opt { optDepth = read arg }) "SEARCH_DEPTH")
-    "Search depth (for systems with infinite search spaces)"
-
-  , Option "h" ["help"]
-    (NoArg  (\_ -> do
-              prg <- getProgName
-              hPutStrLn stderr (usageInfo prg options)
-              exitSuccess))
-    "Show help."
-  ]
-
-
--- * Main function
 
 main :: IO ()
 main = do
@@ -136,7 +59,81 @@ main = do
     AgdaFile (Just fn) -> do checkFile fn; writeFile fn (agdaFile (takeBaseName fn))
 
 
--- * IO utilities
+
+-- * Command-Line Options
+
+data Task
+  = Solve String
+  | Parse String [String]
+
+data Output
+  = StdOut
+  | AgdaFile (Maybe FilePath)
+
+data Options = Options
+  { optTasks      :: [Task]
+  , optLexicon    :: Maybe (Map String (Term ConId Void))
+  , optSystem     :: System ConId
+  , optOutput     :: Output
+  , optGoal       :: Term ConId Void
+  , optDepth      :: Int
+  }
+
+defaultOptions :: Options
+defaultOptions    = Options
+  { optTasks      = []
+  , optLexicon    = Nothing
+  , optSystem     = error "System must be specified."
+  , optOutput     = StdOut
+  , optGoal       = Con (NegAtom "s") []
+  , optDepth      = 5
+  }
+
+options :: [ OptDescr (Options -> IO Options) ]
+options =
+  [ Option [] ["solve"]
+    (ReqArg (\arg opt -> return opt { optTasks = optTasks opt ++ [Solve arg] }) "SEQUENT")
+    "Search for proof of a sequent."
+
+  , Option [] ["parse"]
+    (ReqArg (\arg opt -> return opt { optTasks = optTasks opt ++ [Parse arg []] }) "SENTENCE")
+    "Parse the given sentence."
+
+  , Option [] ["to","or"]
+    (ReqArg addExpected "EXPRESSION")
+    "Generate check if the previous test results in this expression."
+
+  , Option "l" ["lexicon"]
+    (ReqArg (\arg opt -> do lex <- parseLexicon arg; return opt { optLexicon = Just lex }) "LEXICON_FILE")
+    "Lexicon used in parsing."
+
+  , Option "s" ["system"]
+    (ReqArg (\arg opt -> do sys <- parseSystem arg; return opt { optSystem = sys }) "SYSTEM")
+    "Logical system (see below)."
+
+  , Option "g" ["goal"]
+    (ReqArg (\arg opt -> do g <- parseGoal arg; return opt { optGoal = g }) "GOAL_FORMULA")
+    "Goal formula (n, np, s⁻, etc)."
+
+  , Option [] ["to-agda"]
+    (OptArg (\arg opt -> return opt { optOutput = AgdaFile arg }) "AGDA_FILE")
+    "Produce an Agda module, and write it to the given file (or stdout)."
+
+  , Option "d" ["depth"]
+    (ReqArg (\arg opt -> return opt { optDepth = read arg }) "SEARCH_DEPTH")
+    "Search depth (for systems with infinite search spaces)"
+
+  , Option "h" ["help"]
+    (NoArg  (\_ -> do
+              prg <- getProgName
+              hPutStrLn stderr (usageInfo prg options)
+              exitSuccess))
+    "Show help."
+  ]
+
+
+
+-- * Helper functions
 
 -- |Check if a given file exists, and if so ask for a confirmation
 --  for overwriting the file.
@@ -164,15 +161,15 @@ checkFile fn = do
       else yorn
 
 
+-- |Print results.
 printResult :: Result -> IO ()
 printResult (Solved     g p) = do print g; print p
 printResult (Parsed s _ g p) = do putStrLn s; print g; print p
 
 
--- * Option utilities
-
-addResult :: String -> Options -> IO Options
-addResult expr opt@Options{..} = do
+-- |Add an expected result to the most recent @Parse@ task.
+addExpected :: String -> Options -> IO Options
+addExpected expr opt@Options{..} = do
   progName <- getProgName
 
   when (null optTasks) $
@@ -187,6 +184,7 @@ addResult expr opt@Options{..} = do
 
   let (Parse sent exprs) = lastTask
   return opt { optTasks = init optTasks ++ [Parse sent (exprs ++ [expr])]}
+
 
 -- |Check if given Task is a parse-task with no expected result.
 isParse :: Task -> Bool

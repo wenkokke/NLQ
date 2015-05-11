@@ -1,0 +1,22 @@
+-- Algebraic Lambek calculus.
+
+
+set finite
+set algebraic
+set parse_with  = ⊗
+
+
+-- Axiom.
+ax   :  A ⊢ A  where atomic A
+
+
+-- Rules for (⇐ , ⊗ , ⇒).
+m⊗   :  A ⊢ B  →  C ⊢ D  →  A ⊗ C ⊢ B ⊗ D
+m⇒   :  A ⊢ B  →  C ⊢ D  →  B ⇒ C ⊢ A ⇒ D
+m⇐   :  A ⊢ B  →  C ⊢ D  →  A ⇐ D ⊢ B ⇐ C
+r⇒⊗  :  B ⊢ A ⇒ C  →  A ⊗ B ⊢ C
+r⊗⇒  :  A ⊗ B ⊢ C  →  B ⊢ A ⇒ C
+r⇐⊗  :  A ⊢ C ⇐ B  →  A ⊗ B ⊢ C
+r⊗⇐  :  A ⊗ B ⊢ C  →  A ⊢ C ⇐ B
+
+
