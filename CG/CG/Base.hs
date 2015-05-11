@@ -50,7 +50,7 @@ data ConId
   | JAlgebr | JStruct
   | JFocusL | JFocusR
 
-  deriving (Eq,Ord,Generic)
+  deriving (Eq,Ord,Show,Generic)
 
 
 instance Hashable  ConId
@@ -159,21 +159,21 @@ instance Guardable ConId where
 
 -- * Printing
 
-instance Show ConId where
-  show (PosAtom x) = x
-  show (NegAtom x) = x ++ "⁻"
-  show F0L     = "₀"; show F0R     = "⁰"; show FBox  = "□"
-  show F1L     = "₁"; show F1R     = "¹"; show FDia  = "◇"
-  show FProd   = "⊗"; show FImpR   = "⇒"; show FImpL = "⇐"
-  show SProd   = "⊗"; show SImpR   = "⇒"; show SImpL = "⇐"
-  show HProd   = "∘"; show HImpR   = "⇨"; show HImpL = "⇦"
-  show FPlus   = "⊕"; show FSubL   = "⇚"; show FSubR = "⇛"
-  show SPlus   = "⊕"; show SSubL   = "⇚"; show SSubR = "⇛"
-  show S0L     = "₀"; show S0R     = "⁰"; show SBox  = "[]"
-  show S1L     = "₁"; show S1R     = "¹"; show SDia  = "⟨⟩"
-  show JAlgebr = "⊢"; show JStruct = "⊢"
-  show JFocusL = "⊢"; show JFocusR = "⊢"
-  show Down    = "·"; show Comma   = ","
+instance ToString ConId where
+  toString (PosAtom x) = x
+  toString (NegAtom x) = x ++ "⁻"
+  toString F0L     = "₀"; toString F0R     = "⁰"; toString FBox  = "□"
+  toString F1L     = "₁"; toString F1R     = "¹"; toString FDia  = "◇"
+  toString FProd   = "⊗"; toString FImpR   = "⇒"; toString FImpL = "⇐"
+  toString SProd   = "⊗"; toString SImpR   = "⇒"; toString SImpL = "⇐"
+  toString HProd   = "∘"; toString HImpR   = "⇨"; toString HImpL = "⇦"
+  toString FPlus   = "⊕"; toString FSubL   = "⇚"; toString FSubR = "⇛"
+  toString SPlus   = "⊕"; toString SSubL   = "⇚"; toString SSubR = "⇛"
+  toString S0L     = "₀"; toString S0R     = "⁰"; toString SBox  = "[]"
+  toString S1L     = "₁"; toString S1R     = "¹"; toString SDia  = "⟨⟩"
+  toString JAlgebr = "⊢"; toString JStruct = "⊢"
+  toString JFocusL = "⊢"; toString JFocusR = "⊢"
+  toString Down    = "·"; toString Comma   = ","
 
 instance Operator ConId where
 
@@ -233,21 +233,21 @@ instance Operator ConId where
 
 newtype ASCII a = ASCII a
 
-instance Show (ASCII ConId) where
-  show (ASCII (PosAtom x)) = x
-  show (ASCII (NegAtom x)) = x ++ "'"
-  show (ASCII F0L)     = "0" ; show (ASCII F0R)     = "0" ; show (ASCII FBox)  = "[]"
-  show (ASCII F1L)     = "1" ; show (ASCII F1R)     = "1" ; show (ASCII FDia)  = "<>"
-  show (ASCII FProd)   = "*" ; show (ASCII FImpR)   = "->"; show (ASCII FImpL) = "<-"
-  show (ASCII SProd)   = "*" ; show (ASCII SImpR)   = "->"; show (ASCII SImpL) = "<-"
-  show (ASCII HProd)   = "o" ; show (ASCII HImpR)   = "-o"; show (ASCII HImpL) = "o-"
-  show (ASCII FPlus)   = "+" ; show (ASCII FSubL)   = "<="; show (ASCII FSubR) = "=>"
-  show (ASCII SPlus)   = "+" ; show (ASCII SSubL)   = "<="; show (ASCII SSubR) = "=>"
-  show (ASCII S0L)     = "0" ; show (ASCII S0R)     = "0" ; show (ASCII SBox)  = "[]"
-  show (ASCII S1L)     = "1" ; show (ASCII S1R)     = "1" ; show (ASCII SDia)  = "<>"
-  show (ASCII JAlgebr) = "|-"; show (ASCII JStruct) = "|-"
-  show (ASCII JFocusL) = "|-"; show (ASCII JFocusR) = "|-"
-  show (ASCII Down)    = "." ; show (ASCII Comma)   = ","
+instance ToString (ASCII ConId) where
+  toString (ASCII (PosAtom x)) = x
+  toString (ASCII (NegAtom x)) = x ++ "'"
+  toString (ASCII F0L)     = "0" ; toString (ASCII F0R)     = "0" ; toString (ASCII FBox)  = "[]"
+  toString (ASCII F1L)     = "1" ; toString (ASCII F1R)     = "1" ; toString (ASCII FDia)  = "<>"
+  toString (ASCII FProd)   = "*" ; toString (ASCII FImpR)   = "->"; toString (ASCII FImpL) = "<-"
+  toString (ASCII SProd)   = "*" ; toString (ASCII SImpR)   = "->"; toString (ASCII SImpL) = "<-"
+  toString (ASCII HProd)   = "o" ; toString (ASCII HImpR)   = "-o"; toString (ASCII HImpL) = "o-"
+  toString (ASCII FPlus)   = "+" ; toString (ASCII FSubL)   = "<="; toString (ASCII FSubR) = "=>"
+  toString (ASCII SPlus)   = "+" ; toString (ASCII SSubL)   = "<="; toString (ASCII SSubR) = "=>"
+  toString (ASCII S0L)     = "0" ; toString (ASCII S0R)     = "0" ; toString (ASCII SBox)  = "[]"
+  toString (ASCII S1L)     = "1" ; toString (ASCII S1R)     = "1" ; toString (ASCII SDia)  = "<>"
+  toString (ASCII JAlgebr) = "|-"; toString (ASCII JStruct) = "|-"
+  toString (ASCII JFocusL) = "|-"; toString (ASCII JFocusR) = "|-"
+  toString (ASCII Down)    = "." ; toString (ASCII Comma)   = ","
 
 
 -- * Proofs

@@ -40,14 +40,14 @@ toBaseName (Parsed s _ _ _) = map toLower (sanitise s)
     sanitise (':'    : xs) = sanitise xs
     sanitise ( c     : xs) = toUpper c : sanitise xs
 
-defaultName :: (ToString v) => Term ConId v -> String
+defaultName :: (Show v, ToString v) => Term ConId v -> String
 defaultName = map repl . filter (not . isSpace) . show
   where
     repl '(' = '['
     repl ')' = ']'
     repl  c  =  c
 
-withType :: (ToString v) => Term ConId v -> String -> String
+withType :: (Show v, ToString v) => Term ConId v -> String -> String
 withType = printf "id {A = ⟦ %s ⟧ᵀ} (%s)" . show
 
 agdaList :: [String] -> String

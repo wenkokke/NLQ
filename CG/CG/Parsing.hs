@@ -48,7 +48,7 @@ cgDef = haskellStyle
   , reservedNames = let
 
     reservedNames   = ["where","and","atomic","positive","negative"]
-    reservedOpNames = nub (map show operators ++ map (show . ASCII) operators)
+    reservedOpNames = nub (map toString operators ++ map (toString . ASCII) operators)
     operators       = concat [unaryLogical ,unaryStructural
                              ,binaryLogical,binaryStructural
                              ,sequents, [Down]]
@@ -63,12 +63,12 @@ cg = makeTokenParser cgDef
 -- * Term Parsing
 
 con :: ConId -> Parser ()
-con c = reserved (show c) <|> reserved (show (ASCII c))
+con c = reserved (toString c) <|> reserved (toString (ASCII c))
   where
     TokenParser{..} = cg
 
 con' :: ConId -> Parser ()
-con' c = do symbol (show c) <|> symbol (show (ASCII c)); return ()
+con' c = do symbol (toString c) <|> symbol (toString (ASCII c)); return ()
   where
     TokenParser{..} = cg
 
@@ -230,17 +230,22 @@ data ParseWith
 
 
 -- |Handle options for proof systems.
-handle :: [Option] -> System ConId
-handle = foldr handleOpt emptySystem
+runOptions :: [Option] -> System ConId
+runOptions = postProcess . foldr runOption emptySystem
   where
-    handleOpt (IsFinite     b) s = s { finite     = b }
-    handleOpt (IsStructural b) s = s { structural = b }
-    handleOpt (AgdaName     n) s = s { agdaName   = Just n }
-    handleOpt (AgdaModule   n) s = s { agdaModule = Just n }
-    handleOpt (ParseWith    x) s = foldr handlePW s x
+    runOption (IsFinite     b) s = s { finite     = b }
+    runOption (IsStructural b) s = s { structural = b }
+    runOption (AgdaName     n) s = s { agdaName   = Just n }
+    runOption (AgdaModule   n) s = s { agdaModule = Just n }
+    runOption (ParseWith    x) s = foldr runPW s x
 
-    handlePW (UseUnary  op) = addUnary  op
-    handlePW (UseBinary op) = addBinary op
+    runPW (UseUnary  op) = addUnary  op
+    runPW (UseBinary op) = addBinary op
+
+    postProcess sys@System{..}
+      | structural = sys { unaryOp  = fmap toStructural unaryOp
+                         , binaryOp = fmap toStructural binaryOp }
+      | otherwise  = sys
 
 
 -- * Parsers
@@ -272,7 +277,7 @@ parseSystem systemFile = go <$> readFile systemFile
 
         opts  = map (parseOrError option systemFile) rawOpts
         rules = map (parseOrError rule   systemFile) rawRules
-        sys   = handle opts
+        sys   = runOptions opts
 
         isOption  ln = "set" `isPrefixOf` ln
         isComment ln = case parse (whiteSpace *> eof) "" ln of
