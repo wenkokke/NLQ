@@ -1,7 +1,8 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RecordWildCards, FlexibleContexts #-}
 module CG.ToAgda (Result(..),toAgdaFile) where
 
 
+import           CG.Base
 import           Control.Monad.State (State,get,put,evalState)
 import           Data.Char (isSpace,toUpper,toLower)
 import           Data.List (intersperse,intercalate)
@@ -11,55 +12,26 @@ import           Data.Maybe (fromMaybe)
 import           Data.Void (Void)
 import           Text.Printf (printf)
 
-import           CG.Base
-import           CG.Printing (Agda(..))
-import           CG.System (System(..))
 
 
-data Result
-  = Solved                 (Term Void) Proof
-  | Parsed String [String] (Term Void) Proof
+toCtxt :: System c -> String -> String
+toCtxt sys@System{..} sent
+  | structural = unwords (intersperse "," (words sent ++ ["∅"]))
+  | otherwise  = unwords (intersperse "," (words sent))
 
+toAgdaName :: System c -> String
+toAgdaName System{..} = case agdaName of
+  Just n -> n
+  _      -> error "Must set agda_name to export to Agda."
 
--- |Return the Agda data type name associated with given a logical
---  system.
-toAgdaDataType :: System -> String
-toAgdaDataType ALGEXP  = "EXP"
-toAgdaDataType ALGNL   = "NL"
-toAgdaDataType ALGNLCL = "NL"
-toAgdaDataType STRNL   = "NL"
-toAgdaDataType STRCNL  = "CNL"
-toAgdaDataType STRLG   = "LG"
-toAgdaDataType POLNL   = "LG"
-toAgdaDataType POLCNL  = "LG"
-toAgdaDataType POLLG   = "LG"
+toAgdaModule :: System c -> String
+toAgdaModule System{..} = case agdaModule of
+  Just n -> n
+  _      -> error "Must set agda_module to export to Agda."
 
-
--- |Return the Agda module associated with given a logical system.
-toAgdaModule :: System -> String
-toAgdaModule ALGEXP  = error "Error: AlgEXP is not yet implemented in Agda."
-toAgdaModule ALGNL   = error "Error: AlgNL is not yet implemented in Agda."
-toAgdaModule ALGNLCL = "Example.System.NLCL"
-toAgdaModule STRNL   = error "Error: NL is not yet implemented in Agda."
-toAgdaModule STRCNL  = error "Error: CNL is not yet implemented in Agda."
-toAgdaModule STRLG   = error "Error: LG is not yet implemented in Agda."
-toAgdaModule POLNL   = "Example.System.fLG"
-toAgdaModule POLCNL  = "Example.System.fLG"
-toAgdaModule POLLG   = "Example.System.fLG"
-
-toCtxt :: System -> String -> String
-toCtxt sys sent = case sys of
-  ALGNL   -> useProd
-  ALGNLCL -> useProd
-  ALGEXP  -> useProd
-  _       -> useEnv
-  where
-    useEnv  = unwords (intersperse "," (words sent ++ ["∅"]))
-    useProd = unwords (intersperse "," (words sent))
-
-getBaseName :: Result -> String
-getBaseName (Solved     g _) = defaultName g
-getBaseName (Parsed s _ _ _) = map toLower (sanitise s)
+toBaseName :: Result -> String
+toBaseName (Solved     g _) = defaultName g
+toBaseName (Parsed s _ _ _) = map toLower (sanitise s)
   where
     sanitise [] = []
     sanitise (' ':' ': xs) = sanitise (' ':xs)
@@ -68,33 +40,33 @@ getBaseName (Parsed s _ _ _) = map toLower (sanitise s)
     sanitise (':'    : xs) = sanitise xs
     sanitise ( c     : xs) = toUpper c : sanitise xs
 
-defaultName :: (Show v) => Term v -> String
-defaultName = map repl . filter (not . isSpace) . show . Agda
+defaultName :: (ToString v) => Term ConId v -> String
+defaultName = map repl . filter (not . isSpace) . show
   where
     repl '(' = '['
     repl ')' = ']'
     repl  c  =  c
 
-withType :: (Show v) => Term v -> String -> String
-withType = printf "id {A = ⟦ %s ⟧ᵀ} (%s)" . show . Agda
+withType :: (ToString v) => Term ConId v -> String -> String
+withType = printf "id {A = ⟦ %s ⟧ᵀ} (%s)" . show
 
 agdaList :: [String] -> String
 agdaList = unwords . intersperse "\n  ∷" . (++["[]"])
 
-toAgdaDefn :: System -> Term Void -> Result -> State (Map String Int) String
+toAgdaDefn :: System c -> Term ConId Void -> Result -> State (Map String Int) String
 toAgdaDefn sys goalType ret = case ret of
   (Solved     g p) ->
     return $ unlines
-      [ baseName++" : "++dataTypeName++" "++show (Agda g)
+      [ baseName++" : "++dataTypeName++" "++show g
       , baseName++" = "++show p
       , ""
       ]
   (Parsed s e g p) -> do
     n <- next s; let subn = sub n
     return . unlines $
-      [ synBaseName++subn++" : "++dataTypeName++" "++show (Agda g)
+      [ synBaseName++subn++" : "++dataTypeName++" "++show g
       , synBaseName++subn++" \n  = "++show p
-      , semBaseName++subn++" : ⟦ "++show (Agda goalType)++" ⟧ᵀ"
+      , semBaseName++subn++" : ⟦ "++show goalType++" ⟧ᵀ"
       , semBaseName++subn++" \n  = [ "++synBaseName++subn++" ]ᵀ ("++toCtxt sys s++")"
       , ""
       ]
@@ -109,16 +81,16 @@ toAgdaDefn sys goalType ret = case ret of
       ++
       [""]
   where
-    baseName     = getBaseName ret
+    baseName     = toBaseName ret
     synBaseName  = map toUpper baseName
     semBaseName  = map toLower baseName
     listBaseName = "LIST_"++baseName
     testBaseName = "TEST_"++baseName
-    dataTypeName = toAgdaDataType sys
+    dataTypeName = toAgdaName sys
 
 
 -- |Return a valid Agda file given a sequence of proofs.
-toAgdaFile :: String -> System -> [Result] -> Term Void -> String
+toAgdaFile :: String -> System c -> [Result] -> Term ConId Void -> String
 toAgdaFile moduleName sys prfs goalType =
   unlines (comment ++ [importStmts, "", moduleStmt, "", proofStmts])
   where

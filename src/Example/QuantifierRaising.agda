@@ -27,7 +27,7 @@ john_loves_bill₀ = [ JOHN_LOVES_BILL₀ ]ᵀ (john , loves , bill , ∅)
 JOHN_LOVES_EVERYONE1₀ : LG · np · ⊗ (· (np ⇒ s⁻) ⇐ np · ⊗ · (₁ np) ¹ ·) ⊢[ s⁻ ]
 JOHN_LOVES_EVERYONE1₀ = ⇁ (r⇒⊗ (r⇒⊗ (¹ᴸ  (r₁¹ (⇀ (₁ᴿ  (↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻))))))))))))
 john_loves_everyone1₀ : ⟦ s⁻ ⟧ᵀ
-john_loves_everyone1₀ = [ JOHN_LOVES_EVERYONE1₀ ]ᵀ (john , loves , everyone1 , ∅)
+1john_loves_everyone1₀ = [ JOHN_LOVES_EVERYONE1₀ ]ᵀ (john , loves , everyone1 , ∅)
 --> forAll (λ x → john LOVES x)
 
 SOMEONE1_LOVES_MARY₀ : LG · (₁ np) ¹ · ⊗ (· (np ⇒ s⁻) ⇐ np · ⊗ · np ·) ⊢[ s⁻ ]
