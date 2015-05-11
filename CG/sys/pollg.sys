@@ -1,0 +1,77 @@
+-- Polarised Lambek-Grishin calculus.
+
+
+set finite
+set structural
+set parse_with  = ⟨⟩ ⊗
+set agda_name   = LG
+set agda_module = Example.System.fLG
+
+
+-- Axioms.
+ax⁻  :  [ A ] ⊢ · A ·  where atomic A and negative A
+ax⁺  :  · B · ⊢ [ B ]  where atomic B and positive B
+
+-- Focusing and defocusing rules.
+⇁    :    X   ⊢ · B · →    X   ⊢ [ B ]  where negative B
+↽    :  · A · ⊢   Y   →  [ A ] ⊢   Y    where positive A
+⇀    :    X   ⊢ [ B ] →    X   ⊢ · B ·  where positive B
+↼    :  [ A ] ⊢   Y   →  · A · ⊢   Y    where negative A
+
+-- Rules for (□ , ◇).
+◇ᴸ   :  ⟨ · A · ⟩ ⊢     Y      →  · ◇ A · ⊢     Y
+◇ᴿ   :      X     ⊢   [ B ]    →  ⟨   X ⟩ ⊢ [ ◇ B ]
+□ᴸ   :    [ A ]   ⊢     Y      →  [ □ A ] ⊢ [   Y ]
+□ᴿ   :      X     ⊢ [ · B · ]  →      X   ⊢ · □ B ·
+r□◇  :      X     ⊢ [   Y   ]  →  ⟨   X ⟩ ⊢     Y
+r◇□  :  ⟨   X   ⟩ ⊢     Y      →      X   ⊢ [   Y ]
+
+
+-- Rules for (₀ , ⁰ , ₁ , ¹)
+₀ᴸ   :      Y     ⊢   [ A ]    →  [ ₀ A   ] ⊢   ₀ Y
+₀ᴿ   :      X     ⊢ ₀ · B ·    →      X     ⊢ · ₀ B   ·
+⁰ᴸ   :      Y     ⊢   [ A ]    →  [   A ⁰ ] ⊢     Y ⁰
+⁰ᴿ   :      X     ⊢   · B · ⁰  →      X     ⊢ ·   B ⁰ ·
+₁ᴸ   :  ₁ · A ·   ⊢     Y      →  · ₁ A   · ⊢     Y
+₁ᴿ   :    [ B ]   ⊢     X      →    ₁ X     ⊢ [ ₁ B   ]
+¹ᴸ   :    · A · ¹ ⊢     Y      →  ·   A ¹ · ⊢     Y
+¹ᴿ   :    [ B ]   ⊢     X      →      X ¹   ⊢ [   B ¹ ]
+r⁰₀  :      Y     ⊢     X   ⁰  →      X     ⊢   ₀ Y
+r₀⁰  :      Y     ⊢ ₀   X      →      X     ⊢     Y ⁰
+r¹₁  :      Y   ¹ ⊢     X      →    ₁ X     ⊢     Y
+r₁¹  :  ₁   Y     ⊢     X      →      X ¹   ⊢     Y
+
+
+-- Rules for (⇐ , ⊗ , ⇒)
+⊗ᴸ   :  · A · ⊗ · B · ⊢       Y        →  · A ⊗ B · ⊢     Y
+⇒ᴿ   :        X       ⊢ · A · ⇒ · B ·  →      X     ⊢ · A ⇒ B ·
+⇐ᴿ   :        X       ⊢ · B · ⇐ · A ·  →      X     ⊢ · B ⇐ A ·
+
+⊗ᴿ   : X ⊢ [ A ]  →    Y   ⊢ [ B ]  →    X ⊗ Y   ⊢ [ A ⊗ B ]
+⇒ᴸ   : X ⊢ [ A ]  →  [ B ] ⊢   Y    →  [ A ⇒ B ] ⊢   X ⇒ Y
+⇐ᴸ   : X ⊢ [ A ]  →  [ B ] ⊢   Y    →  [ B ⇐ A ] ⊢   Y ⇐ X
+
+r⇒⊗  :  Y ⊢ X ⇒ Z  →  X ⊗ Y ⊢ Z
+r⊗⇒  :  X ⊗ Y ⊢ Z  →  Y ⊢ X ⇒ Z
+r⇐⊗  :  X ⊢ Z ⇐ Y  →  X ⊗ Y ⊢ Z
+r⊗⇐  :  X ⊗ Y ⊢ Z  →  X ⊢ Z ⇐ Y
+
+-- Rules for (⇚ , ⊕ , ⇛)
+⊕ᴿ   :        X       ⊢ · B · ⊕ · A ·  →      X     ⊢ · B ⊕ A ·
+⇚ᴸ   :  · A · ⇚ · B · ⊢       X        →  · A ⇚ B · ⊢     X
+⇛ᴸ   :  · B · ⇛ · A · ⊢       X        →  · B ⇛ A · ⊢     X
+
+⊕ᴸ   :  [ B ] ⊢   Y    →  [ A ] ⊢ X  →  [ B ⊕ A ] ⊢  Y ⊕ X
+⇚ᴿ   :    X   ⊢ [ A ]  →  [ B ] ⊢ Y  →    X ⇚ Y   ⊢[ A ⇚ B ]
+⇛ᴿ   :    X   ⊢ [ A ]  →  [ B ] ⊢ Y  →    Y ⇛ X   ⊢[ B ⇛ A ]
+
+r⇚⊕  :  Z ⇚ X ⊢ Y  →  Z ⊢ Y ⊕ X
+r⊕⇚  :  Z ⊢ Y ⊕ X  →  Z ⇚ X ⊢ Y
+r⇛⊕  :  Y ⇛ Z ⊢ X  →  Z ⊢ Y ⊕ X
+r⊕⇛  :  Z ⊢ Y ⊕ X  →  Y ⇛ Z ⊢ X
+
+-- Grishin Distributives.
+d⇛⇐  :  X ⊗ Y ⊢ Z ⊕ W  →  Z ⇛ X ⊢ W ⇐ Y
+d⇛⇒  :  X ⊗ Y ⊢ Z ⊕ W  →  Z ⇛ Y ⊢ X ⇒ W
+d⇚⇒  :  X ⊗ Y ⊢ Z ⊕ W  →  Y ⇚ W ⊢ X ⇒ Z
+d⇚⇐  :  X ⊗ Y ⊢ Z ⊕ W  →  X ⇚ W ⊢ Z ⇐ Y

@@ -1,212 +1,285 @@
-{-# LANGUAGE RecordWildCards, RankNTypes #-}
-module CG.Parsing (lexicon,judgement,judgementVar,structure,structureVar,formula,formulaVar)where
+{-# LANGUAGE RecordWildCards, RankNTypes, TupleSections #-}
+module CG.Parsing (parseSystem
+                  ,parseLexicon
+                  ,parseGoal
+                  ,formula
+                  ,structure
+                  ,judgement
+                  )where
 
-
-import           Data.Char (isSpace)
-import           Data.List (nub)
-import           Data.Map (Map)
-import qualified Data.Map as M
-import           Data.Void (Void)
-import           Text.Parsec hiding (getInput)
-import           Text.Parsec.Combinator (sepBy1)
-import           Text.Parsec.Expr
-import           Text.Parsec.String (Parser)
-import           Text.Parsec.Language (LanguageDef,haskellStyle)
-import           Text.Parsec.Token (TokenParser,GenTokenParser(..),GenLanguageDef(..))
-import qualified Text.Parsec.Token as P
 
 import           CG.Base
-import           CG.Printing (Agda(..),ASCII(..))
+import           Data.Char (isSpace)
+import           Data.List (nub,isPrefixOf)
+import           Data.Void (Void)
+import           Data.Map (Map)
+import qualified Data.Map as M
+import           Text.Parsec hiding (option)
+import           Text.Parsec.Expr
+import           Text.Parsec.Error (setErrorPos)
+import           Text.Parsec.String (Parser)
+import           Text.Parsec.Language (LanguageDef,haskellStyle)
+import           Text.Parsec.Token (TokenParser,GenTokenParser(..),GenLanguageDef(..),makeTokenParser)
 
 
--- * Export-ready parsers
+-- * Variable Parsing
 
--- |Parse a formula without variables.
-formula      :: Parser (Term Void)
-formula      = formula' void
+class VarParser v where
+  formulaVar   :: Parser v
+  structureVar :: Parser v
 
--- |Parse a structure without variables.
-structure    :: Parser (Term Void)
-structure    = structure' void void
+instance VarParser Void where
+  formulaVar   = oneOf "ABCD" *> unexpected "Variables {A,B,C,D} are not allowed."
+  structureVar = oneOf "XYZW" *> unexpected "Variables {X,Y,Z,W} are not allowed."
 
--- |Parse a judgement without variables.
-judgement    :: Parser (Term Void)
-judgement    = judgement' void void
-
--- |Parse a formula using (A,B,C,D) as variables.
-formulaVar   :: Parser (Term String)
-formulaVar   = formula' varForFormula
-
--- |Parse a structure using (A,B,C,D) and (X,Y,Z,W) as variables.
-structureVar :: Parser (Term String)
-structureVar = structure' varForFormula varForStructure
-
--- |Parse a judgement using (A,B,C,D) and (X,Y,Z,W) as variables.
-judgementVar :: Parser (Term String)
-judgementVar = judgement' varForFormula varForStructure
+instance VarParser Char where
+  formulaVar   = lexeme cg (oneOf "ABCD") <?> "formula variable"
+  structureVar = lexeme cg (oneOf "XYZW") <?> "structure variable"
 
 
-lexicon :: Parser (Map String (Term Void))
+-- * Language Definition
+
+cgDef :: LanguageDef st
+cgDef = haskellStyle
+  { identStart    = identLetter cgDef
+  , identLetter   = satisfy (\c -> not (isSpace c || c `elem` "()"))
+  , opStart       = opLetter cgDef
+  , opLetter      = oneOf "()"
+  , reservedNames = let
+
+    reservedNames   = ["where","and","atomic","positive","negative"]
+    reservedOpNames = nub (map show operators ++ map (show . ASCII) operators)
+    operators       = concat [unaryLogical ,unaryStructural
+                             ,binaryLogical,binaryStructural
+                             ,sequents, [Down]]
+
+    in reservedNames ++ reservedOpNames
+  }
+
+cg :: TokenParser st
+cg = makeTokenParser cgDef
+
+
+-- * Term Parsing
+
+con :: ConId -> Parser ()
+con c = reserved (show c) <|> reserved (show (ASCII c))
+  where
+    TokenParser{..} = cg
+
+con' :: ConId -> Parser ()
+con' c = do symbol (show c) <|> symbol (show (ASCII c)); return ()
+  where
+    TokenParser{..} = cg
+
+infl c = Infix   (con c *> return (binary c)) AssocLeft
+infr c = Infix   (con c *> return (binary c)) AssocRight
+pref c = Prefix  (con c *> return (unary  c))
+post c = Postfix (con c *> return (unary  c))
+
+
+atom :: Parser (Term ConId v)
+atom = do
+  let TokenParser{..} = cg
+  x <- identifier
+  return . nullary $
+    if last x `elem` "⁻'"
+      then NegAtom (init x)
+      else PosAtom       x
+
+
+formulaWithVar :: Parser (Term ConId Char)
+formulaWithVar = formula
+
+formula :: VarParser v => Parser (Term ConId v)
+formula =
+  buildExpressionParser table (parens formula <|> fvar <|> atom)
+  where
+    TokenParser{..} = cg
+    fvar  = Var <$> formulaVar
+    table =
+      [ [ pref F0L   , post F0R   , pref FBox
+        , pref F1L   , post F1R   , pref FDia  ]
+      , [ infl FSubL , infl FImpL , infl HImpL
+        , infr FSubR , infr FImpR , infr HImpR ]
+      , [ infr FProd , infl FPlus , infr HProd ]
+      ]
+
+
+structureWithVar :: Parser (Term ConId Char)
+structureWithVar = structure
+
+structure :: VarParser v => Parser (Term ConId v)
+structure =
+  buildExpressionParser table (parens structure <|> sdia <|> sbox <|> svar <|> down)
+  where
+    TokenParser{..} = cg
+
+    svar    = Var <$> structureVar
+    down    = unary Down <$> cdots formula <?> "down operator"
+    sdia    = unary SDia <$> (angles structure <|> rangles structure)
+    sbox    = unary SBox <$> (brackets structure)
+    cdots   = between (con Down)   (con Down)
+    rangles = between (symbol "⟨") (symbol "⟩")
+    table   =
+      [ [ pref S0L   , post S0R   , pref S1L   , post S1R   ]
+      , [ infl SSubL , infl SImpL , infr SSubR , infr SImpR ]
+      , [ infr SProd , infl SPlus ]
+      , [ infr Comma ]
+      ]
+
+
+judgementWithVar :: Parser (Term ConId Char)
+judgementWithVar = judgement
+
+judgement :: VarParser v => Parser (Term ConId v)
+judgement =
+  spaces *> (try (try jstruct <|> (try jfocusl <|> jfocusr)) <|> jalgebr)
+  where
+    TokenParser{..} = cg
+
+    jstruct = binary JStruct <$> structure        <* con' JStruct <*> structure
+    jfocusl = binary JFocusL <$> brackets formula <* con' JFocusL <*> structure
+    jfocusr = binary JFocusR <$> structure        <* con' JFocusL <*> brackets formula
+    jalgebr = binary JAlgebr <$> formula          <* con' JAlgebr <*> formula
+
+
+lexicon :: Parser (Map String (Term ConId Void))
 lexicon = M.fromList <$> many1 entry
   where
-    entry :: Parser (String, Term Void)
+    TokenParser{..} = cg
     entry = (,) <$> identifier <* symbol ":" <*> formula
-      where
-        TokenParser{..} = lexer
+
+
+guard' :: Parser (Term ConId Char -> Guard ConId)
+guard' =
+  do reserved "where"
+     gs <- sepBy1 single (reserved "and")
+     if null gs
+       then unexpected "panic!"
+       else return (foldr1 and gs)
+  where
+    TokenParser{..} = cg
+    and f g x = f x `And` g x
+    single    = predicate <*> formulaVar
+    predicate = choice
+      [ reserved "atomic"   *> return atomic
+      , reserved "positive" *> return positive
+      , reserved "negative" *> return negative
+      ]
 
 
 rule :: Parser (Rule ConId Int)
 rule = do
-  n  <- ruleName
-  _  <- colon
-  js <- sepBy1 judgementVar ruleSep
+  n  <- identifier
+  _  <- symbol ":"
+  js <- sepBy1 judgement sep
+
   let ps   = init js
   let c    = last js
-  let rule = mkRule ps c n
-  mb <- optionMaybe guards
-  return $ case mb of
-   Just mkG -> rule { guard = runGuard (mkG c) }
-   _        -> rule
+  let rule = mkRule n ps c
+
+  mb <- optionMaybe guard'
+  return $
+    case mb of
+     Just mk -> rule { guard = mk c }
+     _       -> rule
+
   where
-    TokenParser{..} = lexer
-    ruleName = lexeme (many1 (satisfy (not . isSpace))) <?> "Rule Name"
-    ruleSep  = symbol "→" <|> symbol "-->"
+    TokenParser{..} = cg
+    sep = symbol "→" <|> symbol "-->"
 
-newtype Guard = Guard { runGuard :: forall v. Term v -> Bool }
 
-guards :: Parser (Term String -> Guard)
-guards = do lexeme (string "where")
-            gs <- sepBy1 guard' (lexeme (string "and"))
-            return (foldr1 gplus gs)
+option :: Parser Option
+option = do
+  symbol "set"
+  choice (map try
+    [ symbol "finite"      *> return (IsFinite True)
+    , symbol "infinite"    *> return (IsFinite False)
+    , symbol "algebraic"   *> return (IsStructural False)
+    , symbol "structural"  *> return (IsStructural True)
+    , symbol "agda_name"   *> symbol "=" *> (AgdaName   <$> many1 (satisfy (not . isSpace)))
+    , symbol "agda_module" *> symbol "=" *> (AgdaModule <$> many1 (satisfy (not . isSpace)))
+    , symbol "parse_with"  *> symbol "=" *> (ParseWith  <$> pParseWith)
+    ])
+    <?> "option"
+    where
+      TokenParser{..} = cg
+      pParseWith :: Parser [ParseWith]
+      pParseWith = many1 (useBinary <|> useUnary)
+        where
+          useOp opt = choice . map (\c -> con c >> return (opt c))
+          useUnary  = useOp UseUnary  (unaryLogical  ++ unaryStructural)
+          useBinary = useOp UseBinary (binaryLogical ++ binaryStructural)
+
+
+-- * Options
+
+data Option
+  = IsFinite Bool
+  | IsStructural Bool
+  | ParseWith [ParseWith]
+  | AgdaName String
+  | AgdaModule String
+  deriving Show
+
+data ParseWith
+  = UseUnary ConId
+  | UseBinary ConId
+  deriving Show
+
+
+-- |Handle options for proof systems.
+handle :: [Option] -> System ConId
+handle = foldr handleOpt emptySystem
   where
-    TokenParser{..} = lexer
+    handleOpt (IsFinite     b) s = s { finite     = b }
+    handleOpt (IsStructural b) s = s { structural = b }
+    handleOpt (AgdaName     n) s = s { agdaName   = Just n }
+    handleOpt (AgdaModule   n) s = s { agdaModule = Just n }
+    handleOpt (ParseWith    x) s = foldr handlePW s x
 
-    gplus :: (Term String -> Guard) -> (Term String -> Guard) -> Term String -> Guard
-    gplus f g c = Guard (\x -> runGuard (f c) x && runGuard (g c) x)
-
-    guard' :: Parser (Term String -> Guard)
-    guard' = do p <- pred; k <- varForFormula; return (\c -> mkG p k c)
-      where
-        pred :: Parser Guard
-        pred = choice . map (\(n,g) -> lexeme (string n) *> return g) $
-               [ ("atomic"   , Guard isAtomic)
-               , ("positive" , Guard isPositive)
-               , ("negative" , Guard isNegative)
-               ]
-
-        mkG :: Guard -> String -> Term String -> Guard
-        mkG p _ (Var i) = Guard mkG' where
-          mkG' :: forall v'. Term v' -> Bool
-          mkG' (Var _) = True
-          mkG'      y  = runGuard p y
-        mkG p k (Con x xs) = Guard mkG' where
-          mkG' :: forall v'. Term v' -> Bool
-          mkG' (Var _)             = True
-          mkG' (Con y ys) | x == y = and (zipWith (runGuard . mkG p k) xs ys)
-          mkG' _                   = False
-
+    handlePW (UseUnary  op) = addUnary  op
+    handlePW (UseBinary op) = addBinary op
 
 
 -- * Parsers
 
-void :: Parser Void
-void = unexpected "Variables A,B,C,D and X,Y,Z,W are not allowed."
+parseGoal :: String -> IO (Term ConId Void)
+parseGoal str = case parse formula "" str of
+  Left  e -> fail ("Could not parse goal formula `"++show str++"'.\n"++show e)
+  Right x -> return x
 
+parseLexicon :: FilePath -> IO (Map String (Term ConId Void))
+parseLexicon lexiconFile = do
+  lexiconContent <- readFile lexiconFile
+  case parse lexicon lexiconFile lexiconContent of
+   Left  e -> fail ("Could not parse lexicon.\n"++show e)
+   Right l -> return l
 
-con :: ConId -> Parser ()
-con c = reservedOp (show (Agda c)) <|> reservedOp (show (ASCII c))
+parseSystem :: FilePath -> IO (System ConId)
+parseSystem systemFile = go <$> readFile systemFile
   where
-    TokenParser{..} = lexer
+    go contents = sys { rules = rules }
+      where
+        TokenParser{..} = cg
 
+        (rawOpts,rawRules)
+          = span (isOption . snd)            -- break at first non-option
+            $ filter (not . isComment . snd) -- filter out all comments
+            $ zip [1..]                      -- add line numbers
+            $ lines contents                 -- split lines
 
-formula' :: (IsVar v) => Parser v -> Parser (Term v)
-formula' fv =
-  buildExpressionParser table (parens form <|> (Var <$> fv) <|> atom)
-  where
-    TokenParser{..} = lexer
-    form   = formula' fv                     <?> "formula"
-    atom   = (nullary . Atom) <$> identifier
+        opts  = map (parseOrError option systemFile) rawOpts
+        rules = map (parseOrError rule   systemFile) rawRules
+        sys   = handle opts
 
-    op   c = Infix   (con c >> return (binary c))
-    pre  c = Prefix  (con c >> return (unary c))
-    post c = Postfix (con c >> return (unary c))
+        isOption  ln = "set" `isPrefixOf` ln
+        isComment ln = case parse (whiteSpace *> eof) "" ln of
+          Left  _ -> False
+          Right _ -> True
 
-    table =
-      [ [pre F0L , post F0R , pre F1L , post F1R
-        ,pre FBox           , pre FDia           ]
-      , [op FSubL AssocLeft , op FSubR AssocRight
-        ,op FImpR AssocRight, op FImpL AssocLeft
-        ,op HImpR AssocRight, op HImpL AssocLeft ]
-      , [op FProd AssocRight, op FPlus AssocLeft
-        ,op HProd AssocRight                     ]
-      ]
-
-
-structure' :: (IsVar v) => Parser v -> Parser v -> Parser (Term v)
-structure' fv sv =
-  buildExpressionParser table (parens struct <|> sdia <|> sbox <|> var <|> form)
-  where
-    TokenParser{..} = lexer
-    struct = structure' fv sv                               <?> "structure"
-    form   = unary Down <$> between cdot cdot (formula' fv) <?> "formula"
-    var    = Var <$> sv                                     <?> "variable"
-
-    op   c = Infix   (con c >> return (binary c))
-    pre  c = Prefix  (con c >> return (unary c))
-    post c = Postfix (con c >> return (unary c))
-
-    sdia   = unary SDia <$> (angles struct <|> between ropen rclose struct)
-    sbox   = unary SBox <$> brackets struct
-
-    cdot   = symbol "." <|> symbol "·"
-    ropen  = symbol "⟨"
-    rclose = symbol "⟩"
-
-    table  =
-      [ [pre S0L , post S0R , pre S1L , post S1R ]
-      , [op SSubL AssocLeft , op SSubR AssocRight
-        ,op SImpR AssocRight, op SImpL AssocLeft ]
-      , [op SProd AssocRight, op SPlus AssocLeft ]
-      , [op Comma AssocRight]
-      ]
-
-
-judgement' :: (IsVar v) => Parser v -> Parser v -> Parser (Term v)
-judgement' fv sv =
-  spaces *> (try (try jstruct <|> (try jfocusl <|> jfocusr)) <|> jform)
-  where
-    TokenParser{..} = lexer
-    form   = formula'   fv
-    struct = structure' fv sv
-
-    jstruct = binary JStruct <$> struct        <* con JStruct <*> struct
-    jfocusl = binary JFocusL <$> brackets form <* con JFocusL <*> struct
-    jfocusr = binary JFocusR <$> struct        <* con JFocusL <*> brackets form
-    jform   = binary JForm   <$> form          <* con JForm   <*> form
-
-
-lexerDef :: LanguageDef st
-lexerDef = haskellStyle
-  { identStart      = letter <|> oneOf "⊥"
-  , identLetter     = alphaNum <|> oneOf "_'⁻⁺⊥"
-  , opStart         = opLetter lexerDef
-  , opLetter        = oneOf "*><+-~=|⊗⇐⇒⊕⇚⇛⊢∘⇨⇦,"
-  , reservedOpNames = nub $ concatMap (\x -> [show (Agda x), show (ASCII x)])
-                      [FProd, FImpR, FImpL, FPlus, FSubL, FSubR
-                      ,SProd, SImpR, SImpL, SPlus, SSubL, SSubR
-                      ,Comma
-                      ,HProd, HImpR, HImpL
-                      ,F0L  , F0R  , FBox , F1L  , F1R  , FDia
-                      ,JForm, JStruct, JFocusL, JFocusR]
-  }
-
-
-lexer :: TokenParser st
-lexer = P.makeTokenParser lexerDef
-
-
-varForFormula :: Parser String
-varForFormula = lexeme lexer ((:[]) <$> oneOf "ABCD")
-
-varForStructure :: Parser String
-varForStructure = lexeme lexer ((:[]) <$> oneOf "XYZW")
+    parseOrError :: Parser a -> FilePath -> (Line, String) -> a
+    parseOrError p fn (n,str) = case parse p fn str of
+      Left  e -> error (show (setErrorPos (setSourceLine (errorPos e) n) e))
+      Right x -> x

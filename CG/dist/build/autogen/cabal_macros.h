@@ -7,6 +7,13 @@
   (major1) == 4 && (major2) <  8 || \
   (major1) == 4 && (major2) == 8 && (minor) <= 0)
 
+/* package cereal-0.4.1.1 */
+#define VERSION_cereal "0.4.1.1"
+#define MIN_VERSION_cereal(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  4 || \
+  (major1) == 0 && (major2) == 4 && (minor) <= 1)
+
 /* package containers-0.5.6.2 */
 #define VERSION_containers "0.5.6.2"
 #define MIN_VERSION_containers(major1,major2,minor) (\
@@ -154,5 +161,5 @@
   (major1) == 0 && (major2) <  28 || \
   (major1) == 0 && (major2) == 28 && (minor) <= 0)
 
-#define CURRENT_PACKAGE_KEY "CG_DTwIY0ObeNW9LgRKWmKpsk"
+#define CURRENT_PACKAGE_KEY "CG_C9MTUyr6bNF3vouKA2PsiE"
 

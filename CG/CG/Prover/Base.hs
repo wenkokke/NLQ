@@ -1,14 +1,29 @@
-{-# LANGUAGE GADTs, RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DeriveGeneric #-}
+{-# LANGUAGE GADTs, RankNTypes, FlexibleInstances, FlexibleContexts,
+    UndecidableInstances, DeriveGeneric, DeriveFunctor, DeriveFoldable,
+    DeriveTraversable, StandaloneDeriving, RecordWildCards #-}
 module CG.Prover.Base where
 
+
 import Control.Monad.State (MonadState(..),evalState)
-import Control.DeepSeq (NFData)
-import Data.Hashable (Hashable)
-import Data.IntMap as IM (IntMap,lookup)
-import Data.Map as M (lookup,empty,insert)
-import Data.Void (Void,absurd)
-import Data.Void.Unsafe (unsafeVacuous)
-import GHC.Generics
+import Control.DeepSeq     (NFData)
+import Data.Char           (ord)
+import Data.Hashable       (Hashable)
+import Data.Serialize      (Serialize)
+import Data.IntMap as IM   (IntMap,lookup,empty,insert)
+import Data.List           (intersperse)
+import Data.Void           (Void,absurd)
+import Data.Void.Unsafe    (unsafeVacuous)
+import GHC.Generics        (Generic)
+
+
+-- * Special Show instance for String
+
+class    ToString a      where toString :: a -> String
+instance ToString Bool   where toString = (++" ") . show
+instance ToString Int    where toString = (++" ") . show
+instance ToString Void   where toString = absurd
+instance ToString String where toString = (++" ")
+instance ToString Char   where toString = (:" ")
 
 
 -- * Terms
@@ -19,33 +34,86 @@ data Term c v where
   deriving (Eq,Ord,Generic)
 
 
-instance Functor (Term c) where
-  fmap f (Var i)    = Var (f i)
-  fmap f (Con x xs) = Con x (map (fmap f) xs)
+deriving instance Functor (Term c)
+deriving instance Foldable (Term c)
+deriving instance Traversable (Term c)
+instance (Hashable  c, Hashable  v) => Hashable  (Term c v)
+instance (NFData    c, NFData    v) => NFData    (Term c v)
+instance (Serialize c, Serialize v) => Serialize (Term c v)
 
 
-upperBound :: Term c Int -> Int
-upperBound (Var i   ) = i
-upperBound (Con _ xs) =
-  let vs = map upperBound xs in if null vs then 0 else maximum vs
+-- |A class which defines a printable operator. The @prec@ function
+--  returns the precedence of the operator. The @template@ function
+--  is a generalisation of the fixity, where the operator can be
+--  anything that knows how to print itself.
+class Operator a where
+  prec     :: a -> Int
+  template :: a -> ([ShowS] -> ShowS)
 
 
-castVar :: Term c Void -> Term c v
-castVar = unsafeVacuous
+instance Operator String where
+  prec     _    = 0
+  template x [] = showString x
+  template x xs =
+    showParen True (foldr (.) id (intersperse (showChar ' ') (showString x : xs)))
 
 
-instance (Hashable c, Hashable v) => Hashable (Term c v)
-instance (NFData   c, NFData   v) => NFData (Term c v)
+instance (Operator c, ToString v) => Show (Term c v) where
+  showsPrec _ (Var i)    =
+    showString (toString i)
+  showsPrec p (Con x xs) = let q = prec x in
+    showParen (p > 0 && q > 0 && p >= q) (template x (map (showsPrec q) xs))
 
 
-instance (Show v) => Show (Term String v) where
-  showsPrec _ (Var i)    = shows i
-  showsPrec _ (Con f []) = showString f
-  showsPrec p (Con f xs) =
-    showParen (p >= 1) $ showString f . showSeq (showsPrec 1) xs
-    where
-      showSeq _  []     = id
-      showSeq ss (x:xs) = showChar ' ' . ss x . showSeq ss xs
+-- * Guards
+
+class (Eq c) => Guardable c where
+  isAtomic   :: Term c v -> Bool
+  isPositive :: Term c v -> Bool
+  isNegative :: Term c v -> Bool
+
+
+data Guard c
+  = Any
+  | Atomic   (Term c Bool)
+  | Positive (Term c Bool)
+  | Negative (Term c Bool)
+  | And (Guard c) (Guard c)
+  deriving (Eq,Ord,Show,Generic)
+
+
+instance (Hashable  c) => Hashable  (Guard c)
+instance (NFData    c) => NFData    (Guard c)
+instance (Serialize c) => Serialize (Guard c)
+
+
+-- |Construct a given primitive guard, together with its arguments, into a
+--  guarding function. Used internally in @runGuard@.
+mkGuard :: (Guardable c)
+           => (forall v'. Term c v' -> Bool)
+           -> Term c Bool
+           -> (forall v'. Term c v' -> Bool)
+mkGuard _      _     (Var _)             = True
+mkGuard p (Var True)      y              = p y
+mkGuard _ (Var _   )      _              = True
+mkGuard p (Con x xs) (Con y ys) | x == y = and (zipWith (mkGuard p) xs ys)
+mkGuard _      _          _              = False
+
+
+-- |Run a guard, checking if the given Term has all the desired properties.
+runGuard :: (Guardable c) => Guard c -> (forall v. Term c v -> Bool)
+runGuard  Any         = const True
+runGuard (Atomic   c) = mkGuard isAtomic   c
+runGuard (Positive c) = mkGuard isPositive c
+runGuard (Negative c) = mkGuard isNegative c
+runGuard (gd `And` gd2) = \x -> runGuard gd x && runGuard gd2 x
+
+
+-- |Smart constructors for guards.
+atomic, positive, negative :: (Eq v) => v -> Term c v -> Guard c
+atomic   x = Atomic   . fmap (==x)
+positive x = Positive . fmap (==x)
+negative x = Negative . fmap (==x)
 
 
 -- * Rules
@@ -54,29 +122,40 @@ type RuleId = String
 
 data Rule c v = Rule
   { name       :: ! RuleId
-  , guard      :: forall v'. Term c v' -> Bool
+  , guard      :: ! (Guard c)
   , arity      :: ! Int
-  , numVars    :: ! Int
   , premises   :: ! [Term c v]
   , conclusion :: ! (Term c v)
   }
+  deriving (Eq,Ord,Generic)
 
-mkRule :: [Term c String] -> Term c String -> RuleId -> Rule c Int
-mkRule ps c n = Rule n (const True) (length ps) (upperBound c') ps' c'
+
+deriving instance Functor (Rule c)
+deriving instance Foldable (Rule c)
+deriving instance Traversable (Rule c)
+instance (Hashable  c, Hashable  v) => Hashable  (Rule c v)
+instance (NFData    c, NFData    v) => NFData    (Rule c v)
+instance (Serialize c, Serialize v) => Serialize (Rule c v)
+
+
+-- |Construct a @Rule@ from a @RuleId@, a list of premises and a conclusion.
+mkRule :: RuleId -> [Term c Char] -> Term c Char -> Rule c Int
+mkRule n ps c = Rule n Any (length ps) ps' c'
   where
+    (c' : ps') = evalState (mapM (mapM label) (c : ps)) (0, IM.empty)
 
-    (c' : ps') = evalState (mapM lbl (c : ps)) (0, M.empty)
-
-    lbl (Var x) = do (i, vm) <- get
-                     case M.lookup x vm of
-                      Just j -> return (Var j)
-                      _      -> do put (i + 1, M.insert x i vm); return (Var i)
-    lbl (Con x xs) = fmap (Con x) (mapM lbl xs)
+    label x =
+      do (i, vm) <- get
+         case IM.lookup (ord x) vm of
+          Just j -> return j
+          _      -> do put (i + 1, IM.insert (ord x) i vm); return i
 
 
-instance (Show c, Show v, Show (Term c v)) => Show (Rule c v) where
-  showsPrec _ (Rule n _ _ _ ps c) =
-    showParen True (showList ps . showString " ⟶ " . shows c) . showChar ' ' . showString n
+
+instance (Show c, ToString v, Show (Term c v)) => Show (Rule c v) where
+  showsPrec _ (Rule n g _ ps c) =
+    (showString (n++" : ")) .
+    (foldr1 (.) (intersperse (showString "→ ") (map shows (ps ++ [c]))))
 
 
 -- * Substitutions
@@ -92,3 +171,52 @@ subst s = app where
 
   app (Con x xs) = Con x <$> mapM app xs
   app (Var i   ) = IM.lookup i s
+
+
+-- * Systems
+
+data System c = System
+  { finite     :: Bool
+  , structural :: Bool
+  , rules      :: [Rule c Int]
+
+    -- options related to parsing
+  , unaryOp    :: Maybe c
+  , binaryOp   :: [c]
+
+    -- options related to Agda generation
+  , agdaName   :: Maybe String
+  , agdaModule :: Maybe String
+  }
+  deriving (Eq,Ord,Show,Generic)
+
+
+instance (Hashable  c) => Hashable  (System c)
+instance (NFData    c) => NFData    (System c)
+instance (Serialize c) => Serialize (System c)
+
+
+-- |The minimal system. All it is missing is a binary operator.
+emptySystem :: System c
+emptySystem = System
+  { finite     = False
+  , structural = False
+  , rules      = []
+
+  , unaryOp    = Nothing
+  , binaryOp   = []
+
+  , agdaName   = Nothing
+  , agdaModule = Nothing
+  }
+
+addUnary :: c -> System c -> System c
+addUnary op sys = case unaryOp sys of
+  Nothing -> sys { unaryOp = Just op }
+  Just _  -> error "Cannot parse using more than one unary operator."
+
+addBinary :: c -> System c -> System c
+addBinary op sys@System{..} = sys { binaryOp = binaryOp ++ [op] }
+
+addRule :: Rule c Int -> System c -> System c
+addRule rule sys@System{..} = sys { rules = rules ++ [rule] }

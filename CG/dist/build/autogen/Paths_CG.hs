@@ -17,7 +17,7 @@ version = Version [0,1,0,0] []
 bindir, libdir, datadir, libexecdir, sysconfdir :: FilePath
 
 bindir     = "/Users/pepijn/.cabal/bin"
-libdir     = "/Users/pepijn/.cabal/lib/x86_64-osx-ghc-7.10.1/CG_DTwIY0ObeNW9LgRKWmKpsk"
+libdir     = "/Users/pepijn/.cabal/lib/x86_64-osx-ghc-7.10.1/CG_C9MTUyr6bNF3vouKA2PsiE"
 datadir    = "/Users/pepijn/.cabal/share/x86_64-osx-ghc-7.10.1/CG-0.1.0.0"
 libexecdir = "/Users/pepijn/.cabal/libexec"
 sysconfdir = "/Users/pepijn/.cabal/etc"
