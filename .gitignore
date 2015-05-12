@@ -1,7 +1,10 @@
 .DS_Store
 .shake.database
-html
-depr
+dist/
+.cabal-sandbox/
+cabal.sandbox.config
+html/
+depr/
 *.o
 *.hi
 *.agdai
@@ -13,8 +16,8 @@ depr
 *.ind
 *.out
 *.pdf
-flycheck_*.tex
-flycheck_*.hs
+flycheck_*
+flycheck_*
 TAGS
 QUESTIONS.pdf
 Prover/Main
@@ -56,3 +59,4 @@ src/Logic/Classical/Ordered/Experimental/Type.agda
 src/Logic/Classical/Ordered/Experimental/Type/
 src/MAlonzo/
 src/QuantifierRaising
+
