@@ -60,3 +60,8 @@ src/Logic/Classical/Ordered/Experimental/Type/
 src/MAlonzo/
 src/QuantifierRaising
 
+src/Logic/Classical/Ordered/Experimental/Judgement/ToLaTeX.agda
+src/Logic/Classical/Ordered/Experimental/ResMon/ToLaTeX.agda
+src/Logic/Intuitionistic/Linear/Lambda/ToLaTeX.agda
+Setup.hs
+src/Logic/Classical/Ordered/Experimental/ToLaTeX.agda
