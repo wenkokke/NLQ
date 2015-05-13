@@ -1,17 +1,22 @@
-the       : np ⇐ n
-unicorn   : n
-teacher   : n
-waiter    : n
-smiles    : (dp ⇒ s)
-left      : (dp ⇒ s)
-loves     : ((dp ⇒ s) ⇐ dp)
-saw       : ((dp ⇒ s) ⇐ dp)
-served    : ((dp ⇒ s) ⇐ dp)
-nice      : (n ⇐ n)
-old       : (n ⇐ n)
 john      : dp
 mary      : dp
 bill      : dp
+
+unicorn   : n
+teacher   : n
+
+left      : (dp ⇒ s)
+smiles    : (dp ⇒ s)
+cheats    : (dp ⇒ s)
+
+saw       : ((dp ⇒ s) ⇐ dp)
+loves     : ((dp ⇒ s) ⇐ dp)
+serves    : ((dp ⇒ s) ⇐ dp)
+
+the       : np ⇐ n
+waiter    : n
+nice      : (n ⇐ n)
+old       : (n ⇐ n)
 everyone  : s ⇦ (dp ⇨ s)
 someone   : s ⇦ (dp ⇨ s)
 same1     : n ⇦ ((n ⇐ n) ⇨ n)

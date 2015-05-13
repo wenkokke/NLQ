@@ -1,0 +1,48 @@
+-- Variant of Michael Moortgat's modal analysis of in situ binding.
+
+
+set finite
+set algebraic
+set parse_with  = ⊗
+set agda_name   = NL
+set agda_module = Example.System.InSitu
+
+
+-- Axiom.
+ax   :   A ⊢ A  where atomic A
+
+-- Rules for (□ , ◇)
+m□   :    A ⊢   B  →  □ A ⊢ □ B
+m◇   :    A ⊢   B  →  ◇ A ⊢ ◇ B
+r□◇  :    A ⊢ □ B  →  ◇ A ⊢   B
+r◇□  :  ◇ A ⊢   B  →    A ⊢ □ B
+
+-- Rules for (⇐ , ⊗ , ⇒)
+m⊗   :  A ⊢ B  →  C ⊢ D  →  A ⊗ C ⊢ B ⊗ D
+m⇒   :  A ⊢ B  →  C ⊢ D  →  B ⇒ C ⊢ A ⇒ D
+m⇐   :  A ⊢ B  →  C ⊢ D  →  A ⇐ D ⊢ B ⇐ C
+r⇒⊗  :  B ⊢ A ⇒ C  →  A ⊗ B ⊢ C
+r⊗⇒  :  A ⊗ B ⊢ C  →  B ⊢ A ⇒ C
+r⇐⊗  :  A ⊢ C ⇐ B  →  A ⊗ B ⊢ C
+r⊗⇐  :  A ⊗ B ⊢ C  →  A ⊢ C ⇐ B
+
+-- Rules for (⇐ , ⊗ , ⇒)
+m∘   :  A ⊢ B  →  C ⊢ D  →  A ∘ C ⊢ B ∘ D
+m⇨   :  A ⊢ B  →  C ⊢ D  →  B ⇨ C ⊢ A ⇨ D
+m⇦   :  A ⊢ B  →  C ⊢ D  →  A ⇦ D ⊢ B ⇦ C
+r⇨∘  :  B ⊢ A ⇨ C  →  A ∘ B ⊢ C
+r∘⇨  :  A ∘ B ⊢ C  →  B ⊢ A ⇨ C
+r⇦∘  :  A ⊢ C ⇦ B  →  A ∘ B ⊢ C
+r∘⇦  :  A ∘ B ⊢ C  →  A ⊢ C ⇦ B
+
+-- Rules for (I , L , R)
+mI   :  I ⊢ I
+mL   :  L ⊢ L
+mR   :  R ⊢ R
+
+Iᵢ   :  A ∘ I ⊢ B  →  ◇ A ⊢ B
+Iₑ   :  ◇ A ⊢ B  →  A ∘ I ⊢ B
+Lᵢ   :  B ∘ ((L ⊗ A) ⊗ C) ⊢ D  →  A ⊗ (B ∘ C) ⊢ D
+Lₑ   :  A ⊗ (B ∘ C) ⊢ D  →  B ∘ ((L ⊗ A) ⊗ C) ⊢ D
+Rᵢ   :  A ∘ ((R ⊗ B) ⊗ C) ⊢ D  →  (A ∘ B) ⊗ C ⊢ D
+Rₑ   :  (A ∘ B) ⊗ C ⊢ D  →  A ∘ ((R ⊗ B) ⊗ C) ⊢ D

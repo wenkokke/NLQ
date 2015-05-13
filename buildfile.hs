@@ -81,6 +81,7 @@ main = shakeArgs shakeOptions $ do
 
     header  <- readFile' "Header"
     headers <- mapM (liftIO . extractHeader) modules
+
     writeFile' out $ header ++ format (zip modules headers)
 
   -- Generate: Listings
@@ -258,6 +259,7 @@ lambda =
                      ,"Logic/Classical/Ordered/LambekGrishin/Type/Context/Polarised.agda"
                      ,"Logic/Classical/Ordered/LambekGrishin/Type/Polarised.agda"
                      ,"Logic/Classical/Ordered/LambekGrishin/Type/Subtype.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/Type/ToLaTeX.agda"
                      ]
   }
 
@@ -275,6 +277,7 @@ linearLambda =
                      ]
   , include        = ["Logic/Intuitionistic/Unrestricted/Lambda/Base.agda"
                      ,"Logic/Intuitionistic/Unrestricted/Lambda/Permute.agda"
+                     ,"Logic/Intuitionistic/Unrestricted/Lambda/ToLaTeX.agda"
                      ]
   }
 
