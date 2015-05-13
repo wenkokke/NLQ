@@ -1,13 +1,20 @@
-unicorn    : n
-teacher    : n
-nice       : (n ⇐ n)
-old        : (n ⇐ n)
 john       : np
 mary       : np
 bill       : np
-smiles     : (np ⇒ s⁻)
+
+unicorn    : n
+teacher    : n
+
 left       : (np ⇒ s⁻)
+smiles     : (np ⇒ s⁻)
 cheats     : (np ⇒ s⁻)
+
+saw        : ((np ⇒ s⁻) ⇐ np)
+loves      : ((np ⇒ s⁻) ⇐ np)
+serves     : ((np ⇒ s⁻) ⇐ np)
+
+nice       : (n ⇐ n)
+old        : (n ⇐ n)
 teases     : ((np ⇒ s⁻) ⇐ np)
 loves      : ((np ⇒ s⁻) ⇐ np)
 thinks     : ((np ⇒ s⁻) ⇐ s⁻)

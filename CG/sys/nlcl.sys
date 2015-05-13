@@ -6,9 +6,22 @@
 -- Slight modifications have been made, in order to eliminate
 -- the necessity for a `cut' rule, which speeds up the search
 -- considerably.
--- However, the admissibility of reflexivity depends on the presence
--- of monotonicity rules for *each* connective. In the case of NLCL
--- that means *also* of the constants (I, L, R). 
+--
+-- For the proof search we have dropped the atomicity restriction on
+-- the axiom rule, instead relying on the derivable axiom rule.
+-- In a finite system, this would lead to spurious ambiguity, causing
+-- the proof system to find multiple, semantically equivalent
+-- proofs. However, in infinite systems such as NLCL, where finding a
+-- proof is often still a challenge, it is a better option to use the
+-- general transitivity rule, as this considerably shortens many
+-- proofs.
+--
+-- The admissibility of the `ax' and `cut' rules depends on the
+-- presence of monotonicity rules for *each* connective. In the case
+-- of NLCL that means *also* of the constants (I, L, R). In our
+-- version of NLCL, these are represented as the axioms mI, mL and
+-- mR. However, since we are depending the derived `ax', we do not
+-- need to use these rules in our proof search.
 
 
 set infinite
@@ -19,7 +32,7 @@ set agda_module = Example.System.NLCL
 
 
 -- Axiom.
-ax   :  A ⊢ A  where atomic A
+ax′  :  A ⊢ A 
 
 
 -- Rules for (⇐ , ⊗ , ⇒).
@@ -43,9 +56,6 @@ r∘⇦  :  A ∘ B ⊢ C  →  A ⊢ C ⇦ B
 
 
 -- Rules for (I , L , R).
-mI   :  I ⊢ I
-mL   :  L ⊢ L
-mR   :  R ⊢ R
 Iᵢ   :  A ∘ I ⊢ B  →  A ⊢ B
 Iₑ   :  A ⊢ B  →  A ∘ I ⊢ B
 Lᵢ   :  B ∘ ((L ⊗ A) ⊗ C) ⊢ D  →  A ⊗ (B ∘ C) ⊢ D

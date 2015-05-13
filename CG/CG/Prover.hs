@@ -28,7 +28,7 @@ solve System{..} depth goals
 --  Note: this algorithm performs loop-checking under the assumption
 --  that /unary/ rules may cause loops, and rules of other arities
 --  make progress.
-findAll :: (Operator c,Guardable c, Hashable c, Ord c) => Term c Void -> [Rule c Int] -> [Term String Void]
+findAll :: (Operator c, Guardable c, Hashable c, Ord c) => Term c Void -> [Rule c Int] -> [Term String Void]
 findAll goal rules = slv [(S.empty,[goal],head)] []
   where
     slv [                    ] [ ] = []
