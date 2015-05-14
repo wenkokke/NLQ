@@ -359,7 +359,7 @@ _[_] : Context p₁ p₂ → Type → Type
 ...
 \end{spec}
 \begin{hide}
-\begin{code}
+\begin{code}hellocanyouseethis?
 _[_] : ∀ {p₁ p₂} → Context p₁ p₂ → Type → Type
 []        [ A ] = A
 (B ⊗> C)  [ A ] = B ⊗ (C [ A ])

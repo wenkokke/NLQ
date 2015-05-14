@@ -11,6 +11,6 @@ cabal-version:       >=1.10
 
 executable thesis
   main-is:             buildfile.hs
-  other-extensions:    PatternGuards, OverloadedStrings, RecordWildCards
-  build-depends:       attoparsec, base, shake, split, text
+  other-extensions:    OverloadedStrings
+  build-depends:       array, base, bytestring, directory, regex-pcre, shake, temporary, utf8-string
   default-language:    Haskell2010
