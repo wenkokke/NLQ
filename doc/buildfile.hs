@@ -79,6 +79,10 @@ main = shakeArgs shakeOptions
   "clean" ~> do
     removeFilesAfter "_build" ["//*"]
 
+  -- Perform a word count.
+  "wc" ~>
+    cmd "wc" (map (<.> "md") toc)
+
 
 -- |Check if a file exists outside of the _build directory and--if
 --  so--simply copy it into the _build directory. Otherwise, run the
