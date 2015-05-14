@@ -65,3 +65,4 @@ src/Logic/Classical/Ordered/Experimental/ResMon/ToLaTeX.agda
 src/Logic/Intuitionistic/Linear/Lambda/ToLaTeX.agda
 Setup.hs
 src/Logic/Classical/Ordered/Experimental/ToLaTeX.agda
+_build/
