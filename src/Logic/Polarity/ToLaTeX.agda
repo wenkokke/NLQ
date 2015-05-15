@@ -20,5 +20,5 @@ instance
     where
       open ToLaTeX {{...}}
       go : (Polarity × Univ) → String
-      go (+ , A) = toLaTeX A ++ "^+"
+      go (+ , A) = toLaTeX A
       go (- , A) = toLaTeX A ++ "^-"

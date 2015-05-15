@@ -5,7 +5,9 @@
 
 open import Data.Bool                             using (Bool; true; false; _∧_; _∨_)
 open import Data.List                             using (List; _∷_; []; map; foldr; any)
-open import Data.String                           using (String)
+open import Data.String                           using (String; _++_; unlines)
+open import Function                              using (_$_; _∘_)
+open import IO                                    using (IO; writeFile)
 open import Logic.ToLaTeX                         using (module ToLaTeX; ToLaTeX)
 open import Reflection                            using (Term; _≟_)
 open import Relation.Nullary                      using (Dec; yes; no)
@@ -97,3 +99,20 @@ Assert false = TestFailure
 
 _∈_ : Term → List Term → Bool
 y ∈ xs = any (λ x → ⌊ x ≟ y ⌋) xs
+
+
+data Proof : Set where
+  proof : (file sentence tree term : String) → Proof
+
+
+writeProof : Proof → IO _
+writeProof (proof file sentence tree term)
+  = writeFile (file ++ ".tex") ∘ unlines
+  $ "\\begin{figure}"
+  ∷ "\\centering"
+  ∷ tree
+  ∷ ("$" ++ term ++ "$")
+  ∷ ("\\label{" ++ file ++ "}")
+  ∷ ("\\caption{\"" ++ sentence ++ "\"}")
+    ∷ "\\end{figure}"
+  ∷ []

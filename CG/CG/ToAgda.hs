@@ -1,15 +1,16 @@
 {-# LANGUAGE RecordWildCards, FlexibleContexts #-}
-module CG.ToAgda (Result(..),toAgdaFile) where
+module CG.ToAgda (Result(..),writeAgdaFile) where
 
 
 import           CG.Base
-import           Control.Monad.State (State,get,put,evalState)
+import           Control.Monad.State (State,get,put,runState)
 import           Data.Char (isSpace,toUpper,toLower)
 import           Data.List (intersperse,intercalate)
 import           Data.Map (Map)
 import qualified Data.Map as M
 import           Data.Maybe (fromMaybe)
 import           Data.Void (Void)
+import           System.IO
 import           Text.Printf (printf)
 
 
@@ -32,13 +33,13 @@ toAgdaModule System{..} = case agdaModule of
 toBaseName :: Result -> String
 toBaseName (Solved     g _) = defaultName g
 toBaseName (Parsed s _ _ _) = map toLower (sanitise s)
-  where
-    sanitise [] = []
-    sanitise (' ':' ': xs) = sanitise (' ':xs)
-    sanitise (' '    : xs) = '_' : sanitise xs
-    sanitise ('.'    : xs) = sanitise xs
-    sanitise (':'    : xs) = sanitise xs
-    sanitise ( c     : xs) = toUpper c : sanitise xs
+
+sanitise [] = []
+sanitise (' ':' ': xs) = sanitise (' ':xs)
+sanitise (' '    : xs) = '_' : sanitise xs
+sanitise ('.'    : xs) = sanitise xs
+sanitise (':'    : xs) = sanitise xs
+sanitise ( c     : xs) = toUpper c : sanitise xs
 
 defaultName :: (Show v, ToString v) => Term ConId v -> String
 defaultName = map repl . filter (not . isSpace) . show
@@ -52,6 +53,9 @@ withType = printf "id {A = ⟦ %s ⟧ᵀ} (%s)" . show
 
 agdaList :: [String] -> String
 agdaList = unwords . intersperse "\n  ∷" . (++["[]"])
+
+agdaList' :: [String] -> String
+agdaList' = unwords . intersperse " ∷" . (++["[]"])
 
 toAgdaDefn :: System c -> Term ConId Void -> Result -> State (Map String Int) String
 toAgdaDefn sys goalType ret = case ret of
@@ -90,25 +94,59 @@ toAgdaDefn sys goalType ret = case ret of
 
 
 -- |Return a valid Agda file given a sequence of proofs.
-toAgdaFile :: String -> System c -> [Result] -> Term ConId Void -> String
-toAgdaFile moduleName sys prfs goalType =
-  unlines (comment ++ [importStmts, "", moduleStmt, "", proofStmts])
-  where
-    comment      =
-      [ "------------------------------------------------------------------------"
-      , "-- The Lambek Calculus in Agda"
-      , "------------------------------------------------------------------------"
-      , ""
-      ]
-    moduleStmt   = unlines ["module Example."++moduleName++" where"]
-    importStmts  = unlines
-      [ "open import Data.Bool using (Bool; true; false; _∧_; _∨_)"
-      , "open import Data.List using (List; _∷_; [])"
-      , "open import Function using (id)"
-      , "open import Reflection using (Term)"
-      , "open import "++toAgdaModule sys
-      ]
-    proofStmts   = evalState (concat <$> mapM (toAgdaDefn sys goalType) prfs) M.empty
+writeAgdaFile :: Handle -> String -> System c -> [Result] -> Term ConId Void -> IO [String]
+writeAgdaFile h moduleName sys prfs goalType = do
+
+  let (proofDefn, nameMap) =
+        runState (mapM (toAgdaDefn sys goalType) prfs) M.empty
+  let nameList = toNameList nameMap
+  let fileList = map (\(i,s) -> map toLower (sanitise s) ++ "_" ++ show i) nameList
+
+  mapM_ (hPutStrLn h) $
+    [ "------------------------------------------------------------------------"
+    , "-- The Lambek Calculus in Agda"
+    , "------------------------------------------------------------------------"
+    , ""
+    , "open import Data.Colist using (fromList)"
+    , "open import Data.Bool   using (Bool; true; false; _∧_; _∨_)"
+    , "open import Data.List   using (List; _∷_; [])"
+    , "open import Data.String using (String)"
+    , "open import Data.Vec    using (_∷_; [])"
+    , "open import Function    using (id)"
+    , "open import IO          using (IO; mapM′; run)"
+    , "open import Reflection  using (Term)"
+    , "open import "++toAgdaModule sys
+    , ""
+    , "module "++moduleName++" where"
+    , ""
+    , unlines proofDefn
+    , ""
+    , "proofList : List Proof"
+    , "proofList\n  = " ++ (agdaList (proofList nameList))
+    , ""
+    , "main : _"
+    , "main = run (mapM′ writeProof (fromList proofList))"
+    ]
+
+  return fileList
+
+
+-- |Convert a given map of sentences to max IDs, to a list of names.
+toNameList :: Map String Int -> [(Int, String)]
+toNameList sentenceIds =
+  [(j,s) | (s,i) <- M.toList sentenceIds, j <- [0..i-1]]
+
+
+-- |Return a single list which contains all proofs as LaTeX strings.
+proofList :: [(Int, String)] -> [String]
+proofList nameList = do
+  (i,s) <- nameList
+  let fileName = map toLower (sanitise s) ++ "_" ++ show i
+  let termName = map toUpper (sanitise s) ++ sub i
+  let sentence = toUpper (head s) : map toLower (tail s) ++ "."
+  return $
+    printf "proof %s %s (toLaTeX %s) (toLaTeXTerm (%s) (toTerm %s))"
+    (show fileName) (show sentence) termName (agdaList' (map show (words s))) termName
 
 
 -- |Compute the next number for this String.
