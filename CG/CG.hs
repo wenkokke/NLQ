@@ -3,16 +3,16 @@ module Main where
 
 
 import           Prelude hiding (lex)
-import           Control.Monad (when,unless)
+import           Control.Monad (forM,when,unless)
 import           Data.List.Split (splitOn)
 import           Data.Map (Map)
 import           Data.Maybe (fromMaybe,maybe)
 import           Data.Void (Void)
 import           System.Console.GetOpt (OptDescr(..),ArgDescr(..),ArgOrder(..),usageInfo,getOpt)
-import           System.Directory (doesFileExist,createDirectoryIfMissing)
+import           System.Directory (renameFile,doesFileExist,createDirectoryIfMissing)
 import           System.Environment (getProgName,getArgs,getEnv)
 import           System.Exit (ExitCode(..), exitSuccess, exitFailure)
-import           System.FilePath (takeBaseName,dropExtension,(</>),(<.>))
+import           System.FilePath (takeBaseName,dropExtension,(</>),(<.>),(-<.>))
 import           System.IO
 import           System.Process
 import qualified Text.Parsec as P (parse)
@@ -38,7 +38,14 @@ main = do
               , optOutput  = out
               , optGoal    = g
               , optDepth   = d
+              , optVerbose = verbose
               } = opts
+
+  let
+    mbHandles :: IO (Maybe Handle, Maybe Handle)
+    mbHandles =
+      if verbose then return (Nothing, Nothing)
+      else do f <- openFile "/dev/null" AppendMode; return (Just f, Just f)
 
   when (null tasks)
        (putStrLn "Usage: For basic information, try the `--help' option.")
@@ -60,23 +67,55 @@ main = do
     generateAgda (Just fn) = withFile fn WriteMode (\h -> writeAgdaFile h (takeBaseName fn) sys proofs g)
 
     generateLaTeX :: Maybe FilePath -> IO [FilePath]
-    generateLaTeX mbDir = do
-      let targetDir = fromMaybe "." mbDir
+    generateLaTeX targetDir = do
       cgtoolHome <- getEnv "CGTOOL_HOME"
       let mainFile = cgtoolHome </> "Main.agda"
       createDirectoryIfMissing True cgtoolHome
       fileList <- withFile mainFile WriteMode
                   (\h -> writeAgdaFile h "Main" sys proofs g)
       compileAgda cgtoolHome mainFile
-      readProcessWithExitCode (dropExtension mainFile) [] ""
+      (mbOut,mbErr) <- mbHandles
+      p <- runProcess (dropExtension mainFile) [] targetDir Nothing Nothing mbOut mbErr
+      waitForProcess p
       return fileList
 
+    generatePNG :: Maybe FilePath -> IO [FilePath]
+    generatePNG mbDir = do
+      let targetDir = fromMaybe "." mbDir
+      cgtoolHome <- getEnv "CGTOOL_HOME"
+      latexFiles <- generateLaTeX (Just cgtoolHome)
+      forM latexFiles $ \latexFile -> do
+        contents <- readFile (cgtoolHome </> latexFile <.> "tex")
+        writeFile (cgtoolHome </> latexFile <.> "standalone_tex") . unlines $
+          [ "\\documentclass[preview,border={30pt 10pt 30pt 10pt}]{standalone}"
+          , preamble
+          , "\\begin{document}"
+          , contents
+          , "\\end{document}"
+          ]
+        (mbOut,mbErr) <- mbHandles
+        p1 <- runProcess
+              "pdflatex" ["-shell-escape"
+                         ,"-output-directory",cgtoolHome
+                         ,latexFile <.> "standalone_tex"]
+              (Just cgtoolHome) Nothing Nothing mbOut mbErr
+        waitForProcess p1
+        (mbOut,mbErr) <- mbHandles
+        p2 <- runProcess
+              "convert" ["-density","300"
+                        ,cgtoolHome </> latexFile <.> "pdf"
+                        ,"-quality","90"
+                        ,cgtoolHome </> latexFile <.> "png"]
+              (Just cgtoolHome) Nothing Nothing mbOut mbErr
+        waitForProcess p2
+        renameFile (cgtoolHome </> latexFile <.> "png") (targetDir </> latexFile <.> "png")
+        return latexFile
 
   case out of
     StdOut         -> mapM_ printResult proofs
     AgdaFile fn -> do maybe (return ()) checkFile fn; generateAgda fn; return ()
-    LaTeX    mb -> do generateLaTeX mb >>= mapM_ (putStrLn . (++".tex"))
-
+    LaTeX    mb -> do generateLaTeX mb >>= mapM_ (putStrLn . (<.> "tex"))
+    PNG      mb -> do generatePNG mb >>= mapM_ (putStrLn . (<.> "png"))
 
 
 -- * Command-Line Options
@@ -89,6 +128,7 @@ data Output
   = StdOut                    -- ^ Print proofs to the standard output.
   | AgdaFile (Maybe FilePath) -- ^ Convert proofs to an Agda program and print it.
   | LaTeX    (Maybe FilePath) -- ^ Convert proofs to LaTeX files.
+  | PNG      (Maybe FilePath) -- ^ Convert proofs to PNG files.
 
 data Options = Options
   { optTasks      :: [Task]
@@ -97,6 +137,7 @@ data Options = Options
   , optOutput     :: Output
   , optGoal       :: Term ConId Void
   , optDepth      :: Int
+  , optVerbose    :: Bool
   }
 
 defaultOptions :: Options
@@ -107,6 +148,7 @@ defaultOptions    = Options
   , optOutput     = StdOut
   , optGoal       = Con (NegAtom "s") []
   , optDepth      = 5
+  , optVerbose    = False
   }
 
 options :: [ OptDescr (Options -> IO Options) ]
@@ -135,13 +177,21 @@ options =
     (ReqArg (\arg opt -> do g <- parseGoal arg; return opt { optGoal = g }) "GOAL_FORMULA")
     "Goal formula (n, np, s⁻, etc)."
 
+  , Option "v" ["verbose"]
+    (ReqArg (\arg opt -> return opt { optVerbose = read arg }) "BOOL")
+    "Verbose."
+
   , Option [] ["to-agda"]
     (OptArg (\arg opt -> do return opt { optOutput = AgdaFile arg }) "AGDA_FILE")
     "Produce an Agda module, and write it to the given file (or stdout)."
 
   , Option [] ["to-latex"]
     (OptArg (\arg opt -> do return opt { optOutput = LaTeX arg }) "DIRECTORY")
-    "Produce a TeX and a PNG file for each proof."
+    "Produce a TeX file for each proof."
+
+  , Option [] ["to-png"]
+    (OptArg (\arg opt -> do return opt { optOutput = PNG arg }) "DIRECTORY")
+    "Produce a PNG file for each proof."
 
   , Option "d" ["depth"]
     (ReqArg (\arg opt -> return opt { optDepth = read arg }) "SEARCH_DEPTH")
@@ -229,3 +279,65 @@ addExpected expr opt@Options{..} = do
 isParse :: Task -> Bool
 isParse (Parse _ _) = True
 isParse _           = False
+
+
+
+-- preamble.tex
+preamble :: String
+preamble = unlines
+  [ "\\usepackage{adjustbox}%"
+  , "\\usepackage[labelformat=empty]{caption}%"
+  , "\\usepackage{amssymb}%"
+  , "\\usepackage{amsmath}%"
+  , "\\usepackage{bussproofs}%"
+  , "\\usepackage[usenames,dvipsnames]{color}%"
+  , "\\usepackage{etoolbox}%"
+  , "\\usepackage{mdframed}%"
+  , "\\usepackage{pict2e}%"
+  , "\\usepackage{picture}%"
+  , "\\usepackage{scalerel}%"
+  , "\\usepackage{stmaryrd}%"
+  , "\\usepackage{textgreek}%"
+  , "\\usepackage{ucs}%"
+  , "\\usepackage[utf8x]{inputenc}%"
+  , "\\usepackage{xifthen}%"
+  , ""
+  , "\\EnableBpAbbreviations%"
+  , ""
+  , "\\makeatletter"
+  , "\\newcommand{\\pictslash}[2]{%"
+  , "  \\vcenter{%"
+  , "    \\sbox0{$\\m@th#1\\varobslash$}\\dimen0=.55\\wd0"
+  , "    \\hbox to\\wd 0{%"
+  , "      \\hfil\\pictslash@aux#2\\hfil"
+  , "    }%"
+  , "  }%"
+  , "}"
+  , "\\newcommand{\\pictslash@aux}[2]{%"
+  , "    \\begin{picture}(\\dimen0,\\dimen0)"
+  , "    \\roundcap"
+  , "    \\linethickness{.15ex}"
+  , "    \\put(0,#1\\dimen0){\\line(1,#2){\\dimen0}}"
+  , "    \\end{picture}%"
+  , "}"
+  , "\\makeatother"
+  , ""
+  , "\\newcommand{\\varslash}{%"
+  , "  \\mathbin{\\mathpalette\\pictslash{{0}{1}}}%"
+  , "}"
+  , "\\newcommand{\\varbslash}{%"
+  , "  \\mathbin{\\mathpalette\\pictslash{{1}{-1}}}%"
+  , "}"
+  , "\\newcommand{\\focus}[1]{%"
+  , "  \\adjustbox{padding=.4em .15ex .1em .15ex,bgcolor=Cyan}{%"
+  , "    \\ensuremath{\\color{white}\\rule[-4pt]{0pt}{14pt}#1}"
+  , "  }%"
+  , "}"
+  , ""
+  , "\\newcommand{\\varbox}[1][]{\\ifthenelse{\\isempty{#1}}{\\Box}{[ #1 ]}}"
+  , "\\newcommand{\\vardia}[1][]{\\ifthenelse{\\isempty{#1}}{\\Diamond}{\\langle #1 \\rangle}}"
+  , "\\newcommand{\\varpref}[1]{{}_{#1}}"
+  , "\\newcommand{\\varsuff}[1]{{}^{#1}}"
+  , "\\newcommand{\\vardown}[1]{\\,\\cdot\\,#1\\,\\cdot\\,}"
+  , "\\renewcommand{\\fCenter}{\\mathbin{\\vdash}}"
+  ]
