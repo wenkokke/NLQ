@@ -24,7 +24,20 @@
 %
 
 \begin{document}
+
+\begin{abstract}
+%include abstract.tex
+\end{abstract}
+
+%include introduction.tex
 %include motivation.tex
+%include agda_tutorial.tex
+%include linguistic_data.tex
+
+\nocite{*}
+\bibliographystyle{apalike}
+\bibliography{main}
+
 \end{document}
 
 %%% Local Variables:
