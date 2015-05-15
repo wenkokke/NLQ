@@ -28,12 +28,15 @@ open import Logic.Classical.Ordered.LambekGrishin.FocPol.ToLaTeX Univ public
 open import Logic.Classical.Ordered.LambekGrishin.FocPol.ToIntuitionisticLinearLambda Univ S using (LG→LL)
 open import Logic.Intuitionistic.Linear.Lambda.ToUnrestricted Univ using (LL→Λ)
 open import Logic.Intuitionistic.Unrestricted.Lambda.ToAgda Univ ⟦_⟧ᵁ using (Λ→ΛΠ)
+open import Logic.Intuitionistic.Unrestricted.Lambda.EquivalentToIndexed Univ using (Un→Ix)
+open import Logic.Intuitionistic.Unrestricted.Lambda.Indexed.ToLaTeX Univ public using (toLaTeXTerm)
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment public
-open Translation (Λ→ΛΠ ◇ LL→Λ ◇ LG→LL) public renaming ([_] to [_]ᵀ)
+
+open Translation (Λ→ΛΠ  ◇ LL→Λ ◇ LG→LL) public renaming ([_] to [_]ᵀ)
+open Translation (Un→Ix ◇ LL→Λ ◇ LG→LL) public using () renaming ([_] to toTerm)
 
 toLaTeX : ∀ {J} (f : LG J) → String
 toLaTeX {J} = ToLaTeX.toLaTeX (PolarisedLambekGrishinToLaTeX {J} {{UnivToLaTeX}})
-
 
 
 -- * create aliases for polarised types

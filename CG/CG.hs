@@ -4,14 +4,17 @@ module Main where
 
 import           Prelude hiding (lex)
 import           Control.Monad (when,unless)
+import           Data.List.Split (splitOn)
 import           Data.Map (Map)
+import           Data.Maybe (fromMaybe,maybe)
 import           Data.Void (Void)
 import           System.Console.GetOpt (OptDescr(..),ArgDescr(..),ArgOrder(..),usageInfo,getOpt)
-import           System.Directory (doesFileExist)
-import           System.Environment (getProgName,getArgs)
-import           System.Exit (exitSuccess, exitFailure)
-import           System.FilePath (takeBaseName)
+import           System.Directory (doesFileExist,createDirectoryIfMissing)
+import           System.Environment (getProgName,getArgs,getEnv)
+import           System.Exit (ExitCode(..), exitSuccess, exitFailure)
+import           System.FilePath (takeBaseName,dropExtension,(</>),(<.>))
 import           System.IO
+import           System.Process
 import qualified Text.Parsec as P (parse)
 
 import           CG.Prover
@@ -51,12 +54,28 @@ main = do
 
   proofs <- concat <$> mapM runTask tasks
 
-  let agdaFile modName = toAgdaFile modName sys proofs g
+  let
+    generateAgda :: Maybe FilePath -> IO [FilePath]
+    generateAgda  Nothing  = writeAgdaFile stdout "Main" sys proofs g
+    generateAgda (Just fn) = withFile fn WriteMode (\h -> writeAgdaFile h (takeBaseName fn) sys proofs g)
+
+    generateLaTeX :: Maybe FilePath -> IO [FilePath]
+    generateLaTeX mbDir = do
+      let targetDir = fromMaybe "." mbDir
+      cgtoolHome <- getEnv "CGTOOL_HOME"
+      let mainFile = cgtoolHome </> "Main.agda"
+      createDirectoryIfMissing True cgtoolHome
+      fileList <- withFile mainFile WriteMode
+                  (\h -> writeAgdaFile h "Main" sys proofs g)
+      compileAgda cgtoolHome mainFile
+      readProcessWithExitCode (dropExtension mainFile) [] ""
+      return fileList
+
 
   case out of
-    StdOut             -> mapM_ printResult proofs
-    AgdaFile  Nothing  -> putStr (agdaFile "Main")
-    AgdaFile (Just fn) -> do checkFile fn; writeFile fn (agdaFile (takeBaseName fn))
+    StdOut         -> mapM_ printResult proofs
+    AgdaFile fn -> do maybe (return ()) checkFile fn; generateAgda fn; return ()
+    LaTeX    mb -> do generateLaTeX mb >>= mapM_ (putStrLn . (++".tex"))
 
 
 
@@ -67,8 +86,9 @@ data Task
   | Parse String [String]
 
 data Output
-  = StdOut
-  | AgdaFile (Maybe FilePath)
+  = StdOut                    -- ^ Print proofs to the standard output.
+  | AgdaFile (Maybe FilePath) -- ^ Convert proofs to an Agda program and print it.
+  | LaTeX    (Maybe FilePath) -- ^ Convert proofs to LaTeX files.
 
 data Options = Options
   { optTasks      :: [Task]
@@ -104,11 +124,11 @@ options =
     "Generate check if the previous test results in this expression."
 
   , Option "l" ["lexicon"]
-    (ReqArg (\arg opt -> do lex <- parseLexicon arg; return opt { optLexicon = Just lex }) "LEXICON_FILE")
+    (ReqArg (\arg opt -> do lex <- readLexicon arg; return opt { optLexicon = Just lex }) "LEXICON_FILE")
     "Lexicon used in parsing."
 
   , Option "s" ["system"]
-    (ReqArg (\arg opt -> do sys <- parseSystem arg; return opt { optSystem = sys }) "SYSTEM")
+    (ReqArg (\arg opt -> do sys <- readSystem arg; return opt { optSystem = sys }) "SYSTEM")
     "Logical system (see below)."
 
   , Option "g" ["goal"]
@@ -116,8 +136,12 @@ options =
     "Goal formula (n, np, s⁻, etc)."
 
   , Option [] ["to-agda"]
-    (OptArg (\arg opt -> return opt { optOutput = AgdaFile arg }) "AGDA_FILE")
+    (OptArg (\arg opt -> do return opt { optOutput = AgdaFile arg }) "AGDA_FILE")
     "Produce an Agda module, and write it to the given file (or stdout)."
+
+  , Option [] ["to-latex"]
+    (OptArg (\arg opt -> do return opt { optOutput = LaTeX arg }) "DIRECTORY")
+    "Produce a TeX and a PNG file for each proof."
 
   , Option "d" ["depth"]
     (ReqArg (\arg opt -> return opt { optDepth = read arg }) "SEARCH_DEPTH")
@@ -134,6 +158,21 @@ options =
 
 
 -- * Helper functions
+
+compileAgda :: FilePath -> FilePath -> IO ExitCode
+compileAgda dir mainFile = do
+  agdaInclude <- map ("-i"++) . (dir:) . splitOn ":" <$> getEnv "AGDA_PATH"
+  let args = "--compile" : "--compile-dir" : dir : agdaInclude ++ [mainFile]
+  --putStrLn (showCommandForUser "agda" args)
+  (ext,out,err) <- readProcessWithExitCode "agda" args ""
+  case ext of
+   ExitSuccess -> return ExitSuccess
+   _           -> do hPutStrLn stdout out; hPutStrLn stderr err; return ext
+
+
+hOpen :: Maybe FilePath -> IO Handle
+hOpen  Nothing  = return stdout
+hOpen (Just fn) = openFile fn WriteMode
 
 -- |Check if a given file exists, and if so ask for a confirmation
 --  for overwriting the file.
