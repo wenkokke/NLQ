@@ -13,9 +13,15 @@ import           System.Directory (copyFile)
 
 toc :: [FilePath]
 toc =
-  [ "motivation"
+  [ "abstract"
+  , "introduction"
+  , "motivation"
   , "agda_tutorial"
+  , "linguistic_data"
   ]
+
+tocWith :: FilePath -> [FilePath]
+tocWith ext = map (("_build" </>).(-<.> ext)) toc
 
 
 main :: IO ()
@@ -24,76 +30,78 @@ main = shakeArgs shakeOptions
        ,shakeProgress = progressSimple
        } $ do
 
-  want ["_build/main.pdf", "_build/main.html"]
-
+  want ["_build/main.pdf", "_build/main.html", "wc"]
 
   -- Compile thesis to PDF
   "_build/main.pdf" %> \out -> do
     let src = out -<.> "tex"
-    need (map (\fn -> "_build" </> fn -<.> "tex") toc)
-    need ["_build/preamble.tex", src]
-    unit $ cmd "pdflatex" "-output-directory" "_build" src
-    unit $ cmd "open" "_build/main.pdf"
+    let lcl = dropBuild src
+    need (tocWith "tex")
+    need ["_build/preamble.tex", "_build/main.bib", src]
+    command_ [Cwd "_build", EchoStdout False] "pdflatex" [lcl]
+    command_ [Cwd "_build", EchoStdout False] "bibtex"   [dropExtension lcl]
+    command_ [Cwd "_build", EchoStdout False] "pdflatex" [lcl]
+    command_ [Cwd "_build", EchoStdout False] "pdflatex" [lcl]
 
-  -- Convert files without implicit arguments to HTML
+
+  -- Compile thesis to TeX
+  "_build/main.tex" %> \out -> do
+    let src = out -<.> "lagda"
+    need (tocWith "tex")
+    need [src]
+    cmd "lhs2TeX" "--agda" "-P" ":_build/" src "-o" out
+
+  -- Compile thesis to HTML
   "_build/main.html" %> \out -> do
     let src = map (\fn -> "_build" </> fn -<.> "noimp") toc
     need src
-    unit $ cmd "pandoc" "-s" "-f" "markdown" "-t" "html" src "-o" out
-    unit $ cmd "open" "_build/main.html"
+    unit $ cmd "pandoc" "-s" "-N" "-S" "-f" "markdown" "-t" "html" src "-o" out
 
   -- Convert Literate Agda files to TeX
-  "_build//*.tex" %> \out ->
-    checkIfExist out $ do
+  tocWith "tex" |%> \out -> do
       let src = out -<.> "lagda"
       need [src]
-      if out == "_build/main.tex"
-        then do
-          contents <- liftIO (B.readFile src)
-          if beginCode `B.isInfixOf` contents
-            || include `B.isInfixOf` contents
-            then cmd "lhs2TeX" "--agda" "-P" ":_build/" src "-o" out
-            else liftIO (copyFile src out)
-        else liftIO (copyFile src out)
+      liftIO $ copyFile src out
 
   -- Convert files without implicit to Literate Agda
-  "_build//*.lagda" %> \out -> do
-    checkIfExist out $ do
+  tocWith "lagda" |%> \out -> do
       let src = out -<.> "noimp"
       need [src]
-      cmd "pandoc" "--filter" "./pandoc_lhs2TeX.hs" "--no-highlight" "-f" "markdown" "-t" "latex" src "-o" out
+      cmd "pandoc" "--filter" "./pandoc_lhs2TeX.hs" "--no-highlight"
+                   "-S" "-f" "markdown" "-t" "latex" src "-o" out
 
   -- Convert Markdown files to files without implicit arguments
-  "_build//*.noimp" %> \out -> do
-    checkIfExist out $ do
+  tocWith "noimp" |%> \out -> do
       let src = out -<.> "md"
       need [src]
-      liftIO $
-        B.writeFile out . stripImplicit' =<< B.readFile src
+      liftIO $ B.writeFile out . stripImplicit' =<< B.readFile src
 
   -- Copy Markdown files to _build
-  ["_build//*.md", "_build//*.fmt"] |%> \out -> do
-    checkIfExist out (return ())
+  map ("_build" </>) ["main.lagda","preamble.tex","*.md","*.fmt","*.bib"]
+    |%> \out -> do
+    let src = dropBuild out
+    need [src]
+    liftIO $ copyFile src out
 
   -- Clean by removing the _build directory.
   "clean" ~> do
     removeFilesAfter "_build" ["//*"]
+
+  "open" ~> do
+    need ["_build/main.html", "_build/main.pdf"]
+    unit $ cmd "open" "_build/main.html"
+    unit $ cmd "open" "_build/main.pdf"
+
+
 
   -- Perform a word count.
   "wc" ~>
     cmd "wc" (map (<.> "md") toc)
 
 
--- |Check if a file exists outside of the _build directory and--if
---  so--simply copy it into the _build directory. Otherwise, run the
---  given continuation.
-checkIfExist :: FilePath -> Action () -> Action ()
-checkIfExist out cont = do
-  let src = joinPath (filter (/="_build/") (splitPath out))
-  srcExist <- doesFileExist src
-  if srcExist
-    then need [src] >> liftIO (copyFile src out)
-    else cont
+-- |Drop the _build/ directory from the path.
+dropBuild :: FilePath -> FilePath
+dropBuild out = joinPath (filter (/="_build/") (splitPath out))
 
 
 -- |Regular expression to match implicit arguments in Agda.

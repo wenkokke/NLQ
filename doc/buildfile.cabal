@@ -9,7 +9,7 @@ category:            Language
 build-type:          Simple
 cabal-version:       >=1.10
 
-executable thesis
+executable buildfile
   main-is:             buildfile.hs
   other-extensions:    OverloadedStrings
   build-depends:       array, base, bytestring, directory, regex-pcre, shake, temporary, utf8-string

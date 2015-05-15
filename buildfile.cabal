@@ -9,7 +9,7 @@ category:            Language
 build-type:          Simple
 cabal-version:       >=1.10
 
-executable thesis
+executable buildfile
   main-is:             buildfile.hs
   other-extensions:    PatternGuards, OverloadedStrings, RecordWildCards
   build-depends:       attoparsec, base, shake, split, text
