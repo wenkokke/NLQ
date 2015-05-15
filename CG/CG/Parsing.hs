@@ -283,7 +283,7 @@ readSystem systemFile = do
   if fileExist
     then unsafeReadSystem systemFile
     else do cgtoolHome <- getEnv "CGTOOL_HOME"
-            let systemFile' = cgtoolHome </> "lex" </> systemFile
+            let systemFile' = cgtoolHome </> "sys" </> systemFile
             fileExist' <- doesFileExist systemFile'
             if fileExist'
               then unsafeReadSystem systemFile'
