@@ -32,25 +32,29 @@ infixr 50 ¬_
 ¬_ : Λ.Type → Λ.Type
 ¬ A = A ⇒ el ⊥
 
-
 ¬¬ₑ : ∀ {Γ B} → Λ Γ ⊢ B → Λ Γ ⊢ ¬ ¬ B
 ¬¬ₑ f = ⇒ᵢ (⇒ₑ ax f)
 
 ¬¬ᵢ : ∀ {Γ B} → Λ Γ ⊢ ¬ ¬ ¬ B → Λ Γ ⊢ ¬ B
 ¬¬ᵢ f = ⇒ᵢ (sᴸ (_ , ∅) (⇒ₑ f (¬¬ₑ ax)))
 
-¬¬-swap : ∀ {A B} → Λ A , ∅ ⊢ B → Λ ¬ B , ∅ ⊢ ¬ A
-¬¬-swap f = ⇒ᵢ (eᴸ₁ (⇒ₑ ax f))
+contrapositive : ∀ {A B} → Λ A , ∅ ⊢ B → Λ ¬ B , ∅ ⊢ ¬ A
+contrapositive f = ⇒ᵢ (eᴸ₁ (⇒ₑ ax f))
+
+¬[A⊗¬A] : ∀ {A} → Λ ∅ ⊢ ¬ (A ⊗ ¬ A)
+¬[A⊗¬A] = ⇒ᵢ (⊗ₑᴸ₁ (eᴸ₁ (⇒ₑ ax ax)))
 
 ¬¬A⊗¬¬B⊢¬¬[A⊗B] : ∀ {A B} → Λ ¬ ¬ A ⊗ ¬ ¬ B , ∅ ⊢ ¬ ¬ (A ⊗ B)
 ¬¬A⊗¬¬B⊢¬¬[A⊗B] =
   ⊗ₑ ax (⇒ᵢ (eᴸ₁ (⇒ₑ ax (⇒ᵢ (eᴸ₂ (⇒ₑ ax (⇒ᵢ (eᴸ₂ (⇒ₑ ax (eᴸ₁ (⊗ᵢ ax ax)))))))))))
 
 ¬¬[A⊗B]⊢¬¬A⊗¬¬B : ∀ {A B} → Λ ¬ ¬ (A ⊗ B) , ∅ ⊢ ¬ ¬ A ⊗ ¬ ¬ B
-¬¬[A⊗B]⊢¬¬A⊗¬¬B {A} {B} = {!!}
+¬¬[A⊗B]⊢¬¬A⊗¬¬B {A} {B} = {!cut′ !}
 
 ¬¬-resp-⊗₁ : ∀ {Γ A B} → Λ Γ ⊢ ¬ ¬ A ⊗ ¬ ¬ B → Λ Γ ⊢ ¬ ¬ (A ⊗ B)
 ¬¬-resp-⊗₁ = ⇒ₑ (⇒ᵢ ¬¬A⊗¬¬B⊢¬¬[A⊗B])
+
+
 
 
 -- * Call-by-Value Translation
@@ -68,7 +72,7 @@ infixr 50 ¬_
 
 mutual
   cbvᴸ : ∀ {A B} → LG A ⊢ B → Λ ¬ ⌈ B ⌉ , ∅  ⊢ ¬ ⌈ A ⌉
-  cbvᴸ  ax       = ¬¬-swap ax
+  cbvᴸ  ax       = contrapositive ax
   cbvᴸ (m⊗  f g) = ⇒ᵢ (⇒ₑ (¬¬-resp-⊗₁ (⊗ₑᴸ₁ (⊗ᵢ (cbvᴿ f) (cbvᴿ g)))) ax)
   cbvᴸ (m⇒  f g) = ⇒ᵢ (eᴸ₁ (⇒ₑ ax (⇒ᵢ (⇒ₑ (¬¬-resp-⊗₁ (⊗ₑᴸ₁ (⊗ᵢ (cbvᴿ f) (¬¬ₑ (cbvᴸ g))))) ax))))
   cbvᴸ (m⇐  f g) = ⇒ᵢ (eᴸ₁ (⇒ₑ ax (⇒ᵢ (⇒ₑ (¬¬-resp-⊗₁ (⊗ₑᴸ₁ (⊗ᵢ (¬¬ₑ (cbvᴸ f)) (cbvᴿ g)))) ax))))
@@ -127,7 +131,7 @@ mutual
 
 mutual
   cbnᴸ : ∀ {A B} → LG A ⊢ B → Λ ¬ ¬ ⌊ B ⌋ , ∅ ⊢ ¬ ¬ ⌊ A ⌋
-  cbnᴸ  ax       = ¬¬-swap (¬¬-swap (¬¬-swap ax))
+  cbnᴸ  ax       = contrapositive (contrapositive (contrapositive ax))
   cbnᴸ (m⊗  f g) = ⇒ᵢ (⇒ₑ ax (⇒ᵢ (eᴸ₁ (⇒ₑ ax (¬¬-resp-⊗₁ (⊗ₑ ax (⊗ᵢ (cbnᴿ f) (cbnᴿ g))))))))
   cbnᴸ (m⇒  f g) = {!!}
   cbnᴸ (m⇐  f g) = {!!}
@@ -149,7 +153,7 @@ mutual
   cbnᴸ _         = {!!}
 
   cbnᴿ : ∀ {A B} → LG A ⊢ B → Λ ¬ ⌊ A ⌋ , ∅ ⊢ ¬ ¬ ¬ ⌊ B ⌋
-  cbnᴿ  ax       = ¬¬-swap (¬¬-swap (¬¬ₑ ax))
+  cbnᴿ  ax       = contrapositive (contrapositive (¬¬ₑ ax))
   cbnᴿ (m⊗  f g) = {!!}
   cbnᴿ (m⇒  f g) = {!!}
   cbnᴿ (m⇐  f g) = {!!}

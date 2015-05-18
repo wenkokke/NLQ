@@ -4,6 +4,8 @@
 set finite
 set algebraic
 set parse_with  = ⊗
+set agda_name   = LG
+set agda_module = Example.System.aLG
 
 
 -- Axiom.
