@@ -37,12 +37,11 @@ grammar formalisms. I will do this in the following way:
 
 ## What is a type-logical grammar?
 
-Type-logical grammars are substructural logics, which are designed for
-reasoning about the structure of natural language.
-In these type theories, atomic types correspond to syntactic
-categories, such as *noun*, *noun phrase* or *sentence*. Judgements,
-then, correspond to grammaticality.
-For instance, the judgement
+Type-logical grammars are substructural type theories, which are
+designed for reasoning about the structure of natural language. In
+these type theories, atomic types correspond to syntactic categories,
+such as *noun*, *noun phrase* or *sentence*. Judgements, then,
+correspond to grammaticality. For instance, the judgement
 $$\text{NP} , \; \text{NP} \to \text{S} \vdash \text{S}$$
 could be taken to mean that from an $\text{NP}$ constituent and an
 $\text{NP} \to \text{S}$ constituent (in that order) we can construct

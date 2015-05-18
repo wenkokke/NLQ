@@ -1,4 +1,4 @@
-{-# LANGUAGE RecordWildCards, RankNTypes, TupleSections #-}
+{-# LANGUAGE RecordWildCards, RankNTypes, TupleSections, ScopedTypeVariables #-}
 module CG.Parsing (readSystem
                   ,readLexicon
                   ,parseGoal
@@ -9,6 +9,7 @@ module CG.Parsing (readSystem
 
 
 import           CG.Base
+import           Control.Exception (IOException, handle)
 import           Data.Char (isSpace)
 import           Data.List (nub,isPrefixOf)
 import           Data.Void (Void)
@@ -259,16 +260,17 @@ parseGoal str = case parse formula "" str of
   Right x -> return x
 
 readLexicon :: FilePath -> IO (Map String (Term ConId Void))
-readLexicon lexiconFile = do
-  fileExist <- doesFileExist lexiconFile
-  if fileExist
-    then unsafeReadLexicon lexiconFile
-    else do cgtoolHome <- getEnv "CGTOOL_HOME"
-            let lexiconFile' = cgtoolHome </> "lex" </> lexiconFile
-            fileExist' <- doesFileExist lexiconFile'
-            if fileExist'
-              then unsafeReadLexicon lexiconFile'
-              else error ("no such file: " ++ lexiconFile)
+readLexicon lexiconFile =
+  handle (\(e :: IOException) -> error (show e)) $ do
+    fileExist <- doesFileExist lexiconFile
+    if fileExist
+      then unsafeReadLexicon lexiconFile
+      else do cgtoolHome <- getEnv "CGTOOL_HOME"
+              let lexiconFile' = cgtoolHome </> "lex" </> lexiconFile
+              fileExist' <- doesFileExist lexiconFile'
+              if fileExist'
+                then unsafeReadLexicon lexiconFile'
+                else error ("no such file: " ++ lexiconFile)
 
 unsafeReadLexicon :: FilePath -> IO (Map String (Term ConId Void))
 unsafeReadLexicon lexiconFile = do
@@ -278,16 +280,17 @@ unsafeReadLexicon lexiconFile = do
    Right l -> return l
 
 readSystem :: FilePath -> IO (System ConId)
-readSystem systemFile = do
-  fileExist <- doesFileExist systemFile
-  if fileExist
-    then unsafeReadSystem systemFile
-    else do cgtoolHome <- getEnv "CGTOOL_HOME"
-            let systemFile' = cgtoolHome </> "sys" </> systemFile
-            fileExist' <- doesFileExist systemFile'
-            if fileExist'
-              then unsafeReadSystem systemFile'
-              else error ("no such file: " ++ systemFile)
+readSystem systemFile =
+  handle (\(e :: IOException) -> error (show e)) $ do
+    fileExist <- doesFileExist systemFile
+    if fileExist
+      then unsafeReadSystem systemFile
+      else do cgtoolHome <- getEnv "CGTOOL_HOME"
+              let systemFile' = cgtoolHome </> "sys" </> systemFile
+              fileExist' <- doesFileExist systemFile'
+              if fileExist'
+                then unsafeReadSystem systemFile'
+                else error ("No such file: " ++ systemFile)
 
 unsafeReadSystem :: FilePath -> IO (System ConId)
 unsafeReadSystem systemFile = go <$> readFile systemFile
