@@ -67,3 +67,5 @@ src/Logic/Intuitionistic/Linear/Lambda/ToLaTeX.agda
 Setup.hs
 src/Logic/Classical/Ordered/Experimental/ToLaTeX.agda
 _build/
+src/Logic/Classical/Ordered/Experimental/ResMon/ToAgda.agda
+src/Logic/Classical/Ordered/Experimental/ResMon/ToIntuitionisticLinearLambda.agda
