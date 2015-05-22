@@ -80,30 +80,27 @@ the two families. See \citet{moortgat2009} for discussion of how LG
 overcomes syntactic and semantic limitations of the original Lambek
 calculus.
 
-We will formalise the Lambek-Grishin calculus in Agda, present a
+We will formalise the residuation-monotonicity axiomatisation for the
+Lambek-Grishin calculus~\citep{moortgat2007} in Agda, present a
 verified procedure for cut elimination in this system, and present a
-CPS-translation into the host language Agda. There are several reasons
-why we have chosen this particular system to formalise:
+CPS-translation into Agda. There are several reasons why we have
+chosen to formalise this particular system:
 \begin{itemize}
 \item
-  It allows cut as an admissible rule, instead of going the way of
-  defining the system with a cut and then implementing a procedure for
-  eliminating these cuts, which I find somewhat cumbersome: why
-  implement two systems and a function injection proofs in the one
-  into the other, when you can simply define a single system and a
-  function which computes proofs?;
+  It allows cut as an admissible rule, i.e.\ a function on proofs,
+  instead of defining a separate cut-free system and a cut-elimination
+  procedure.
 \item
-  This particular system has efficiently decidable proof search,
-  largely due to the absence of the cut rule; this will come in handy
-  when later on we will implement a decision procedure for the system;
+  It has efficiently decidable proof search, largely due to the
+  absence of the cut rule;
 \item
-  The Lambek-Grishin calculus has some interesting symmetries, as
-  explored in \citet{moortgat2009}. Because of this, most proofs
-  of properties of LG are not much more complicated than their
-  associated proofs for the non-associative Lambek calculus.
+  It calculus has some interesting symmetries, as explored in
+  \citet{moortgat2007,moortgat2009}. Because of this, most proofs of
+  properties of LG are not much more complicated than their associated
+  proofs for the non-associative Lambek calculus.
 \item
-  An implementation of the non-associative Lambek calculus can easily
-  be extracted from our implementation of LG.
+  Lastly, an implementation of the non-associative Lambek calculus can
+  easily and mechanically be extracted from our implementation of LG.
 \end{itemize}
 Since this paper is by no means a complete introduction to Agda or to
 dependently-typed programming, we advise the interested reader to
