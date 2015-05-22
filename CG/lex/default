@@ -1,3 +1,5 @@
+-- Default lexicon.
+
 john       : np
 mary       : np
 bill       : np

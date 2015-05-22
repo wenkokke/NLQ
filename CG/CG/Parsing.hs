@@ -5,6 +5,7 @@ module CG.Parsing (readSystem
                   ,formula
                   ,structure
                   ,judgement
+                  ,getCgHome
                   )where
 
 
@@ -149,7 +150,7 @@ judgement =
 
 
 lexicon :: Parser (Map String (Term ConId Void))
-lexicon = M.fromList <$> many1 entry
+lexicon = whiteSpace >> M.fromList <$> many1 entry
   where
     TokenParser{..} = cg
     entry = (,) <$> identifier <* symbol ":" <*> formula
@@ -259,18 +260,24 @@ parseGoal str = case parse formula "" str of
   Left  e -> fail ("Could not parse goal formula `"++show str++"'.\n"++show e)
   Right x -> return x
 
+getCgHome :: IO (Maybe String)
+getCgHome =
+  handle (\(e :: IOException) -> return Nothing) (Just <$> getEnv "CGTOOL_HOME")
+
 readLexicon :: FilePath -> IO (Map String (Term ConId Void))
-readLexicon lexiconFile =
-  handle (\(e :: IOException) -> error (show e)) $ do
-    fileExist <- doesFileExist lexiconFile
-    if fileExist
-      then unsafeReadLexicon lexiconFile
-      else do cgtoolHome <- getEnv "CGTOOL_HOME"
-              let lexiconFile' = cgtoolHome </> "lex" </> lexiconFile
-              fileExist' <- doesFileExist lexiconFile'
-              if fileExist'
-                then unsafeReadLexicon lexiconFile'
-                else error ("no such file: " ++ lexiconFile)
+readLexicon lexiconFile = do
+  fileExist <- doesFileExist lexiconFile
+  if fileExist
+    then unsafeReadLexicon lexiconFile
+    else do mbHome <- getCgHome
+            case mbHome of
+             Just home -> do
+               let lexiconFile' = home </> "lex" </> lexiconFile
+               fileExist' <- doesFileExist lexiconFile'
+               if fileExist'
+                 then unsafeReadLexicon lexiconFile'
+                 else error ("No such lexicon `" ++ lexiconFile ++ "'")
+             Nothing   -> error ("No such lexicon `" ++ lexiconFile ++ "'")
 
 unsafeReadLexicon :: FilePath -> IO (Map String (Term ConId Void))
 unsafeReadLexicon lexiconFile = do
@@ -280,17 +287,20 @@ unsafeReadLexicon lexiconFile = do
    Right l -> return l
 
 readSystem :: FilePath -> IO (System ConId)
-readSystem systemFile =
-  handle (\(e :: IOException) -> error (show e)) $ do
-    fileExist <- doesFileExist systemFile
-    if fileExist
-      then unsafeReadSystem systemFile
-      else do cgtoolHome <- getEnv "CGTOOL_HOME"
-              let systemFile' = cgtoolHome </> "sys" </> systemFile
-              fileExist' <- doesFileExist systemFile'
-              if fileExist'
-                then unsafeReadSystem systemFile'
-                else error ("No such file: " ++ systemFile)
+readSystem systemFile = do
+  fileExist <- doesFileExist systemFile
+  if fileExist
+    then unsafeReadSystem systemFile
+    else do mbHome <- getCgHome
+            case mbHome of
+             Just home -> do
+               let systemFile' = home </> "sys" </> systemFile
+               fileExist' <- doesFileExist systemFile'
+               if fileExist'
+                 then unsafeReadSystem systemFile'
+                 else error ("No such system `" ++ systemFile ++ "'")
+             Nothing   -> error ("No such system `" ++ systemFile ++ "'")
+
 
 unsafeReadSystem :: FilePath -> IO (System ConId)
 unsafeReadSystem systemFile = go <$> readFile systemFile

@@ -3,7 +3,7 @@
 ------------------------------------------------------------------------
 
 
-open import Function     using (id)
+open import Function     using (id; _∘_)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
 
@@ -23,6 +23,13 @@ infix 3 ¬_
 ¬_ : Set ℓ → Set ℓ
 ¬ A = A → ⊥
 
+deMorgan : {A B : Set ℓ} → (¬ ¬ A) → (¬ ¬ B) → ¬ ¬ (A × B)
+deMorgan c₁ c₂ k = c₁ (λ x → c₂ (λ y → k (x , y)))
+
+
+
+-- * Call-by-value translation
+
 ⌈_⌉ : Type → Set ℓ
 ⌈ el  A ⌉ =      ⟦ A ⟧ᵁ
 ⌈ ◇   A ⌉ =      ⌈ A ⌉
@@ -38,117 +45,201 @@ infix 3 ¬_
 ⌈ B ⇚ A ⌉ =   (  ⌈ B ⌉ × ¬ ⌈ A ⌉)
 ⌈ A ⇛ B ⌉ =   (¬ ⌈ A ⌉ ×   ⌈ B ⌉)
 
-⌊_⌋ : Type → Set ℓ
-⌊ A ⌋ = ⌈ A ∞ ⌉
-
-
-A⟶¬¬A : ∀ {A} → A → ¬ ¬ A
-A⟶¬¬A x k = k x
-
-¬¬A×¬¬B⟶¬¬[A×B] : ∀ {A B} → (¬ ¬ A) × (¬ ¬ B) → ¬ ¬ (A × B)
-¬¬A×¬¬B⟶¬¬[A×B] (ca , cb) kab =
-  ca (λ a → cb (λ b → kab (a , b)))
-
-¬¬[A×B]⟶¬¬A×¬¬B  : ∀ {A B} → ¬ ¬ (A × B) → (¬ ¬ A) × (¬ ¬ B)
-¬¬[A×B]⟶¬¬A×¬¬B cab =
-  (λ ka → cab (λ {(a , _) → ka a})) , (λ kb → cab (λ {(_ , b) → kb b}))
-
 
 mutual
-  cbvᴸ : ∀ {A B} → LG A ⊢ B → (¬ ⌈ B ⌉ → ¬ ⌈ A ⌉)
-  cbvᴸ  ax       k  x      = k x
-  cbvᴸ (m◇  f)   k  x      = cbvᴿ f x k
-  cbvᴸ (m□  f)   k  x      = cbvᴿ f x k
-  cbvᴸ (r◇□ f)   k  x      = cbvᴿ f x k
-  cbvᴸ (r□◇ f)   k  x      = cbvᴿ f x k
-  cbvᴸ (m⁰  f)   k  x      = k (λ y → cbvᴿ f y x)
-  cbvᴸ (m₀  f)   k  x      = k (λ y → cbvᴿ f y x)
-  cbvᴸ (r⁰₀ f)   k  x      = k (λ y → cbvᴸ f (A⟶¬¬A x) y)
-  cbvᴸ (r₀⁰ f)   k  x      = k (λ y → cbvᴸ f (A⟶¬¬A x) y)
-  cbvᴸ (m₁  f)   k  x      = k (λ y → cbvᴿ f y x)
-  cbvᴸ (m¹  f)   k  x      = k (λ y → cbvᴿ f y x)
-  cbvᴸ (r¹₁ f)   k  x      = cbvᴸ f x k
-  cbvᴸ (r₁¹ f)   k  x      = cbvᴸ f x k
-  cbvᴸ (m⊗  f g) k (x , y) = ¬¬A×¬¬B⟶¬¬[A×B] (cbvᴿ f x , cbvᴿ g y) k
-  cbvᴸ (m⇒  f g) k  k′     = k (λ {(x , y) → ¬¬A×¬¬B⟶¬¬[A×B] (cbvᴿ f x , A⟶¬¬A (cbvᴸ g y)) k′})
-  cbvᴸ (m⇐  f g) k  k′     = k (λ {(x , y) → ¬¬A×¬¬B⟶¬¬[A×B] (A⟶¬¬A (cbvᴸ f x) , cbvᴿ g y) k′})
-  cbvᴸ (r⇒⊗ f)   k (x , y) = cbvᴸ f (A⟶¬¬A (x , k)) y
-  cbvᴸ (r⊗⇒ f)   k  x      = k (λ {(y , z) → cbvᴸ f z (y , x)})
-  cbvᴸ (r⇐⊗ f)   k (x , y) = cbvᴸ f (A⟶¬¬A (k , y)) x
-  cbvᴸ (r⊗⇐ f)   k  x      = k (λ {(y , z) → cbvᴸ f y (x , z)})
-  cbvᴸ (m⊕  f g) k  k′     = k (λ {(x , y) → k′ (cbvᴸ f x , cbvᴸ g y)})
-  cbvᴸ (m⇛  f g) k (x , y) = ¬¬A×¬¬B⟶¬¬[A×B] ((A⟶¬¬A (cbvᴸ f x)) , cbvᴿ g y) k
-  cbvᴸ (m⇚  f g) k (x , y) = ¬¬A×¬¬B⟶¬¬[A×B] (cbvᴿ f x , (A⟶¬¬A (cbvᴸ g y))) k
-  cbvᴸ (r⇛⊕ f)   k  x      = k (λ {(y , z) → cbvᴸ f z (y , x)})
-  cbvᴸ (r⊕⇛ f)   k (x , y) = cbvᴸ f (A⟶¬¬A (x , k)) y
-  cbvᴸ (r⊕⇚ f)   k (x , y) = cbvᴸ f (A⟶¬¬A (k , y)) x
-  cbvᴸ (r⇚⊕ f)   k  x      = k (λ {(y , z) → cbvᴸ f y (x , z)})
-  cbvᴸ (d⇛⇐ f)   k (x , y) = k (λ {(z , w) → cbvᴸ f (A⟶¬¬A (x , z)) (y , w)})
-  cbvᴸ (d⇛⇒ f)   k (x , y) = k (λ {(z , w) → cbvᴸ f (A⟶¬¬A (x , w)) (z , y)})
-  cbvᴸ (d⇚⇒ f)   k (x , y) = k (λ {(z , w) → cbvᴸ f (A⟶¬¬A (w , y)) (z , x)})
-  cbvᴸ (d⇚⇐ f)   k (x , y) = k (λ {(z , w) → cbvᴸ f (A⟶¬¬A (z , y)) (x , w)})
+  ⌈_⌉ᴸ : ∀ {A B} → LG A ⊢ B → ¬ ⌈ B ⌉ → ¬ ⌈ A ⌉
+  ⌈ ax       ⌉ᴸ k x  = k x
+  ⌈ m□  f    ⌉ᴸ k x  = ⌈ f ⌉ᴸ k x
+  ⌈ m◇  f    ⌉ᴸ k x  = ⌈ f ⌉ᴸ k x
+  ⌈ r□◇ f    ⌉ᴸ k x  = ⌈ f ⌉ᴸ k x
+  ⌈ r◇□ f    ⌉ᴸ k x  = ⌈ f ⌉ᴸ k x
+  ⌈ m⁰  f    ⌉ᴸ k x  = k (λ y → ⌈ f ⌉ᴿ y x)
+  ⌈ m₀  f    ⌉ᴸ k x  = k (λ y → ⌈ f ⌉ᴿ y x)
+  ⌈ r⁰₀ f    ⌉ᴸ k x  = k (λ y → ⌈ f ⌉ᴸ (λ k → k x) y)
+  ⌈ r₀⁰ f    ⌉ᴸ k x  = k (λ y → ⌈ f ⌉ᴸ (λ k → k x) y)
+  ⌈ m₁  f    ⌉ᴸ k x  = k (λ y → ⌈ f ⌉ᴿ y x)
+  ⌈ m¹  f    ⌉ᴸ k x  = k (λ y → ⌈ f ⌉ᴿ y x)
+  ⌈ r¹₁ f    ⌉ᴸ k x  = ⌈ f ⌉ᴸ x k
+  ⌈ r₁¹ f    ⌉ᴸ k x  = ⌈ f ⌉ᴸ x k
+  ⌈ r⇒⊗ f    ⌉ᴸ   x  =    λ {(y , z) → ⌈ f ⌉ᴸ (λ k → k (y , x)) z}
+  ⌈ r⊗⇒ f    ⌉ᴸ k x  = k (λ {(y , z) → ⌈ f ⌉ᴸ z (y , x)})
+  ⌈ r⇐⊗ f    ⌉ᴸ   x  =    λ {(y , z) → ⌈ f ⌉ᴸ (λ k → k (x , z)) y}
+  ⌈ r⊗⇐ f    ⌉ᴸ k x  = k (λ {(y , z) → ⌈ f ⌉ᴸ y (x , z)})
+  ⌈ m⊗  f g  ⌉ᴸ k    =    λ {(x , y) → deMorgan (⌈ f ⌉ᴿ x) (⌈ g ⌉ᴿ y) k}
+  ⌈ m⇒  f g  ⌉ᴸ k k′ = k (λ {(x , y) → deMorgan (⌈ f ⌉ᴿ x) (λ k → k  (⌈ g ⌉ᴸ y)) k′})
+  ⌈ m⇐  f g  ⌉ᴸ k k′ = k (λ {(x , y) → deMorgan (λ k → k  (⌈ f ⌉ᴸ x)) (⌈ g ⌉ᴿ y) k′})
+  ⌈ r⇛⊕ f    ⌉ᴸ k x  = k (λ {(y , z) → ⌈ f ⌉ᴸ z (y , x)})
+  ⌈ r⊕⇛ f    ⌉ᴸ   x  =    λ {(y , z) → ⌈ f ⌉ᴸ (λ k → k (y , x)) z}
+  ⌈ r⇚⊕ f    ⌉ᴸ k x  = k (λ {(y , z) → ⌈ f ⌉ᴸ y (x , z)})
+  ⌈ r⊕⇚ f    ⌉ᴸ   x  =    λ {(y , z) → ⌈ f ⌉ᴸ (λ k → k (x , z)) y}
+  ⌈ m⊕  f g  ⌉ᴸ k k′ = k (λ {(x , y) → k′ (⌈ f ⌉ᴸ x , ⌈ g ⌉ᴸ y)})
+  ⌈ m⇛  f g  ⌉ᴸ k    =    λ {(x , y) → deMorgan (λ k → k (⌈ f ⌉ᴸ x)) (⌈ g ⌉ᴿ y) k}
+  ⌈ m⇚  f g  ⌉ᴸ k    =    λ {(x , y) → deMorgan (⌈ f ⌉ᴿ x) (λ k → k (⌈ g ⌉ᴸ y)) k}
+  ⌈ d⇛⇐ f    ⌉ᴸ k    =    λ {(x , y) → k (λ {(z , w) → ⌈ f ⌉ᴸ (λ k → k (x , z)) (y , w)})}
+  ⌈ d⇛⇒ f    ⌉ᴸ k    =    λ {(x , y) → k (λ {(z , w) → ⌈ f ⌉ᴸ (λ k → k (x , w)) (z , y)})}
+  ⌈ d⇚⇒ f    ⌉ᴸ k    =    λ {(x , y) → k (λ {(z , w) → ⌈ f ⌉ᴸ (λ k → k (w , y)) (z , x)})}
+  ⌈ d⇚⇐ f    ⌉ᴸ k    =    λ {(x , y) → k (λ {(z , w) → ⌈ f ⌉ᴸ (λ k → k (z , y)) (x , w)})}
 
-  cbvᴿ : ∀ {A B} → LG A ⊢ B → (⌈ A ⌉ → ¬ ¬ ⌈ B ⌉)
-  cbvᴿ  ax        x      k  = k x
-  cbvᴿ (m◇  f)    x      k  = cbvᴿ f x k
-  cbvᴿ (m□  f)    x      k  = cbvᴿ f x k
-  cbvᴿ (r◇□ f)    x      k  = cbvᴿ f x k
-  cbvᴿ (r□◇ f)    x      k  = cbvᴿ f x k
-  cbvᴿ (m⁰  f)    x      k  = k (λ y → cbvᴸ f x y)
-  cbvᴿ (m₀  f)    x      k  = k (λ y → cbvᴸ f x y)
-  cbvᴿ (r⁰₀ f)    x      k  = k (λ y → cbvᴸ f (A⟶¬¬A x) y)
-  cbvᴿ (r₀⁰ f)    x      k  = k (λ y → cbvᴸ f (A⟶¬¬A x) y)
-  cbvᴿ (m₁  f)    x      k  = k (λ y → cbvᴸ f x y)
-  cbvᴿ (m¹  f)    x      k  = k (λ y → cbvᴸ f x y)
-  cbvᴿ (r¹₁ f)    x      k  = cbvᴸ f x k
-  cbvᴿ (r₁¹ f)    x      k  = cbvᴸ f x k
-  cbvᴿ (m⊗  f g) (x , y) k  = ¬¬A×¬¬B⟶¬¬[A×B] (cbvᴿ f x , cbvᴿ g y) k
-  cbvᴿ (m⇒  f g)  k      k′ = k′ (λ {(x , y) → ¬¬A×¬¬B⟶¬¬[A×B] (cbvᴿ f x , A⟶¬¬A (cbvᴸ g y)) k})
-  cbvᴿ (m⇐  f g)  k      k′ = k′ (λ {(x , y) → ¬¬A×¬¬B⟶¬¬[A×B] (A⟶¬¬A (cbvᴸ f x) , cbvᴿ g y) k})
-  cbvᴿ (r⇒⊗ f)   (x , y) k  = cbvᴿ f y (A⟶¬¬A (x , k))
-  cbvᴿ (r⊗⇒ f)    x      k  = k (λ {(y , z) → cbvᴿ f (y , x) z})
-  cbvᴿ (r⇐⊗ f)   (x , y) k  = cbvᴿ f x (A⟶¬¬A (k , y))
-  cbvᴿ (r⊗⇐ f)    x      k  = k (λ {(y , z) → cbvᴿ f (x , z) y})
-  cbvᴿ (m⊕  f g)  k      k′ = k′ (λ {(x , y) → k (cbvᴸ f x , cbvᴸ g y)})
-  cbvᴿ (m⇛  f g) (x , y) k  = ¬¬A×¬¬B⟶¬¬[A×B] (A⟶¬¬A (cbvᴸ f x) , cbvᴿ g y) k
-  cbvᴿ (m⇚  f g) (x , y) k  = ¬¬A×¬¬B⟶¬¬[A×B] (cbvᴿ f x , A⟶¬¬A (cbvᴸ g y)) k
-  cbvᴿ (r⇛⊕ f)    x      k  = k (λ {(y , z) → cbvᴿ f (y , x) z})
-  cbvᴿ (r⊕⇛ f)   (x , y) k  = cbvᴿ f y (A⟶¬¬A (x , k))
-  cbvᴿ (r⊕⇚ f)   (x , y) k  = cbvᴿ f x (A⟶¬¬A (k , y))
-  cbvᴿ (r⇚⊕ f)    x      k  = k (λ {(y , z) → cbvᴿ f (x , z) y})
-  cbvᴿ (d⇛⇐ f)   (x , y) k  = k (λ {(z , w) → cbvᴿ f (y , w) (A⟶¬¬A (x , z))})
-  cbvᴿ (d⇛⇒ f)   (x , y) k  = k (λ {(z , w) → cbvᴿ f (z , y) (A⟶¬¬A (x , w))})
-  cbvᴿ (d⇚⇒ f)   (x , y) k  = k (λ {(z , w) → cbvᴿ f (z , x) (A⟶¬¬A (w , y))})
-  cbvᴿ (d⇚⇐ f)   (x , y) k  = k (λ {(z , w) → cbvᴿ f (x , w) (A⟶¬¬A (z , y))})
-
-
-mutual
-  cbnᴸ : ∀ {A B} → LG A ⊢ B → (¬ ⌊ A ⌋ → ¬ ⌊ B ⌋)
-  cbnᴸ f = cbvᴸ (f ∞ᵗ)
-
-  cbnᴿ : ∀ {A B} → LG A ⊢ B → (⌊ B ⌋ → ¬ ¬ ⌊ A ⌋)
-  cbnᴿ f = cbvᴿ (f ∞ᵗ)
+  ⌈_⌉ᴿ : ∀ {A B} → LG A ⊢ B → ⌈ A ⌉ → ¬ ¬ ⌈ B ⌉
+  ⌈ ax       ⌉ᴿ  x      k  = k x
+  ⌈ m□  f    ⌉ᴿ  x      k  = ⌈ f ⌉ᴿ x k
+  ⌈ m◇  f    ⌉ᴿ  x      k  = ⌈ f ⌉ᴿ x k
+  ⌈ r□◇ f    ⌉ᴿ  x      k  = ⌈ f ⌉ᴿ x k
+  ⌈ r◇□ f    ⌉ᴿ  x      k  = ⌈ f ⌉ᴿ x k
+  ⌈ m⁰  f    ⌉ᴿ  x      k  = k (λ y → ⌈ f ⌉ᴿ y x)
+  ⌈ m₀  f    ⌉ᴿ  x      k  = k (λ y → ⌈ f ⌉ᴿ y x)
+  ⌈ r⁰₀ f    ⌉ᴿ  x      k  = k (λ y → ⌈ f ⌉ᴿ y (λ k → k x))
+  ⌈ r₀⁰ f    ⌉ᴿ  x      k  = k (λ y → ⌈ f ⌉ᴿ y (λ k → k x))
+  ⌈ m₁  f    ⌉ᴿ  x      k  = k (λ y → ⌈ f ⌉ᴿ y x)
+  ⌈ m¹  f    ⌉ᴿ  x      k  = k (λ y → ⌈ f ⌉ᴿ y x)
+  ⌈ r¹₁ f    ⌉ᴿ  x      k  = ⌈ f ⌉ᴸ x k
+  ⌈ r₁¹ f    ⌉ᴿ  x      k  = ⌈ f ⌉ᴸ x k
+  ⌈ r⇒⊗ f    ⌉ᴿ (x , y) z  = ⌈ f ⌉ᴿ y (λ k → k (x , z))
+  ⌈ r⊗⇒ f    ⌉ᴿ  x      k  = k (λ {(y , z) → ⌈ f ⌉ᴿ (y , x) z})
+  ⌈ r⇐⊗ f    ⌉ᴿ (x , y) z  = ⌈ f ⌉ᴿ x (λ k → k (z , y))
+  ⌈ r⊗⇐ f    ⌉ᴿ  x      k  = k (λ {(y , z) → ⌈ f ⌉ᴿ (x , z) y})
+  ⌈ m⊗  f g  ⌉ᴿ (x , y) k  = deMorgan (⌈ f ⌉ᴿ x) (⌈ g ⌉ᴿ y) k
+  ⌈ m⇒  f g  ⌉ᴿ  k′     k  = k (λ {(x , y) → deMorgan (⌈ f ⌉ᴿ x) (λ k → k (⌈ g ⌉ᴸ y)) k′})
+  ⌈ m⇐  f g  ⌉ᴿ  k′     k  = k (λ {(x , y) → deMorgan (λ k → k (⌈ f ⌉ᴸ x)) (⌈ g ⌉ᴿ y) k′})
+  ⌈ r⇛⊕ f    ⌉ᴿ  x      k  = k (λ {(y , z) → ⌈ f ⌉ᴿ (y , x) z})
+  ⌈ r⊕⇛ f    ⌉ᴿ (x , y) z  = ⌈ f ⌉ᴿ y (λ k → k (x , z))
+  ⌈ r⊕⇚ f    ⌉ᴿ (x , y) z  = ⌈ f ⌉ᴿ x (λ k → k (z , y))
+  ⌈ r⇚⊕ f    ⌉ᴿ  x      k  = k (λ {(y , z) → ⌈ f ⌉ᴿ (x , z) y})
+  ⌈ m⊕  f g  ⌉ᴿ  k′     k  = k (λ {(x , y) → k′ (⌈ f ⌉ᴸ x , ⌈ g ⌉ᴸ y)})
+  ⌈ m⇛  f g  ⌉ᴿ (x , y) k  = deMorgan (λ k → k (⌈ f ⌉ᴸ x)) (⌈ g ⌉ᴿ y) k
+  ⌈ m⇚  f g  ⌉ᴿ (x , y) k  = deMorgan (⌈ f ⌉ᴿ x) (λ k → k (⌈ g ⌉ᴸ y)) k
+  ⌈ d⇛⇐ f    ⌉ᴿ (x , y) k  = k (λ {(z , w) → ⌈ f ⌉ᴿ (y , w) (λ k → k (x , z))})
+  ⌈ d⇛⇒ f    ⌉ᴿ (x , y) k  = k (λ {(z , w) → ⌈ f ⌉ᴿ (z , y) (λ k → k (x , w))})
+  ⌈ d⇚⇒ f    ⌉ᴿ (x , y) k  = k (λ {(z , w) → ⌈ f ⌉ᴿ (z , x) (λ k → k (w , y))})
+  ⌈ d⇚⇐ f    ⌉ᴿ (x , y) k  = k (λ {(z , w) → ⌈ f ⌉ᴿ (x , w) (λ k → k (z , y))})
 
 
 ⌈_⌉ᴶ : Judgement → Set ℓ
 ⌈ A ⊢ B ⌉ᴶ = ⌈ A ⌉ → ¬ ¬ ⌈ B ⌉
 
-
-⌊_⌋ᴶ : Judgement → Set ℓ
-⌊ A ⊢ B ⌋ᴶ = ¬ ⌊ A ⌋ → ¬ ⌊ B ⌋
-
-
 CBV : Translation Type (Set ℓ) LG_ id
 CBV = record
   { ⟦_⟧ᵀ = ⌈_⌉
   ; ⟦_⟧ᴶ = ⌈_⌉ᴶ
-  ; [_]  = λ { {_ ⊢ _} f → cbvᴿ f}
+  ; [_]  = λ { {_ ⊢ _} f → ⌈_⌉ᴿ f}
   }
 
+
+
+-- * Call-by-name translation
+
+⌊_⌋ : Type → Set ℓ
+⌊ A ⌋ = ⌈ A ∞ ⌉
+
+⌊_⌋ᴸ : ∀ {A B} → LG A ⊢ B → (¬ ⌊ A ⌋ → ¬ ⌊ B ⌋)
+⌊_⌋ᴸ = ⌈_⌉ᴸ ∘ _∞ᵗ
+
+⌊_⌋ᴿ : ∀ {A B} → LG A ⊢ B → (⌊ B ⌋ → ¬ ¬ ⌊ A ⌋)
+⌊_⌋ᴿ = ⌈_⌉ᴿ ∘ _∞ᵗ
+
+⌊_⌋ᴶ : Judgement → Set ℓ
+⌊ A ⊢ B ⌋ᴶ = ¬ ⌊ A ⌋ → ¬ ⌊ B ⌋
 
 CBN : Translation Type (Set ℓ) LG_ id
 CBN = record
   { ⟦_⟧ᵀ = ⌊_⌋
   ; ⟦_⟧ᴶ = ⌊_⌋ᴶ
-  ; [_]  = λ { {_ ⊢ _} f → cbnᴸ f}
+  ; [_]  = λ { {_ ⊢ _} f → ⌊_⌋ᴸ f}
+  }
+
+
+
+
+-- * Alternative call-by-value translation
+
+⌈_⌉′ : Type → Set ℓ
+⌈ el  A ⌉′ =        ⟦ A ⟧ᵁ
+⌈ ◇   A ⌉′ =        ⌈ A ⌉′
+⌈ □   A ⌉′ =        ⌈ A ⌉′
+⌈ ₀   A ⌉′ = ¬      ⌈ A ⌉′
+⌈ A   ⁰ ⌉′ = ¬      ⌈ A ⌉′
+⌈ ₁   A ⌉′ = ¬      ⌈ A ⌉′
+⌈ A   ¹ ⌉′ = ¬      ⌈ A ⌉′
+⌈ A ⊗ B ⌉′ =     (  ⌈ A ⌉′ ×   ⌈ B ⌉′)
+⌈ A ⇒ B ⌉′ = ¬   (  ⌈ A ⌉′ × ¬ ⌈ B ⌉′)
+⌈ B ⇐ A ⌉′ = ¬   (¬ ⌈ B ⌉′ ×   ⌈ A ⌉′)
+⌈ B ⊕ A ⌉′ = ¬   (¬ ⌈ B ⌉′ × ¬ ⌈ A ⌉′)
+⌈ B ⇚ A ⌉′ = ¬ ¬ (  ⌈ B ⌉′ × ¬ ⌈ A ⌉′)
+⌈ A ⇛ B ⌉′ = ¬ ¬ (¬ ⌈ A ⌉′ ×   ⌈ B ⌉′)
+
+mutual
+  ⌈_⌉′ᴸ : ∀ {A B} → LG A ⊢ B → ¬ ⌈ B ⌉′ → ¬ ⌈ A ⌉′
+  ⌈ ax       ⌉′ᴸ k x  = k x
+  ⌈ m□  f    ⌉′ᴸ k x  = ⌈ f ⌉′ᴸ k x
+  ⌈ m◇  f    ⌉′ᴸ k x  = ⌈ f ⌉′ᴸ k x
+  ⌈ r□◇ f    ⌉′ᴸ k x  = ⌈ f ⌉′ᴸ k x
+  ⌈ r◇□ f    ⌉′ᴸ k x  = ⌈ f ⌉′ᴸ k x
+  ⌈ m⁰  f    ⌉′ᴸ k x  = k (λ y → ⌈ f ⌉′ᴿ y x)
+  ⌈ m₀  f    ⌉′ᴸ k x  = k (λ y → ⌈ f ⌉′ᴿ y x)
+  ⌈ r⁰₀ f    ⌉′ᴸ k x  = k (λ y → ⌈ f ⌉′ᴸ (λ k → k x) y)
+  ⌈ r₀⁰ f    ⌉′ᴸ k x  = k (λ y → ⌈ f ⌉′ᴸ (λ k → k x) y)
+  ⌈ m₁  f    ⌉′ᴸ k x  = k (λ y → ⌈ f ⌉′ᴿ y x)
+  ⌈ m¹  f    ⌉′ᴸ k x  = k (λ y → ⌈ f ⌉′ᴿ y x)
+  ⌈ r¹₁ f    ⌉′ᴸ k x  = ⌈ f ⌉′ᴸ x k
+  ⌈ r₁¹ f    ⌉′ᴸ k x  = ⌈ f ⌉′ᴸ x k
+  ⌈ r⇒⊗ f    ⌉′ᴸ   x  =    λ {(y , z) → ⌈ f ⌉′ᴸ (λ k → k (y , x)) z}
+  ⌈ r⊗⇒ f    ⌉′ᴸ k x  = k (λ {(y , z) → ⌈ f ⌉′ᴸ z (y , x)})
+  ⌈ r⇐⊗ f    ⌉′ᴸ   x  =    λ {(y , z) → ⌈ f ⌉′ᴸ (λ k → k (x , z)) y}
+  ⌈ r⊗⇐ f    ⌉′ᴸ k x  = k (λ {(y , z) → ⌈ f ⌉′ᴸ y (x , z)})
+  ⌈ m⊗  f g  ⌉′ᴸ k    =    λ {(x , y) → deMorgan (⌈ f ⌉′ᴿ x) (⌈ g ⌉′ᴿ y) k}
+  ⌈ m⇒  f g  ⌉′ᴸ k k′ = k (λ {(x , y) → deMorgan (⌈ f ⌉′ᴿ x) (λ k → k  (⌈ g ⌉′ᴸ y)) k′})
+  ⌈ m⇐  f g  ⌉′ᴸ k k′ = k (λ {(x , y) → deMorgan (λ k → k  (⌈ f ⌉′ᴸ x)) (⌈ g ⌉′ᴿ y) k′})
+  ⌈ r⇛⊕ f    ⌉′ᴸ k x  = k (λ {(y , z) → ⌈ f ⌉′ᴸ z (λ k → k (y , x))})
+  ⌈ r⊕⇛ f    ⌉′ᴸ x k  = k (λ {(y , z) → ⌈ f ⌉′ᴸ (λ k → k (y , x)) z})
+  ⌈ r⇚⊕ f    ⌉′ᴸ k x  = k (λ {(y , z) → ⌈ f ⌉′ᴸ y (λ k → k (x , z))})
+  ⌈ r⊕⇚ f    ⌉′ᴸ x k  = k (λ {(y , z) → ⌈ f ⌉′ᴸ (λ k → k (x , z)) y})
+  ⌈ m⊕  f g  ⌉′ᴸ k k′ = k (λ {(x , y) → k′ (⌈ f ⌉′ᴸ x , ⌈ g ⌉′ᴸ y)})
+  ⌈ m⇛  f g  ⌉′ᴸ k k′ = k (λ k → k′ (λ {(x , y) → deMorgan (λ k → k (⌈ f ⌉′ᴸ x)) (⌈ g ⌉′ᴿ y) k}))
+  ⌈ m⇚  f g  ⌉′ᴸ k k′ = k (λ k → k′ (λ {(x , y) → deMorgan (⌈ f ⌉′ᴿ x) (λ k → k (⌈ g ⌉′ᴸ y)) k}))
+  ⌈ d⇛⇐ f    ⌉′ᴸ k k′ = k (λ {(x , y) → k′ (λ {(z , w) → ⌈ f ⌉′ᴸ (λ k → k (z , x)) (w , y)})})
+  ⌈ d⇛⇒ f    ⌉′ᴸ k k′ = k (λ {(x , y) → k′ (λ {(z , w) → ⌈ f ⌉′ᴸ (λ k → k (z , y)) (x , w)})})
+  ⌈ d⇚⇒ f    ⌉′ᴸ k k′ = k (λ {(x , y) → k′ (λ {(z , w) → ⌈ f ⌉′ᴸ (λ k → k (y , w)) (x , z)})})
+  ⌈ d⇚⇐ f    ⌉′ᴸ k k′ = k (λ {(x , y) → k′ (λ {(z , w) → ⌈ f ⌉′ᴸ (λ k → k (x , w)) (z , y)})})
+
+  ⌈_⌉′ᴿ : ∀ {A B} → LG A ⊢ B → ⌈ A ⌉′ → ¬ ¬ ⌈ B ⌉′
+  ⌈ ax       ⌉′ᴿ  x      k  = k x
+  ⌈ m□  f    ⌉′ᴿ  x      k  = ⌈ f ⌉′ᴿ x k
+  ⌈ m◇  f    ⌉′ᴿ  x      k  = ⌈ f ⌉′ᴿ x k
+  ⌈ r□◇ f    ⌉′ᴿ  x      k  = ⌈ f ⌉′ᴿ x k
+  ⌈ r◇□ f    ⌉′ᴿ  x      k  = ⌈ f ⌉′ᴿ x k
+  ⌈ m⁰  f    ⌉′ᴿ  x      k  = k (λ y → ⌈ f ⌉′ᴿ y x)
+  ⌈ m₀  f    ⌉′ᴿ  x      k  = k (λ y → ⌈ f ⌉′ᴿ y x)
+  ⌈ r⁰₀ f    ⌉′ᴿ  x      k  = k (λ y → ⌈ f ⌉′ᴿ y (λ k → k x))
+  ⌈ r₀⁰ f    ⌉′ᴿ  x      k  = k (λ y → ⌈ f ⌉′ᴿ y (λ k → k x))
+  ⌈ m₁  f    ⌉′ᴿ  x      k  = k (λ y → ⌈ f ⌉′ᴿ y x)
+  ⌈ m¹  f    ⌉′ᴿ  x      k  = k (λ y → ⌈ f ⌉′ᴿ y x)
+  ⌈ r¹₁ f    ⌉′ᴿ  x      k  = ⌈ f ⌉′ᴸ x k
+  ⌈ r₁¹ f    ⌉′ᴿ  x      k  = ⌈ f ⌉′ᴸ x k
+  ⌈ r⇒⊗ f    ⌉′ᴿ (x , y) z  = ⌈ f ⌉′ᴿ y (λ k → k (x , z))
+  ⌈ r⊗⇒ f    ⌉′ᴿ  x      k  = k (λ {(y , z) → ⌈ f ⌉′ᴿ (y , x) z})
+  ⌈ r⇐⊗ f    ⌉′ᴿ (x , y) z  = ⌈ f ⌉′ᴿ x (λ k → k (z , y))
+  ⌈ r⊗⇐ f    ⌉′ᴿ  x      k  = k (λ {(y , z) → ⌈ f ⌉′ᴿ (x , z) y})
+  ⌈ m⊗  f g  ⌉′ᴿ (x , y) k  = deMorgan (⌈ f ⌉′ᴿ x) (⌈ g ⌉′ᴿ y) k
+  ⌈ m⇒  f g  ⌉′ᴿ  k′     k  = k (λ {(x , y) → deMorgan (⌈ f ⌉′ᴿ x) (λ k → k (⌈ g ⌉′ᴸ y)) k′})
+  ⌈ m⇐  f g  ⌉′ᴿ  k′     k  = k (λ {(x , y) → deMorgan (λ k → k (⌈ f ⌉′ᴸ x)) (⌈ g ⌉′ᴿ y) k′})
+  ⌈ r⇛⊕ f    ⌉′ᴿ  x      k  = k (λ {(y , z) → ⌈ f ⌉′ᴿ (λ k → k (y , x)) z })
+  ⌈ r⊕⇛ f    ⌉′ᴿ  k      x  = k (λ {(y , z) → ⌈ f ⌉′ᴿ z (λ k → k (y , x))})
+  ⌈ r⇚⊕ f    ⌉′ᴿ  x      k  = k (λ {(y , z) → ⌈ f ⌉′ᴿ (λ k → k (x , z)) y })
+  ⌈ r⊕⇚ f    ⌉′ᴿ  k      x  = k (λ {(y , z) → ⌈ f ⌉′ᴿ y (λ k → k (x , z))})
+  ⌈ m⊕  f g  ⌉′ᴿ  k′     k  = k (λ {(x , y) → k′ (⌈ f ⌉′ᴸ x , ⌈ g ⌉′ᴸ y)})
+  ⌈ m⇛  f g  ⌉′ᴿ  k′     k  = k (λ k → k′ (λ {(x , y) → deMorgan (λ k → k (⌈ f ⌉′ᴸ x)) (⌈ g ⌉′ᴿ y) k}))
+  ⌈ m⇚  f g  ⌉′ᴿ  k′     k  = k (λ k → k′ (λ {(x , y) → deMorgan (⌈ f ⌉′ᴿ x) (λ k → k (⌈ g ⌉′ᴸ y)) k}))
+  ⌈ d⇛⇐ f    ⌉′ᴿ  k′     k  = k (λ {(x , y) → k′ (λ {(z , w) → ⌈ f ⌉′ᴿ (w , y) (λ k → k (z , x))})})
+  ⌈ d⇛⇒ f    ⌉′ᴿ  k′     k  = k (λ {(x , y) → k′ (λ {(z , w) → ⌈ f ⌉′ᴿ (x , w) (λ k → k (z , y))})})
+  ⌈ d⇚⇒ f    ⌉′ᴿ  k′     k  = k (λ {(x , y) → k′ (λ {(z , w) → ⌈ f ⌉′ᴿ (x , z) (λ k → k (y , w))})})
+  ⌈ d⇚⇐ f    ⌉′ᴿ  k′     k  = k (λ {(x , y) → k′ (λ {(z , w) → ⌈ f ⌉′ᴿ (z , y) (λ k → k (x , w))})})
+
+⌈_⌉′ᴶ : Judgement → Set ℓ
+⌈ A ⊢ B ⌉′ᴶ = ⌈ A ⌉′ → ¬ ¬ ⌈ B ⌉′
+
+CBV′ : Translation Type (Set ℓ) LG_ id
+CBV′ = record
+  { ⟦_⟧ᵀ = ⌈_⌉′
+  ; ⟦_⟧ᴶ = ⌈_⌉′ᴶ
+  ; [_]  = λ { {_ ⊢ _} f → ⌈_⌉′ᴿ f}
   }

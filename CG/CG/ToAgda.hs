@@ -41,6 +41,10 @@ sanitise ('.'    : xs) = sanitise xs
 sanitise (':'    : xs) = sanitise xs
 sanitise ( c     : xs) = toUpper c : sanitise xs
 
+sanitiseForLaTeX [] = []
+sanitiseForLaTeX ('_':xs) = '\\' : '_' : sanitiseForLaTeX xs
+sanitiseForLaTeX ( c :xs) =         c  : sanitiseForLaTeX xs
+
 defaultName :: (Show v, ToString v) => Term ConId v -> String
 defaultName = map repl . filter (not . isSpace) . show
   where
@@ -95,7 +99,7 @@ toAgdaDefn sys goalType ret = case ret of
 
 -- |Return a valid Agda file given a sequence of proofs.
 writeAgdaFile :: Handle -> String -> System c -> [Result] -> Term ConId Void -> IO [String]
-writeAgdaFile h moduleName sys prfs goalType = do
+writeAgdaFile h moduleName sys@System{..} prfs goalType = do
 
   let (proofDefn, nameMap) =
         runState (mapM (toAgdaDefn sys goalType) prfs) M.empty
@@ -122,7 +126,7 @@ writeAgdaFile h moduleName sys prfs goalType = do
     , unlines proofDefn
     , ""
     , "proofList : List Proof"
-    , "proofList\n  = " ++ (agdaList (proofList nameList))
+    , "proofList\n  = " ++ (agdaList (proofList structural nameList))
     , ""
     , "main : _"
     , "main = run (mapM′ writeProof (fromList proofList))"
@@ -138,15 +142,19 @@ toNameList sentenceIds =
 
 
 -- |Return a single list which contains all proofs as LaTeX strings.
-proofList :: [(Int, String)] -> [String]
-proofList nameList = do
+proofList :: Bool -> [(Int, String)] -> [String]
+proofList structural nameList = do
   (i,s) <- nameList
-  let fileName = map toLower (sanitise s) ++ "_" ++ show i
-  let termName = map toUpper (sanitise s) ++ sub i
-  let sentence = toUpper (head s) : map toLower (tail s) ++ "."
+  let
+    fileName = map toLower (sanitise s) ++ "_" ++ show i
+    termName = map toUpper (sanitise s) ++ sub i
+    sentence = sanitiseForLaTeX (toUpper (head s) : map toLower (tail s) ++ ".")
+    wordList = if structural
+               then agdaList' (map (show . sanitiseForLaTeX) (words s))
+               else agdaList' [show (sanitiseForLaTeX (sanitise s))]
   return $
     printf "proof %s %s (toLaTeX %s) (toLaTeXTerm (%s) (toTerm %s))"
-    (show fileName) (show sentence) termName (agdaList' (map show (words s))) termName
+    (show fileName) (show sentence) termName wordList termName
 
 
 -- |Compute the next number for this String.

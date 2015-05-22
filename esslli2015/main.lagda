@@ -1,4 +1,4 @@
-\documentclass{llncs}
+\documentclass[twocolumn]{llncs}
 
 %include main.fmt
 \include{preamble}
@@ -7,23 +7,31 @@
 
 \title{Formalising type-logical grammars in Agda}%
 \author{Pepijn Kokke}%
-\institute{Utrecht University}%1
+\institute{Utrecht University}%
 \maketitle
 
 \begin{abstract}
-In recent years, the interest in using proof assistants to reason about
-categorial grammars has grown. The advantage of using proof assistants
-is that they allow one to write formally verified proofs about one's
-logical systems. The downside is that in many cases the formal proofs
-are written as an afterthought, are incomplete, or use obtuse
-syntax. This makes it that the verified proofs are often much more
-difficult to read than the pen-and-paper proofs, and almost never
-directly published.
+In recent years, the interest in using proof assistants to formalise
+and reason about mathematics and programming languages has grown.
+Type-logical grammars, being closely related to type theories and
+systems used in functional programming, are a perfect candidate to
+next apply this curiosity to.
+The advantages of using proof assistants is that they allow one to
+write formally verified proofs about one's type-logical systems, and
+that any theory, once implemented, can immediately be computed with.
+The downside is that in many cases the formal proofs are written as an
+afterthought, are incomplete, or use obtuse syntax.
+This makes it that the verified proofs are often much more difficult
+to read than the pen-and-paper proofs, and almost never directly
+published.
 
 In this paper, we will try to remedy that by example. Concretely, we
 use Agda to model the Lambek-Grishin calculus, a grammar logic with a
-rich vocabulary of type-forming operations. We present a verified
-procedure for cut elimination in this system.
+rich vocabulary of type-forming operations.
+We then resent a verified procedure for cut elimination in this
+system.
+Finally, we present a CPS-translation from proofs in Lambek-Grishin to
+programs in Agda.
 \end{abstract}
 
 
@@ -34,18 +42,17 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 \end{code}
 \end{hide}
 
-
 \section{Introduction}
 
-Why would we want to formalise categorial grammars using proof
+Why would we want to formalise type-logical grammars using proof
 assistants? One good reason is that it allows us to write formally
-verified proofs about the theoretical properties of our categorial
+verified proofs about the theoretical properties of our type-logical
 grammars. But not only that---it allows us to directly run our proofs
 as programs. For instance, we can directly run the procedure for cut
 elimination in this paper to investigate what kind of derivations are
 created by it \textit{and} be confident in its correctness.
 
-Why, then, would we want to use Agda instead of more a established
+Why, then, would we want to use Agda instead of a more established
 proof assistant such as, for instance, Coq? There are several good
 reasons, but we believe that the syntactic freedom offered by Agda is
 the most important.
@@ -73,9 +80,31 @@ the two families. See \citet{moortgat2009} for discussion of how LG
 overcomes syntactic and semantic limitations of the original Lambek
 calculus.
 
-We will formalise the Lambek-Grishin calculus in Agda, and present a
-verified procedure for cut elimination in this system.
-
+We will formalise the Lambek-Grishin calculus in Agda, present a
+verified procedure for cut elimination in this system, and present a
+CPS-translation into the host language Agda. There are several reasons
+why we have chosen this particular system to formalise:
+\begin{itemize}
+\item
+  It allows cut as an admissible rule, instead of going the way of
+  defining the system with a cut and then implementing a procedure for
+  eliminating these cuts, which I find somewhat cumbersome: why
+  implement two systems and a function injection proofs in the one
+  into the other, when you can simply define a single system and a
+  function which computes proofs?;
+\item
+  This particular system has efficiently decidable proof search,
+  largely due to the absence of the cut rule; this will come in handy
+  when later on we will implement a decision procedure for the system;
+\item
+  The Lambek-Grishin calculus has some interesting symmetries, as
+  explored in \citet{moortgat2009}. Because of this, most proofs
+  of properties of LG are not much more complicated than their
+  associated proofs for the non-associative Lambek calculus.
+\item
+  An implementation of the non-associative Lambek calculus can easily
+  be extracted from our implementation of LG.
+\end{itemize}
 Since this paper is by no means a complete introduction to Agda or to
 dependently-typed programming, we advise the interested reader to
 refer to \citet{norell2009} for a detailed discussion of Agda.
@@ -83,19 +112,19 @@ refer to \citet{norell2009} for a detailed discussion of Agda.
 It should be mentioned that (although we omit some of the more tedious
 parts) this paper is written in literate Agda, and the code has been
 made available on GitHub.\footnote{
-  See \url{https://gist.github.com/anonymous/02dfa69d41a63d80f0fe}.
-}
+\url{https://gist.github.com/anonymous/02dfa69d41a63d80f0fe}}
 
 
 \section{Formulas, Judgements, Base System}
 
-If we want to model our categorial grammars in Agda, a natural
+If we want to model our type-logical grammars in Agda, a natural
 starting point would be our atomic formulas---such as |n|, |np|, |s|,
 etc. These could easily be represented as an enumerated data
 type. However, in order to avoid committing to a certain set of atomic
 formulas, and side-step the debate on which formulas \textit{should} be
 atomic, we will simply assume there is a some data type representing
-our atomic formulas:
+our atomic formulas. This will be reflected in our module header as
+follows:
 \begin{code}
 module main (Univ : Set) where
 \end{code}
@@ -169,14 +198,19 @@ data LG_ : Judgement → Set where
   d⇚⇒  : ∀ {A B C D} →  LG A ⊗ B ⊢ C ⊕ D  → LG B ⇚ D ⊢ A ⇒ C
   d⇚⇐  : ∀ {A B C D} →  LG A ⊗ B ⊢ C ⊕ D  → LG A ⇚ D ⊢ C ⇐ B
 \end{code}
-Note that Agda allows any unicode character in identifiers, so |r⊗⇒|
-is a valid Agda identifier.
+Note that Agda allows arbitrary unicode characters in identifiers, so
+|r⊗⇒| is a valid Agda identifier.
 
 Using this data type, we can already do quite a lot. For instance, we
 can show that while the inference rule |ax| above is restricted to
-atomic formulas, the unrestricted version is admissible, by induction on
+atomic formulas\footnote{%
+  Whereas the rule |ax| may appear to be unrestricted, it only allows
+  the derivation of the identity proof for any formula |el A|. That
+  is, any \textit{atomic formula} |A| delimited by the constructor
+  |el|.
+}, the unrestricted version is admissible, by induction on
 the formula. Note that the construction |{A = ...}| below is used to
-pattern match on an implicit variable |A|:
+pattern match on the implicit variable |A|:
 \begin{code}
 ax′ : ∀ {A} → LG A ⊢ A
 ax′ {A = el   _} = ax
@@ -203,15 +237,14 @@ appl-⇚′  : ∀ {A B} → LG B ⊢ (B ⇚ A) ⊕ A
 appl-⇚′  = r⇚⊕ (m⇚ ax′ ax′)
 \end{code}
 However, the most compelling reason to use the axiomatisation we have
-chosen, using residuation and monotonicity rules, is that transitivity
-becomes an admissible rule.
+chosen, using residuation and monotonicity rules, is that cut becomes
+an admissible rule.
 
 
 
+\section{Admissible Cut}
 
-\section{Admissible Transitivity}
-
-We would like to show that |trans′| of type |LG A ⊢ B → LG B ⊢ C → LG A ⊢ C| is
+We would like to show that |cut′| of type |LG A ⊢ B → LG B ⊢ C → LG A ⊢ C| is
 an admissible rule.
 The method of \citet{moortgat1999}, for the basic non-associative
 Lambek calculus, can be readily generalized to the case of LG:
@@ -223,21 +256,22 @@ Lambek calculus, can be readily generalized to the case of LG:
   changed by any inference rule;
 \item\label{p3} as a consequence of~\ref{p2}, every formula has one
   side where, if it occurs there at the top level, it is immutable,
-  based on its main connective;
+  i.e.\ there is no rule   which can eliminate it;
 \item\label{p4} due to~\ref{p1} and~\ref{p3}, when we find such an
   immutable formula, we can be sure that, stepping through the
   derivation, after some number of steps we will find the monotonicity
   rule which introduced that formula;
-\item\label{p5} due to the type of |trans′|, when we match on the cut
+\item\label{p5} due to the type of |cut′|, when we match on the cut
   formula |B| we will always have an immutable variant of that formula
-  in either the first or the second argument of |trans′|;
+  in either the first or the second argument of |cut′|;
 \item\label{p6} finally, for each main connective there exists a
   rewrite rule which makes use of the facts in~\ref{p4} and~\ref{p5}
-  to rewrite an application of |trans′| to a derivation with two
-  smaller applications of |trans′| on the arguments of the main
-  connective in |B| (for binary connectives), or simply to a dervation
-  (for atomic formulas). As an example, the rewrite rule for |_⊗_|
-  can be found in figure~\ref{cut:otimes}.
+  to rewrite an application of |cut′|: to two applications of |cut′|
+  on the arguments of the monotonicity rule which introduced the
+  connective, chained together by applications of residuation (for
+  binary connectives) or simply to a derivation (for atomic
+  formulas).  As an example, the rewrite rule for |_⊗_| can be found
+  in figure~\ref{cut:otimes}.
 \end{enumerate}
 \begin{figure*}[ht]%
   \footnotesize
@@ -296,7 +330,10 @@ not only for |B ⊗ C|.
 
 All that remains now is to show that for any |f| of type |LG A ⊢ B ⊗
 C|, we can construct such a view. We will attempt to do this by
-induction on the given derivation:
+induction on the given derivation.
+Note that |hole0| is the Agda syntax for a proof obligation. For
+clarity, I have added the types of the various subproofs |f| in
+comments:
 \begin{spec}
 find : (f : LG A ⊢ B ⊗ C) → Origin f
 find (m⊗   f g)  = origin f g id refl
@@ -315,7 +352,7 @@ above example.
 We would like to describe contexts which a) can be taken apart using
 residuation; and b) when fully taken apart, will leave the nested
 formula on the correct side of the turnstile. A natural fit for this
-is using Spolarity:
+is using polarity:
 \begin{code}
 data Polarity : Set where + - : Polarity
 \end{code}
@@ -431,29 +468,113 @@ level in the succedent:
   find    f = find′    (_ ⊢> []) f
 \end{spec}
 And with that, we can finally put the rewrite rules from
-\citet{moortgat1999} to use. We can define |trans′| by pattern
+\citet{moortgat1999} to use. We can define |cut′| by pattern
 matching on the cut formula |B|; applying the appropriate |find|
 function to find the monotonicity rule introducing the formula; and
 apply the appropriate rewrite rule to create a derivation containing
 two cuts on structurally smaller formulas:
 \begin{spec}
-trans′ : (f : LG A ⊢ B) (g : LG B ⊢ C) → LG A ⊢ C
-trans′ {B = el   _}  f g with el.find g
+cut′ : (f : LG A ⊢ B) (g : LG B ⊢ C) → LG A ⊢ C
+cut′ {B = el   _}  f g with el.find g
 ...  | (el.origin       g′  pr) = g′ f
-trans′ {B = _ ⊗  _}  f g with ⊗.find f
-...  | (⊗.origin h₁ h₂  f′  pr)  = f′ (r⇐⊗ (trans′ h₁ (r⊗⇐ (r⇒⊗ (trans′ h₂ (r⊗⇒ g))))))
-trans′ {B = _ ⇐  _}  f g with ⇐.find g
-...  | (⇐.origin h₁ h₂  g′  pr)  = g′ (r⊗⇐ (r⇒⊗ (trans′ h₂ (r⊗⇒ (trans′ (r⇐⊗ f) h₁)))))
-trans′ {B = _ ⇒  _}  f g with ⇒.find g
-...  | (⇒.origin h₁ h₂  g′  pr)  = g′ (r⊗⇒ (r⇐⊗ (trans′ h₁ (r⊗⇐ (trans′ (r⇒⊗ f) h₂)))))
-trans′ {B = _ ⊕  _}  f g with ⊕.find g
-...  | (⊕.origin h₁ h₂  g′  pr)  = g′ (r⇚⊕ (trans′ (r⊕⇚ (r⇛⊕ (trans′ (r⊕⇛ f) h₂))) h₁))
-trans′ {B = _ ⇚  _}  f g with ⇚.find f
-...  | (⇚.origin h₁ h₂  f′  pr)  = f′ (r⊕⇚ (r⇛⊕ (trans′ (r⊕⇛ (trans′ h₁ (r⇚⊕ g))) h₂)))
-trans′ {B = _ ⇛  _}  f g with ⇛.find f
-...  | (⇛.origin h₁ h₂  f′  pr)  = f′ (r⊕⇛ (r⇚⊕ (trans′ (r⊕⇚ (trans′ h₂ (r⇛⊕ g))) h₁)))
+cut′ {B = _ ⊗  _}  f g with ⊗.find f
+...  | (⊗.origin h₁ h₂  f′  pr)  =
+  f′ (r⇐⊗ (cut′ h₁ (r⊗⇐ (r⇒⊗ (cut′ h₂ (r⊗⇒ g))))))
+cut′ {B = _ ⇐  _}  f g with ⇐.find g
+...  | (⇐.origin h₁ h₂  g′  pr)  =
+  g′ (r⊗⇐ (r⇒⊗ (cut′ h₂ (r⊗⇒ (cut′ (r⇐⊗ f) h₁)))))
+cut′ {B = _ ⇒  _}  f g with ⇒.find g
+...  | (⇒.origin h₁ h₂  g′  pr)  =
+  g′ (r⊗⇒ (r⇐⊗ (cut′ h₁ (r⊗⇐ (cut′ (r⇒⊗ f) h₂)))))
+cut′ {B = _ ⊕  _}  f g with ⊕.find g
+...  | (⊕.origin h₁ h₂  g′  pr)  =
+  g′ (r⇚⊕ (cut′ (r⊕⇚ (r⇛⊕ (cut′ (r⊕⇛ f) h₂))) h₁))
+cut′ {B = _ ⇚  _}  f g with ⇚.find f
+...  | (⇚.origin h₁ h₂  f′  pr)  =
+  f′ (r⊕⇚ (r⇛⊕ (cut′ (r⊕⇛ (cut′ h₁ (r⇚⊕ g))) h₂)))
+cut′ {B = _ ⇛  _}  f g with ⇛.find f
+...  | (⇛.origin h₁ h₂  f′  pr)  =
+  f′ (r⊕⇛ (r⇚⊕ (cut′ (r⊕⇚ (cut′ h₂ (r⇛⊕ g))) h₁)))
 \end{spec}
 
+
+\section{CPS Translation}
+
+If we define negation as |¬ A = A → ⊥|, for some target type |⊥|...
+
+\begin{spec}
+⌈_⌉ : Type → Set
+⌈ el  A  ⌉ = ⌈ A ⌉ᵁ
+⌈ A ⊗ B  ⌉ =    (   ⌈ A ⌉  ×    ⌈ B ⌉)
+⌈ A ⇒ B  ⌉ = ¬  (   ⌈ A ⌉  × ¬  ⌈ B ⌉)
+⌈ B ⇐ A  ⌉ = ¬  (¬  ⌈ B ⌉  ×    ⌈ A ⌉)
+⌈ B ⊕ A  ⌉ = ¬  (¬  ⌈ B ⌉  × ¬  ⌈ A ⌉)
+⌈ B ⇚ A  ⌉ =    (   ⌈ B ⌉  × ¬  ⌈ A ⌉)
+⌈ A ⇛ B  ⌉ =    (¬  ⌈ A ⌉  ×    ⌈ B ⌉)
+\end{spec}
+
+\begin{spec}
+deMorgan : (¬ ¬ A) → (¬ ¬ B) → ¬ ¬ (A × B)
+deMorgan c₁ c₂ k = c₁ (λ x → c₂ (λ y → k (x , y)))
+\end{spec}
+
+\begin{figure*}[ht]%
+\renewcommand{\hscodestyle}{\footnotesize}
+\centering
+\begin{spec}
+⌈_⌉ᴸ : LG A ⊢ B → ¬ ⌈ B ⌉ → ¬ ⌈ A ⌉
+⌈ ax        ⌉ᴸ  k  x   = k x
+⌈ r⇒⊗  f    ⌉ᴸ     x   =      λ {(y , z) → ⌈ f ⌉ᴸ (λ k → k (y , x)) z}
+⌈ r⊗⇒  f    ⌉ᴸ  k  x   = k (  λ {(y , z) → ⌈ f ⌉ᴸ z (y , x)})
+⌈ r⇐⊗  f    ⌉ᴸ     x   =      λ {(y , z) → ⌈ f ⌉ᴸ (λ k → k (x , z)) y}
+⌈ r⊗⇐  f    ⌉ᴸ  k  x   = k (  λ {(y , z) → ⌈ f ⌉ᴸ y (x , z)})
+⌈ m⊗   f g  ⌉ᴸ  k      =      λ {(x , y) → deMorgan (⌈ f ⌉ᴿ x) (⌈ g ⌉ᴿ y) k}
+⌈ m⇒   f g  ⌉ᴸ  k  k′  = k (  λ {(x , y) → deMorgan (⌈ f ⌉ᴿ x) (λ k → k (⌈ g ⌉ᴸ y)) k′})
+⌈ m⇐   f g  ⌉ᴸ  k  k′  = k (  λ {(x , y) → deMorgan (λ k → k (⌈ f ⌉ᴸ x)) (⌈ g ⌉ᴿ y) k′})
+⌈ r⇛⊕  f    ⌉ᴸ  k  x   = k (  λ {(y , z) → ⌈ f ⌉ᴸ z (y , x)})
+⌈ r⊕⇛  f    ⌉ᴸ     x   =      λ {(y , z) → ⌈ f ⌉ᴸ (λ k → k (y , x)) z}
+⌈ r⇚⊕  f    ⌉ᴸ  k  x   = k (  λ {(y , z) → ⌈ f ⌉ᴸ y (x , z)})
+⌈ r⊕⇚  f    ⌉ᴸ     x   =      λ {(y , z) → ⌈ f ⌉ᴸ (λ k → k (x , z)) y}
+⌈ m⊕   f g  ⌉ᴸ  k  k′  = k (  λ {(x , y) → k′ (⌈ f ⌉ᴸ x , ⌈ g ⌉ᴸ y)})
+⌈ m⇛   f g  ⌉ᴸ  k      =      λ {(x , y) → deMorgan (λ k → k (⌈ f ⌉ᴸ x)) (⌈ g ⌉ᴿ y) k}
+⌈ m⇚   f g  ⌉ᴸ  k      =      λ {(x , y) → deMorgan (⌈ f ⌉ᴿ x) (λ k → k (⌈ g ⌉ᴸ y)) k}
+⌈ d⇛⇐  f    ⌉ᴸ  k      =      λ {(x , y) → k (λ {(z , w) → ⌈ f ⌉ᴸ (λ k → k (x , z)) (y , w)})}
+⌈ d⇛⇒  f    ⌉ᴸ  k      =      λ {(x , y) → k (λ {(z , w) → ⌈ f ⌉ᴸ (λ k → k (x , w)) (z , y)})}
+⌈ d⇚⇒  f    ⌉ᴸ  k      =      λ {(x , y) → k (λ {(z , w) → ⌈ f ⌉ᴸ (λ k → k (w , y)) (z , x)})}
+⌈ d⇚⇐  f    ⌉ᴸ  k      =      λ {(x , y) → k (λ {(z , w) → ⌈ f ⌉ᴸ (λ k → k (z , y)) (x , w)})}
+\end{spec}
+\caption{CPS-translation focused on the left-hand side of the turnstile.}%
+\label{cps:focusleft}%
+\end{figure*}%
+
+\begin{figure*}[ht]%
+\renewcommand{\hscodestyle}{\footnotesize}
+\centering
+\begin{spec}
+⌈_⌉ᴿ : LG A ⊢ B → ⌈ A ⌉ → ¬ ¬ ⌈ B ⌉
+⌈ ax        ⌉ᴿ    x       k  = k x
+⌈ r⇒⊗  f    ⌉ᴿ (  x , y)  z  = ⌈ f ⌉ᴿ y (λ k → k (x , z))
+⌈ r⊗⇒  f    ⌉ᴿ    x       k  = k (  λ {(y , z) → ⌈ f ⌉ᴿ (y , x) z})
+⌈ r⇐⊗  f    ⌉ᴿ (  x , y)  z  = ⌈ f ⌉ᴿ x (λ k → k (z , y))
+⌈ r⊗⇐  f    ⌉ᴿ    x       k  = k (  λ {(y , z) → ⌈ f ⌉ᴿ (x , z) y})
+⌈ m⊗   f g  ⌉ᴿ (  x , y)  k  = deMorgan (⌈ f ⌉ᴿ x) (⌈ g ⌉ᴿ y) k
+⌈ m⇒   f g  ⌉ᴿ    k′      k  = k (  λ {(x , y) → deMorgan (⌈ f ⌉ᴿ x) (λ k → k (⌈ g ⌉ᴸ y)) k′})
+⌈ m⇐   f g  ⌉ᴿ    k′      k  = k (  λ {(x , y) → deMorgan (λ k → k (⌈ f ⌉ᴸ x)) (⌈ g ⌉ᴿ y) k′})
+⌈ r⇛⊕  f    ⌉ᴿ    x       k  = k (  λ {(y , z) → ⌈ f ⌉ᴿ (y , x) z})
+⌈ r⊕⇛  f    ⌉ᴿ (  x , y)  z  = ⌈ f ⌉ᴿ y (λ k → k (x , z))
+⌈ r⊕⇚  f    ⌉ᴿ (  x , y)  z  = ⌈ f ⌉ᴿ x (λ k → k (z , y))
+⌈ r⇚⊕  f    ⌉ᴿ    x       k  = k (  λ {(y , z) → ⌈ f ⌉ᴿ (x , z) y})
+⌈ m⊕   f g  ⌉ᴿ    k′      k  = k (  λ {(x , y) → k′ (⌈ f ⌉ᴸ x , ⌈ g ⌉ᴸ y)})
+⌈ m⇛   f g  ⌉ᴿ (  x , y)  k  = deMorgan (λ k → k (⌈ f ⌉ᴸ x)) (⌈ g ⌉ᴿ y) k
+⌈ m⇚   f g  ⌉ᴿ (  x , y)  k  = deMorgan (⌈ f ⌉ᴿ x) (λ k → k (⌈ g ⌉ᴸ y)) k
+⌈ d⇛⇐  f    ⌉ᴿ (  x , y)  k  = k (  λ {(z , w) → ⌈ f ⌉ᴿ (y , w) (λ k → k (x , z))})
+⌈ d⇛⇒  f    ⌉ᴿ (  x , y)  k  = k (  λ {(z , w) → ⌈ f ⌉ᴿ (z , y) (λ k → k (x , w))})
+⌈ d⇚⇒  f    ⌉ᴿ (  x , y)  k  = k (  λ {(z , w) → ⌈ f ⌉ᴿ (z , x) (λ k → k (w , y))})
+⌈ d⇚⇐  f    ⌉ᴿ (  x , y)  k  = k (  λ {(z , w) → ⌈ f ⌉ᴿ (x , w) (λ k → k (z , y))})
+\end{spec}
+\caption{CPS-translation focused on the right-hand side of the turnstile.}%
+\label{cps:focusright}%
+\end{figure*}%
 
 \section{Conclusion}
 
@@ -474,5 +595,28 @@ readable formalisation of the Lambek-Grishin calculus.
 \nocite{*}
 \bibliographystyle{apalike}
 \bibliography{main}
+
+
+\noindent
+\todo{%
+  \begin{itemize}%
+  \item%
+    Emphasise that there is a large library which I am working on, which
+    includes code for easily implementing type-logical grammars, and
+    working directly with them as parsing systems.
+  \item%
+    Emphasise that the readability is w.r.t.\ other machine checkable
+    proofs, as the advantage over pen-and-paper proofs is that my style
+    of proof is machine checkable.
+  \item%
+    Emphasise that the reason this particular system was chosen is
+    because a) it has a nice symmetrical property, and from this proof a
+    proof for the non-associative Lambek calculus can easily be
+    extracted, and b) it has the property that it has a small and finite
+    search space, and therefore we can implement proof search for it
+    relatively painlessly.
+  \end{itemize}
+}
+
 
 \end{document}

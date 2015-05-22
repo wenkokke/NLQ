@@ -1,0 +1,17 @@
+-- Lexicon with experimental support for ``reset''.
+
+mary       : np
+
+left       : (np ⇒ s⁻)
+to_leave   : (np ⇒ s⁻)
+
+loves      : ((np ⇒ s⁻) ⇐ np)
+
+wants      : ((np ⇒ s⁻) ⇐   s⁻)
+said       : ((np ⇒ s⁻) ⇐ ◇ s⁻)
+
+everyone   : ((np ⇐ n) ⊗ n)
+someone    : ((np ⇐ n) ⊗ n)
+
+everyone′  : s⁻ ⇚ (np ⇛ s⁻)
+someone′   : s⁻ ⇚ (np ⇛ s⁻)
