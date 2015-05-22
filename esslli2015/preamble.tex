@@ -6,6 +6,7 @@
   citecolor  = ForestGreen
   ]{hyperref}
 
+\usepackage[cm]{fullpage}
 \usepackage{natbib}
 \makeatletter
 \renewcommand\bibsection%
@@ -17,12 +18,22 @@
 
 \usepackage{ifthen}
 \usepackage{enumitem}
-\renewcommand{\hscodestyle}{\small}
 
 
 % use Wouter's setup for notes (extended with ``hidden'')
 \newboolean{showHidden}
 \setboolean{showHidden}{false}
+
+\newboolean{showNotes}
+\setboolean{showNotes}{true}
+
+\newcommand{\todo}[1]{
+  \ifthenelse%
+  {\boolean{showNotes}}
+  {\textcolor{red}{\textbf{TODO:~}#1}}
+  {}}
+
+
 
 \newenvironment{hide}{\ifshowHidden}{\fi}
 
@@ -87,6 +98,8 @@
 \DeclareUnicodeCharacter{7478}{$^{J}$}
 \DeclareUnicodeCharacter{7480}{$^{L}$}
 \DeclareUnicodeCharacter{7487}{$^{R}$}
+\DeclareUnicodeCharacter{7489}{$^{U}$}
+\DeclareUnicodeCharacter{7522}{$_{i}$}
 \DeclareUnicodeCharacter{8314}{$^{+}$}
 \DeclareUnicodeCharacter{8315}{$^{-}$}
 \DeclareUnicodeCharacter{9633}{$\Box$}
@@ -97,4 +110,7 @@
 \def\myitem{\item[$\circ$]}
 
 % customise the apprearance of lhs2TeX code blocks
-\renewcommand\hscodestyle{\setlength\leftskip{\parindent}}
+\renewcommand{\hscodestyle}{%
+  \setlength\leftskip{\parindent}%
+  \footnotesize
+}

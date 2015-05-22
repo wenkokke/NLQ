@@ -63,41 +63,26 @@ gq : ((Entity → Bool) → Bool) → (Bool → Bool → Bool) → ⟦ np ⇐ n 
 gq q _⊙_ (p₁ , p₂) = q (λ x → p₂ x ⊙ p₁ x)
 
 -- * setup lexicon
-dutch : ⟦ n ⇐ n ⟧ᵀ
-dutch = im DUTCH
-
-english : ⟦ n ⇐ n ⟧ᵀ
+dutch english : ⟦ n ⇐ n ⟧ᵀ
+dutch   = im DUTCH
 english = im ENGLISH
 
-smiles : ⟦ np ⇒ s⁻ ⟧ᵀ
-smiles = iv SMILES
+left to_leave cheats smiles : ⟦ np ⇒ s⁻ ⟧ᵀ
+left     = iv LEFT
+to_leave = iv LEFT
+cheats   = iv CHEATS
+smiles   = iv SMILES
 
-left : ⟦ np ⇒ s⁻ ⟧ᵀ
-left = iv LEFT
-
-cheats : ⟦ np ⇒ s⁻ ⟧ᵀ
-cheats = iv CHEATS
-
-teases : ⟦ (np ⇒ s⁻) ⇐ np ⟧ᵀ
+teases loves : ⟦ (np ⇒ s⁻) ⇐ np ⟧ᵀ
 teases = tv TEASES
+loves  = tv LOVES
 
-loves : ⟦ (np ⇒ s⁻) ⇐ np ⟧ᵀ
-loves = tv LOVES
+wants : ⟦ (np ⇒ s⁻) ⇐ s⁻ ⟧ᵀ
+wants ((x , k) , y) = k (WANTS x (y id))
 
-thinks : ⟦ (np ⇒ s⁻) ⇐ s⁻ ⟧ᵀ
-thinks ((x , k) , y) = k (THINKS x (y id))
+said : ⟦ (np ⇒ s⁻) ⇐ (◇ s⁻) ⟧ᵀ
+said ((x , k) , y) = k (SAID x (y id))
 
-thinks' : ⟦ (np ⇒ s⁻) ⇐ (◇ s⁻) ⟧ᵀ
-thinks' ((x , k) , y) = k (THINKS x (y id))
-
-everyone : ⟦ (np ⇐ n) ⊗ n ⟧ᵀ
+everyone someone : ⟦ (np ⇐ n) ⊗ n ⟧ᵀ
 everyone = gq forAll _⊃_ , PERSON
-
-someone : ⟦ (np ⇐ n) ⊗ n ⟧ᵀ
-someone = gq exists _∧_ , PERSON
-
-everyone1 : ⟦ (₁ np) ¹ ⟧ᵀ
-everyone1 p = forAll (λ x → PERSON x ⊃ p x)
-
-someone1 : ⟦ (₁ np) ¹ ⟧ᵀ
-someone1 p = exists (λ x → PERSON x ∧ p x)
+someone  = gq exists _∧_ , PERSON

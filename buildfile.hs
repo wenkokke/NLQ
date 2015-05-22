@@ -225,8 +225,7 @@ experimentalExtendedLambek =
                      ]
   , include        = ["Logic/Classical/Ordered/LambekGrishin//*.agda"
                      ]
-  , exclude        = ["//ToIntuitionisticLinearLambda.agda"
-                     ,"//Trans.agda"
+  , exclude        = ["//Trans.agda"
                      ,"//FocPol.agda"
                      ,"//FocPol//*.agda"
                      ,"//EquivalentToFocPol.agda"

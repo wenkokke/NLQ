@@ -84,7 +84,8 @@ postulate
   UNICORN : Entity → Bool
   PERSON  : Entity → Bool
   TEACHER : Entity → Bool
-  THINKS  : Entity → Bool → Bool
+  SAID   : Entity → Bool → Bool
+  WANTS  : Entity → Bool → Bool
 
 
 -- * setup tests

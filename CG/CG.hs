@@ -1,27 +1,51 @@
-{-# LANGUAGE OverloadedStrings, ViewPatterns, FlexibleContexts, PartialTypeSignatures, TupleSections, RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings, ViewPatterns, FlexibleContexts, PartialTypeSignatures, TupleSections, RecordWildCards, ScopedTypeVariables #-}
 module Main where
 
 
 import           Prelude hiding (lex)
-import           Control.Monad (forM,when,unless)
+import           Control.Exception (IOException, handle)
+import           Control.Monad (forM,forM_,when,unless)
+import           Data.List (stripPrefix)
 import           Data.List.Split (splitOn)
 import           Data.Map (Map)
 import           Data.Maybe (fromMaybe,maybe)
+import qualified Data.Text as T
+import qualified Data.Text.IO as T
 import           Data.Void (Void)
 import           System.Console.GetOpt (OptDescr(..),ArgDescr(..),ArgOrder(..),usageInfo,getOpt)
-import           System.Directory (renameFile,doesFileExist,createDirectoryIfMissing)
+import           System.Directory (renameFile,doesFileExist,getDirectoryContents,createDirectoryIfMissing)
 import           System.Environment (getProgName,getArgs,getEnv)
 import           System.Exit (ExitCode(..), exitSuccess, exitFailure)
 import           System.FilePath (takeBaseName,dropExtension,(</>),(<.>),(-<.>))
 import           System.IO
 import           System.Process
 import qualified Text.Parsec as P (parse)
+import           Text.Printf (printf)
 
 import           CG.Prover
 import           CG.Parser
 import           CG.Base hiding (Term)
 import           CG.Parsing
 import           CG.ToAgda
+
+
+descInstalled :: FilePath -> IO ()
+descInstalled dir = do
+  let
+    readDesc :: FilePath -> IO (Maybe String)
+    readDesc f =
+      handle (\(e :: IOException) -> return Nothing)
+      (stripPrefix "-- " . T.unpack <$> withFile f ReadMode T.hGetLine)
+
+  filesAndDirectories <- getDirectoryContents dir
+  forM_ filesAndDirectories $ \fileOrDirectory -> do
+    isFile <- doesFileExist (dir </> fileOrDirectory)
+    when isFile $ do
+      mbDesc <- readDesc (dir </> fileOrDirectory)
+      case mbDesc of
+       Nothing   -> return ()
+       Just desc -> do
+         putStrLn (printf "%s%-32s  %s" (replicate 19 ' ') fileOrDirectory desc)
 
 
 
@@ -47,6 +71,24 @@ main = do
       if verbose then return (Nothing, Nothing)
       else do f <- openFile "/dev/null" AppendMode; return (Just f, Just f)
 
+    -- run a command
+    runCommand :: String -> [String] -> Maybe FilePath -> IO ()
+    runCommand cmd args dir = do
+      putStrLn (showCommandForUser cmd args)
+      (mbOut,mbErr) <- mbHandles
+      p <- runProcess cmd args dir Nothing Nothing mbOut mbErr
+      e <- waitForProcess p
+      case e of
+       ExitSuccess   -> return ()
+       ExitFailure r -> error ("Error in `"++cmd++"' (exit "++show r++")")
+
+    -- use the given lexicon, otherwise read the default lexicon
+    givenOrDefaultLexicon :: IO (Map String (Term ConId Void))
+    givenOrDefaultLexicon = case mbLexicon of
+      Just lx -> return lx
+      Nothing -> do hPutStrLn stderr "Reading default lexicon..."; readLexicon "default"
+
+
   when (null tasks)
        (putStrLn "Usage: For basic information, try the `--help' option.")
 
@@ -55,9 +97,9 @@ main = do
     runTask (Solve str) = case P.parse judgement "" str of
       Left  e -> error (show e)
       Right g -> return $ map (uncurry Solved) (solve sys d [g])
-    runTask (Parse sent expr) = case mbLexicon of
-      Just lx -> return (map (uncurry $ Parsed sent expr) (parse sys d lx sent g))
-      _       -> error "No lexicon file given."
+    runTask (Parse sent expr) = do
+      lx <- givenOrDefaultLexicon
+      return (map (uncurry $ Parsed sent expr) (parse sys d lx sent g))
 
   proofs <- concat <$> mapM runTask tasks
 
@@ -68,48 +110,54 @@ main = do
 
     generateLaTeX :: Maybe FilePath -> IO [FilePath]
     generateLaTeX targetDir = do
-      cgtoolHome <- getEnv "CGTOOL_HOME"
-      let mainFile = cgtoolHome </> "Main.agda"
-      createDirectoryIfMissing True cgtoolHome
-      fileList <- withFile mainFile WriteMode
-                  (\h -> writeAgdaFile h "Main" sys proofs g)
-      compileAgda cgtoolHome mainFile
-      (mbOut,mbErr) <- mbHandles
-      p <- runProcess (dropExtension mainFile) [] targetDir Nothing Nothing mbOut mbErr
-      waitForProcess p
+      home <- fromMaybe "." <$> getCgHome
+
+      let mainFile = home </> "Main.agda"
+      createDirectoryIfMissing True home
+      fileList    <- withFile mainFile WriteMode (\h -> writeAgdaFile h "Main" sys proofs g)
+
+      agdaInclude <- map ("-i"++) . (home:) . splitOn ":" <$> getEnv "AGDA_PATH"
+      let args = "--compile" : "--compile-dir" : home : agdaInclude ++ [mainFile]
+
+      runCommand "agda" args (Just home)
+      runCommand (dropExtension mainFile) [] targetDir
+
       return fileList
 
     generatePNG :: Maybe FilePath -> IO [FilePath]
     generatePNG mbDir = do
+
       let targetDir = fromMaybe "." mbDir
-      cgtoolHome <- getEnv "CGTOOL_HOME"
-      latexFiles <- generateLaTeX (Just cgtoolHome)
-      forM latexFiles $ \latexFile -> do
-        contents <- readFile (cgtoolHome </> latexFile <.> "tex")
-        writeFile (cgtoolHome </> latexFile <.> "standalone_tex") . unlines $
-          [ "\\documentclass[preview,border={30pt 10pt 30pt 10pt}]{standalone}"
+      home <- fromMaybe "." <$> getCgHome
+      latexFiles <- generateLaTeX (Just home)
+
+      forM_ latexFiles $ \latexFile -> do
+
+        putStrLn ("Processing `"++latexFile++"'...")
+
+        contents <- readFile (home </> latexFile <.> "tex")
+        writeFile (home </> latexFile <.> "standalone_tex") . unlines $
+          [ "\\documentclass[preview,border={10pt 10pt 50pt 10pt}]{standalone}"
           , preamble
           , "\\begin{document}"
           , contents
           , "\\end{document}"
           ]
-        (mbOut,mbErr) <- mbHandles
-        p1 <- runProcess
-              "pdflatex" ["-shell-escape"
-                         ,"-output-directory",cgtoolHome
-                         ,latexFile <.> "standalone_tex"]
-              (Just cgtoolHome) Nothing Nothing mbOut mbErr
-        waitForProcess p1
-        (mbOut,mbErr) <- mbHandles
-        p2 <- runProcess
-              "convert" ["-density","300"
-                        ,cgtoolHome </> latexFile <.> "pdf"
-                        ,"-quality","90"
-                        ,cgtoolHome </> latexFile <.> "png"]
-              (Just cgtoolHome) Nothing Nothing mbOut mbErr
-        waitForProcess p2
-        renameFile (cgtoolHome </> latexFile <.> "png") (targetDir </> latexFile <.> "png")
-        return latexFile
+
+        let args1 = ["-shell-escape"
+                    ,"-output-directory",home
+                    ,latexFile <.> "standalone_tex"]
+        runCommand "pdflatex" args1 (Just home)
+
+        let args2 = ["-density","300"
+                    ,home </> latexFile <.> "pdf"
+                    ,"-quality","90"
+                    ,home </> latexFile <.> "png"]
+        runCommand "convert" args2 (Just home)
+
+        renameFile (home </> latexFile <.> "png") (targetDir </> latexFile <.> "png")
+
+      return latexFiles
 
   case out of
     StdOut         -> mapM_ printResult proofs
@@ -165,21 +213,21 @@ options =
     (ReqArg addExpected "EXPRESSION")
     "Generate check if the previous test results in this expression."
 
+  , Option "s" ["system"]
+    (ReqArg (\arg opt -> do sys <- readSystem arg; return opt { optSystem = sys }) "SYSTEM_FILE")
+    "Type-logical system (see below)."
+
+  , Option "d" ["depth"]
+    (ReqArg (\arg opt -> return opt { optDepth = read arg }) "SEARCH_DEPTH")
+    "Set the search depth. For systems marked as `infinite' only. Defaults to `5'."
+
   , Option "l" ["lexicon"]
     (ReqArg (\arg opt -> do lex <- readLexicon arg; return opt { optLexicon = Just lex }) "LEXICON_FILE")
-    "Lexicon used in parsing."
-
-  , Option "s" ["system"]
-    (ReqArg (\arg opt -> do sys <- readSystem arg; return opt { optSystem = sys }) "SYSTEM")
-    "Logical system (see below)."
+    "Lexicon used in parsing. Defaults to `$CGTOOL_HOME/lex/default'."
 
   , Option "g" ["goal"]
     (ReqArg (\arg opt -> do g <- parseGoal arg; return opt { optGoal = g }) "GOAL_FORMULA")
-    "Goal formula (n, np, s⁻, etc)."
-
-  , Option "v" ["verbose"]
-    (ReqArg (\arg opt -> return opt { optVerbose = read arg }) "BOOL")
-    "Verbose."
+    "Goal formula for parsing. Defaults to `s⁻'."
 
   , Option [] ["to-agda"]
     (OptArg (\arg opt -> do return opt { optOutput = AgdaFile arg }) "AGDA_FILE")
@@ -187,21 +235,32 @@ options =
 
   , Option [] ["to-latex"]
     (OptArg (\arg opt -> do return opt { optOutput = LaTeX arg }) "DIRECTORY")
-    "Produce a TeX file for each proof."
+    "Produce a TeX file for each proof, and write it to DIRECTORY."
 
   , Option [] ["to-png"]
     (OptArg (\arg opt -> do return opt { optOutput = PNG arg }) "DIRECTORY")
-    "Produce a PNG file for each proof."
+    "Produce a PNG file for each proof, and write it to DIRECTORY."
 
-  , Option "d" ["depth"]
-    (ReqArg (\arg opt -> return opt { optDepth = read arg }) "SEARCH_DEPTH")
-    "Search depth (for systems with infinite search spaces)"
+  , Option "v" ["verbose"]
+    (NoArg (\opt -> return opt { optVerbose = True }))
+    "Verbose output."
 
   , Option "h" ["help"]
     (NoArg  (\_ -> do
               prg <- getProgName
               hPutStrLn stderr (usageInfo prg options)
-              exitSuccess))
+              mbCgHome <- getCgHome
+              case mbCgHome of
+               Nothing     -> do
+                 putStrLn "Warning: `$CGTOOL_HOME' is not set."
+                 exitFailure
+               Just cgHome -> do
+                 hPutStrLn stderr (printf "\nAvailable systems (in `%s')\n" (cgHome </> "sys"))
+                 descInstalled (cgHome </> "sys")
+                 hPutStrLn stderr (printf "\nAvailable lexicons (in `%s')\n" (cgHome </> "lex"))
+                 descInstalled (cgHome </> "lex")
+                 exitSuccess
+            ))
     "Show help."
   ]
 
@@ -213,16 +272,10 @@ compileAgda :: FilePath -> FilePath -> IO ExitCode
 compileAgda dir mainFile = do
   agdaInclude <- map ("-i"++) . (dir:) . splitOn ":" <$> getEnv "AGDA_PATH"
   let args = "--compile" : "--compile-dir" : dir : agdaInclude ++ [mainFile]
-  --putStrLn (showCommandForUser "agda" args)
   (ext,out,err) <- readProcessWithExitCode "agda" args ""
   case ext of
    ExitSuccess -> return ExitSuccess
    _           -> do hPutStrLn stdout out; hPutStrLn stderr err; return ext
-
-
-hOpen :: Maybe FilePath -> IO Handle
-hOpen  Nothing  = return stdout
-hOpen (Just fn) = openFile fn WriteMode
 
 -- |Check if a given file exists, and if so ask for a confirmation
 --  for overwriting the file.
@@ -281,7 +334,6 @@ isParse (Parse _ _) = True
 isParse _           = False
 
 
-
 -- preamble.tex
 preamble :: String
 preamble = unlines
@@ -334,8 +386,8 @@ preamble = unlines
   , "  }%"
   , "}"
   , ""
-  , "\\newcommand{\\varbox}[1][]{\\ifthenelse{\\isempty{#1}}{\\Box}{[ #1 ]}}"
-  , "\\newcommand{\\vardia}[1][]{\\ifthenelse{\\isempty{#1}}{\\Diamond}{\\langle #1 \\rangle}}"
+  , "\\newcommand{\\varbox}[1][]{\\ifthenelse{\\isempty{#1}}{\\Box}{\\,[\\,#1\\,]\\,}}"
+  , "\\newcommand{\\vardia}[1][]{\\ifthenelse{\\isempty{#1}}{\\Diamond}{\\,\\langle\\,#1\\,\\rangle\\,}}"
   , "\\newcommand{\\varpref}[1]{{}_{#1}}"
   , "\\newcommand{\\varsuff}[1]{{}^{#1}}"
   , "\\newcommand{\\vardown}[1]{\\,\\cdot\\,#1\\,\\cdot\\,}"

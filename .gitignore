@@ -5,6 +5,7 @@ dist/
 cabal.sandbox.config
 html/
 depr/
+auto/
 *.o
 *.hi
 *.agdai

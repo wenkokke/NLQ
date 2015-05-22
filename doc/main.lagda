@@ -16,11 +16,12 @@
 % -------------------------- %
 % 5 - Non-Associative Lambek Calculus
 %     * Limitations
-% - -
-% - - Multi-modal Lambek Calculi
+% 6 - Multi-modal Lambek Calculi
 %     * NL_{CL}
 %     * Moortgat (1996)
-% - - Lambek-Grishin Calculus
+% 7 - Lambek-Grishin Calculus
+%     * Algebraic + Translation
+%     * Polarised + Translation
 %
 
 \begin{document}

@@ -27,8 +27,8 @@ instance
 
       go : ℕ → Structure → String
       go _ ·  A  · = "\\vardown{" ++ toLaTeX A ++ "}"
-      go _ [  X  ] = "\\varbox{" ++ go 0 X ++ "}"
-      go _ ⟨  X  ⟩ = "\\vardia{" ++ go 0 X ++ "}"
+      go _ [  X  ] = "\\varbox[" ++ go 0 X ++ "]"
+      go _ ⟨  X  ⟩ = "\\vardia[" ++ go 0 X ++ "]"
       go p (₀   A) = parens ⌊ 40 ≤? p ⌋ $ "\\varpref0" ∙ go 40 A
       go p (A   ⁰) = parens ⌊ 40 ≤? p ⌋ $ go 40 A ∙ "\\varsuff0"
       go p (₁   A) = parens ⌊ 40 ≤? p ⌋ $ "\\varpref1" ∙ go 40 A

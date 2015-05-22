@@ -7,7 +7,7 @@ open import Function using (_$_)
 open import Example.System.NLCL
 
 
-module Example.BarkerShan where
+module Example.NLCL where
 
 
 MARY_LEFT₀ : NL dp ⊗ (dp ⇒ s) ⊢ s
@@ -18,14 +18,19 @@ mary_left₀ = [ MARY_LEFT₀ ]ᵀ (mary , left)
 
 
 EVERYONE_LEFT₀ : NL ( s ⇦ ( dp ⇨ s ) ) ⊗ ( dp ⇒ s ) ⊢ s
-EVERYONE_LEFT₀
-  = r⇐⊗ (Iᵢ (r⊗⇐ (Rᵢ (r⇦∘ (m⇦ ax (r∘⇨ (Rₑ (r⇒⊗ (m⇒ (Iₑ ax) ax)))))))))
+EVERYONE_LEFT₀ = r⇐⊗ (Iᵢ (r⊗⇐ (Rᵢ (r⇦∘ (m⇦ ax (r∘⇨ (Rₑ (r⇒⊗ (m⇒ (Iₑ ax) ax)))))))))
 everyone_left₀ : ⟦ s  ⟧ᵀ
-everyone_left₀
-  = [ EVERYONE_LEFT₀ ]ᵀ (everyone , left)
+everyone_left₀ = [ EVERYONE_LEFT₀ ]ᵀ (everyone , left)
+--> forAll (λ x → PERSON x ⊃ LEFT x)
 
 
--- manually derived
+--
+-- NOTE:
+--   The below proof is manually derived, as the search space for NLCL
+--   is enormous and therefore there is no way to efficiently search
+--   for this proof automatically, nor is there any guarantee there
+--   aren't any other proofs of this sentence.
+--
 JOHN_LOVES_EVERYONE₀ : NL dp ⊗ (dp ⇒ s) ⇐ dp ⊗ s ⇦ (dp ⇨ s) ⊢ s
 JOHN_LOVES_EVERYONE₀
   = r⇒⊗ (r⇒⊗ (Iᵢ (r⊗⇒ (Lᵢ (r⊗⇒ (Lᵢ (r⇦∘ (m⇦ ax (r∘⇨ (Lₑ (r⇒⊗ (Lₑ (r⇒⊗ (Iₑ (r⊗⇒ (r⇐⊗ (m⇐ (m⇒ ax ax) ax)))))))))))))))))

@@ -5,9 +5,13 @@
 
 open import Algebra                                    using (module Monoid)
 open import Function                                   using (_∘_)
-open import Data.List                                  using (List; _++_) renaming ([] to ∅; _∷_ to _,_)
+open import Data.List                                  using (List; length; _++_) renaming ([] to ∅; _∷_ to _,_)
+open import Data.List.NonEmpty                         using (List⁺; toList; head; tail) renaming (_∷_ to _,_)
+open import Data.Nat                                   using (ℕ; suc; _≤?_)
+open import Data.Fin                                   using (Fin; suc; zero; #_)
 open import Data.Product                               using (∃; ∃₂; _×_; _,_; proj₁; proj₂)
 open import Relation.Nullary                           using (Dec; yes; no)
+open import Relation.Nullary.Decidable                 using (True; fromWitness)
 open import Relation.Binary                            using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym; subst; subst₂)
 
@@ -93,6 +97,11 @@ eᴸ₂  : ∀ {Γ A B C D}
      → Λ A , (B , (C , Γ)) ⊢ D
 eᴸ₂  = eᴸ ∅ (_ , (_ , ∅)) (_ , ∅) _
 
+eᴸ₂′ : ∀ {Γ A B C D}
+     → Λ A , (B , (C , Γ)) ⊢ D
+     → Λ C , (A , (B , Γ)) ⊢ D
+eᴸ₂′ = eᴸ ∅ (_ , ∅) (_ , (_ , ∅)) _
+
 
 -- Lemma: weaker version of eᴸ and eᴿ which only swap two contexts,
 -- without allowing them to be embedded in further contexts are often
@@ -113,3 +122,55 @@ sᴸ  Γ₁ {Γ₂} = subst₂ (λ Γ₁′ Γ₂′ → Λ Γ₂ ++ Γ₁′ �
 -- Lemma: cut.
 cut′ : ∀ {Γ Δ A B} → Λ Γ ⊢ A → Λ A , Δ ⊢ B → Λ Γ ++ Δ ⊢ B
 cut′ {Γ} f g = sᴸ Γ (⇒ₑ (⇒ᵢ g) f)
+
+
+private
+
+  swapList1 : ∀ {ℓ} {A : Set ℓ} (x : A) (xs : List A) (i : Fin (length xs)) → List⁺ A
+  swapList1 x ∅ ()
+  swapList1 x (y , xs)  zero   = y , (x , xs)
+  swapList1 x (y , xs) (suc i) with swapList1 x xs i
+  swapList1 x (y , xs) (suc i) | (z , zs) = z , (y , zs)
+
+  swapList : ∀ {ℓ} {A : Set ℓ} (xs : List A) (i j : Fin (length xs)) → List A
+  swapList ∅ () ()
+  swapList (x , xs)  zero    zero   = x , xs
+  swapList (x , xs)  zero   (suc j) with swapList1 x xs j
+  swapList (x , xs)  zero   (suc j) | (y , ys) = (y , ys)
+  swapList (x , xs) (suc i)  zero   with swapList1 x xs i
+  swapList (x , xs) (suc i)  zero   | (y , ys) = (y , ys)
+  swapList (x , xs) (suc i) (suc j) = x , (swapList xs i j)
+
+  swapCtxt1 : ∀ {Γ B} (A : Type) (i : Fin (length Γ)) → Λ A , Γ ⊢ B → Λ toList (swapList1 A Γ i) ⊢ B
+  swapCtxt1 {∅} _ ()
+  swapCtxt1 {C , Γ} A  zero   f = eᴸ₁ f
+  swapCtxt1 {C , Γ} A (suc i) f = eᴸ₁ (sᴸ (C , ∅) (⇒ₑ (swapCtxt1 {Γ} A i (⇒ᵢ (eᴸ₁ f))) ax))
+
+  swapCtxt : ∀ {Γ B} (i j : Fin (length Γ)) →  Λ Γ ⊢ B → Λ swapList Γ i j ⊢ B
+  swapCtxt {∅} () ()
+  swapCtxt {A , Γ}  zero    zero   f = f
+  swapCtxt {A , Γ}  zero   (suc j) f = swapCtxt1 {Γ} A j f
+  swapCtxt {A , Γ} (suc i)  zero   f = swapCtxt1 {Γ} A i f
+  swapCtxt {A , Γ} (suc i) (suc j) f = sᴸ (A , ∅) (⇒ₑ (swapCtxt {Γ} i j (⇒ᵢ f)) ax)
+
+
+eᵢⱼ : ∀ {Γ B} (m n : ℕ)
+       {m∈Γ : True (suc m ≤? length Γ)}
+       {n∈Γ : True (suc n ≤? length Γ)}
+         → Λ Γ ⊢ B → Λ swapList Γ (#_ m {m<n = m∈Γ}) (#_ n {m<n = n∈Γ}) ⊢ B
+eᵢⱼ m n {m∈Γ} {n∈Γ} f = swapCtxt (#_ m {m<n = m∈Γ}) (#_ n {m<n = n∈Γ}) f
+
+
+-- Several pre-computed exchanges (which won't use any computational rules)
+e₀₁ : ∀ {A B C Γ} → Λ B , (A , Γ) ⊢ C → Λ A , (B , Γ) ⊢ C
+e₀₁ f = eᴸ ∅ (_ , ∅) (_ , ∅) _ f
+e₁₂ : ∀ {A B C D Γ} → Λ A , (C , (B , Γ)) ⊢ D → Λ A , (B , (C , Γ)) ⊢ D
+e₁₂ f = eᴸ (_ , ∅) (_ , ∅) (_ , ∅) _ f
+e₀₂ : ∀ {A B C D Γ} → Λ C , (B , (A , Γ)) ⊢ D → Λ A , (B , (C , Γ)) ⊢ D
+e₀₂ f = e₀₁ (e₁₂ (e₀₁ f))
+e₂₃ : ∀ {A B C D E Γ} → Λ A , (B , (D , (C , Γ))) ⊢ E → Λ A , (B , (C , (D , Γ))) ⊢ E
+e₂₃ f = eᴸ (_ , (_ , ∅)) (_ , ∅) (_ , ∅) _ f
+e₁₃ : ∀ {A B C D E Γ} → Λ A , (D , (C , (B , Γ))) ⊢ E → Λ A , (B , (C , (D , Γ))) ⊢ E
+e₁₃ f = e₁₂ (e₂₃ (e₁₂ f))
+e₀₃ : ∀ {A B C D E Γ}  → Λ D , (B , (C , (A , Γ))) ⊢ E → Λ A , (B , (C , (D , Γ))) ⊢ E
+e₀₃ f = e₀₁ (e₁₂ (e₂₃ (e₁₂ (e₀₁ f))))
