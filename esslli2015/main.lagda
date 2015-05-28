@@ -577,10 +577,16 @@ that the possible derivation steps depend on the main connective;
 therefore we first have to explore every possible main connective, and
 then every possible rule which would produce that main connective.
 Because of this, the definitions of the various |find′| functions are
-very long and tedious, and have mostly been omitted.
+very long and tedious, and have mostly been omitted.\footnote{
+  The burden on the programmer or logician can be reduced by clever
+  use of the symmetries $\cdot^{\bowtie}$ and $\cdot^{\infty}$ as done
+  in \citet{moortgat2009}. One would only have to implement only
+  \textit{two} of the |find′| functions; the rest can be derived using
+  the symmetries.
+}
 
 From the more general |Origin′| and |find′| we can very easily recover
-our original definitions |Origin| and |find′| by setting the context
+our original definitions |Origin| and |find| by setting the context
 to be empty. In the case of the cut formula |B ⊗ C|, we set the
 context to |(_ ⊢> [])| to ensure that the formula ends up at the top
 level in the succedent:
