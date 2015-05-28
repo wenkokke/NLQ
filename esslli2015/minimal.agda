@@ -949,21 +949,21 @@ module logic {u ℓ} (Univ : Set u) (⌈_⌉ᵁ : Univ → Set ℓ) (⊥ : Set �
         ... | origin h₁ h₂ f′ pr rewrite pr = origin h₁ h₂ (g ∘ f′) refl
 
 
-  trans′ : ∀ {A B C} (f : LG A ⊢ B) (g : LG B ⊢ C) → LG A ⊢ C
-  trans′ {B = el _ }  f  g with el.find ([] <⊢ _) g
+  cut′ : ∀ {A B C} (f : LG A ⊢ B) (g : LG B ⊢ C) → LG A ⊢ C
+  cut′ {B = el _ }  f  g with el.find ([] <⊢ _) g
   ... | (el.origin        g′ pr)  = g′ f
-  trans′ {B = _ ⊗ _}  f  g with ⊗.find (_ ⊢> []) f
-  ... | (⊗.origin  h₁ h₂  f′ pr)  = f′ (r⇐⊗ (trans′ h₁ (r⊗⇐ (r⇒⊗ (trans′ h₂ (r⊗⇒ g))))))
-  trans′ {B = _ ⇐ _}  f  g with ⇐.find ([] <⊢ _) g
-  ... | (⇐.origin  h₁ h₂  g′ pr)  = g′ (r⊗⇐ (r⇒⊗ (trans′ h₂ (r⊗⇒ (trans′ (r⇐⊗ f) h₁)))))
-  trans′ {B = _ ⇒ _}  f  g with ⇒.find ([] <⊢ _) g
-  ... | (⇒.origin  h₁ h₂  g′ pr)  = g′ (r⊗⇒ (r⇐⊗ (trans′ h₁ (r⊗⇐ (trans′ (r⇒⊗ f) h₂)))))
-  trans′ {B = _ ⊕ _}  f  g with ⊕.find ([] <⊢ _) g
-  ... | (⊕.origin  h₁ h₂  g′ pr)  = g′ (r⇚⊕ (trans′ (r⊕⇚ (r⇛⊕ (trans′ (r⊕⇛ f) h₂))) h₁))
-  trans′ {B = _ ⇚ _}  f  g with ⇚.find (_ ⊢> []) f
-  ... | (⇚.origin  h₁ h₂  f′ pr)  = f′ (r⊕⇚ (r⇛⊕ (trans′ (r⊕⇛ (trans′ h₁ (r⇚⊕ g))) h₂)))
-  trans′ {B = _ ⇛ _}  f  g with ⇛.find (_ ⊢> []) f
-  ... | (⇛.origin  h₁ h₂  f′ pr)  = f′ (r⊕⇛ (r⇚⊕ (trans′ (r⊕⇚ (trans′ h₂ (r⇛⊕ g))) h₁)))
+  cut′ {B = _ ⊗ _}  f  g with ⊗.find (_ ⊢> []) f
+  ... | (⊗.origin  h₁ h₂  f′ pr)  = f′ (r⇐⊗ (cut′ h₁ (r⊗⇐ (r⇒⊗ (cut′ h₂ (r⊗⇒ g))))))
+  cut′ {B = _ ⇐ _}  f  g with ⇐.find ([] <⊢ _) g
+  ... | (⇐.origin  h₁ h₂  g′ pr)  = g′ (r⊗⇐ (r⇒⊗ (cut′ h₂ (r⊗⇒ (cut′ (r⇐⊗ f) h₁)))))
+  cut′ {B = _ ⇒ _}  f  g with ⇒.find ([] <⊢ _) g
+  ... | (⇒.origin  h₁ h₂  g′ pr)  = g′ (r⊗⇒ (r⇐⊗ (cut′ h₁ (r⊗⇐ (cut′ (r⇒⊗ f) h₂)))))
+  cut′ {B = _ ⊕ _}  f  g with ⊕.find ([] <⊢ _) g
+  ... | (⊕.origin  h₁ h₂  g′ pr)  = g′ (r⇚⊕ (cut′ (r⊕⇚ (r⇛⊕ (cut′ (r⊕⇛ f) h₂))) h₁))
+  cut′ {B = _ ⇚ _}  f  g with ⇚.find (_ ⊢> []) f
+  ... | (⇚.origin  h₁ h₂  f′ pr)  = f′ (r⊕⇚ (r⇛⊕ (cut′ (r⊕⇛ (cut′ h₁ (r⇚⊕ g))) h₂)))
+  cut′ {B = _ ⇛ _}  f  g with ⇛.find (_ ⊢> []) f
+  ... | (⇛.origin  h₁ h₂  f′ pr)  = f′ (r⊕⇛ (r⇚⊕ (cut′ (r⊕⇚ (cut′ h₂ (r⇛⊕ g))) h₁)))
 
 
   ¬_ : Set ℓ → Set ℓ

@@ -15,3 +15,6 @@ someone    : ((np ⇐ n) ⊗ n)
 
 everyone′  : s⁻ ⇚ (np ⇛ s⁻)
 someone′   : s⁻ ⇚ (np ⇛ s⁻)
+
+everyone″  : (s⁻ ⇚ s⁻) ⇛ np
+someone″   : (s⁻ ⇚ s⁻) ⇛ np
