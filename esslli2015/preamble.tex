@@ -20,10 +20,7 @@
 \usepackage{enumitem}
 
 
-% use Wouter's setup for notes (extended with ``hidden'')
-\newboolean{showHidden}
-\setboolean{showHidden}{false}
-
+% use Wouter's setup for notes
 \newboolean{showNotes}
 \setboolean{showNotes}{true}
 
@@ -34,8 +31,16 @@
   {}}
 
 
+% partial code environments
+\usepackage{etoolbox}%
+\newboolean{partial}
+\setboolean{partial}{false}
+\AtEndEnvironment{hscode}{\ifthenelse{\boolean{partial}}{\\...}{}}
 
+% hidden blocks
 \newenvironment{hide}{\ifshowHidden}{\fi}
+\newboolean{showHidden}
+\setboolean{showHidden}{false}
 
 \renewcommand{\sectionautorefname}{\S}
 \renewcommand{\subsectionautorefname}{\S\S}

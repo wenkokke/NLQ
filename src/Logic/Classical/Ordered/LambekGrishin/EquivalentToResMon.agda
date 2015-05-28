@@ -25,7 +25,7 @@
 ------------------------------------------------------------------------
 
 
-open import Function                                   using (_∘_)
+open import Function                                   using (_∘_; id)
 open import Function.Equivalence                       using (_⇔_; equivalence)
 open import Data.Product                               using (_×_; _,_; proj₂)
 open import Relation.Nullary                           using (Dec; yes; no; ¬_)
@@ -45,7 +45,7 @@ open import Logic.Classical.Ordered.LambekGrishin.Base                Univ as SB
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement    Univ as AJ
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base         Univ as AB renaming (LG_ to Alg_)
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Trans        Univ as AT using ()
-open import Logic.Classical.Ordered.LambekGrishin.ToResMon            Univ using (Str→Alg; ↓_)
+open import Logic.Classical.Ordered.LambekGrishin.ToResMon            Univ public
 open Translation Str→Alg renaming ([_] to to)
 
 
@@ -148,6 +148,8 @@ from↑ (d⇚⇐ f  ) = d⇚⇐ (from↑ f)
 eq↑ : ∀ {A B} → (Alg A ⊢ B) ⇔ (Str ↑ A ⊢ ↑ B)
 eq↑ = equivalence from↑ (to ∘ deflate)
 
+Alg→Str↑ : Translation Type Type Alg_ Str_
+Alg→Str↑ = record { ⟦_⟧ᵀ = id ; ⟦_⟧ᴶ = λ {(A ⊢ B) → ↑ A ⊢ ↑ B} ; [_] = λ { {A ⊢ B} → from↑} }
 
 
 -- Alternatively, if we know that a type comes from a deflated
@@ -325,3 +327,6 @@ from↓ (d⇚⇐ f  ) = d⇚⇐′ (from↓ f)
 
 eq↓ : ∀ {A B} → (Alg A ⊢ B) ⇔ (Str · A ·  ⊢ · B · )
 eq↓ = equivalence from↓ to
+
+Alg→Str↓ : Translation Type Type Alg_ Str_
+Alg→Str↓ = record { ⟦_⟧ᵀ = id ; ⟦_⟧ᴶ = λ {(A ⊢ B) → · A · ⊢ · B ·} ; [_] = λ { {A ⊢ B} → from↓} }

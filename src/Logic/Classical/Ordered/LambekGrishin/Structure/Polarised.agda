@@ -3,7 +3,8 @@
 ------------------------------------------------------------------------
 
 
-open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
+open import Relation.Binary.HeterogeneousEquality as H using (_≅_; refl; cong; cong₂)
 
 
 module Logic.Classical.Ordered.LambekGrishin.Structure.Polarised {ℓ} (Univ : Set ℓ) where
@@ -12,7 +13,7 @@ module Logic.Classical.Ordered.LambekGrishin.Structure.Polarised {ℓ} (Univ : S
 open import Logic.Polarity
 open import Logic.Classical.Ordered.LambekGrishin.Type      Univ
 open import Logic.Classical.Ordered.LambekGrishin.Structure Univ
-            as Unpolarised hiding (module Structure; Structure)
+     as Unpolarised hiding (module Structure; Structure; _⋈ˢ; _∞ˢ; ⋈ˢ-inv; ∞ˢ-inv)
 
 
 infix  10 ·_·
@@ -52,6 +53,70 @@ data Polarised : Polarity → Unpolarised.Structure → Set ℓ where
   _⊕_ : ∀ {Γ Δ} (Γ⁻ : Polarised - Γ) (Δ⁻ : Polarised - Δ) → Polarised - (Γ ⊕ Δ)
   _⇒_ : ∀ {Γ Δ} (Γ⁺ : Polarised + Γ) (Δ⁻ : Polarised - Δ) → Polarised - (Γ ⇒ Δ)
   _⇐_ : ∀ {Γ Δ} (Γ⁻ : Polarised - Γ) (Δ⁺ : Polarised + Δ) → Polarised - (Γ ⇐ Δ)
+
+
+_⋈ˢ : ∀ {p} → Structure p → Structure p
+(· A ·) ⋈ˢ = · A ⋈ ·
+([ X ]) ⋈ˢ = [ X ⋈ˢ ]
+(⟨ X ⟩) ⋈ˢ = ⟨ X ⋈ˢ ⟩
+(₀   X) ⋈ˢ = (X ⋈ˢ)   ⁰
+(X   ⁰) ⋈ˢ = ₀       (X ⋈ˢ)
+(₁   X) ⋈ˢ = (X ⋈ˢ)   ¹
+(X   ¹) ⋈ˢ = ₁       (X ⋈ˢ)
+(X ⊗ Y) ⋈ˢ = (Y ⋈ˢ) ⊗ (X ⋈ˢ)
+(X ⇒ Y) ⋈ˢ = (Y ⋈ˢ) ⇐ (X ⋈ˢ)
+(Y ⇐ X) ⋈ˢ = (X ⋈ˢ) ⇒ (Y ⋈ˢ)
+(Y ⊕ X) ⋈ˢ = (X ⋈ˢ) ⊕ (Y ⋈ˢ)
+(Y ⇚ X) ⋈ˢ = (X ⋈ˢ) ⇛ (Y ⋈ˢ)
+(X ⇛ Y) ⋈ˢ = (Y ⋈ˢ) ⇚ (X ⋈ˢ)
+
+
+_∞ˢ : ∀ {p} → Structure p → Structure (~ p)
+(· A ·) ∞ˢ = · A ∞ ·
+([ X ]) ∞ˢ = ⟨ X ∞ˢ ⟩
+(⟨ X ⟩) ∞ˢ = [ X ∞ˢ ]
+(₀   X) ∞ˢ = (X ∞ˢ)   ¹
+(X   ⁰) ∞ˢ = ₁       (X ∞ˢ)
+(₁   X) ∞ˢ = (X ∞ˢ)   ⁰
+(X   ¹) ∞ˢ = ₀       (X ∞ˢ)
+(X ⊗ Y) ∞ˢ = (Y ∞ˢ) ⊕ (X ∞ˢ)
+(X ⇒ Y) ∞ˢ = (Y ∞ˢ) ⇚ (X ∞ˢ)
+(Y ⇐ X) ∞ˢ = (X ∞ˢ) ⇛ (Y ∞ˢ)
+(Y ⊕ X) ∞ˢ = (X ∞ˢ) ⊗ (Y ∞ˢ)
+(Y ⇚ X) ∞ˢ = (X ∞ˢ) ⇒ (Y ∞ˢ)
+(X ⇛ Y) ∞ˢ = (Y ∞ˢ) ⇐ (X ∞ˢ)
+
+
+⋈ˢ-inv : ∀ {p} (X : Structure p) → (X ⋈ˢ) ⋈ˢ ≡ X
+⋈ˢ-inv ·  A  · rewrite ⋈-inv A = refl
+⋈ˢ-inv [  X  ] rewrite ⋈ˢ-inv X = refl
+⋈ˢ-inv ⟨  X  ⟩ rewrite ⋈ˢ-inv X = refl
+⋈ˢ-inv (₀   X) rewrite ⋈ˢ-inv X = refl
+⋈ˢ-inv (X   ⁰) rewrite ⋈ˢ-inv X = refl
+⋈ˢ-inv (₁   X) rewrite ⋈ˢ-inv X = refl
+⋈ˢ-inv (X   ¹) rewrite ⋈ˢ-inv X = refl
+⋈ˢ-inv (X ⇒ Y) rewrite ⋈ˢ-inv X | ⋈ˢ-inv Y = refl
+⋈ˢ-inv (X ⇐ Y) rewrite ⋈ˢ-inv X | ⋈ˢ-inv Y = refl
+⋈ˢ-inv (X ⇚ Y) rewrite ⋈ˢ-inv X | ⋈ˢ-inv Y = refl
+⋈ˢ-inv (X ⇛ Y) rewrite ⋈ˢ-inv X | ⋈ˢ-inv Y = refl
+⋈ˢ-inv (X ⊗ Y) rewrite ⋈ˢ-inv X | ⋈ˢ-inv Y = refl
+⋈ˢ-inv (X ⊕ Y) rewrite ⋈ˢ-inv X | ⋈ˢ-inv Y = refl
+
+
+∞ˢ-inv : ∀ {p} (X : Structure p) → (X ∞ˢ) ∞ˢ ≅ X
+∞ˢ-inv { p } ·  A  · rewrite ~-inv p | ∞-inv A = refl
+∞ˢ-inv { - } [  X  ] = cong  [_] (∞ˢ-inv X)
+∞ˢ-inv { + } ⟨  X  ⟩ = cong  ⟨_⟩ (∞ˢ-inv X)
+∞ˢ-inv { - } (₀   X) = cong   ₀_ (∞ˢ-inv X)
+∞ˢ-inv { - } (X   ⁰) = cong  _⁰  (∞ˢ-inv X)
+∞ˢ-inv { + } (₁   X) = cong   ₁_ (∞ˢ-inv X)
+∞ˢ-inv { + } (X   ¹) = cong  _¹  (∞ˢ-inv X)
+∞ˢ-inv { + } (X ⊗ Y) = cong₂ _⊗_ (∞ˢ-inv X) (∞ˢ-inv Y)
+∞ˢ-inv { - } (X ⇒ Y) = cong₂ _⇒_ (∞ˢ-inv X) (∞ˢ-inv Y)
+∞ˢ-inv { - } (X ⇐ Y) = cong₂ _⇐_ (∞ˢ-inv X) (∞ˢ-inv Y)
+∞ˢ-inv { - } (X ⊕ Y) = cong₂ _⊕_ (∞ˢ-inv X) (∞ˢ-inv Y)
+∞ˢ-inv { + } (X ⇚ Y) = cong₂ _⇚_ (∞ˢ-inv X) (∞ˢ-inv Y)
+∞ˢ-inv { + } (X ⇛ Y) = cong₂ _⇛_ (∞ˢ-inv X) (∞ˢ-inv Y)
 
 
 module Correct where

@@ -31,6 +31,8 @@ open import Example.System.fLG
 
 module Example.ScopeAmbiguityInPolEXP where
 
+
+
 MARY_LEFT₀ : LG · np · ⊗ · np ⇒ s⁻ · ⊢[ s⁻ ]
 MARY_LEFT₀
   = (⇁ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻))))
@@ -251,8 +253,6 @@ TEST_mary_said_everyone_left₀ = _
 
 
 
-
-
 proofList : List Proof
 proofList
   = proof "everyone_loves_mary_0" "Everyone loves mary." (toLaTeX EVERYONE_LOVES_MARY₀) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "mary"  ∷ []) (toTerm EVERYONE_LOVES_MARY₀))
@@ -269,6 +269,8 @@ proofList
   ∷ proof "mary_wants_everyone_to_leave_1" "Mary wants everyone to\\_leave." (toLaTeX MARY_WANTS_EVERYONE_TO_LEAVE₁) (toLaTeXTerm ("mary"  ∷ "wants"  ∷ "everyone"  ∷ "to\\_leave"  ∷ []) (toTerm MARY_WANTS_EVERYONE_TO_LEAVE₁))
   ∷ proof "mary_wants_everyone_to_leave_2" "Mary wants everyone to\\_leave." (toLaTeX MARY_WANTS_EVERYONE_TO_LEAVE₂) (toLaTeXTerm ("mary"  ∷ "wants"  ∷ "everyone"  ∷ "to\\_leave"  ∷ []) (toTerm MARY_WANTS_EVERYONE_TO_LEAVE₂))
   ∷ []
+
+
 
 main : _
 main = run (mapM′ writeProof (fromList proofList))

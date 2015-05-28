@@ -15,9 +15,17 @@ data Polarity : Set where
   - : Polarity
 
 
+open import Algebra.FunctionProperties {A = Polarity} _≡_ using (Involutive)
+
+
 ~_ : Polarity → Polarity
 ~ + = -
 ~ - = +
+
+
+~-inv : Involutive ~_
+~-inv + = refl
+~-inv - = refl
 
 
 _≟-Polarity_ : (p₁ p₂ : Polarity) → Dec (p₁ ≡ p₂)
