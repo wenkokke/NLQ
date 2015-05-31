@@ -255,19 +255,19 @@ TEST_mary_said_everyone_left₀ = _
 
 proofList : List Proof
 proofList
-  = proof "everyone_loves_mary_0" "Everyone loves mary." (toLaTeX EVERYONE_LOVES_MARY₀) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "mary"  ∷ []) (toTerm EVERYONE_LOVES_MARY₀))
-  ∷ proof "everyone_loves_someone_0" "Everyone loves someone." (toLaTeX EVERYONE_LOVES_SOMEONE₀) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "someone"  ∷ []) (toTerm EVERYONE_LOVES_SOMEONE₀))
-  ∷ proof "everyone_loves_someone_1" "Everyone loves someone." (toLaTeX EVERYONE_LOVES_SOMEONE₁) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "someone"  ∷ []) (toTerm EVERYONE_LOVES_SOMEONE₁))
-  ∷ proof "everyone_loves_someone_2" "Everyone loves someone." (toLaTeX EVERYONE_LOVES_SOMEONE₂) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "someone"  ∷ []) (toTerm EVERYONE_LOVES_SOMEONE₂))
-  ∷ proof "everyone_loves_someone_3" "Everyone loves someone." (toLaTeX EVERYONE_LOVES_SOMEONE₃) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "someone"  ∷ []) (toTerm EVERYONE_LOVES_SOMEONE₃))
-  ∷ proof "everyone_loves_someone_4" "Everyone loves someone." (toLaTeX EVERYONE_LOVES_SOMEONE₄) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "someone"  ∷ []) (toTerm EVERYONE_LOVES_SOMEONE₄))
-  ∷ proof "everyone_loves_someone_5" "Everyone loves someone." (toLaTeX EVERYONE_LOVES_SOMEONE₅) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "someone"  ∷ []) (toTerm EVERYONE_LOVES_SOMEONE₅))
-  ∷ proof "mary_left_0" "Mary left." (toLaTeX MARY_LEFT₀) (toLaTeXTerm ("mary"  ∷ "left"  ∷ []) (toTerm MARY_LEFT₀))
-  ∷ proof "mary_loves_everyone_0" "Mary loves everyone." (toLaTeX MARY_LOVES_EVERYONE₀) (toLaTeXTerm ("mary"  ∷ "loves"  ∷ "everyone"  ∷ []) (toTerm MARY_LOVES_EVERYONE₀))
-  ∷ proof "mary_said_everyone_left_0" "Mary said everyone left." (toLaTeX MARY_SAID_EVERYONE_LEFT₀) (toLaTeXTerm ("mary"  ∷ "said"  ∷ "everyone"  ∷ "left"  ∷ []) (toTerm MARY_SAID_EVERYONE_LEFT₀))
-  ∷ proof "mary_wants_everyone_to_leave_0" "Mary wants everyone to\\_leave." (toLaTeX MARY_WANTS_EVERYONE_TO_LEAVE₀) (toLaTeXTerm ("mary"  ∷ "wants"  ∷ "everyone"  ∷ "to\\_leave"  ∷ []) (toTerm MARY_WANTS_EVERYONE_TO_LEAVE₀))
-  ∷ proof "mary_wants_everyone_to_leave_1" "Mary wants everyone to\\_leave." (toLaTeX MARY_WANTS_EVERYONE_TO_LEAVE₁) (toLaTeXTerm ("mary"  ∷ "wants"  ∷ "everyone"  ∷ "to\\_leave"  ∷ []) (toTerm MARY_WANTS_EVERYONE_TO_LEAVE₁))
-  ∷ proof "mary_wants_everyone_to_leave_2" "Mary wants everyone to\\_leave." (toLaTeX MARY_WANTS_EVERYONE_TO_LEAVE₂) (toLaTeXTerm ("mary"  ∷ "wants"  ∷ "everyone"  ∷ "to\\_leave"  ∷ []) (toTerm MARY_WANTS_EVERYONE_TO_LEAVE₂))
+  = proof "everyone_loves_mary_0" "Everyone loves mary." (toLaTeX EVERYONE_LOVES_MARY₀) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "mary"  ∷ []) EVERYONE_LOVES_MARY₀)
+  ∷ proof "everyone_loves_someone_0" "Everyone loves someone." (toLaTeX EVERYONE_LOVES_SOMEONE₀) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "someone"  ∷ []) EVERYONE_LOVES_SOMEONE₀)
+  ∷ proof "everyone_loves_someone_1" "Everyone loves someone." (toLaTeX EVERYONE_LOVES_SOMEONE₁) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "someone"  ∷ []) EVERYONE_LOVES_SOMEONE₁)
+  ∷ proof "everyone_loves_someone_2" "Everyone loves someone." (toLaTeX EVERYONE_LOVES_SOMEONE₂) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "someone"  ∷ []) EVERYONE_LOVES_SOMEONE₂)
+  ∷ proof "everyone_loves_someone_3" "Everyone loves someone." (toLaTeX EVERYONE_LOVES_SOMEONE₃) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "someone"  ∷ []) EVERYONE_LOVES_SOMEONE₃)
+  ∷ proof "everyone_loves_someone_4" "Everyone loves someone." (toLaTeX EVERYONE_LOVES_SOMEONE₄) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "someone"  ∷ []) EVERYONE_LOVES_SOMEONE₄)
+  ∷ proof "everyone_loves_someone_5" "Everyone loves someone." (toLaTeX EVERYONE_LOVES_SOMEONE₅) (toLaTeXTerm ("everyone"  ∷ "loves"  ∷ "someone"  ∷ []) EVERYONE_LOVES_SOMEONE₅)
+  ∷ proof "mary_left_0" "Mary left." (toLaTeX MARY_LEFT₀) (toLaTeXTerm ("mary"  ∷ "left"  ∷ []) MARY_LEFT₀)
+  ∷ proof "mary_loves_everyone_0" "Mary loves everyone." (toLaTeX MARY_LOVES_EVERYONE₀) (toLaTeXTerm ("mary"  ∷ "loves"  ∷ "everyone"  ∷ []) MARY_LOVES_EVERYONE₀)
+  ∷ proof "mary_said_everyone_left_0" "Mary said everyone left." (toLaTeX MARY_SAID_EVERYONE_LEFT₀) (toLaTeXTerm ("mary"  ∷ "said"  ∷ "everyone"  ∷ "left"  ∷ []) MARY_SAID_EVERYONE_LEFT₀)
+  ∷ proof "mary_wants_everyone_to_leave_0" "Mary wants everyone to\\_leave." (toLaTeX MARY_WANTS_EVERYONE_TO_LEAVE₀) (toLaTeXTerm ("mary"  ∷ "wants"  ∷ "everyone"  ∷ "to\\_leave"  ∷ []) MARY_WANTS_EVERYONE_TO_LEAVE₀)
+  ∷ proof "mary_wants_everyone_to_leave_1" "Mary wants everyone to\\_leave." (toLaTeX MARY_WANTS_EVERYONE_TO_LEAVE₁) (toLaTeXTerm ("mary"  ∷ "wants"  ∷ "everyone"  ∷ "to\\_leave"  ∷ []) MARY_WANTS_EVERYONE_TO_LEAVE₁)
+  ∷ proof "mary_wants_everyone_to_leave_2" "Mary wants everyone to\\_leave." (toLaTeX MARY_WANTS_EVERYONE_TO_LEAVE₂) (toLaTeXTerm ("mary"  ∷ "wants"  ∷ "everyone"  ∷ "to\\_leave"  ∷ []) MARY_WANTS_EVERYONE_TO_LEAVE₂)
   ∷ []
 
 

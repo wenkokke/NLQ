@@ -6,6 +6,8 @@
 open import Function    using (id; flip)
 open import Data.Bool   using (Bool; true; false; not; _∧_; _∨_)
 open import Data.String using (String)
+open import Data.Unit   using (⊤; tt)
+open import Data.Vec    using (Vec)
 
 
 module Example.System.aLG where
@@ -22,17 +24,17 @@ open import Logic.Classical.Ordered.LambekGrishin.ResMon                 Univ pu
 open import Logic.Classical.Ordered.LambekGrishin.ToAgda                 Univ Bool ⟦_⟧ᵁ using (CBV)
 open import Logic.Classical.Ordered.LambekGrishin.EquivalentToResMon     Univ public using (Alg→Str↓)
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.ToLaTeX         Univ using (LambekGrishinToLaTeX)
-open import Logic.Intuitionistic.Linear.Lambda.ToUnrestricted            Univ using (LL→Λ)
-open import Logic.Intuitionistic.Unrestricted.Lambda.ToAgda              Univ ⟦_⟧ᵁ using (Λ→ΛΠ)
-open import Logic.Intuitionistic.Unrestricted.Lambda.EquivalentToIndexed Univ using (Un→Ix)
-open import Logic.Intuitionistic.Unrestricted.Lambda.Indexed.ToLaTeX     Univ public using (toLaTeXTerm)
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment
 open Translation (CBV ◇ Alg→Str↓) using () renaming (⟦_⟧ᵀ to ⟦_⟧ᵀ′; [_] to [_]ᵀ′)
 
 
--- TODO implement translation to indexed terms
 toLaTeX : ∀ {J} (f : LG J) → String
-toLaTeX {J} _ = ""
+toLaTeX {J} f = ToLaTeX.toLaTeX (LambekGrishinToLaTeX {{UnivToLaTeX}}) f
+
+
+-- * mock definitions for toLaTeXTerm and toTerm which result in the empty string
+toLaTeXTerm : ∀ {A B} (xs : Vec String 1) (f : LG A ⊢ B) → String
+toLaTeXTerm _ _ = ""
 
 
 -- * create corrected ⟦_⟧ᵀ and [_]ᵀ functions

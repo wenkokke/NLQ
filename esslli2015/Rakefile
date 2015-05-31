@@ -15,16 +15,15 @@ end
 
 desc "Compile the paper"
 file 'main.pdf' => BibTeXFiles + FormatFiles + LaTeXFiles + LiterateFiles.ext('tex') do
-  runCmd "pdflatex main.tex"
+  runCmd "pdflatex -draftmode main.tex"
   if $?.success?
     runCmd "bibtex main"
     if $?.success?
-      runCmd "pdflatex main.tex"
+      runCmd "pdflatex -draftmode main.tex"
       runCmd "pdflatex main.tex"
     end
   end
 end
-
 
 desc "Compile literate Agda to TeX (and remove implicits)"
 rule '.tex' => ['.lagda'] do |t|
@@ -47,6 +46,11 @@ rule '.tex' => ['.lagda'] do |t|
 
     fail unless $?.success?
   end
+end
+
+desc "Extract the source code from the paper"
+file 'main.agda' => 'main.lagda' do
+  runCmd "runhaskell Unlit.lhs < main.lagda > main.agda"
 end
 
 

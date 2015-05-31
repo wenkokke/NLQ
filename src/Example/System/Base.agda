@@ -3,9 +3,9 @@
 ------------------------------------------------------------------------
 
 
-open import Data.Bool                             using (Bool; true; false; _∧_; _∨_)
-open import Data.List                             using (List; _∷_; []; map; foldr; any)
-open import Data.String                           using (String; _++_; unlines)
+open import Data.Bool                             using (Bool; true; false; _∧_; _∨_; if_then_else_)
+open import Data.List                             using (List; _∷_; []; map; foldr; any; null)
+open import Data.String                           using (String; _++_; unlines; toList)
 open import Function                              using (_$_; _∘_)
 open import IO                                    using (IO; writeFile)
 open import Logic.ToLaTeX                         using (module ToLaTeX; ToLaTeX)
@@ -106,14 +106,17 @@ data Proof : Set where
   proof : (file sentence tree term : String) → Proof
 
 
+mathMode : String → String
+mathMode str = if null (toList str) then "" else ("$" ++ str ++ "$")
+
 writeProof : Proof → IO _
 writeProof (proof file sentence tree term)
   = writeFile (file ++ ".tex") ∘ unlines
-  $ "\\begin{figure}"
-  ∷ "\\centering"
+  $ "\\begin{figure}[ht]%"
+  ∷ "\\centering%"
   ∷ tree
-  ∷ ("$" ++ term ++ "$")
+  ∷ mathMode term
   ∷ ("\\label{" ++ file ++ "}")
-  ∷ ("\\caption{\"" ++ sentence ++ "\"}")
+  ∷ ("\\caption{``" ++ sentence ++ "''}")
     ∷ "\\end{figure}"
   ∷ []

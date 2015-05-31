@@ -1048,14 +1048,69 @@ module example where
 
   open logic Univ ⌈_⌉ᵁ Bool
 
-  EVERYONE_LOVES_SOMEONE
-    : LG (el NP ⇐ el N ⊗ el N) ⊗ ((el NP ⇒ el S) ⇐ el NP) ⊗ (el NP ⇐ el N ⊗ el N) ⊢ el S
-  EVERYONE_LOVES_SOMEONE
-    = r⇐⊗ (r⇐⊗ (m⇐ (r⊗⇐ (r⇒⊗ (r⇒⊗ (r⇐⊗ (m⇐ (r⊗⇒ (r⇐⊗ ax′)) ax))))) ax))
+  everyone : ⌈ (el NP ⇐ el N) ⊗ el N ⌉
+  everyone = ((λ {(g , f) → forAll (λ x → f x ⊃ g x)}) , PERSON)
+  loves    : ⌈ (el NP ⇒ el S) ⇐ el NP ⌉
+  loves    = λ {(k , y) → k (λ {(x , k) → k (LOVES x y)})}
+  someone  : ⌈ (el NP ⇐ el N) ⊗ el N ⌉
+  someone  = ((λ {(g , f) → exists (λ x → f x ∧ g x)}) , PERSON)
 
-  everyone_loves_someone : Bool
-  everyone_loves_someone = ⌈_⌉ᴿ EVERYONE_LOVES_SOMEONE
-    ( ((λ {(p₂ , p₁) → forAll (λ x → p₁ x ⊃ p₂ x)}) , PERSON)
-    , ( λ {(k , y) → k (λ {(x , k′) → k′ (LOVES  x y)})})
-    , ((λ {(p₂ , p₁) → exists (λ x → p₁ x ∧ p₂ x)}) , PERSON)
-    ) id
+  EVERYONE_LOVES_SOMEONE₀
+   EVERYONE_LOVES_SOMEONE₁
+    EVERYONE_LOVES_SOMEONE₂
+     EVERYONE_LOVES_SOMEONE₃
+      EVERYONE_LOVES_SOMEONE₄
+       EVERYONE_LOVES_SOMEONE₅
+        EVERYONE_LOVES_SOMEONE₆
+        : LG ( ( el NP ⇐ el N ) ⊗ el N ) ⊗ ( ( ( el NP ⇒ el S ) ⇐ el NP ) ⊗ ( ( el NP ⇐ el N ) ⊗ el N ) ) ⊢ el S
+
+  everyone_loves_someone₀
+   everyone_loves_someone₁
+    everyone_loves_someone₂
+     everyone_loves_someone₃
+      everyone_loves_someone₄
+       everyone_loves_someone₅
+        everyone_loves_someone₆
+        : Bool
+
+  EVERYONE_LOVES_SOMEONE₀
+    = r⇒⊗ (r⇐⊗ (m⇐ (m⇒ (r⇐⊗ ax′) ax) (r⇐⊗ ax′)))
+  everyone_loves_someone₀
+    = ⌈ EVERYONE_LOVES_SOMEONE₀ ⌉ᴿ (everyone , loves , someone) id
+  --> exists (λ y → PERSON y ∧ forAll (λ x → PERSON x ⊃ LOVES x y))
+
+  EVERYONE_LOVES_SOMEONE₁
+    = r⇐⊗ (r⇐⊗ (m⇐ (r⊗⇐ (r⇒⊗ (r⇐⊗ (m⇐ ax′ (r⇐⊗ ax′))))) ax))
+  everyone_loves_someone₁
+    = ⌈ EVERYONE_LOVES_SOMEONE₁ ⌉ᴿ (everyone , loves , someone) id
+  --> forAll (λ x → PERSON x ⊃ exists (λ y → PERSON y ∧ LOVES x y))
+
+  EVERYONE_LOVES_SOMEONE₂
+    = r⇒⊗ (r⇒⊗ (r⇐⊗ (m⇐ (r⊗⇒ (r⇐⊗ (m⇐ (m⇒ (r⇐⊗ ax′) ax) ax))) ax)))
+  everyone_loves_someone₂
+    = ⌈ EVERYONE_LOVES_SOMEONE₂ ⌉ᴿ (everyone , loves , someone) id
+  --> exists (λ y → PERSON y ∧ forAll (λ x → PERSON x ⊃ LOVES x y))
+
+  EVERYONE_LOVES_SOMEONE₃
+    = r⇐⊗ (r⇐⊗ (m⇐ (r⊗⇐ (r⇒⊗ (r⇒⊗ (r⇐⊗ (m⇐ (r⊗⇒ (r⇐⊗ ax′)) ax))))) ax))
+  everyone_loves_someone₃
+    = ⌈ EVERYONE_LOVES_SOMEONE₃ ⌉ᴿ (everyone , loves , someone) id
+  --> forAll (λ x → PERSON x ⊃ exists (λ y → PERSON y ∧ LOVES x y))
+
+  EVERYONE_LOVES_SOMEONE₄
+    = r⇒⊗ (r⇐⊗ (m⇐ (r⊗⇒ (r⇐⊗ (r⇐⊗ (m⇐ (r⊗⇐ (r⇒⊗ ax′)) ax)))) (r⇐⊗ ax′)))
+  everyone_loves_someone₄
+    = ⌈ EVERYONE_LOVES_SOMEONE₄ ⌉ᴿ (everyone , loves , someone) id
+  --> exists (λ y → PERSON y ∧ forAll (λ x → PERSON x ⊃ LOVES x y))
+
+  EVERYONE_LOVES_SOMEONE₅
+    = r⇒⊗ (r⇒⊗ (r⇐⊗ (m⇐ (r⊗⇒ (r⇐⊗ (m⇐ (r⊗⇒ (r⇐⊗ (r⇐⊗ (m⇐ (r⊗⇐ (r⇒⊗ ax′)) ax)))) ax))) ax)))
+  everyone_loves_someone₅
+    = ⌈ EVERYONE_LOVES_SOMEONE₅ ⌉ᴿ (everyone , loves , someone) id
+  --> exists (λ y → PERSON y ∧ forAll (λ x → PERSON x ⊃ LOVES x y))
+
+  EVERYONE_LOVES_SOMEONE₆
+    = r⇒⊗ (r⇒⊗ (r⇐⊗ (m⇐ (r⊗⇒ (r⊗⇒ (r⇐⊗ (r⇐⊗ (m⇐ (r⊗⇐ (r⇒⊗ (r⇐⊗ ax′))) ax))))) ax)))
+  everyone_loves_someone₆
+    = ⌈ EVERYONE_LOVES_SOMEONE₆ ⌉ᴿ (everyone , loves , someone) id
+  --> exists (λ y → PERSON y ∧ forAll (λ x → PERSON x ⊃ LOVES x y))
