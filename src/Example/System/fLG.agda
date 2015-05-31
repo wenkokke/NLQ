@@ -5,9 +5,10 @@
 
 open import Function                              using (id; const)
 open import Data.Bool                             using (Bool; true; false; not; _∧_; _∨_)
-open import Data.List                             using (List; _∷_; []; map; foldr)
+open import Data.List                             using (List; _∷_; []; map; foldr; length)
 open import Data.Product                          using (_×_; proj₁; _,_)
 open import Data.String                           using (String)
+open import Data.Vec                              using (Vec)
 open import Relation.Nullary                      using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
@@ -25,18 +26,22 @@ open import Logic.Polarity.ToLaTeX Univ using (PolarisedUnivToLaTeX) public
 open import Logic.ToLaTeX using (module ToLaTeX)
 open import Logic.Classical.Ordered.LambekGrishin.FocPol Univ public
 open import Logic.Classical.Ordered.LambekGrishin.FocPol.ToLaTeX Univ public
-open import Logic.Classical.Ordered.LambekGrishin.FocPol.ToIntuitionisticLinearLambda Univ S using (LG→LL)
+open import Logic.Classical.Ordered.LambekGrishin.FocPol.ToIntuitionisticLinearLambda Univ S using (⟦_⟧ˢ; LG→LL)
 open import Logic.Intuitionistic.Linear.Lambda.ToUnrestricted Univ using (LL→Λ)
 open import Logic.Intuitionistic.Unrestricted.Lambda.ToAgda Univ ⟦_⟧ᵁ using (Λ→ΛΠ)
 open import Logic.Intuitionistic.Unrestricted.Lambda.EquivalentToIndexed Univ using (Un→Ix)
-open import Logic.Intuitionistic.Unrestricted.Lambda.Indexed.ToLaTeX Univ public using (toLaTeXTerm)
+import Logic.Intuitionistic.Unrestricted.Lambda.Indexed.ToLaTeX Univ as ITL
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment public
 
 open Translation (Λ→ΛΠ  ◇ LL→Λ ◇ LG→LL) public renaming ([_] to [_]ᵀ)
 open Translation (Un→Ix ◇ LL→Λ ◇ LG→LL) public using () renaming ([_] to toTerm)
 
+
 toLaTeX : ∀ {J} (f : LG J) → String
 toLaTeX {J} = ToLaTeX.toLaTeX (PolarisedLambekGrishinToLaTeX {J} {{UnivToLaTeX}})
+
+toLaTeXTerm : ∀ {Γ B} (xs : Vec String (length ⟦ Γ ⟧ˢ)) (f : LG Γ ⊢[ B ]) → String
+toLaTeXTerm {Γ} {B} xs f = ITL.toLaTeXTerm xs (toTerm f)
 
 
 -- * create aliases for polarised types

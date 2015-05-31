@@ -153,7 +153,7 @@ proofList structural nameList = do
                then agdaList' (map (show . sanitiseForLaTeX) (words s))
                else agdaList' [show (sanitiseForLaTeX (sanitise s))]
   return $
-    printf "proof %s %s (toLaTeX %s) (toLaTeXTerm (%s) (toTerm %s))"
+    printf "proof %s %s (toLaTeX %s) (toLaTeXTerm (%s) %s)"
     (show fileName) (show sentence) termName wordList termName
 
 
