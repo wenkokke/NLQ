@@ -41,9 +41,10 @@ In this paper, we will try to remedy that by example.
 Concretely, we use Agda to model the Lambek-Grishin calculus, a
 grammar logic with a rich vocabulary of type-forming operations.
 We then present a verified procedure for cut elimination in this
-system. Then we briefly outline a CPS translation from proofs in the
-Lambek-Grishin calculus to programs in Agda. And finally, we will put
-our system to use in the analysis of a simple example sentence.
+system. Then we briefly outline a continuation-passing style
+translation from proofs in the Lambek-Grishin calculus to programs in
+Agda. And finally, we will put our system to use in the analysis of a
+simple example sentence.
 \end{abstract}
 
 \begin{hide}
@@ -119,8 +120,9 @@ calculus.
 We will formalise the residuation-monotonicity axiomatisation for the
 Lambek-Grishin calculus~\citep{moortgat2007} in Agda, present a
 verified procedure for cut elimination in this system, and briefly
-outline a CPS translation into Agda. There are several reasons why we
-have chosen to formalise this particular system.
+outline a continuation-passing style (CPS) translation into
+Agda. There are several reasons why we have chosen to formalise this
+particular system.
 \begin{itemize}
 \item%
   It allows cut as an admissible rule, i.e.\ a function on proofs,
@@ -1826,8 +1828,11 @@ demonstrate the analysis of an example sentence.
 Most importantly, we hope we presented the reader with a clean and
 readable formalisation of the Lambek-Grishin calculus.
 
-\section{Related Work}
-Previous work on the formalisation of Lambek calculi was done in Coq by \citet{anoun2004}.
+\section{Related \& Future Work}
+Previous work on the formalisation of Lambek calculi was done in Coq
+by \citet{anoun2004}, who, amongst other things, implemented sequent
+calculus and natural deduction systems for multi-modal categorial
+grammars.
 
 The work presented in this paper is part of a larger undertaking to
 formalise type-logical grammars in Agda. At the moment, we have

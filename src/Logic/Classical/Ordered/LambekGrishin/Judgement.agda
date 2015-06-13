@@ -19,7 +19,9 @@ open import Logic.Classical.Ordered.LambekGrishin.Type                Univ
 open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Univ
 
 
-infix 3 _⊢_ [_]⊢_ _⊢[_]
+infix  3  _⊢_ [_]⊢_ _⊢[_]
+infixl 50 _⋈ᴶ _∞ᴶ
+
 
 
 data Judgement : Set ℓ where

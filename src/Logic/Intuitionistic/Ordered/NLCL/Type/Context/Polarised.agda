@@ -10,6 +10,7 @@ open import Logic.Polarity
 open import Logic.Intuitionistic.Ordered.NLCL.Type Univ
 
 
+infix  50 _[_]
 infixr 20 _⊗>_ _∘>_
 infixr 30 _⇒>_ _⇨>_ _⇐>_ _⇦>_
 infixl 20 _<⊗_ _<∘_

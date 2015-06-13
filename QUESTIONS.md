@@ -1,5 +1,14 @@
 # Questions for Moortgat
 
+## June 13th
+
+  * How does one define an AB or Lambek grammar for aⁿbⁿ? Solved.
+
+  * The Lambek calculus needs linear logic's & in order to get rid
+    of all that silly "ambiguous definitions" machinery. Which means
+    we also need to add & back into our linear logic fragment.
+
+
 ## March 26th
 
   * What is the gain from also having a structural box operator without

@@ -4,7 +4,6 @@
 ------------------------------------------------------------------------
 
 
-open import Categories.Category                        using (Category)
 open import Algebra                                    using (module Monoid; Monoid)
 open import Function                                   using (id; _∘_)
 open import Data.Empty                                 using (⊥)
@@ -42,6 +41,9 @@ data Context : Set ℓ where
 module Simple where
 
   open TC.Simple renaming (_[_] to _[_]′; _<_> to _<_>′)
+
+  infix 50 _[_]
+  infix 50 _<_>
 
   -- Apply a context to a type by plugging the type into the context.
   _[_] : Context → Type → Judgement

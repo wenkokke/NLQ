@@ -1,23 +1,23 @@
 #!/usr/bin/env runhaskell
 
 
+import           Control.Arrow ((***))
+import           Control.Monad (forM_)
 import           Data.ByteString (ByteString)
 import qualified Data.ByteString as B
+import qualified Data.ByteString.Lazy as Lazy
 import qualified Data.ByteString.UTF8 as B (fromString)
+import qualified Data.ByteString.Search as B (replace)
 import           Development.Shake
 import           Development.Shake.FilePath
-import           Text.Regex.PCRE
+import           Text.Regex.PCRE (Regex,makeRegex,matchOnceText)
 import           Text.Regex.PCRE.ByteString ()
 import           System.Directory (copyFile)
 
 
 toc :: [FilePath]
 toc =
-  [ "abstract"
-  , "introduction"
-  , "motivation"
-  , "agda_tutorial"
-  , "linguistic_data"
+  [ "ab_grammars"
   ]
 
 tocWith :: FilePath -> [FilePath]
@@ -37,10 +37,10 @@ main = shakeArgs shakeOptions
     let src = out -<.> "tex"
     let lcl = dropBuild src
     need (tocWith "tex")
-    need ["_build/preamble.tex", "_build/main.bib", src]
-    command_ [Cwd "_build", EchoStdout False] "pdflatex" [lcl]
+    need ["_build/preamble.tex", "_build/main.bib", "_build/main.fmt", src]
+    command_ [Cwd "_build", EchoStdout False] "pdflatex" ["-draftmode", lcl]
     command_ [Cwd "_build", EchoStdout False] "bibtex"   [dropExtension lcl]
-    command_ [Cwd "_build", EchoStdout False] "pdflatex" [lcl]
+    command_ [Cwd "_build", EchoStdout False] "pdflatex" ["-draftmode", lcl]
     command_ [Cwd "_build", EchoStdout False] "pdflatex" [lcl]
 
 
@@ -53,28 +53,57 @@ main = shakeArgs shakeOptions
 
   -- Compile thesis to HTML
   "_build/main.html" %> \out -> do
-    let src = map (\fn -> "_build" </> fn -<.> "noimp") toc
-    need src
-    unit $ cmd "pandoc" "-s" "-N" "-S" "-f" "markdown" "-t" "html" src "-o" out
+    let src = tocWith "no_implicit_args"
+    let ref = "_build/references.md"
+    let bib = out -<.> "yml"
+    let tmp = tocWith "replace_for_html"
+    need (bib : src)
+    writeFile' ref "# References\n"
+    liftIO $
+      forM_ tmp $ \fn ->
+        B.writeFile fn . format formatListHTML
+          =<< B.readFile (fn -<.> "no_implicit_args")
+    unit $
+      cmd "pandoc" "-F" "pandoc-citeproc" bib
+                 "-s" "-N" "-S"
+                 "-f" "markdown"
+                 "-t" "html"
+                 tmp ref "-o" out
+
+
+  -- Compile bibliography to YAML
+  "_build/main.yml" %> \out -> do
+    let src = out -<.> "bib"
+    need [src]
+    Stdout yml <- cmd "pandoc-citeproc" "--bib2yaml" src
+    writeFile' out yml
 
   -- Convert Literate Agda files to TeX
   tocWith "tex" |%> \out -> do
-      let src = out -<.> "lagda"
-      need [src]
-      liftIO $ copyFile src out
+    let src = out -<.> "lagda"
+    need [src]
+    liftIO $ copyFile src out
 
   -- Convert files without implicit to Literate Agda
   tocWith "lagda" |%> \out -> do
-      let src = out -<.> "noimp"
-      need [src]
-      cmd "pandoc" "--filter" "./pandoc_lhs2TeX.hs" "--no-highlight"
-                   "-S" "-f" "markdown" "-t" "latex" src "-o" out
+    let src = out -<.> "no_implicit_args"
+    let tmp = out -<.> "replace_for_latex"
+    need [src]
+    liftIO $
+      B.writeFile tmp . format formatListLaTeX =<< B.readFile src
+    cmd "pandoc" "-F" "./pandoc_lhs2TeX.hs"
+                 "--natbib"
+                 "--no-highlight"
+                 "-S"
+                 "-f" "markdown"
+                 "-t" "latex"
+                 tmp "-o" out
 
   -- Convert Markdown files to files without implicit arguments
-  tocWith "noimp" |%> \out -> do
-      let src = out -<.> "md"
-      need [src]
-      liftIO $ B.writeFile out . stripImplicit' =<< B.readFile src
+  tocWith "no_implicit_args" |%> \out -> do
+    let src = out -<.> "md"
+    need [src]
+    liftIO $ B.writeFile out . stripImplicit =<< B.readFile src
 
   -- Copy Markdown files to _build
   map ("_build" </>) ["main.lagda","preamble.tex","*.md","*.fmt","*.bib"]
@@ -87,10 +116,13 @@ main = shakeArgs shakeOptions
   "clean" ~> do
     removeFilesAfter "_build" ["//*"]
 
-  "open" ~> do
-    need ["_build/main.html", "_build/main.pdf"]
-    unit $ cmd "open" "_build/main.html"
+  "pdf" ~> do
+    need ["_build/main.pdf"]
     unit $ cmd "open" "_build/main.pdf"
+
+  "html" ~> do
+    need ["_build/main.html"]
+    unit $ cmd "open" "_build/main.html"
 
 
 
@@ -104,6 +136,27 @@ dropBuild :: FilePath -> FilePath
 dropBuild out = joinPath (filter (/="_build/") (splitPath out))
 
 
+
+-- * Formatting directives for HTML
+
+format :: [(ByteString, ByteString)] -> ByteString -> ByteString
+format = foldr (\(pat,sub) -> ((Lazy.toStrict . B.replace pat sub) . )) id
+
+formatListLaTeX :: [(ByteString, ByteString)]
+formatListLaTeX = map (B.fromString *** B.fromString)
+  [ ("⇒" , "\\varbslash" )
+  , ("⇐" , "\\varslash"  )
+  ]
+
+formatListHTML :: [(ByteString, ByteString)]
+formatListHTML = map (B.fromString *** B.fromString)
+  [ ("⇒" , "\\backslash" )
+  , ("⇐" , "/"           )
+  ]
+
+
+-- * Stripping implicit characters
+
 -- |Regular expression to match implicit arguments in Agda.
 reAgdaImplicit :: Regex
 reAgdaImplicit =
@@ -111,26 +164,15 @@ reAgdaImplicit =
 
 
 -- |Byte strings for @\begin{code}@, @\end{code}@ and @%include@.
-beginCode, endCode, include, codeFence :: ByteString
+beginCode, endCode, codeFence :: ByteString
 beginCode = B.fromString "\\begin{code}"
 endCode   = B.fromString "\\end{code}"
-include   = B.fromString "%include"
 codeFence = B.fromString "```"
-
-
--- |Strip all implicit arguments from the given byte string, not
---  checking whether or not they are contained within @\begin{code}@
---  and @\end{code}@ tags.
-unsafeStripImplicit :: ByteString -> ByteString
-unsafeStripImplicit str = case matchOnceText reAgdaImplicit str of
-  Just (a,_,b) -> B.append a (unsafeStripImplicit b)
-  _            -> str
-
 
 -- |Strip implicit arguments from the given byte string, checking
 --  whether they are contained within @\begin{code}@ and @\end{code}@ tags.
-stripImplicit :: ByteString -> ByteString
-stripImplicit str
+stripImplicitTeX :: ByteString -> ByteString
+stripImplicitTeX str
   | B.null rest = str
   | otherwise   = B.append (B.append pref (handle code)) (stripImplicit suff)
   where
@@ -139,13 +181,25 @@ stripImplicit str
     handle code = B.append beginCode (unsafeStripImplicit (B.drop (B.length beginCode) code))
 
 
--- |Strip implicit arguments from the given byte string, checking
---  whether they are contained within @\begin{code}@ and @\end{code}@ tags.
-stripImplicit' :: ByteString -> ByteString
-stripImplicit' str
+-- |As @stripImplicit@, but for code contained within Markdown code
+--  fences (i.e. "```").
+stripImplicitMd :: ByteString -> ByteString
+stripImplicitMd str
   | B.null rest = str
   | otherwise   = B.append (B.append pref (handle code)) (stripImplicit suff)
   where
     (pref,rest) = B.breakSubstring codeFence str
     (code,suff) = B.breakSubstring codeFence rest
     handle code = unsafeStripImplicit (B.drop (B.length codeFence) code)
+
+
+-- |Combination of @stripImplicitMd and @stripImplicitTeX@.
+stripImplicit :: ByteString -> ByteString
+stripImplicit = stripImplicitTeX . stripImplicitMd
+
+
+-- |Strip all implicit arguments from the given byte string.
+unsafeStripImplicit :: ByteString -> ByteString
+unsafeStripImplicit str = case matchOnceText reAgdaImplicit str of
+  Just (a,_,b) -> B.append a (unsafeStripImplicit b)
+  _            -> str

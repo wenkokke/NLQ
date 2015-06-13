@@ -1,4 +1,12 @@
 ## Linguistic Data
 
- 1. Mary said everyone left.
- 2. Mary wants everyone to leave.
+### Scope Ambiguity
+
+Something about simple stuff like "someone loves everyone".
+
+ (@) Someone loves everyone.
+
+And then something about scope islands, such as "said".
+
+ (@) Mary said everyone left.
+ (@) Mary wants everyone to leave.

@@ -18,12 +18,17 @@ open import Logic.Polarity
 open import Logic.Classical.Ordered.LambekGrishin.Type Univ
 
 
+infixl 50 _[_]
 infixr 30 _⊗>_ _<⊗_
 infixr 20 _⇛>_ _<⇛_
 infixl 20 _⇚>_ _<⇚_
 infixr 30 _⊕>_ _<⊕_
 infixr 20 _⇒>_ _<⇒_
 infixl 20 _⇐>_ _<⇐_
+infixr 40 □>_ ◇>_
+infixr 40 ₀>_ ₁>_
+infixl 40 _<⁰ _<¹
+
 
 
 

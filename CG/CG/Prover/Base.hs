@@ -34,8 +34,8 @@ data Term c v where
   deriving (Eq,Ord,Generic)
 
 
-deriving instance Functor (Term c)
-deriving instance Foldable (Term c)
+deriving instance Functor     (Term c)
+deriving instance Foldable    (Term c)
 deriving instance Traversable (Term c)
 instance (Hashable  c, Hashable  v) => Hashable  (Term c v)
 instance (NFData    c, NFData    v) => NFData    (Term c v)

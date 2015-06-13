@@ -1,0 +1,4 @@
+%format  ⇒  = "\varbslash"
+%format  ⇐  = "\varslash"
+%format _⇒_ = "\_\varbslash\_"
+%format _⇐_ = "\_\varslash\_"

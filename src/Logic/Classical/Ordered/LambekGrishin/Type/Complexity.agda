@@ -41,12 +41,6 @@ mutual
   ⌊ A ⇒ B ⌋ = ⌈ A ⌉ + ⌈ B ⌉
 
 
--- Lemma which shows that no type has strictly lower complexity than
--- elementary types.
-⌈A⌉≮⌈elB⌉ : ∀ A B → ⌈ A ⌉ ≮ ⌈ el B ⌉
-⌈A⌉≮⌈elB⌉ A B (s≤s ())
-
-
 -- Lemma which shows that if types are not of the same complexity,
 -- then they cannot be equal.
 ⌈A⌉<⌈B⌉→A≠B : ∀ A B → ⌈ A ⌉ < ⌈ B ⌉ → A ≢ B

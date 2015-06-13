@@ -4,7 +4,7 @@
 
 
 open import Level        using (Lift; lift)
-open import Function     using (id; flip; _∘_)
+open import Function     using (id; flip)
 open import Data.Product using (_×_; _,_; map; curry; uncurry; proj₁; proj₂)
 open import Data.Unit    using (⊤; tt)
 
@@ -19,6 +19,8 @@ open import Logic.Intuitionistic.Ordered.NLCL.Base      Univ as NLB
 
 
 private
+  infix 3 ⟦_⟧ᵀ ⟦_⟧ᴶ [_]
+
   ⟦_⟧ᵀ : Type → Set ℓ₂
   ⟦ el  A ⟧ᵀ = ⟦ A ⟧ᵁ
   ⟦ A ⊗ B ⟧ᵀ = ⟦ A ⟧ᵀ × ⟦ B ⟧ᵀ
