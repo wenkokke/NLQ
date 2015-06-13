@@ -51,7 +51,7 @@ loves : ⟦ (dp ⇒ s) ⇐ dp ⟧ᵀ
 loves = flip LOVES
 
 thinks : ⟦ (dp ⇒ s) ⇐ s ⟧ᵀ
-thinks = flip THINKS
+thinks = flip WANTS
 
 everyone : ⟦ s ⇦ (dp ⇨ s) ⟧ᵀ
 everyone p = forAll (λ x → PERSON x ⊃ p x)

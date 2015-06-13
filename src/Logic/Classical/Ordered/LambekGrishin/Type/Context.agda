@@ -5,9 +5,6 @@
 
 
 open import Level                                      using (zero)
-open import Categories.Agda                            using (Sets)
-open import Categories.Category                        using (Category)
-open import Categories.Functor                         using (Functor)
 open import Algebra                                    using (Monoid)
 open import Function                                   using (_∘_)
 open import Data.Unit                                  using (⊤; tt)
@@ -37,6 +34,9 @@ infixl 20 _⇚>_ _<⇚_
 infixr 30 _⊕>_ _<⊕_
 infixr 20 _⇒>_ _<⇒_
 infixl 20 _⇐>_ _<⇐_
+infixr 40 □>_ ◇>_
+infixr 40 ₀>_ ₁>_
+infixl 40 _<⁰ _<¹
 
 
 -- Contexts encode incomplete types with a single hole.
@@ -596,37 +596,37 @@ instance
 
 
 -- Proof that contexts also form a category
-instance
-  category : Category zero ℓ ℓ
-  category = record
-    { Obj          = ⊤
-    ; _⇒_          = λ {tt tt → Context}
-    ; _≡_          = _≡_
-    ; id           = []
-    ; _∘_          = _<_>
-    ; assoc        = λ {_}{_}{_}{_}{f}{g}{h} → <>-assoc h g f
-    ; identityˡ    = <>-identityˡ _
-    ; identityʳ    = <>-identityʳ _
-    ; equiv        = P.isEquivalence
-    ; ∘-resp-≡     = <>-cong
-    }
-    where open Simple
+--instance
+--  category : Category zero ℓ ℓ
+--  category = record
+--    { Obj          = ⊤
+--    ; _⇒_          = λ {tt tt → Context}
+--    ; _≡_          = _≡_
+--    ; id           = []
+--    ; _∘_          = _<_>
+--    ; assoc        = λ {_}{_}{_}{_}{f}{g}{h} → <>-assoc h g f
+--    ; identityˡ    = <>-identityˡ _
+--    ; identityʳ    = <>-identityʳ _
+--    ; equiv        = P.isEquivalence
+--    ; ∘-resp-≡     = <>-cong
+--    }
+--    where open Simple
 
 
 -- Proof that `_[_]` forms a functor from contexts into types
-instance
-  functor : Functor category (Sets ℓ)
-  functor = record
-    { F₀           = λ {tt → Type}
-    ; F₁           = _[_]
-    ; identity     = refl
-    ; homomorphism = λ {_}{_}{_}{f}{g}{x} → <>-def g f x
-    ; F-resp-≡     = F-resp-≡
-    }
-    where
-      open Simple
-      F-resp-≡ : ∀ {A B} → A ≡ B → ∀ {C} → A [ C ] ≡ B [ C ]
-      F-resp-≡ refl = refl
+--instance
+--  functor : Functor category (Sets ℓ)
+--  functor = record
+--    { F₀           = λ {tt → Type}
+--    ; F₁           = _[_]
+--    ; identity     = refl
+--    ; homomorphism = λ {_}{_}{_}{f}{g}{x} → <>-def g f x
+--    ; F-resp-≡     = F-resp-≡
+--    }
+--    where
+--      open Simple
+--      F-resp-≡ : ∀ {A B} → A ≡ B → ∀ {C} → A [ C ] ≡ B [ C ]
+--      F-resp-≡ refl = refl
 
 
 -- Proof that if the given universe has decidable equality, then so do contexts.

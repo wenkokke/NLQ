@@ -16,7 +16,8 @@ module Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement {ℓ} (Univ : Set 
 open import Logic.Classical.Ordered.LambekGrishin.Type Univ as T hiding (module DecEq)
 
 
-infix 3 _⊢_
+infix  3  _⊢_
+infixl 50 _⋈ᴶ _∞ᴶ
 
 
 data Judgement : Set ℓ where

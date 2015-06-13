@@ -25,10 +25,10 @@ open import Relation.Binary.PartialOrderReasoning as ≤-Reasoning using ()
 module ResiduationProperties {a ℓ} {A : Set a} (_≤_ : Rel A ℓ) where
 
   _LeftResidualOf_ : (⇐ ∙ : Op₂ A) → Set (a ⊔ ℓ)
-  _LeftResidualOf_ _⇐_ _∙_ = ∀ {x y z} → (x ∙ y) ≤ z ⇔ x ≤ (z ⇐ y)
+  _LeftResidualOf_ _⇐_ _∙_ = ∀ {x y z} → ((x ∙ y) ≤ z) ⇔ (x ≤ (z ⇐ y))
 
   _RightResidualOf_ : (⇒ ∙ : Op₂ A) → Set (a ⊔ ℓ)
-  _RightResidualOf_ _⇒_ _∙_ = ∀ {x y z} → y ≤ (x ⇒ z) ⇔ (x ∙ y) ≤ z
+  _RightResidualOf_ _⇒_ _∙_ = ∀ {x y z} → (y ≤ (x ⇒ z)) ⇔ ((x ∙ y) ≤ z)
 
 
 

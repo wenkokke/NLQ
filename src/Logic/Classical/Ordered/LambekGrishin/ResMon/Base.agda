@@ -19,7 +19,8 @@ open import Logic.Classical.Ordered.LambekGrishin.Type             Univ
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement Univ
 
 
-infix 1 LG_
+infix  1  LG_
+infixl 50 _⋈ᵗ _∞ᵗ
 
 data LG_ : Judgement → Set ℓ where
 
@@ -111,7 +112,7 @@ appl-⇚′ f = r⇚⊕ (m⇚ f ax′)
 
 
 -- Symmetries that do hold
-_⋈ᵗ : ∀ {J} → LG J → LG J ⋈ᴶ
+_⋈ᵗ : ∀ {J} → LG J → LG (J ⋈ᴶ)
 _⋈ᵗ  ax       = ax
 _⋈ᵗ (m□  f  ) = m□  (f ⋈ᵗ)
 _⋈ᵗ (m◇  f  ) = m◇  (f ⋈ᵗ)
@@ -145,7 +146,7 @@ _⋈ᵗ (d⇚⇒ f  ) = d⇛⇐ (f ⋈ᵗ)
 _⋈ᵗ (d⇚⇐ f  ) = d⇛⇒ (f ⋈ᵗ)
 
 
-_∞ᵗ : ∀ {J} → LG J → LG J ∞ᴶ
+_∞ᵗ : ∀ {J} → LG J → LG (J ∞ᴶ)
 _∞ᵗ  ax       = ax
 _∞ᵗ (m□  f  ) = m◇  (f ∞ᵗ)
 _∞ᵗ (m◇  f  ) = m□  (f ∞ᵗ)
@@ -179,11 +180,11 @@ _∞ᵗ (d⇚⇒ f  ) = d⇚⇒ (f ∞ᵗ)
 _∞ᵗ (d⇚⇐ f  ) = d⇛⇒ (f ∞ᵗ)
 
 
-_⋈ᵗ⁻¹ : ∀ {J} → LG J ⋈ᴶ → LG J
+_⋈ᵗ⁻¹ : ∀ {J} → LG (J ⋈ᴶ) → LG J
 _⋈ᵗ⁻¹ {J} f = P.subst LG_ (⋈ᴶ-inv J) (f ⋈ᵗ)
 
 
-_∞ᵗ⁻¹ : ∀ {J} → LG J ∞ᴶ → LG J
+_∞ᵗ⁻¹ : ∀ {J} → LG (J ∞ᴶ) → LG J
 _∞ᵗ⁻¹ {J} f = P.subst LG_ (∞ᴶ-inv J) (f ∞ᵗ)
 
 

@@ -1,3 +1,89 @@
+# Overview
+
+Every section describing a logical system is going to be set up as
+three parts.
+
+**Theory**
+
+  ~ the type theory behind the type-logical grammar, from the
+    perspective of type theory;
+
+**Syntax**
+
+  ~ the reason the type theory is set up as it is from a linguistic
+    perspective;
+
+**Semantics**
+
+  ~ the interpretation of the terms of the type theory in conventional
+    intuitionistic linear lambda calculus.
+
+
+The general overview of the thesis is as follows:
+
+  - What is a type-logical grammar?
+
+      * What is a type theory?
+      * Give an implementation of indexed lambda calculus.
+
+  - What are substructural type theories?
+
+      * Give an implementation of lambda calculus with explicit
+      structure.
+
+  - What is linear type theory?
+
+      * Explain linear type theory.
+      * Mention affine type theory, mention relevant type theory.
+      * Give an implementation of linear lambda calculus.
+      * Give a translation of linear lambda calculus into lambda
+      calculus.
+
+  - What is ordered type theory / the Lambek calculus?
+
+      * Explain ordered type theory.
+      * Mention associative type theory, mention commutative type
+        theory.
+      * Give a natural deduction implementation of the Lambek
+        calculus.
+      * Touch upon natural deduction versus sequent calculus, and cut
+        elimination as normalisation.
+      * Give a sequent calculus implementation of Lambek calculus.
+      * Give the algebraic implementation due to Moortgat, and explain
+        its advantages in terms of spurious ambiguity and proof
+        search.
+
+  - What is a multi-modal type-logical grammar?
+
+      * What is the Lambek-Grishin calculus?
+
+          + Explain general multi-modal type-logical grammars.
+          + Give the algebraic Lambek-Grishin calculus.
+          + Give a CPS translation of aLG.
+          + Explain focusing.
+          + Give the structural Lambek-Grishin calculus.
+          + Give a CPS translation of sLG.
+          + Give proof of equivalence between sLG and aLG.
+          + Explain polarity.
+          + Give the polarised Lambek-Grishin calculus.
+          + Give a CPS translation of fLG.
+          + Give proof of equivalence between fLG and sLG.
+
+      * How can the Lambek-Grishin calculus be applied to linguistics?
+
+          + Give analyses of sentences in linguistic data.
+
+      * What is Moortgat's system for in-situ binding / $\text{NL}_{CL}$?
+
+          + Give explanation of Moortgat's in-situ binding (1996).
+          + Give implementation of $\text{NL}_{CL}$.
+          + Explain limitations of $\text{NL}_{CL}$.
+          + Give merge of $\text{NL}_{CL}$ ang Moorgat's work of licensing
+            movement using diamonds.
+
+
+<!--
+
 # Introduction
 
 In my thesis, I will make the following contributions. I will:
@@ -69,3 +155,5 @@ book" would mean the same as "a blue book" or "a large book".
 
 *Once all these concepts are familiar, I will delve into a slightly
  deeper motivation of why this particular approach is important.*
+
+-->

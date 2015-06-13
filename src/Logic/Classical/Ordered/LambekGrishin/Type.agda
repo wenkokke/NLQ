@@ -3,9 +3,6 @@
 ------------------------------------------------------------------------
 
 open import Level                                      using (zero)
-open import Categories.Category                        using (Category)
-open import Categories.Discrete                        using (Discrete)
-open import Categories.Functor                         using (Functor)
 open import Function                                   using (_∘_)
 open import Data.Product                               using (∃; ∃₂; _×_; _,_; proj₁; proj₂)
 open import Relation.Nullary                           using (Dec; yes; no)
@@ -43,11 +40,6 @@ data Type : Set ℓ where
   _⊕_ : Type → Type → Type
   _⇚_ : Type → Type → Type
   _⇛_ : Type → Type → Type
-
-
-
-CType : Category ℓ ℓ zero
-CType = Discrete Type
 
 
 
