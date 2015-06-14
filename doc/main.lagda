@@ -6,10 +6,10 @@
 \begin{document}
 
 \begin{abstract}
-%%include abstract.tex
+%%include abstract.tex_lagda
 \end{abstract}
 
-%include ab_grammars.tex
+%include ab_grammars.tex_lagda
 
 \nocite{*}
 \bibliographystyle{apalike}

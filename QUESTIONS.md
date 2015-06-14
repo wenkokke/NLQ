@@ -1,5 +1,6 @@
 # Questions for Moortgat
 
+
 ## June 13th
 
   * How does one define an AB or Lambek grammar for aⁿbⁿ? Solved.
@@ -7,6 +8,19 @@
   * The Lambek calculus needs linear logic's & in order to get rid
     of all that silly "ambiguous definitions" machinery. Which means
     we also need to add & back into our linear logic fragment.
+
+  * How will the suggestions in the previous point affect the
+    translations from a lexical function back to a context-free
+    grammar?
+
+  * How did you originally define the grammar for $a^{n}b^{n}$ in the
+    Lambek-Grishin calculus?
+
+  * Talk about how a define linear negation is not in fact a negation
+    at all, and ask why the choice for intuitionistic linear logic was
+    made, instead of classical linear logic.
+
+  * Talk about AB grammars, ask if they're associative.
 
 
 ## March 26th
@@ -80,6 +94,7 @@
     *The idea is to add the rules at a structural level, and then add
     structural rules for converting to logical rules. The inverse
     rules should follow from transitivity.*
+
 
 ## March 12th
 
@@ -235,4 +250,6 @@ However, for this paper, we will *only* deal with logics in the
 *unrestricted*, *linear* and *ordered* categories.
 
 The second axis is roughly spun by *intuitionistic* versus *classical*
-logics.
+logics. This should probably disappear, as that distinction doesn't
+really make sense. Right now it's basically taken to mean "uses
+two-sided sequents with multiple proofs on both sides".

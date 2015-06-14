@@ -11,11 +11,20 @@ import Text.Pandoc.JSON
 
 
 convert :: Block -> Block
-convert (CodeBlock _ str) = RawBlock (Format "latex") (codeBlock str)
-convert bl                = bl
+convert bl@(CodeBlock (_, classes, _) str)
+  | "hidden"  `elem` classes = Null
+  | "partial" `elem` classes = RawBlock (Format "latex") (partEnv (codeEnv str))
+  | otherwise                = RawBlock (Format "latex")          (codeEnv str)
+convert bl                   = bl
 
-codeBlock :: String -> String
-codeBlock code = unlines ["\\begin{code}",code,"\\end{code}"]
+
+codeEnv :: String -> String
+codeEnv str = unlines ["\\begin{code}",str,"\\end{code}"]
+
+
+partEnv :: String -> String
+partEnv str = unlines ["\\begin{partial}",str,"\\end{partial}"]
+
 
 main :: IO ()
 main = toJSONFilter convert
