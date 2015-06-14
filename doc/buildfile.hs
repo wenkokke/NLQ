@@ -2,10 +2,8 @@
 
 
 import           Control.Arrow ((***))
-import           Control.Monad (forM_)
 import           Development.Shake
 import           Development.Shake.FilePath
-import           System.Directory (copyFile)
 import           Data.String (IsString(..))
 import           Data.Text (Text)
 import qualified Data.Text    as T
@@ -31,8 +29,7 @@ import qualified Data.Text.IO as T
 --   3. _build/$file.md_noimp_lagda
 --   4. _build/$file.md_noimp_fmthtml_lagda
 --   5. _build/main.html
-
-
+--
 
 
 main :: IO ()
