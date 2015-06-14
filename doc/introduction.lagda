@@ -1,5 +1,16 @@
 # Overview
 
+In this thesis, we will not busy ourselves with setting up term
+languages, rewrite schemas or proofs for normalisation. We will obtain
+normalisation procedures as a corollary from interpretations in
+intuitionistic logic. That is to say, we will provide interpretations
+of our logical systems to propositional intuitionistic logic, which we
+can trivially translate to Agda, since ITT much more expressive. In
+this way we can piggy-back on Agda's implementations of normalisation
+without losing the guarantee that we are using constructs which are
+beyond the propositional calculus.
+
+
 Every section describing a logical system is going to be set up as
 three parts.
 
