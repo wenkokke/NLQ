@@ -1,34 +1,28 @@
+``` hidden
+module introduction where
+```
+
+# Introduction
+
+- for the systems we introduce, we will not busy ourselves with
+  rewrite rules, normalisation, etc.
+
+- we will define translations of various systems into intuitionistic
+  logic (or the simply-typed lambda calculus) either directly or
+  through a continuation-passing style translation;
+
+- all our logical fragments will remain propositional, and many will
+  be fragments of non-commutative linear logic;
+
+- we will translate our proofs in intuitionistic logic back into Agda,
+  piggy-backing on the implementation to obtain evaluation;
+
+- the intermediate translation to IL will guarantee that we do not use
+  any constructions not available in IL in the translation of our
+  systems;
+
+
 # Overview
-
-In this thesis, we will not busy ourselves with setting up term
-languages, rewrite schemas or proofs for normalisation. We will obtain
-normalisation procedures as a corollary from interpretations in
-intuitionistic logic. That is to say, we will provide interpretations
-of our logical systems to propositional intuitionistic logic, which we
-can trivially translate to Agda, since ITT much more expressive. In
-this way we can piggy-back on Agda's implementations of normalisation
-without losing the guarantee that we are using constructs which are
-beyond the propositional calculus.
-
-
-Every section describing a logical system is going to be set up as
-three parts.
-
-**Theory**
-
-  ~ the type theory behind the type-logical grammar, from the
-    perspective of type theory;
-
-**Syntax**
-
-  ~ the reason the type theory is set up as it is from a linguistic
-    perspective;
-
-**Semantics**
-
-  ~ the interpretation of the terms of the type theory in conventional
-    intuitionistic linear lambda calculus.
-
 
 The general overview of the thesis is as follows:
 

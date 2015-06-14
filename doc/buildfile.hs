@@ -17,7 +17,6 @@ import qualified Data.Text.IO as T
 --   1. $file.lagda
 --   2. _build/$file.md_lagda
 --   3. _build/$file.md_noimp_lagda
---   4. _build/$file.md_noimp_fmttex_lagda
 --   5. _build/$file.tex_lagda
 --   6. _build/main.tex
 --   7. _build/main.pdf
@@ -27,9 +26,17 @@ import qualified Data.Text.IO as T
 --   1. $file.lagda
 --   2. _build/$file.md_lagda
 --   3. _build/$file.md_noimp_lagda
---   4. _build/$file.md_noimp_fmthtml_lagda
---   5. _build/main.html
+--   5. _build/main.html_nofmt
+--   6. _build/main.html
 --
+
+
+toc :: [FilePath]
+toc =
+  [ "abstract"
+  , "type_logical_grammar"
+  , "lambek_grammar"
+  ]
 
 
 main :: IO ()
@@ -53,9 +60,14 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
   -- * compilation of main files
 
   toBuild "main.html" %> \out -> do
+    let src = out -<.> "html_nofmt"
+    need [src]
+    liftIO $ T.writeFile out . formatHTML =<< T.readFile src
+
+  toBuild "main.html_nofmt" %> \out -> do
     let ref = toBuild "references.md"
     let yml = out -<.> "yml"
-    let src = tocWith "md_noimp_fmthtml_lagda"
+    let src = tocWith "md_noimp_lagda"
     need (ref : yml : src)
     cmd "pandoc" "-F" "pandoc-citeproc" yml
                  "-F" "./pandoc_HTML.hs"
@@ -67,7 +79,7 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
   toBuild "main.tex" %> \out -> do
     let src = out -<.> "lagda"
     need (tocWith "tex_lagda")
-    need [src]
+    writeFile' src mainFile
     cmd "lhs2TeX" "--agda" "-P" ":_build/" src "-o" out
 
   toBuild "main.pdf" %> \out -> do
@@ -94,7 +106,7 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
     writeFile' out yml
 
   -- import files by copying
-  map toBuild ["main.lagda","preamble.tex","main.fmt","main.bib"] |%> \out -> do
+  map toBuild ["preamble.tex","main.fmt","main.bib"] |%> \out -> do
     let src = fromBuild out
     copyFile' src out
 
@@ -112,29 +124,22 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
     need [src]
     cmd "./remove_implicit_args.rb" src out
 
-  -- apply formatting directives for LaTeX
-  tocWith "md_noimp_fmttex_lagda" |%> \out -> do
-    let src = out -<.> "md_noimp_lagda"
-    need [src]
-    liftIO $ T.writeFile out . formatTeX =<< T.readFile src
-
-  -- apply formatting directives for HTML
-  tocWith "md_noimp_fmthtml_lagda" |%> \out -> do
-    let src = out -<.> "md_noimp_lagda"
-    need [src]
-    liftIO $ T.writeFile out . formatHTML =<< T.readFile src
-
   -- compile Markdown to LaTeX in presence of literate Agda
   tocWith "tex_lagda_nopipe" |%> \out -> do
-    let src = out -<.> "md_noimp_fmttex_lagda"
+    let src = out -<.> "md_noimp_lagda"
     need [src]
-    cmd "pandoc" "-F" "./pandoc_lhs2TeX.hs"
-                 "--natbib"
-                 "--no-highlight"
-                 "-S"
-                 "-f" "markdown"
-                 "-t" "latex"
-                 src "-o" out
+
+    -- workaround: Pandoc will crash on empty files
+    contents <- readFile' src
+    if null contents
+      then writeFile' out contents
+      else cmd "pandoc" "-F" "./pandoc_lhs2TeX.hs"
+                        "--natbib"
+                        "--no-highlight"
+                        "-S"
+                        "-f" "markdown"
+                        "-t" "latex"
+                        src "-o" out
 
   -- fix a bug in Pandoc's output w.r.t. pipes
   tocWith "tex_lagda" |%> \out -> do
@@ -150,9 +155,6 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
 
 
 -- * Path management
-
-toc :: [FilePath]
-toc = ["ab_grammars"]
 
 tocWith :: FilePath -> [FilePath]
 tocWith ext = map (toBuild . (<.> ext)) toc
@@ -175,7 +177,9 @@ formatTeX = formatWith
 
 formatHTML :: Text -> Text
 formatHTML = formatWith
-  [ "|" ==> "$"
+  [ "|" ==> ""
+  , "⇐" ==> "&#47;"
+  , "⇒" ==> "&#92;"
   ]
 
 
@@ -192,3 +196,28 @@ formatWith =
 
 (==>) :: a -> b -> (a , b)
 (==>) = (,)
+
+
+-- * Creating `main.lagda`
+
+mainFile :: String
+mainFile = unlines
+  [ "\\documentclass{article}"
+  , "%include main.fmt"
+  , "\\include{preamble}%"
+  , "\\begin{document}"
+  , "\\begin{abstract}"
+  , "%include abstract.tex_lagda"
+  , "\\end{abstract}"
+  , include_all_files
+  , "\\nocite{*}%"
+  , "\\bibliographystyle{apalike}%"
+  , "\\bibliography{main}"
+  , "\\end{document}"
+  ]
+  where
+    include_all_files
+      = unlines
+      $ map ("%include " ++)
+      $ filter (/="abstract.tex_lagda")
+      $ tocWith "tex_lagda"
