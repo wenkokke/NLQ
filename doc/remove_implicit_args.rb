@@ -25,7 +25,6 @@ def correct_indent(str)
       if indent.nil? and not
         indent = ln.chars.take_while{ |c| c =~ /^\s*$/ }.length
       end
-      puts indent
       ln[0..indent-1] = '' unless indent == 0 or ln.length < indent
       next ln
     end
