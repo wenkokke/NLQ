@@ -11,9 +11,9 @@ import Text.Pandoc.JSON
 
 
 convert :: Block -> Block
-convert bl@(CodeBlock (_, classes, _) _)
+convert bl@(CodeBlock (id, classes, kv) str)
   | "hidden" `elem` classes = Null
-  | otherwise               = bl
+  | otherwise               = CodeBlock (id, "agda" : classes, kv) str
 convert bl                  = bl
 
 

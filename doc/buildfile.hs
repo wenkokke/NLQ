@@ -34,6 +34,7 @@ import qualified Data.Text.IO as T
 toc :: [FilePath]
 toc =
   [ "abstract"
+  , "substructural_logic"
   , "type_logical_grammar"
   , "lambek_grammar"
   ]
