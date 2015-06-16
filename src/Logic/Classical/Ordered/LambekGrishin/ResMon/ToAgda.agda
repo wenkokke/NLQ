@@ -127,24 +127,26 @@ CBV = record
 
 -- * Call-by-name translation
 
-⌊_⌋ : Type → Set ℓ
-⌊ A ⌋ = ⌈ A ∞ ⌉
+module _ where -- TODO: HACK! ∞
 
-⌊_⌋ᴸ : ∀ {A B} → LG A ⊢ B → (¬ ⌊ A ⌋ → ¬ ⌊ B ⌋)
-⌊_⌋ᴸ = ⌈_⌉ᴸ ∘ _∞ᵗ
+  ⌊_⌋ : Type → Set ℓ
+  ⌊ A ⌋ = ⌈ A ∞ ⌉
 
-⌊_⌋ᴿ : ∀ {A B} → LG A ⊢ B → (⌊ B ⌋ → ¬ ¬ ⌊ A ⌋)
-⌊_⌋ᴿ = ⌈_⌉ᴿ ∘ _∞ᵗ
+  ⌊_⌋ᴸ : ∀ {A B} → LG A ⊢ B → (¬ ⌊ A ⌋ → ¬ ⌊ B ⌋)
+  ⌊_⌋ᴸ = ⌈_⌉ᴸ ∘ _∞ᵗ
 
-⌊_⌋ᴶ : Judgement → Set ℓ
-⌊ A ⊢ B ⌋ᴶ = ¬ ⌊ A ⌋ → ¬ ⌊ B ⌋
+  ⌊_⌋ᴿ : ∀ {A B} → LG A ⊢ B → (⌊ B ⌋ → ¬ ¬ ⌊ A ⌋)
+  ⌊_⌋ᴿ = ⌈_⌉ᴿ ∘ _∞ᵗ
 
-CBN : Translation Type (Set ℓ) LG_ id
-CBN = record
-  { ⟦_⟧ᵀ = ⌊_⌋
-  ; ⟦_⟧ᴶ = ⌊_⌋ᴶ
-  ; [_]  = λ { {_ ⊢ _} f → ⌊_⌋ᴸ f}
-  }
+  ⌊_⌋ᴶ : Judgement → Set ℓ
+  ⌊ A ⊢ B ⌋ᴶ = ¬ ⌊ A ⌋ → ¬ ⌊ B ⌋
+
+  CBN : Translation Type (Set ℓ) LG_ id
+  CBN = record
+    { ⟦_⟧ᵀ = ⌊_⌋
+    ; ⟦_⟧ᴶ = ⌊_⌋ᴶ
+    ; [_]  = λ { {_ ⊢ _} f → ⌊_⌋ᴸ f}
+    }
 
 
 -- * Bernardi & Moortgat translation

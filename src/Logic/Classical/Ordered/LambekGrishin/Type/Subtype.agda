@@ -1,6 +1,5 @@
 ------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
---
 ------------------------------------------------------------------------
 
 
@@ -24,10 +23,15 @@ open import Logic.Classical.Ordered.LambekGrishin.Type            Univ as T
 open import Logic.Classical.Ordered.LambekGrishin.Type.Complexity Univ
 open import Logic.Classical.Ordered.LambekGrishin.Type.Context    Univ as C hiding (module Simple)
 
-open T.DecEq _≟-Univ_ using (decSetoid)
-open C.DecEq _≟-Univ_ using (decSetoid)
 open C.Simple  using (_[_]; _<_>; <>-def; []-resp-≡)
-open DecSetoid {{...}} using (_≟_)
+private
+  module TDecEq = T.DecEq _≟-Univ_ using (decSetoid)
+  module CDecEq = C.DecEq _≟-Univ_ using (decSetoid)
+  open DecSetoid TDecEq.decSetoid using () renaming (_≟_ to _≟-Type_)
+  open DecSetoid CDecEq.decSetoid using () renaming (_≟_ to _≟-Context_)
+
+
+infix 3 _⊆_
 
 
 _⊆_ : (A B : Type) → Set ℓ
@@ -37,10 +41,10 @@ import Relation.Binary.NonStrictToStrict _≡_ _⊆_ as ⊂
 open ⊂ public using () renaming (_<_ to _⊂_)
 
 _⊈_ : (A B : Type) → Set ℓ
-A ⊈ B = ¬ A ⊆ B
+A ⊈ B = ¬ (A ⊆ B)
 
 _⊄_ : (A B : Type) → Set ℓ
-A ⊄ B = ¬ A ⊂ B
+A ⊄ B = ¬ (A ⊂ B)
 
 
 -- Lemma: we can weaken the subtype relation by adding a context to
@@ -82,7 +86,7 @@ A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 □-inj-⊆ (_ <⇒ _ , ())
 □-inj-⊆ (_ <⇐ _ , ())
 
-□-inj-⊂ : ∀ {A B} → A ⊂ □ B → A ⊆ B
+□-inj-⊂ : ∀ {A B} → A ⊂ (□ B) → A ⊆ B
 □-inj-⊂ (A⊆□B , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (□-inj-⊆ A⊆□B)
 
 -- Lemma: the `◇` constructor injects into the subtype relations.
@@ -107,7 +111,7 @@ A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 ◇-inj-⊆ (_ <⇒ _ , ())
 ◇-inj-⊆ (_ <⇐ _ , ())
 
-◇-inj-⊂ : ∀ {A B} → A ⊂ ◇ B → A ⊆ B
+◇-inj-⊂ : ∀ {A B} → A ⊂ (◇ B) → A ⊆ B
 ◇-inj-⊂ (A⊆◇B , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (◇-inj-⊆ A⊆◇B)
 
 -- Lemma: the `₀` constructor injects into the subtype relations.
@@ -132,7 +136,7 @@ A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 ₀-inj-⊆ (_ <⇒ _ , ())
 ₀-inj-⊆ (_ <⇐ _ , ())
 
-₀-inj-⊂ : ∀ {A B} → A ⊂ ₀ B → A ⊆ B
+₀-inj-⊂ : ∀ {A B} → A ⊂ (₀ B) → A ⊆ B
 ₀-inj-⊂ (A⊆₀B , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (₀-inj-⊆ A⊆₀B)
 
 -- Lemma: the `₁` constructor injects into the subtype relations.
@@ -157,7 +161,7 @@ A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 ₁-inj-⊆ (_ <⇒ _ , ())
 ₁-inj-⊆ (_ <⇐ _ , ())
 
-₁-inj-⊂ : ∀ {A B} → A ⊂ ₁ B → A ⊆ B
+₁-inj-⊂ : ∀ {A B} → A ⊂ (₁ B) → A ⊆ B
 ₁-inj-⊂ (A⊆₁B , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (₁-inj-⊆ A⊆₁B)
 
 -- Lemma: the `⁰` constructor injects into the subtype relations.
@@ -182,7 +186,7 @@ A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 ⁰-inj-⊆ (_ <⇒ _ , ())
 ⁰-inj-⊆ (_ <⇐ _ , ())
 
-⁰-inj-⊂ : ∀ {A B} → A ⊂ B ⁰ → A ⊆ B
+⁰-inj-⊂ : ∀ {A B} → A ⊂ (B ⁰) → A ⊆ B
 ⁰-inj-⊂ (A⊆⁰B , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (⁰-inj-⊆ A⊆⁰B)
 
 -- Lemma: the `¹` constructor injects into the subtype relations.
@@ -207,7 +211,7 @@ A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 ¹-inj-⊆ (_ <⇒ _ , ())
 ¹-inj-⊆ (_ <⇐ _ , ())
 
-¹-inj-⊂ : ∀ {A B} → A ⊂ B ¹ → A ⊆ B
+¹-inj-⊂ : ∀ {A B} → A ⊂ (B ¹) → A ⊆ B
 ¹-inj-⊂ (A⊆¹B , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (¹-inj-⊆ A⊆¹B)
 
 -- Lemma: the `⇒` constructor injects into the subtype relations.
@@ -232,7 +236,7 @@ A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 ⇒-inj-⊆ (_ <⊕ _ , ())
 ⇒-inj-⊆ (_ <⇐ _ , ())
 
-⇒-inj-⊂ : ∀ {A B C} → A ⊂ B ⇒ C → A ⊆ B ⊎ A ⊆ C
+⇒-inj-⊂ : ∀ {A B C} → A ⊂ (B ⇒ C) → A ⊆ B ⊎ A ⊆ C
 ⇒-inj-⊂ (A⊆B⇒C , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (⇒-inj-⊆ A⊆B⇒C)
 
 
@@ -258,7 +262,7 @@ A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 ⇐-inj-⊆ (_ <⊕ _ , ())
 ⇐-inj-⊆ (_ <⇒ _ , ())
 
-⇐-inj-⊂ : ∀ {A B C} → A ⊂ B ⇐ C → A ⊆ B ⊎ A ⊆ C
+⇐-inj-⊂ : ∀ {A B C} → A ⊂ (B ⇐ C) → A ⊆ B ⊎ A ⊆ C
 ⇐-inj-⊂ (A⊆B⇐C , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (⇐-inj-⊆ A⊆B⇐C)
 
 -- Lemma: the `⇛` constructor injects into the subtype relations.
@@ -283,7 +287,7 @@ A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 ⇛-inj-⊆ (_ <⊕ _ , ())
 ⇛-inj-⊆ (_ <⇒ _ , ())
 
-⇛-inj-⊂ : ∀ {A B C} → A ⊂ B ⇛ C → A ⊆ B ⊎ A ⊆ C
+⇛-inj-⊂ : ∀ {A B C} → A ⊂ (B ⇛ C) → A ⊆ B ⊎ A ⊆ C
 ⇛-inj-⊂ (A⊆B⇛C , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (⇛-inj-⊆ A⊆B⇛C)
 
 
@@ -309,7 +313,7 @@ A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 ⇚-inj-⊆ (_ <⊕ _ , ())
 ⇚-inj-⊆ (_ <⇒ _ , ())
 
-⇚-inj-⊂ : ∀ {A B C} → A ⊂ B ⇚ C → A ⊆ B ⊎ A ⊆ C
+⇚-inj-⊂ : ∀ {A B C} → A ⊂ (B ⇚ C) → A ⊆ B ⊎ A ⊆ C
 ⇚-inj-⊂ (A⊆B⇚C , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (⇚-inj-⊆ A⊆B⇚C)
 
 
@@ -335,7 +339,7 @@ A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 ⊗-inj-⊆ (_ <⊕ _ , ())
 ⊗-inj-⊆ (_ <⇒ _ , ())
 
-⊗-inj-⊂ : ∀ {A B C} → A ⊂ B ⊗ C → A ⊆ B ⊎ A ⊆ C
+⊗-inj-⊂ : ∀ {A B C} → A ⊂ (B ⊗ C) → A ⊆ B ⊎ A ⊆ C
 ⊗-inj-⊂ (A⊆B⊗C , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (⊗-inj-⊆ A⊆B⊗C)
 
 
@@ -361,7 +365,7 @@ A⊄elB (A⊆elB , A≠B) = A≠B (A⊆elB→A=elB A⊆elB)
 ⊕-inj-⊆ (_ <⊗ _ , ())
 ⊕-inj-⊆ (_ <⇒ _ , ())
 
-⊕-inj-⊂ : ∀ {A B C} → A ⊂ B ⊕ C → A ⊆ B ⊎ A ⊆ C
+⊕-inj-⊂ : ∀ {A B C} → A ⊂ (B ⊕ C) → A ⊆ B ⊎ A ⊆ C
 ⊕-inj-⊂ (A⊆B⊕C , A≠B) = [ ⊥-elim ∘ A≠B , id ]′ (⊕-inj-⊆ A⊆B⊕C)
 
 
@@ -377,14 +381,14 @@ module Simple where
     P.trans (<>-def Ξ₂ Ξ₁ A) (P.trans ([]-resp-≡ Ξ₂ p₁) p₂)
 
   antisym : ∀ {A B} → A ⊆ B → B ⊆ A → A ≡ B
-  antisym {A} (Ξ₁ , p₁  ) (Ξ₂ , p₂) with Ξ₁ ≟ []
+  antisym {A} (Ξ₁ , p₁  ) (Ξ₂ , p₂) with Ξ₁ ≟-Context []
   antisym {A} (Ξ₁ , p₁  ) (Ξ₂ , p₂) | yes Ξ₁=[] rewrite Ξ₁=[] = p₁
   antisym {A} (Ξ₁ , refl) (Ξ₂ , p₂) | no  Ξ₁≠[] =
     ⊥-elim (Γ≠[]→A≠Γ[A] A (Ξ₂ < Ξ₁ >) (Γ≠[]→Δ<Γ>≠[] Ξ₁ Ξ₂ Ξ₁≠[]) (sym (P.trans (<>-def Ξ₂ Ξ₁ A) p₂)))
 
 
   _⊆?_ : ∀ A B → Dec (A ⊆ B)
-  A ⊆? B with (A ≟ B)
+  A ⊆? B with (A ≟-Type B)
   A ⊆? B | yes A=B = yes ([] , A=B)
   A ⊆? (el B)  | no  A≠B = no (A≠B ∘ A⊆elB→A=elB)
   A ⊆? (□  B)  | no  A≠B with A ⊆? B
@@ -446,10 +450,9 @@ isPartialOrder = record
 isDecPartialOrder : IsDecPartialOrder _≡_ _⊆_
 isDecPartialOrder = record
   { isPartialOrder = isPartialOrder
-  ; _≟_            = _≟_
-  ; _≤?_           = _⊆?_
+  ; _≟_            = _≟-Type_
+  ; _≤?_           = Simple._⊆?_
   }
-  where open Simple
 
 
 isStrictPartialOrder : IsStrictPartialOrder _≡_ _⊂_
@@ -459,10 +462,9 @@ isStrictPartialOrder = ⊂.isPartialOrder⟶isStrictPartialOrder isPartialOrder
 isDecStrictPartialOrder : IsDecStrictPartialOrder _≡_ _⊂_
 isDecStrictPartialOrder = record
   { isStrictPartialOrder = isStrictPartialOrder
-  ; _≟_                  = _≟_
-  ; _<?_                 = ⊂.decidable _≟_ _⊆?_
+  ; _≟_                  = _≟-Type_
+  ; _<?_                 = ⊂.decidable _≟-Type_ Simple._⊆?_
   }
-  where open Simple
 
 
 mutual
@@ -506,7 +508,7 @@ private
 
 mutual
   [A|A⊆B]-correct : ∀ {A B} → A ⊆ B → Σ[ i ∈ Fin ⌈ B ⌉ ]( A ≡ lookup i [A|A⊆ B ] )
-  [A|A⊆B]-correct {A} {B} A⊆B with A ≟ B
+  [A|A⊆B]-correct {A} {B} A⊆B with A ≟-Type B
   ...| yes A=B = zero , A=B
   ...| no  A≠B with [A|A⊂B]-correct (A⊆B , A≠B)
   ...| (i , p) = suc i , p

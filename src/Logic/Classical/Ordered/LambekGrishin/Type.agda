@@ -12,13 +12,20 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 module Logic.Classical.Ordered.LambekGrishin.Type {ℓ} (Univ : Set ℓ) where
 
 
+infixl 10 _⋈
+infixl 10 _∞
 infixr 20 _⇒_
 infixl 20 _⇐_
 infixl 25 _⇚_
 infixr 25 _⇛_
 infixr 30 _⊗_
 infixr 30 _⊕_
-infix  40 □_ ◇_ ₀_ _⁰ ₁_ _¹
+infixr 40 □_
+infixr 40 ◇_
+infixr 40 ₀_
+infixl 40 _⁰
+infixr 40 ₁_
+infixl 40 _¹
 
 
 data Type : Set ℓ where
@@ -44,9 +51,6 @@ data Type : Set ℓ where
 
 
 -- Symmetries that should hold for these types.
-
-
-infixl 5 _⋈ _∞
 
 
 _⋈ : Type → Type

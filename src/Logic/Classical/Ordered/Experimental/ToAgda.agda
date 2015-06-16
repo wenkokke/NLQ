@@ -1,7 +1,9 @@
-------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
--- This file was automatically generated.
-------------------------------------------------------------------------
+--
+-- This file was generated from:
+--   src/Logic/Classical/Ordered/LambekGrishin/ToAgda.agda
+--------------------------------------------------------------------------------
 
 
 open import Function                                   using (id; _∘_)

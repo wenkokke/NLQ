@@ -51,7 +51,7 @@ loves : ⟦ (np ⇒ s) ⇐ np ⟧ᵀ
 loves = flip LOVES
 
 thinks : ⟦ (np ⇒ s) ⇐ s ⟧ᵀ
-thinks = flip THINKS
+thinks = flip SAID
 
 everyone : ⟦ ◇ (s ⇦ □ (np ⇨ s)) ⟧ᵀ
 everyone p = forAll (λ x → PERSON x ⊃ p x)

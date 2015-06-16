@@ -9,7 +9,7 @@ open import Reflection using (Term)
 open import Example.System.InSitu
 
 
-module Example.QuantifierInSitu where
+module Example.ScopeAmbiguityInSitu where
 
 
 EVERYONE_LEFT₀ : NL ◇ ( s ⇦ ( □ np ⇨ s ) ) ⊗ ( np ⇒ s ) ⊢ s

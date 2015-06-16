@@ -38,7 +38,7 @@ MARY_LEFT₀
   = (⇁ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻))))
 mary_left₀ : ⟦ s⁻  ⟧ᵀ
 mary_left₀
-  = [ MARY_LEFT₀ ]ᵀ (mary , left , ∅)
+  = [ MARY_LEFT₀ ]ᵀ (mary ∷ left ∷ [])
 
 LIST_mary_left₀ : List Term
 LIST_mary_left₀
@@ -54,7 +54,7 @@ EVERYONE_LOVES_MARY₀
   = (⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))
 everyone_loves_mary₀ : ⟦ s⁻  ⟧ᵀ
 everyone_loves_mary₀
-  = [ EVERYONE_LOVES_MARY₀ ]ᵀ (everyone , loves , mary , ∅)
+  = [ EVERYONE_LOVES_MARY₀ ]ᵀ (everyone ∷ loves ∷ mary ∷ [])
 
 LIST_everyone_loves_mary₀ : List Term
 LIST_everyone_loves_mary₀
@@ -70,7 +70,7 @@ MARY_LOVES_EVERYONE₀
   = (⇁ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))))
 mary_loves_everyone₀ : ⟦ s⁻  ⟧ᵀ
 mary_loves_everyone₀
-  = [ MARY_LOVES_EVERYONE₀ ]ᵀ (mary , loves , everyone , ∅)
+  = [ MARY_LOVES_EVERYONE₀ ]ᵀ (mary ∷ loves ∷ everyone ∷ [])
 
 LIST_mary_loves_everyone₀ : List Term
 LIST_mary_loves_everyone₀
@@ -86,7 +86,7 @@ EVERYONE_LOVES_SOMEONE₀
   = (⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻))))))))))))))))))))
 everyone_loves_someone₀ : ⟦ s⁻  ⟧ᵀ
 everyone_loves_someone₀
-  = [ EVERYONE_LOVES_SOMEONE₀ ]ᵀ (everyone , loves , someone , ∅)
+  = [ EVERYONE_LOVES_SOMEONE₀ ]ᵀ (everyone ∷ loves ∷ someone ∷ [])
 
 LIST_everyone_loves_someone₀ : List Term
 LIST_everyone_loves_someone₀
@@ -103,7 +103,7 @@ EVERYONE_LOVES_SOMEONE₁
   = (⇁ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻))))))))))))))))))))))
 everyone_loves_someone₁ : ⟦ s⁻  ⟧ᵀ
 everyone_loves_someone₁
-  = [ EVERYONE_LOVES_SOMEONE₁ ]ᵀ (everyone , loves , someone , ∅)
+  = [ EVERYONE_LOVES_SOMEONE₁ ]ᵀ (everyone ∷ loves ∷ someone ∷ [])
 
 LIST_everyone_loves_someone₁ : List Term
 LIST_everyone_loves_someone₁
@@ -120,7 +120,7 @@ EVERYONE_LOVES_SOMEONE₂
   = (⇁ (r⇐⊗ (⊗ᴸ (r⊗⇐ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻))))))))))))))))))))))))
 everyone_loves_someone₂ : ⟦ s⁻  ⟧ᵀ
 everyone_loves_someone₂
-  = [ EVERYONE_LOVES_SOMEONE₂ ]ᵀ (everyone , loves , someone , ∅)
+  = [ EVERYONE_LOVES_SOMEONE₂ ]ᵀ (everyone ∷ loves ∷ someone ∷ [])
 
 LIST_everyone_loves_someone₂ : List Term
 LIST_everyone_loves_someone₂
@@ -137,7 +137,7 @@ EVERYONE_LOVES_SOMEONE₃
   = (⇁ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⊗⇒ (r⊗⇒ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻))))))))))))))))))))))))
 everyone_loves_someone₃ : ⟦ s⁻  ⟧ᵀ
 everyone_loves_someone₃
-  = [ EVERYONE_LOVES_SOMEONE₃ ]ᵀ (everyone , loves , someone , ∅)
+  = [ EVERYONE_LOVES_SOMEONE₃ ]ᵀ (everyone ∷ loves ∷ someone ∷ [])
 
 LIST_everyone_loves_someone₃ : List Term
 LIST_everyone_loves_someone₃
@@ -154,7 +154,7 @@ EVERYONE_LOVES_SOMEONE₄
   = (⇁ (r⇐⊗ (⊗ᴸ (r⊗⇐ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⊗⇒ (r⊗⇒ (r⇐⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻))))))))))))))))))))))))))
 everyone_loves_someone₄ : ⟦ s⁻  ⟧ᵀ
 everyone_loves_someone₄
-  = [ EVERYONE_LOVES_SOMEONE₄ ]ᵀ (everyone , loves , someone , ∅)
+  = [ EVERYONE_LOVES_SOMEONE₄ ]ᵀ (everyone ∷ loves ∷ someone ∷ [])
 
 LIST_everyone_loves_someone₄ : List Term
 LIST_everyone_loves_someone₄
@@ -171,7 +171,7 @@ EVERYONE_LOVES_SOMEONE₅
   = (⇁ (r⇒⊗ (r⇒⊗ (⊗ᴸ (r⊗⇒ (r⊗⇒ (r⇐⊗ (⊗ᴸ (r⊗⇐ (r⇒⊗ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇒ (r⊗⇒ (r⇐⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻))))))))))))))))))))))))))))
 everyone_loves_someone₅ : ⟦ s⁻  ⟧ᵀ
 everyone_loves_someone₅
-  = [ EVERYONE_LOVES_SOMEONE₅ ]ᵀ (everyone , loves , someone , ∅)
+  = [ EVERYONE_LOVES_SOMEONE₅ ]ᵀ (everyone ∷ loves ∷ someone ∷ [])
 
 LIST_everyone_loves_someone₅ : List Term
 LIST_everyone_loves_someone₅
@@ -188,7 +188,7 @@ MARY_WANTS_EVERYONE_TO_LEAVE₀
   = (⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ (⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻))))))))))) (⇒ᴸ ax⁺ ax⁻))))))
 mary_wants_everyone_to_leave₀ : ⟦ s⁻  ⟧ᵀ
 mary_wants_everyone_to_leave₀
-  = [ MARY_WANTS_EVERYONE_TO_LEAVE₀ ]ᵀ (mary , wants , everyone , to_leave , ∅)
+  = [ MARY_WANTS_EVERYONE_TO_LEAVE₀ ]ᵀ (mary ∷ wants ∷ everyone ∷ to_leave ∷ [])
 
 LIST_mary_wants_everyone_to_leave₀ : List Term
 LIST_mary_wants_everyone_to_leave₀
@@ -206,7 +206,7 @@ MARY_WANTS_EVERYONE_TO_LEAVE₁
   = (⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ (⇁ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))) (⇒ᴸ ax⁺ ax⁻)))))))))))))))
 mary_wants_everyone_to_leave₁ : ⟦ s⁻  ⟧ᵀ
 mary_wants_everyone_to_leave₁
-  = [ MARY_WANTS_EVERYONE_TO_LEAVE₁ ]ᵀ (mary , wants , everyone , to_leave , ∅)
+  = [ MARY_WANTS_EVERYONE_TO_LEAVE₁ ]ᵀ (mary ∷ wants ∷ everyone ∷ to_leave ∷ [])
 
 LIST_mary_wants_everyone_to_leave₁ : List Term
 LIST_mary_wants_everyone_to_leave₁
@@ -224,7 +224,7 @@ MARY_WANTS_EVERYONE_TO_LEAVE₂
   = (⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⊗⇐ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ (⇁ (r⇐⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))))))))) (⇒ᴸ ax⁺ ax⁻)))))))))))
 mary_wants_everyone_to_leave₂ : ⟦ s⁻  ⟧ᵀ
 mary_wants_everyone_to_leave₂
-  = [ MARY_WANTS_EVERYONE_TO_LEAVE₂ ]ᵀ (mary , wants , everyone , to_leave , ∅)
+  = [ MARY_WANTS_EVERYONE_TO_LEAVE₂ ]ᵀ (mary ∷ wants ∷ everyone ∷ to_leave ∷ [])
 
 LIST_mary_wants_everyone_to_leave₂ : List Term
 LIST_mary_wants_everyone_to_leave₂
@@ -242,7 +242,7 @@ MARY_SAID_EVERYONE_LEFT₀
   = (⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ (◇ᴿ (⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))))))))))) (⇒ᴸ ax⁺ ax⁻))))))
 mary_said_everyone_left₀ : ⟦ s⁻  ⟧ᵀ
 mary_said_everyone_left₀
-  = [ MARY_SAID_EVERYONE_LEFT₀ ]ᵀ (mary , said , everyone , left , ∅)
+  = [ MARY_SAID_EVERYONE_LEFT₀ ]ᵀ (mary ∷ said ∷ everyone ∷ left ∷ [])
 
 LIST_mary_said_everyone_left₀ : List Term
 LIST_mary_said_everyone_left₀
