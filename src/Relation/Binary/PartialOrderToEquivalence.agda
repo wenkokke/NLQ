@@ -26,7 +26,7 @@ module Relation.Binary.PartialOrderToEquivalence
 -- we can define the equivalence in terms of a product of partial
 -- order proofs, which will help with the definition of anti-symmetry.
 _≈_ : ∀ x y → Set ℓ
-x ≈ y = x ≤ y × y ≤ x
+x ≈ y = (x ≤ y) × (y ≤ x)
 
 -- we can then easily define an equivalence relation, based on using
 -- swap to encode symmetry.

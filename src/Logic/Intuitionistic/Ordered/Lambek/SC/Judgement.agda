@@ -17,14 +17,14 @@ open import Logic.Intuitionistic.Ordered.Lambek.Type.Context Univ as TC
 open TC.Simple using (_[_]; _<_>; <>-assoc; <>-def)
 
 
-infix 5 _⊢_ ⊢ᴺ_ ⊢ᴾ_
+infix 3 _⊢_ ⊢ᴺ_ ⊢ᴾ_
 
 data Judgement : Set ℓ where
   _⊢_ : Type → Type → Judgement
   ⊢ᴺ_ : Context → Judgement
   ⊢ᴾ_ : Context → Judgement
 
-
+{-
 ⊢-injective : ∀ {A B C D} → A ⊢ B ≡ C ⊢ D → A ≡ C × B ≡ D
 ⊢-injective refl = refl , refl
 
@@ -33,3 +33,4 @@ data Judgement : Set ℓ where
 
 ⊢ᴾ-injective : ∀ {Δ₁ Δ₂} → ⊢ᴾ Δ₁ ≡ ⊢ᴾ Δ₂ → Δ₁ ≡ Δ₂
 ⊢ᴾ-injective refl = refl
+-}

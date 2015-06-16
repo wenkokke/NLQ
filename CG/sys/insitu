@@ -36,10 +36,6 @@ r⇦∘  :  A ⊢ C ⇦ B  →  A ∘ B ⊢ C
 r∘⇦  :  A ∘ B ⊢ C  →  A ⊢ C ⇦ B
 
 -- Rules for (I , L , R)
-mI   :  I ⊢ I
-mL   :  L ⊢ L
-mR   :  R ⊢ R
-
 Iᵢ   :  A ∘ I ⊢ B  →  ◇ A ⊢ B
 Iₑ   :  ◇ A ⊢ B  →  A ∘ I ⊢ B
 Lᵢ   :  B ∘ ((L ⊗ A) ⊗ C) ⊢ D  →  A ⊗ (B ∘ C) ⊢ D

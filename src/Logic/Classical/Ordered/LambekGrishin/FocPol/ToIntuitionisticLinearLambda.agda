@@ -5,7 +5,7 @@
 
 open import Algebra                                         using (module Monoid)
 open import Function                                        using (_∘_)
-open import Data.List                                       using (List; _++_) renaming (_∷_ to _,_; _∷ʳ_ to _,′_; [] to ∅)
+open import Data.List                                       using (List; _++_; _∷_; [])
 open import Data.Sum                                        using (_⊎_; inj₁; inj₂)
 open import Data.Product                                    using (∃; _×_; _,_; proj₁)
 open import Relation.Nullary                                using (Dec; yes; no)
@@ -31,6 +31,9 @@ open import Logic.Classical.Ordered.LambekGrishin.Judgement           (Polarity 
 open import Logic.Classical.Ordered.LambekGrishin.FocPol.Base         Univ          as LGB
 
 open Monoid (Data.List.monoid ΛT.Type) using (assoc)
+
+
+infixr 50 ¬_
 
 
 ¬_ : ΛT.Type → ΛT.Type
@@ -94,8 +97,8 @@ Negative-≡ (A ⇐ B) = refl
 
 
 ⟦_⟧ˢ : ∀ {p} → LGS.Structure p → List ΛT.Type
-⟦ ·_· { + } A ⟧ˢ = ⟦ A ⟧⁺ , ∅
-⟦ ·_· { - } A ⟧ˢ = ⟦ A ⟧⁻ , ∅
+⟦ ·_· { + } A ⟧ˢ = ⟦ A ⟧⁺ ∷ []
+⟦ ·_· { - } A ⟧ˢ = ⟦ A ⟧⁻ ∷ []
 ⟦     [ Γ ]   ⟧ˢ = ⟦ Γ ⟧ˢ
 ⟦     ⟨ Γ ⟩   ⟧ˢ = ⟦ Γ ⟧ˢ
 ⟦     ₀   Γ   ⟧ˢ = ⟦ Γ ⟧ˢ

@@ -5,7 +5,7 @@
 open import Function             using (_$_)
 open import Coinduction          using (♭)
 open import Category.Monad.State using (State; StateMonadState; module RawMonadState; RawMonadState)
-open import Data.List            using (List; length) renaming ([] to ∅; _∷_ to _,_)
+open import Data.List            using (List; _∷_; []; length)
 open import Data.Nat             using (suc)
 open import Data.Nat.Show        renaming (show to showℕ)
 open import Data.Stream          using (Stream; _∷_; iterate; map; take; drop)

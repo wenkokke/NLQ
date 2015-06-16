@@ -4,7 +4,7 @@
 
 open import Level        using (suc)
 open import Function     using (case_of_; _∘_) renaming (id to λΠ_)
-open import Data.List    using (List; map) renaming (_∷_ to _,_)
+open import Data.List    using (List; _∷_; map)
 open import Data.Product using (_×_; proj₁; proj₂; _,_; uncurry′)
 open import Data.Sum     using (_⊎_; [_,_])
 
@@ -32,13 +32,13 @@ private
   ⟦ Γ ⊢ A ⟧ᴶ = Env ⟦ Γ ⟧ˢ → ⟦ A ⟧ᵀ
 
   [_] : ∀ {J} → Λ J → λΠ ⟦ J ⟧ᴶ
-  [ ax               ] (x , ∅) = x
-  [ ⇒ᵢ f             ]      e  = λ x → [ f ] (x , e)
+  [ ax               ] (x ∷ ∅) = x
+  [ ⇒ᵢ f             ]      e  = λ x → [ f ] (x ∷ e)
   [ ⇒ₑ f g           ]      e  = split e into λ e₁ e₂ → [ f ] e₁  ([ g ] e₂)
   [ ⊗ᵢ f g           ]      e  = split e into λ e₁ e₂ → [ f ] e₁ , [ g ] e₂
-  [ ⊗ₑ f g           ]      e  = split e into λ e₁ e₂ → case [ f ] e₁ of (λ {(x , y) → [ g ] (x , (y , e₂))})
-  [ wᴸ₁ f            ] (_ , e) = [ f ] e
-  [ cᴸ₁ f            ] (x , e) = [ f ] (x , (x , e))
+  [ ⊗ₑ f g           ]      e  = split e into λ e₁ e₂ → case [ f ] e₁ of (λ {(x , y) → [ g ] (x ∷ (y ∷ e₂))})
+  [ wᴸ₁ f            ] (_ ∷ e) = [ f ] e
+  [ cᴸ₁ f            ] (x ∷ e) = [ f ] (x ∷ (x ∷ e))
   [ eᴸ Γ₁ Γ₂ Γ₃ Γ₄ f ]      e  = [ f ] (exchange Γ₁ Γ₃ Γ₂ Γ₄ e)
 
 

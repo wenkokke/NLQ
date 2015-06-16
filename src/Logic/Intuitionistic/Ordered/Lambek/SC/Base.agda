@@ -21,7 +21,7 @@ open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement Univ as J
 open C.Simple using (_[_]; _<_>; <>-assoc; <>-def)
 
 
-infix 3 NL_
+infix 1 NL_
 
 mutual
   data NL_ : Judgement → Set ℓ where

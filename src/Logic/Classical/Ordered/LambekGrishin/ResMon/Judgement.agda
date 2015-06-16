@@ -17,7 +17,8 @@ open import Logic.Classical.Ordered.LambekGrishin.Type Univ as T hiding (module 
 
 
 infix  3  _⊢_
-infixl 50 _⋈ᴶ _∞ᴶ
+infixl 50 _⋈ᴶ
+infixl 50 _∞ᴶ
 
 
 data Judgement : Set ℓ where

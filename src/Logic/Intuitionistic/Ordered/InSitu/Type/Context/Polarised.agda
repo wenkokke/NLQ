@@ -14,6 +14,8 @@ infixr 20 _⊗>_ _∘>_
 infixr 30 _⇒>_ _⇨>_ _⇐>_ _⇦>_
 infixl 20 _<⊗_ _<∘_
 infixl 30 _<⇒_ _<⇨_ _<⇐_ _<⇦_
+infixr 40 ◇>_ □>_
+infixl 50 _[_]
 
 
 data Context : Polarity → Set ℓ where
