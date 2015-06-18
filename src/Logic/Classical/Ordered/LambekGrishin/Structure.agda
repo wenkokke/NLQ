@@ -6,10 +6,10 @@
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Structure {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Structure {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type Atom
 
 
 infix  10 ·_·

@@ -13,11 +13,11 @@ open import Relation.Binary                            using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym; subst; subst₂)
 
 
-module Logic.Intuitionistic.Linear.Lambda.SequentCalculus.Base {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Linear.Lambda.SequentCalculus.Base {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Linear.Lambda.Type      Univ
-open import Logic.Intuitionistic.Linear.Lambda.Judgement Univ
+open import Logic.Intuitionistic.Linear.Lambda.Type      Atom
+open import Logic.Intuitionistic.Linear.Lambda.Judgement Atom
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 

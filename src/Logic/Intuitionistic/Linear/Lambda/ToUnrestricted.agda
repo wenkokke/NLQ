@@ -6,15 +6,15 @@ open import Function  using (id)
 open import Data.List using (List; map; _++_) renaming ([] to ∅; _∷_ to _,_)
 
 
-module Logic.Intuitionistic.Linear.Lambda.ToUnrestricted {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Linear.Lambda.ToUnrestricted {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Index
 open import Logic.Translation
-open import Logic.Intuitionistic.Linear.Lambda.Base            Univ as L
-open import Logic.Intuitionistic.Unrestricted.Lambda.Type      Univ
-open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement Univ
-open import Logic.Intuitionistic.Unrestricted.Lambda.Base      Univ as U
+open import Logic.Intuitionistic.Linear.Lambda.Base            Atom as L
+open import Logic.Intuitionistic.Unrestricted.Lambda.Type      Atom
+open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement Atom
+open import Logic.Intuitionistic.Unrestricted.Lambda.Base      Atom as U
 
 
 private

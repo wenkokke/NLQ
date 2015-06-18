@@ -16,17 +16,17 @@ open import Relation.Binary                            using (module DecSetoid; 
 open import Relation.Binary.PropositionalEquality as P using (_≡_; _≢_; refl; cong; sym; inspect)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Type.Subtype {ℓ} (Univ : Set ℓ) (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
+module Logic.Classical.Ordered.LambekGrishin.Type.Subtype {ℓ} (Atom : Set ℓ) (_≟-Atom_ : (A B : Atom) → Dec (A ≡ B)) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type            Univ as T
-open import Logic.Classical.Ordered.LambekGrishin.Type.Complexity Univ
-open import Logic.Classical.Ordered.LambekGrishin.Type.Context    Univ as C hiding (module Simple)
+open import Logic.Classical.Ordered.LambekGrishin.Type            Atom as T
+open import Logic.Classical.Ordered.LambekGrishin.Type.Complexity Atom
+open import Logic.Classical.Ordered.LambekGrishin.Type.Context    Atom as C hiding (module Simple)
 
 open C.Simple  using (_[_]; _<_>; <>-def; []-resp-≡)
 private
-  module TDecEq = T.DecEq _≟-Univ_ using (decSetoid)
-  module CDecEq = C.DecEq _≟-Univ_ using (decSetoid)
+  module TDecEq = T.DecEq _≟-Atom_ using (decSetoid)
+  module CDecEq = C.DecEq _≟-Atom_ using (decSetoid)
   open DecSetoid TDecEq.decSetoid using () renaming (_≟_ to _≟-Type_)
   open DecSetoid CDecEq.decSetoid using () renaming (_≟_ to _≟-Context_)
 

@@ -23,15 +23,15 @@ open import Function                              using (id; flip; _∘_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst)
 
 
-module Logic.Classical.Ordered.LambekGrishin.ResMon.Origin {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.ResMon.Origin {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Classical.Ordered.LambekGrishin.Type                               Univ as T
-open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised             Univ as TC
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement                   Univ
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.Context.Polarised Univ as JC
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base                        Univ as LGB
+open import Logic.Classical.Ordered.LambekGrishin.Type                               Atom as T
+open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised             Atom as TC
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement                   Atom
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.Context.Polarised Atom as JC
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base                        Atom as LGB
 
 
 module el where

@@ -7,19 +7,19 @@ open import Data.String
 open import Logic.ToLaTeX
 
 
-module Logic.Classical.Ordered.LambekGrishin.Judgement.ToLaTeX {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Judgement.ToLaTeX {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type                        Univ
-open import Logic.Classical.Ordered.LambekGrishin.Type.ToLaTeX                Univ
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised         Univ
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised.ToLaTeX Univ
-open import Logic.Classical.Ordered.LambekGrishin.Judgement                   Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type                        Atom
+open import Logic.Classical.Ordered.LambekGrishin.Type.ToLaTeX                Atom
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised         Atom
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised.ToLaTeX Atom
+open import Logic.Classical.Ordered.LambekGrishin.Judgement                   Atom
 
 
 
 instance
-  JudgementToLaTeX : {{UnivToLaTeX : ToLaTeX Univ}} → ToLaTeX Judgement
+  JudgementToLaTeX : {{AtomToLaTeX : ToLaTeX Atom}} → ToLaTeX Judgement
   JudgementToLaTeX = record { toLaTeXPrec = λ _ → go }
     where
       open ToLaTeX {{...}}

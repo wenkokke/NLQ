@@ -5,7 +5,7 @@
 ------------------------------------------------------------------------
 
 
-module Logic.Intuitionistic.Linear.Lambda.Type {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Linear.Lambda.Type {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Unrestricted.Lambda.Type Univ public
+open import Logic.Intuitionistic.Unrestricted.Lambda.Type Atom public

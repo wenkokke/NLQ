@@ -11,14 +11,14 @@ open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym; trans; inspect; [_])
 
 
-module Logic.Classical.Ordered.LambekGrishin.Type.Polarised {ℓ} (Univ : Set ℓ) (Polarityᵁ? : Univ → Polarity) where
+module Logic.Classical.Ordered.LambekGrishin.Type.Polarised {ℓ} (Atom : Set ℓ) (Polarityᵁ? : Atom → Polarity) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type Atom
 
 
 data Polarised : Polarity → Type → Set ℓ where
-  el   : ∀       (A  : Univ)                               → Polarised (Polarityᵁ? A) (el A)
+  el   : ∀       (A  : Atom)                               → Polarised (Polarityᵁ? A) (el A)
   □_   : ∀ {A}   (A⁻ : Polarised - A)                      → Polarised - (□ A)
   ◇_   : ∀ {A}   (A⁺ : Polarised + A)                      → Polarised + (◇ A)
   ₀_   : ∀ {A}   (A⁻ : Polarised - A)                      → Polarised - (₀ A)
@@ -33,15 +33,15 @@ data Polarised : Polarity → Type → Set ℓ where
   _⇐_  : ∀ {A B} (A⁻ : Polarised - A) (B⁺ : Polarised + B) → Polarised - (A ⇐ B)
 
 
-Negativeᵁ : Univ → Set
+Negativeᵁ : Atom → Set
 Negativeᵁ A = Polarityᵁ? A ≡ -
 
-Positiveᵁ : Univ → Set
+Positiveᵁ : Atom → Set
 Positiveᵁ A = Polarityᵁ? A ≡ +
 
 
 data Negative : Type → Set ℓ where
-  el  : (A   : Univ) → {{A⁻ : Negativeᵁ A}} → Negative (el A)
+  el  : (A   : Atom) → {{A⁻ : Negativeᵁ A}} → Negative (el A)
   □_  : (A   : Type) → Negative (□ A)
   ₀_  : (A   : Type) → Negative (₀ A)
   _⁰  : (A   : Type) → Negative (A ⁰)
@@ -74,7 +74,7 @@ Negative? (A ⊕ B) = yes (A ⊕ B)
 
 
 data Positive : Type → Set ℓ where
-  el  : (A   : Univ) → {{A⁺ : Positiveᵁ A}} → Positive (el A)
+  el  : (A   : Atom) → {{A⁺ : Positiveᵁ A}} → Positive (el A)
   ◇_  : (A   : Type) → Positive (◇ A)
   ₁_  : (A   : Type) → Positive (₁ A)
   _¹  : (A   : Type) → Positive (A ¹)

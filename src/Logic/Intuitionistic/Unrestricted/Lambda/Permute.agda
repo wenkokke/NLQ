@@ -36,12 +36,12 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst
 --
 
 
-module Logic.Intuitionistic.Unrestricted.Lambda.Permute {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Unrestricted.Lambda.Permute {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Unrestricted.Lambda.Type      Univ as T
-open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement Univ as J
-open import Logic.Intuitionistic.Unrestricted.Lambda.Base      Univ as B
+open import Logic.Intuitionistic.Unrestricted.Lambda.Type      Atom as T
+open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement Atom as J
+open import Logic.Intuitionistic.Unrestricted.Lambda.Base      Atom as B
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 

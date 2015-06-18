@@ -11,14 +11,14 @@ open import Logic.ToLaTeX
 open import Relation.Nullary.Decidable
 
 
-module Logic.Classical.Ordered.LambekGrishin.Type.ToLaTeX {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Type.ToLaTeX {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type Atom
 
 
 instance
-  TypeToLaTeX : {{UnivToLaTeX : ToLaTeX Univ}} → ToLaTeX Type
+  TypeToLaTeX : {{AtomToLaTeX : ToLaTeX Atom}} → ToLaTeX Type
   TypeToLaTeX = record { toLaTeXPrec = go }
     where
       open ToLaTeX {{...}}

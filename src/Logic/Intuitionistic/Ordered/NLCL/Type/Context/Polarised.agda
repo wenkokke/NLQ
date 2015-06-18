@@ -3,11 +3,11 @@
 ------------------------------------------------------------------------
 
 
-module Logic.Intuitionistic.Ordered.NLCL.Type.Context.Polarised {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.NLCL.Type.Context.Polarised {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Intuitionistic.Ordered.NLCL.Type Univ
+open import Logic.Intuitionistic.Ordered.NLCL.Type Atom
 
 
 infix  50 _[_]

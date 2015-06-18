@@ -3,10 +3,10 @@
 ------------------------------------------------------------------------
 
 
-module Logic.Intuitionistic.Ordered.NLCL.Type.Context {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.NLCL.Type.Context {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Ordered.NLCL.Type Univ
+open import Logic.Intuitionistic.Ordered.NLCL.Type Atom
 
 
 infixr 20 _⊗>_ _∘>_

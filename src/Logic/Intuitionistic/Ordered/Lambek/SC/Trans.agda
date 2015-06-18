@@ -11,15 +11,15 @@ open import Relation.Nullary using (Dec; yes; no; ¬_)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym; trans)
 
 
-module Logic.Intuitionistic.Ordered.Lambek.SC.Trans {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.Lambek.SC.Trans {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Ordered.Lambek.Type                  Univ
-open import Logic.Intuitionistic.Ordered.Lambek.Type.Context          Univ
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement          Univ as SCJ
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Base               Univ as SCB
-open import Logic.Intuitionistic.Ordered.Lambek.ResMon.EquivalentToSC Univ as SCE
-open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Trans          Univ as NLT hiding (trans′)
+open import Logic.Intuitionistic.Ordered.Lambek.Type                  Atom
+open import Logic.Intuitionistic.Ordered.Lambek.Type.Context          Atom
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement          Atom as SCJ
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Base               Atom as SCB
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.EquivalentToSC Atom as SCE
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Trans          Atom as NLT hiding (trans′)
 
 
 trans′ : ∀ {A B C} → NL A ⊢ B → NL B ⊢ C → NL A ⊢ C

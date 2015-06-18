@@ -11,12 +11,12 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 open import Relation.Binary.HeterogeneousEquality as H using (_≅_; refl; ≅-to-≡)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Judgement {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Judgement {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Classical.Ordered.LambekGrishin.Type                Univ
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type                Atom
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Atom
 
 
 infix  3  _⊢_ [_]⊢_ _⊢[_]

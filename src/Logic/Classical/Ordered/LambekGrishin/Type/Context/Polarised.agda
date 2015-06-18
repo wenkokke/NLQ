@@ -11,11 +11,11 @@ open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Classical.Ordered.LambekGrishin.Type Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type Atom
 
 
 infixl 50 _[_]

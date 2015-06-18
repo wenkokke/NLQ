@@ -7,17 +7,17 @@
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Classical.Ordered.Experimental.ResMon.Trans {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.Experimental.ResMon.Trans {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Classical.Ordered.Experimental.Type                               Univ as T
-open import Logic.Classical.Ordered.Experimental.Type.Context.Polarised             Univ as TCP using ([])
-open import Logic.Classical.Ordered.Experimental.ResMon.Judgement                   Univ
-open import Logic.Classical.Ordered.Experimental.ResMon.Judgement.Context.Polarised Univ as JCP
-open import Logic.Classical.Ordered.Experimental.ResMon.Base                        Univ as EXPB
-open import Logic.Classical.Ordered.Experimental.ResMon.Origin                      Univ as EXPO1 renaming (module ◇ to ◇₁; module □ to □₁)
-open import Logic.Classical.Ordered.Experimental.ResMon.Origin2                     Univ as EXPO2 renaming (module ◇ to ◇₂; module □ to □₂)
+open import Logic.Classical.Ordered.Experimental.Type                               Atom as T
+open import Logic.Classical.Ordered.Experimental.Type.Context.Polarised             Atom as TCP using ([])
+open import Logic.Classical.Ordered.Experimental.ResMon.Judgement                   Atom
+open import Logic.Classical.Ordered.Experimental.ResMon.Judgement.Context.Polarised Atom as JCP
+open import Logic.Classical.Ordered.Experimental.ResMon.Base                        Atom as EXPB
+open import Logic.Classical.Ordered.Experimental.ResMon.Origin                      Atom as EXPO1 renaming (module ◇ to ◇₁; module □ to □₁)
+open import Logic.Classical.Ordered.Experimental.ResMon.Origin2                     Atom as EXPO2 renaming (module ◇ to ◇₂; module □ to □₂)
 
 trans′ : ∀ {A B C} (f : EXP A ⊢ B) (g : EXP B ⊢ C) → EXP A ⊢ C
 trans′ {B = el B}    f  g with el.viewOrigin ([] <⊢ _) g

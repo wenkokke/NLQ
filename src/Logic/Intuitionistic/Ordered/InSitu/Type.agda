@@ -9,7 +9,7 @@ open import Relation.Binary                            using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Intuitionistic.Ordered.InSitu.Type {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.InSitu.Type {ℓ} (Atom : Set ℓ) where
 
 
 infixr 20 _⊗_ _∘_
@@ -20,7 +20,7 @@ infix  40 □_ ◇_
 
 data Type : Set ℓ where
 
-  el  : Univ → Type
+  el  : Atom → Type
 
   ◇_  : Type → Type
   □_  : Type → Type

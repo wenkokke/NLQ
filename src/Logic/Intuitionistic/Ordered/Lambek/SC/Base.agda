@@ -12,12 +12,12 @@ open import Relation.Binary using (module DecSetoid; DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; _≢_; refl; sym)
 
 
-module Logic.Intuitionistic.Ordered.Lambek.SC.Base {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.Lambek.SC.Base {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Ordered.Lambek.Type         Univ as T
-open import Logic.Intuitionistic.Ordered.Lambek.Type.Context Univ as C
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement Univ as J
+open import Logic.Intuitionistic.Ordered.Lambek.Type         Atom as T
+open import Logic.Intuitionistic.Ordered.Lambek.Type.Context Atom as C
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement Atom as J
 open C.Simple using (_[_]; _<_>; <>-assoc; <>-def)
 
 

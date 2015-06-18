@@ -14,12 +14,12 @@ open import Data.Product         using (_×_; _,_; proj₁)
 open import Data.Vec             using (Vec; _∷_; []; lookup; tail)
 
 
-module Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Show {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Show {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Classical.Unrestricted.LambdaCMinus.Type         Univ
-open import Logic.Classical.Unrestricted.LambdaCMinus.Judgement    Univ
-open import Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Type         Atom
+open import Logic.Classical.Unrestricted.LambdaCMinus.Judgement    Atom
+open import Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base Atom
 
 private
   Generator : Set

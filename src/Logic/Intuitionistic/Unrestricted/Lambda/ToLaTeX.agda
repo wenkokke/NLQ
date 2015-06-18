@@ -8,17 +8,17 @@ open import Data.String
 open import Logic.ToLaTeX
 
 
-module Logic.Intuitionistic.Unrestricted.Lambda.ToLaTeX {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Unrestricted.Lambda.ToLaTeX {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Unrestricted.Lambda.Type                        Univ
-open import Logic.Intuitionistic.Unrestricted.Lambda.Type.ToLaTeX                Univ
-open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement                   Univ
-open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement.ToLaTeX           Univ
-open import Logic.Intuitionistic.Unrestricted.Lambda.Base                        Univ
+open import Logic.Intuitionistic.Unrestricted.Lambda.Type                        Atom
+open import Logic.Intuitionistic.Unrestricted.Lambda.Type.ToLaTeX                Atom
+open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement                   Atom
+open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement.ToLaTeX           Atom
+open import Logic.Intuitionistic.Unrestricted.Lambda.Base                        Atom
 
 instance
-  LambdaToLaTeX : ∀ {J} {{UnivToLaTeX : ToLaTeX Univ}} → ToLaTeX (Λ J)
+  LambdaToLaTeX : ∀ {J} {{AtomToLaTeX : ToLaTeX Atom}} → ToLaTeX (Λ J)
   LambdaToLaTeX = record { toLaTeXPrec = λ _ → B.toLaTeX ∘ bussProof }
     where
       module B = ToLaTeX BussProofToLaTeX

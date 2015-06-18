@@ -17,12 +17,12 @@
 open import Function using (_∘_)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Base {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Base {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type                Univ
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Univ
-open import Logic.Classical.Ordered.LambekGrishin.Judgement           Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type                Atom
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Atom
+open import Logic.Classical.Ordered.LambekGrishin.Judgement           Atom
 
 
 infix 1  LG_

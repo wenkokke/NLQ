@@ -16,8 +16,8 @@ open import Example.System.Base public renaming (NP to DP)
 
 -- * import focused Lambek-Grishin calculus
 open import Logic.Translation
-open import Logic.Intuitionistic.Ordered.NLCL Univ public
-open import Logic.Intuitionistic.Ordered.NLCL.ToAgda Univ ⟦_⟧ᵁ using (NLCL→λΠ)
+open import Logic.Intuitionistic.Ordered.NLCL Atom public
+open import Logic.Intuitionistic.Ordered.NLCL.ToAgda Atom ⟦_⟧ᵁ using (NLCL→λΠ)
 open Translation NLCL→λΠ public renaming ([_] to [_]ᵀ)
 
 

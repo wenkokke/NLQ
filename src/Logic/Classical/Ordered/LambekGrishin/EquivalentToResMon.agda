@@ -33,19 +33,19 @@ open import Relation.Nullary.Decidable                 using (fromWitness)
 open import Relation.Binary.PropositionalEquality as P using (_≡_)
 
 
-module Logic.Classical.Ordered.LambekGrishin.EquivalentToResMon {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.EquivalentToResMon {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
 open import Logic.Translation
-open import Logic.Classical.Ordered.LambekGrishin.Type                Univ
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Univ as SS
-open import Logic.Classical.Ordered.LambekGrishin.Judgement           Univ as SJ
-open import Logic.Classical.Ordered.LambekGrishin.Base                Univ as SB renaming (LG_ to Str_)
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement    Univ as AJ
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base         Univ as AB renaming (LG_ to Alg_)
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Trans        Univ as AT using ()
-open import Logic.Classical.Ordered.LambekGrishin.ToResMon            Univ public
+open import Logic.Classical.Ordered.LambekGrishin.Type                Atom
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Atom as SS
+open import Logic.Classical.Ordered.LambekGrishin.Judgement           Atom as SJ
+open import Logic.Classical.Ordered.LambekGrishin.Base                Atom as SB renaming (LG_ to Str_)
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement    Atom as AJ
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base         Atom as AB renaming (LG_ to Alg_)
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Trans        Atom as AT using ()
+open import Logic.Classical.Ordered.LambekGrishin.ToResMon            Atom public
 open Translation Str→Alg renaming ([_] to to)
 
 

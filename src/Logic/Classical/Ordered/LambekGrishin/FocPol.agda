@@ -16,14 +16,14 @@ open import Logic.Polarity
 open import Logic.Translation
 
 
-module Logic.Classical.Ordered.LambekGrishin.FocPol {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.FocPol {ℓ} (Atom : Set ℓ) where
 
 
 -- * import fLG
-open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised (Polarity × Univ) proj₁ public
+open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised (Polarity × Atom) proj₁ public
      hiding (module Correct; module Polarised; Polarised)
-open import Logic.Classical.Ordered.LambekGrishin.Type (Polarity × Univ) public
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised (Polarity × Univ) public
+open import Logic.Classical.Ordered.LambekGrishin.Type (Polarity × Atom) public
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised (Polarity × Atom) public
      hiding (module Correct; module Polarised; Polarised)
-open import Logic.Classical.Ordered.LambekGrishin.Judgement (Polarity × Univ) public
-open import Logic.Classical.Ordered.LambekGrishin.FocPol.Base Univ public
+open import Logic.Classical.Ordered.LambekGrishin.Judgement (Polarity × Atom) public
+open import Logic.Classical.Ordered.LambekGrishin.FocPol.Base Atom public

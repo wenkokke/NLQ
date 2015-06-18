@@ -9,11 +9,11 @@ open import Data.Product                          using (_×_; _,_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
 
-module Logic.Intuitionistic.Ordered.Lambek.SC.Judgement {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.Lambek.SC.Judgement {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Ordered.Lambek.Type         Univ as T
-open import Logic.Intuitionistic.Ordered.Lambek.Type.Context Univ as TC
+open import Logic.Intuitionistic.Ordered.Lambek.Type         Atom as T
+open import Logic.Intuitionistic.Ordered.Lambek.Type.Context Atom as TC
 open TC.Simple using (_[_]; _<_>; <>-assoc; <>-def)
 
 

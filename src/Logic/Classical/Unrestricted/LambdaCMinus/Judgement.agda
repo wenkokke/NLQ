@@ -8,10 +8,10 @@ open import Data.Product                               using (_×_; _,_; proj₁
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Classical.Unrestricted.LambdaCMinus.Judgement {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Unrestricted.LambdaCMinus.Judgement {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Classical.Unrestricted.LambdaCMinus.Type Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Type Atom
 
 
 infixr 3 _⊢_ _⊢[_]_

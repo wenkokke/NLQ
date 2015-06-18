@@ -14,13 +14,13 @@ open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.Context.Polarised {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.Context.Polarised {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Classical.Ordered.LambekGrishin.Type                     Univ as T
-open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised   Univ as TCP
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement         Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type                     Atom as T
+open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised   Atom as TCP
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement         Atom
 
 
 infix 50 _[_]ᴶ

@@ -5,7 +5,7 @@
 ------------------------------------------------------------------------
 
 
-module Logic.Intuitionistic.Linear.Lambda.Judgement.ToLaTeX {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Linear.Lambda.Judgement.ToLaTeX {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement.ToLaTeX Univ public
+open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement.ToLaTeX Atom public

@@ -4,10 +4,10 @@
 ------------------------------------------------------------------------
 
 
-module Logic.Intuitionistic.Ordered.Lambek.SC {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.Lambek.SC {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement          Univ public
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Base               Univ public
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Trans              Univ public
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Complete           Univ public
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement          Atom public
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Base               Atom public
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Trans              Atom public
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Complete           Atom public

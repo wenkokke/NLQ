@@ -3,16 +3,16 @@
 ------------------------------------------------------------------------
 
 
-module Logic.Classical.Ordered.Experimental.EquivalentToResMon {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.Experimental.EquivalentToResMon {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
 open import Logic.Translation
-open import Logic.Classical.Ordered.Experimental.Type                Univ
-open import Logic.Classical.Ordered.Experimental.Structure.Polarised Univ
-open import Logic.Classical.Ordered.Experimental.Judgement           Univ as SJ
-open import Logic.Classical.Ordered.Experimental.Base                Univ as SB renaming (EXP_ to Str_)
-open import Logic.Classical.Ordered.Experimental.ResMon.Judgement    Univ as AJ
-open import Logic.Classical.Ordered.Experimental.ResMon.Base         Univ as AB renaming (EXP_ to Alg_)
-open import Logic.Classical.Ordered.Experimental.ResMon.Trans        Univ as AT using ()
-open import Logic.Classical.Ordered.Experimental.ToResMon            Univ using (↓_; Str→Alg)
+open import Logic.Classical.Ordered.Experimental.Type                Atom
+open import Logic.Classical.Ordered.Experimental.Structure.Polarised Atom
+open import Logic.Classical.Ordered.Experimental.Judgement           Atom as SJ
+open import Logic.Classical.Ordered.Experimental.Base                Atom as SB renaming (EXP_ to Str_)
+open import Logic.Classical.Ordered.Experimental.ResMon.Judgement    Atom as AJ
+open import Logic.Classical.Ordered.Experimental.ResMon.Base         Atom as AB renaming (EXP_ to Alg_)
+open import Logic.Classical.Ordered.Experimental.ResMon.Trans        Atom as AT using ()
+open import Logic.Classical.Ordered.Experimental.ToResMon            Atom using (↓_; Str→Alg)

@@ -7,12 +7,12 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 open import Relation.Binary.HeterogeneousEquality as H using (_≅_; refl; cong; cong₂)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Structure.Polarised {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Structure.Polarised {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Classical.Ordered.LambekGrishin.Type      Univ
-open import Logic.Classical.Ordered.LambekGrishin.Structure Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type      Atom
+open import Logic.Classical.Ordered.LambekGrishin.Structure Atom
      as Unpolarised hiding (module Structure; Structure; _⋈ˢ; _∞ˢ; ⋈ˢ-inv; ∞ˢ-inv)
 
 

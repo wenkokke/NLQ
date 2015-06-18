@@ -16,8 +16,8 @@ open import Example.System.Base public
 
 -- * import focused Lambek-Grishin calculus
 open import Logic.Translation
-open import Logic.Intuitionistic.Ordered.InSitu Univ public
-open import Logic.Intuitionistic.Ordered.InSitu.ToAgda Univ ⟦_⟧ᵁ using (InSitu→λΠ)
+open import Logic.Intuitionistic.Ordered.InSitu Atom public
+open import Logic.Intuitionistic.Ordered.InSitu.ToAgda Atom ⟦_⟧ᵁ using (InSitu→λΠ)
 open Translation InSitu→λΠ public renaming ([_] to [_]ᵀ)
 
 

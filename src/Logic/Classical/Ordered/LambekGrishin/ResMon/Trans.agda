@@ -6,16 +6,16 @@
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Classical.Ordered.LambekGrishin.ResMon.Trans {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.ResMon.Trans {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Classical.Ordered.LambekGrishin.Type                               Univ as T
-open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised             Univ as TCP using ([])
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement                   Univ
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.Context.Polarised Univ as JCP
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base                        Univ as LGB
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Origin                      Univ as LGO
+open import Logic.Classical.Ordered.LambekGrishin.Type                               Atom as T
+open import Logic.Classical.Ordered.LambekGrishin.Type.Context.Polarised             Atom as TCP using ([])
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement                   Atom
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.Context.Polarised Atom as JCP
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base                        Atom as LGB
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Origin                      Atom as LGO
 
 
 trans′ : ∀ {A B C} (f : LG A ⊢ B) (g : LG B ⊢ C) → LG A ⊢ C
