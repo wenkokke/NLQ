@@ -3,13 +3,13 @@
 ------------------------------------------------------------------------
 
 
-module Logic.Intuitionistic.Ordered.NLCL.Base {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.NLCL.Base {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Intuitionistic.Ordered.NLCL.Type                   Univ
-open import Logic.Intuitionistic.Ordered.NLCL.Type.Context.Polarised Univ
-open import Logic.Intuitionistic.Ordered.NLCL.Judgement              Univ
+open import Logic.Intuitionistic.Ordered.NLCL.Type                   Atom
+open import Logic.Intuitionistic.Ordered.NLCL.Type.Context.Polarised Atom
+open import Logic.Intuitionistic.Ordered.NLCL.Judgement              Atom
 
 
 infix 1 NL_

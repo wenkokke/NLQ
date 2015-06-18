@@ -7,11 +7,11 @@
 open import Data.Nat using (ℕ; suc; _+_)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Structure.Complexity {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Structure.Complexity {ℓ} (Atom : Set ℓ) where
 
 
-import Logic.Classical.Ordered.LambekGrishin.Type.Complexity Univ as T
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Univ
+import Logic.Classical.Ordered.LambekGrishin.Type.Complexity Atom as T
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Atom
 
 
 infix 10 ⌈_⌉ ⌊_⌋

@@ -12,12 +12,12 @@ open import Relation.Nullary.Decidable            using (True; toWitness; fromWi
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst; subst₂)
 
 
-module Logic.Classical.Unrestricted.LambdaCMinus.Base {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Unrestricted.LambdaCMinus.Base {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Index
-open import Logic.Classical.Unrestricted.LambdaCMinus.Type      Univ renaming (_⇚_ to _-_)
-open import Logic.Classical.Unrestricted.LambdaCMinus.Judgement Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Type      Atom renaming (_⇚_ to _-_)
+open import Logic.Classical.Unrestricted.LambdaCMinus.Judgement Atom
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 

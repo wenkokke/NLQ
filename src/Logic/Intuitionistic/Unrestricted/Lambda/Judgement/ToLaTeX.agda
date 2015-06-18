@@ -8,17 +8,17 @@ open import Data.String
 open import Logic.ToLaTeX
 
 
-module Logic.Intuitionistic.Unrestricted.Lambda.Judgement.ToLaTeX {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Unrestricted.Lambda.Judgement.ToLaTeX {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Unrestricted.Lambda.Type         Univ
-open import Logic.Intuitionistic.Unrestricted.Lambda.Type.ToLaTeX Univ
-open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement    Univ
+open import Logic.Intuitionistic.Unrestricted.Lambda.Type         Atom
+open import Logic.Intuitionistic.Unrestricted.Lambda.Type.ToLaTeX Atom
+open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement    Atom
 
 
 
 instance
-  ListTypeToLaTeX :  {{UnivToLaTeX : ToLaTeX Univ}} → ToLaTeX (List Type)
+  ListTypeToLaTeX :  {{AtomToLaTeX : ToLaTeX Atom}} → ToLaTeX (List Type)
   ListTypeToLaTeX = record { toLaTeXPrec = λ _ → go }
     where
       open ToLaTeX {{...}}
@@ -29,7 +29,7 @@ instance
 
 
 instance
-  JudgementToLaTeX : {{UnivToLaTeX : ToLaTeX Univ}} → ToLaTeX Judgement
+  JudgementToLaTeX : {{AtomToLaTeX : ToLaTeX Atom}} → ToLaTeX Judgement
   JudgementToLaTeX = record { toLaTeXPrec = λ _ → go }
     where
       open ToLaTeX {{...}}

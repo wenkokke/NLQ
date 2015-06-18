@@ -8,15 +8,15 @@ open import Data.String
 open import Logic.ToLaTeX
 
 
-module Logic.Classical.Ordered.LambekGrishin.Structure.Polarised.ToLaTeX {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Structure.Polarised.ToLaTeX {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Univ
-open import Logic.Classical.Ordered.LambekGrishin.Structure.ToLaTeX   Univ
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Atom
+open import Logic.Classical.Ordered.LambekGrishin.Structure.ToLaTeX   Atom
 
 
 instance
-  PolarisedStructureToLaTeX : ∀ {p} {{UnivToLaTeX : ToLaTeX Univ}} → ToLaTeX (Structure p)
+  PolarisedStructureToLaTeX : ∀ {p} {{AtomToLaTeX : ToLaTeX Atom}} → ToLaTeX (Structure p)
   PolarisedStructureToLaTeX = record { toLaTeXPrec = λ _ → toLaTeX ∘ forget }
     where
       open ToLaTeX {{...}}

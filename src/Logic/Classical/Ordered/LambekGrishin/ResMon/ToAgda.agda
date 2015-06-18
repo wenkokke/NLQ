@@ -8,14 +8,14 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂; uncurry)
 
 
 module Logic.Classical.Ordered.LambekGrishin.ResMon.ToAgda
-       {u ℓ} (Univ : Set u) (⊥ : Set ℓ) (⟦_⟧ᵁ : Univ → Set ℓ) where
+       {u ℓ} (Atom : Set u) (⊥ : Set ℓ) (⟦_⟧ᵁ : Atom → Set ℓ) where
 
 
 open import Logic.Polarity
 open import Logic.Translation
-open import Logic.Classical.Ordered.LambekGrishin.Type             Univ
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement Univ
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base      Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type             Atom
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement Atom
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base      Atom
 
 
 infix 3 ¬_

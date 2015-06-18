@@ -20,16 +20,16 @@ open import Example.System.Base public
 -- * import focused Lambek-Grishin calculus
 open import Logic.Translation
 open import Logic.ToLaTeX using (module ToLaTeX)
-open import Logic.Classical.Ordered.LambekGrishin.ResMon                 Univ public
-open import Logic.Classical.Ordered.LambekGrishin.ToAgda                 Univ Bool ⟦_⟧ᵁ using (CBV)
-open import Logic.Classical.Ordered.LambekGrishin.EquivalentToResMon     Univ public using (Alg→Str↓)
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.ToLaTeX         Univ using (LambekGrishinToLaTeX)
+open import Logic.Classical.Ordered.LambekGrishin.ResMon                 Atom public
+open import Logic.Classical.Ordered.LambekGrishin.ToAgda                 Atom Bool ⟦_⟧ᵁ using (CBV)
+open import Logic.Classical.Ordered.LambekGrishin.EquivalentToResMon     Atom public using (Alg→Str↓)
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.ToLaTeX         Atom using (LambekGrishinToLaTeX)
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment
 open Translation (CBV ◇ Alg→Str↓) using () renaming (⟦_⟧ᵀ to ⟦_⟧ᵀ′; [_] to [_]ᵀ′)
 
 
 toLaTeX : ∀ {J} (f : LG J) → String
-toLaTeX {J} f = ToLaTeX.toLaTeX (LambekGrishinToLaTeX {{UnivToLaTeX}}) f
+toLaTeX {J} f = ToLaTeX.toLaTeX (LambekGrishinToLaTeX {{AtomToLaTeX}}) f
 
 
 -- * mock definitions for toLaTeXTerm and toTerm which result in the empty string

@@ -42,31 +42,31 @@ false ⊃ _     = true
 
 
 -- * setup atomic formulas
-data Univ : Set where
-  N  : Univ
-  NP : Univ
-  S  : Univ
+data Atom : Set where
+  N  : Atom
+  NP : Atom
+  S  : Atom
 
-_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)
-N  ≟-Univ N  = yes refl
-N  ≟-Univ NP = no (λ ())
-N  ≟-Univ S  = no (λ ())
-NP ≟-Univ N  = no (λ ())
-NP ≟-Univ NP = yes refl
-NP ≟-Univ S  = no (λ ())
-S  ≟-Univ N  = no (λ ())
-S  ≟-Univ NP = no (λ ())
-S  ≟-Univ S  = yes refl
+_≟-Atom_ : (A B : Atom) → Dec (A ≡ B)
+N  ≟-Atom N  = yes refl
+N  ≟-Atom NP = no (λ ())
+N  ≟-Atom S  = no (λ ())
+NP ≟-Atom N  = no (λ ())
+NP ≟-Atom NP = yes refl
+NP ≟-Atom S  = no (λ ())
+S  ≟-Atom N  = no (λ ())
+S  ≟-Atom NP = no (λ ())
+S  ≟-Atom S  = yes refl
 
-⟦_⟧ᵁ : Univ → Set
+⟦_⟧ᵁ : Atom → Set
 ⟦ N  ⟧ᵁ = Entity → Bool
 ⟦ NP ⟧ᵁ = Entity
 ⟦ S  ⟧ᵁ = Bool
 
-UnivToLaTeX : ToLaTeX Univ
-UnivToLaTeX = record { toLaTeXPrec = λ _ → toLaTeX }
+AtomToLaTeX : ToLaTeX Atom
+AtomToLaTeX = record { toLaTeXPrec = λ _ → toLaTeX }
   where
-    toLaTeX : Univ → String
+    toLaTeX : Atom → String
     toLaTeX N  = "n"
     toLaTeX NP = "np"
     toLaTeX S  = "s"

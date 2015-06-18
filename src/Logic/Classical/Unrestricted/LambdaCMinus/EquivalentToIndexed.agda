@@ -13,15 +13,15 @@ open import Relation.Nullary.Decidable            using (True; toWitness; fromWi
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst; subst₂)
 
 
-module Logic.Classical.Unrestricted.LambdaCMinus.EquivalentToIndexed {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Unrestricted.LambdaCMinus.EquivalentToIndexed {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Index
 open import Logic.Translation
-open import Logic.Classical.Unrestricted.LambdaCMinus.Type         Univ
-open import Logic.Classical.Unrestricted.LambdaCMinus.Judgement    Univ
-open import Logic.Classical.Unrestricted.LambdaCMinus.Base         Univ as E
-open import Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base Univ as I
+open import Logic.Classical.Unrestricted.LambdaCMinus.Type         Atom
+open import Logic.Classical.Unrestricted.LambdaCMinus.Judgement    Atom
+open import Logic.Classical.Unrestricted.LambdaCMinus.Base         Atom as E
+open import Logic.Classical.Unrestricted.LambdaCMinus.Indexed.Base Atom as I
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 

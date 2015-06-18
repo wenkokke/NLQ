@@ -12,14 +12,14 @@ open import Relation.Binary                            using (Rel)
 open import Relation.Binary.PropositionalEquality as P using (_≡_)
 
 
-module Logic.Intuitionistic.Ordered.Lambek.ResMon.Complete {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.Lambek.ResMon.Complete {ℓ} (Atom : Set ℓ) where
 
 
 open import Algebra.ResiduatedAlgebra
-open import Logic.Intuitionistic.Ordered.Lambek.Type             Univ
-open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Judgement Univ
-open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Base      Univ
-open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Trans     Univ
+open import Logic.Intuitionistic.Ordered.Lambek.Type             Atom
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Judgement Atom
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Base      Atom
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Trans     Atom
 
 
 private

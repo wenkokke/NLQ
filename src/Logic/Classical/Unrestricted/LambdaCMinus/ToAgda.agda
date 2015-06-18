@@ -9,13 +9,13 @@ open import Data.Product using (_×_; proj₁; proj₂; _,_; uncurry′)
 open import Data.Sum     using (_⊎_; [_,_])
 
 
-module Logic.Classical.Unrestricted.LambdaCMinus.ToAgda {ℓ₁ ℓ₂} (Univ : Set ℓ₁) (⟦_⟧ᵁ : Univ → Set ℓ₂) (R : Set ℓ₂) where
+module Logic.Classical.Unrestricted.LambdaCMinus.ToAgda {ℓ₁ ℓ₂} (Atom : Set ℓ₁) (⟦_⟧ᵁ : Atom → Set ℓ₂) (R : Set ℓ₂) where
 
 
 open import Logic.Translation
-open import Logic.Classical.Unrestricted.LambdaCMinus.Type      Univ renaming (_⇚_ to _-_)
-open import Logic.Classical.Unrestricted.LambdaCMinus.Judgement Univ
-open import Logic.Classical.Unrestricted.LambdaCMinus.Base      Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Type      Atom renaming (_⇚_ to _-_)
+open import Logic.Classical.Unrestricted.LambdaCMinus.Judgement Atom
+open import Logic.Classical.Unrestricted.LambdaCMinus.Base      Atom
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment
 
 

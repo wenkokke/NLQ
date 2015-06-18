@@ -15,15 +15,15 @@ open import Logic.Polarity
 open import Logic.Translation
 
 
-module Logic.Classical.Ordered.LambekGrishin.EquivalentToFocPol {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.EquivalentToFocPol {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      (Polarity × Univ) proj₁
-open import Logic.Classical.Ordered.LambekGrishin.Type                (Polarity × Univ)
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised (Polarity × Univ)
-open import Logic.Classical.Ordered.LambekGrishin.Judgement           (Polarity × Univ)
-open import Logic.Classical.Ordered.LambekGrishin.Base                (Polarity × Univ)
-open import Logic.Classical.Ordered.LambekGrishin.FocPol.Base         Univ renaming (LG_ to LGᴾᴼᴸ_)
+open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      (Polarity × Atom) proj₁
+open import Logic.Classical.Ordered.LambekGrishin.Type                (Polarity × Atom)
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised (Polarity × Atom)
+open import Logic.Classical.Ordered.LambekGrishin.Judgement           (Polarity × Atom)
+open import Logic.Classical.Ordered.LambekGrishin.Base                (Polarity × Atom)
+open import Logic.Classical.Ordered.LambekGrishin.FocPol.Base         Atom renaming (LG_ to LGᴾᴼᴸ_)
 
 
 from : ∀ {J} → LGᴾᴼᴸ J → LG J

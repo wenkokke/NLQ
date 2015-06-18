@@ -9,15 +9,15 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
 module Logic.Classical.Ordered.LambekGrishin.ToAgda
-  {u ℓ} (Univ : Set u) (⊥ : Set ℓ) (⌈_⌉ᵁ : Univ → Set ℓ) where
+  {u ℓ} (Atom : Set u) (⊥ : Set ℓ) (⌈_⌉ᵁ : Atom → Set ℓ) where
 
 
 open import Logic.Polarity
 open import Logic.Translation
-open import Logic.Classical.Ordered.LambekGrishin.Type                Univ
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Univ
-open import Logic.Classical.Ordered.LambekGrishin.Judgement           Univ
-open import Logic.Classical.Ordered.LambekGrishin.Base                Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type                Atom
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Atom
+open import Logic.Classical.Ordered.LambekGrishin.Judgement           Atom
+open import Logic.Classical.Ordered.LambekGrishin.Base                Atom
 
 
 infix 3 ¬_

@@ -9,19 +9,19 @@ open import Data.List                             using (List; _++_; monoid) ren
 open import Relation.Binary.PropositionalEquality using (sym)
 
 
-module Logic.Classical.Ordered.LambekGrishin.ResMon.ToIntuitionisticLinearLambda {ℓ} (Univ : Set ℓ) (⊥ : Univ) where
+module Logic.Classical.Ordered.LambekGrishin.ResMon.ToIntuitionisticLinearLambda {ℓ} (Atom : Set ℓ) (⊥ : Atom) where
 
 
 open import Logic.Polarity
 open import Logic.Translation
-open import Logic.Classical.Ordered.LambekGrishin.Type             Univ as LG
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement Univ as LGJ
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base      Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type             Atom as LG
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement Atom as LGJ
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base      Atom
 
-open import Logic.Intuitionistic.Linear.Lambda.Type      Univ as Λ
-open import Logic.Intuitionistic.Linear.Lambda.Judgement Univ as ΛJ
-open import Logic.Intuitionistic.Linear.Lambda.Base      Univ
-open import Logic.Intuitionistic.Linear.Lambda.Permute   Univ
+open import Logic.Intuitionistic.Linear.Lambda.Type      Atom as Λ
+open import Logic.Intuitionistic.Linear.Lambda.Judgement Atom as ΛJ
+open import Logic.Intuitionistic.Linear.Lambda.Base      Atom
+open import Logic.Intuitionistic.Linear.Lambda.Permute   Atom
 
 open Monoid (monoid Λ.Type) using (assoc)
 

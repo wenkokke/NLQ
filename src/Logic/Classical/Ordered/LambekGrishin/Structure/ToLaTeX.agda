@@ -11,16 +11,16 @@ open import Logic.ToLaTeX
 open import Relation.Nullary.Decidable
 
 
-module Logic.Classical.Ordered.LambekGrishin.Structure.ToLaTeX {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Structure.ToLaTeX {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type         Univ
-open import Logic.Classical.Ordered.LambekGrishin.Type.ToLaTeX Univ
-open import Logic.Classical.Ordered.LambekGrishin.Structure    Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type         Atom
+open import Logic.Classical.Ordered.LambekGrishin.Type.ToLaTeX Atom
+open import Logic.Classical.Ordered.LambekGrishin.Structure    Atom
 
 
 instance
-  StructureToLaTeX : {{UnivToLaTeX : ToLaTeX Univ}} → ToLaTeX Structure
+  StructureToLaTeX : {{AtomToLaTeX : ToLaTeX Atom}} → ToLaTeX Structure
   StructureToLaTeX = record { toLaTeXPrec = go }
     where
       open ToLaTeX {{...}}

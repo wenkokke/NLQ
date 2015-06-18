@@ -13,14 +13,14 @@ open import Relation.Binary                            using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym; subst; subst₂)
 
 
-module Logic.Intuitionistic.Linear.Lambda.EquivalentToSequentCalculus {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Linear.Lambda.EquivalentToSequentCalculus {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Linear.Lambda.Type                 Univ
-open import Logic.Intuitionistic.Linear.Lambda.Judgement            Univ
-open import Logic.Intuitionistic.Linear.Lambda.Base                 Univ as Λ
-open import Logic.Intuitionistic.Linear.Lambda.Permute              Univ
-open import Logic.Intuitionistic.Linear.Lambda.SequentCalculus.Base Univ as ILL
+open import Logic.Intuitionistic.Linear.Lambda.Type                 Atom
+open import Logic.Intuitionistic.Linear.Lambda.Judgement            Atom
+open import Logic.Intuitionistic.Linear.Lambda.Base                 Atom as Λ
+open import Logic.Intuitionistic.Linear.Lambda.Permute              Atom
+open import Logic.Intuitionistic.Linear.Lambda.SequentCalculus.Base Atom as ILL
 
 
 from : ∀ {J} → ILL J → Λ J

@@ -10,15 +10,15 @@ open import Relation.Nullary                           using (Dec; yes; no; ¬_)
 open import Relation.Binary.PropositionalEquality as P using (_≡_)
 
 
-module Logic.Intuitionistic.Ordered.Lambek.ResMon.EquivalentToSC {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.Lambek.ResMon.EquivalentToSC {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Ordered.Lambek.Type             Univ as NLT
-open import Logic.Intuitionistic.Ordered.Lambek.Type.Context     Univ as NLTC hiding (module Simple)
-open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Judgement Univ as NLJ
-open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Base      Univ as NL
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement     Univ as SCJ
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Base          Univ as SCB hiding (contᴺ′; contᴾ′) renaming (NL_ to SC_)
+open import Logic.Intuitionistic.Ordered.Lambek.Type             Atom as NLT
+open import Logic.Intuitionistic.Ordered.Lambek.Type.Context     Atom as NLTC hiding (module Simple)
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Judgement Atom as NLJ
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Base      Atom as NL
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement     Atom as SCJ
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Base          Atom as SCB hiding (contᴺ′; contᴾ′) renaming (NL_ to SC_)
 
 
 module Simple where

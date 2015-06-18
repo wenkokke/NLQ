@@ -9,7 +9,7 @@ open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Binary                            using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
-module Logic.Classical.Ordered.LambekGrishin.Type {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Type {ℓ} (Atom : Set ℓ) where
 
 
 infixl 10 _⋈
@@ -30,7 +30,7 @@ infixl 40 _¹
 
 data Type : Set ℓ where
 
-  el  : Univ → Type
+  el  : Atom → Type
 
   □_  : Type → Type
   ◇_  : Type → Type
@@ -332,12 +332,12 @@ case-⊕ (_ ⊕ _) = yes (_ , _ , refl)
 
 
 -- Proof that if the given universe has decidable equality, then so do types.
-module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
+module DecEq (_≟-Atom_ : (A B : Atom) → Dec (A ≡ B)) where
 
   infix 4 _≟-Type_
 
   _≟-Type_ : (A B : Type) → Dec (A ≡ B)
-  el A  ≟-Type el C with (A ≟-Univ C)
+  el A  ≟-Type el C with (A ≟-Atom C)
   ... | yes A=C rewrite A=C = yes refl
   ... | no  A≠C = no (A≠C ∘ el-injective)
   el A  ≟-Type □ B   = no (λ ())

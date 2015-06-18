@@ -8,18 +8,18 @@ open import Data.String
 open import Logic.ToLaTeX
 
 
-module Logic.Classical.Ordered.LambekGrishin.ResMon.ToLaTeX {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.ResMon.ToLaTeX {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type                        Univ
-open import Logic.Classical.Ordered.LambekGrishin.Type.ToLaTeX                Univ
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement            Univ
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.ToLaTeX    Univ
-open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base                 Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type                        Atom
+open import Logic.Classical.Ordered.LambekGrishin.Type.ToLaTeX                Atom
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement            Atom
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Judgement.ToLaTeX    Atom
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.Base                 Atom
 
 
 instance
-  LambekGrishinToLaTeX : ∀ {J} {{UnivToLaTeX : ToLaTeX Univ}} → ToLaTeX (LG J)
+  LambekGrishinToLaTeX : ∀ {J} {{AtomToLaTeX : ToLaTeX Atom}} → ToLaTeX (LG J)
   LambekGrishinToLaTeX = record { toLaTeXPrec = λ _ → B.toLaTeX ∘ bussProof }
     where
       module B = ToLaTeX BussProofToLaTeX

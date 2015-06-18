@@ -5,10 +5,10 @@
 open import Data.String renaming (String to Name)
 
 
-module Logic.Classical.Unrestricted.LambdaCMinus.Named.Base {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Unrestricted.LambdaCMinus.Named.Base {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Classical.Unrestricted.LambdaCMinus.Type Univ
+open import Logic.Classical.Unrestricted.LambdaCMinus.Type Atom
 
 
 infixr 9 _$_ _$ᴷ_

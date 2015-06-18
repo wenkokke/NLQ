@@ -12,10 +12,10 @@ open import Relation.Binary                            using (module DecSetoid; 
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.Intuitionistic.Unrestricted.Lambda.Judgement {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Unrestricted.Lambda.Judgement {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Unrestricted.Lambda.Type Univ as T hiding (module DecEq)
+open import Logic.Intuitionistic.Unrestricted.Lambda.Type Atom as T hiding (module DecEq)
 
 
 infix 3 _⊢_
@@ -29,10 +29,10 @@ data Judgement : Set ℓ where
 ⊢-injective refl = (refl , refl)
 
 
-module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
+module DecEq (_≟-Atom_ : (A B : Atom) → Dec (A ≡ B)) where
 
 
-  module TEQ = T.DecEq _≟-Univ_
+  module TEQ = T.DecEq _≟-Atom_
   open DecSetoid TEQ.decSetoid
 
 

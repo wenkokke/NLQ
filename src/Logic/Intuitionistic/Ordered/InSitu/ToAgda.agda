@@ -9,13 +9,13 @@ open import Data.Product using (_×_; _,_; map; curry; uncurry; proj₁; proj₂
 open import Data.Unit    using (⊤; tt)
 
 
-module Logic.Intuitionistic.Ordered.InSitu.ToAgda {ℓ₁ ℓ₂} (Univ : Set ℓ₁) (⟦_⟧ᵁ : Univ → Set ℓ₂) where
+module Logic.Intuitionistic.Ordered.InSitu.ToAgda {ℓ₁ ℓ₂} (Atom : Set ℓ₁) (⟦_⟧ᵁ : Atom → Set ℓ₂) where
 
 
 open import Logic.Translation
-open import Logic.Intuitionistic.Ordered.InSitu.Type      Univ as NLT
-open import Logic.Intuitionistic.Ordered.InSitu.Judgement Univ as NLJ
-open import Logic.Intuitionistic.Ordered.InSitu.Base      Univ as NLB
+open import Logic.Intuitionistic.Ordered.InSitu.Type      Atom as NLT
+open import Logic.Intuitionistic.Ordered.InSitu.Judgement Atom as NLJ
+open import Logic.Intuitionistic.Ordered.InSitu.Base      Atom as NLB
 
 
 private

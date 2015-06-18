@@ -12,15 +12,15 @@ open import Data.Product                          using (_×_; _,_; proj₁; pro
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst; subst₂)
 
 
-module Logic.Intuitionistic.Unrestricted.Lambda.EquivalentToIndexed {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Unrestricted.Lambda.EquivalentToIndexed {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Index
 open import Logic.Translation
-open import Logic.Intuitionistic.Unrestricted.Lambda.Type         Univ
-open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement    Univ
-open import Logic.Intuitionistic.Unrestricted.Lambda.Base         Univ as E
-open import Logic.Intuitionistic.Unrestricted.Lambda.Indexed.Base Univ as I
+open import Logic.Intuitionistic.Unrestricted.Lambda.Type         Atom
+open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement    Atom
+open import Logic.Intuitionistic.Unrestricted.Lambda.Base         Atom as E
+open import Logic.Intuitionistic.Unrestricted.Lambda.Indexed.Base Atom as I
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 

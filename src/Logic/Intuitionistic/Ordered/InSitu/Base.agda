@@ -3,13 +3,13 @@
 ------------------------------------------------------------------------
 
 
-module Logic.Intuitionistic.Ordered.InSitu.Base {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.InSitu.Base {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.Intuitionistic.Ordered.InSitu.Type                   Univ
-open import Logic.Intuitionistic.Ordered.InSitu.Type.Context.Polarised Univ
-open import Logic.Intuitionistic.Ordered.InSitu.Judgement              Univ
+open import Logic.Intuitionistic.Ordered.InSitu.Type                   Atom
+open import Logic.Intuitionistic.Ordered.InSitu.Type.Context.Polarised Atom
+open import Logic.Intuitionistic.Ordered.InSitu.Judgement              Atom
 
 
 infix 1 NL_

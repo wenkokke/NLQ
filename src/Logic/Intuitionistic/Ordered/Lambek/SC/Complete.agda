@@ -8,14 +8,14 @@ open import Function.Equivalence using (equivalence)
 open import Relation.Binary      using (Rel)
 
 
-module Logic.Intuitionistic.Ordered.Lambek.SC.Complete {ℓ} (Univ : Set ℓ) where
+module Logic.Intuitionistic.Ordered.Lambek.SC.Complete {ℓ} (Atom : Set ℓ) where
 
 
 open import Algebra.ResiduatedAlgebra
-open import Logic.Intuitionistic.Ordered.Lambek.Type         Univ as T
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement Univ as SCJ
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Base      Univ as SCB
-open import Logic.Intuitionistic.Ordered.Lambek.SC.Trans     Univ as SCT
+open import Logic.Intuitionistic.Ordered.Lambek.Type         Atom as T
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Judgement Atom as SCJ
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Base      Atom as SCB
+open import Logic.Intuitionistic.Ordered.Lambek.SC.Trans     Atom as SCT
 
 
 private

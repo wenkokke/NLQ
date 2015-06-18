@@ -18,11 +18,11 @@ open import Relation.Binary                            using (DecSetoid; module 
 open import Relation.Binary.PropositionalEquality as P using (_≡_; _≢_; refl; cong)
 
 
-module Logic.Classical.Ordered.LambekGrishin.Type.Context {ℓ} (Univ : Set ℓ) where
+module Logic.Classical.Ordered.LambekGrishin.Type.Context {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Classical.Ordered.LambekGrishin.Type            Univ renaming (module DecEq to TypeDecEq)
-open import Logic.Classical.Ordered.LambekGrishin.Type.Complexity Univ
+open import Logic.Classical.Ordered.LambekGrishin.Type            Atom renaming (module DecEq to TypeDecEq)
+open import Logic.Classical.Ordered.LambekGrishin.Type.Complexity Atom
 
 open DecTotalOrder    decTotalOrder    using (_≤_) renaming (refl to ≤-refl; trans to ≤-trans)
 open StrictTotalOrder strictTotalOrder using (_<_) renaming (irrefl to <-irrefl; trans to <-trans)
@@ -630,9 +630,9 @@ instance
 
 
 -- Proof that if the given universe has decidable equality, then so do contexts.
-module DecEq (_≟-Univ_ : (A B : Univ) → Dec (A ≡ B)) where
+module DecEq (_≟-Atom_ : (A B : Atom) → Dec (A ≡ B)) where
 
-  open TypeDecEq _≟-Univ_ using (_≟-Type_)
+  open TypeDecEq _≟-Atom_ using (_≟-Type_)
 
   infix 4 _≟-Context_
 
