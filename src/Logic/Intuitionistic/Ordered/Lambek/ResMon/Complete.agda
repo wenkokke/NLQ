@@ -27,7 +27,7 @@ private
   A ≤ B = NL A ⊢ B
 
 
-open import Relation.Binary.PartialOrderToEquivalence _≤_ ax′ trans′
+open import Relation.Binary.PartialOrderToEquivalence _≤_ ax′ cut′
 
 -- The proof is simple: show that we can implement the structure of
 -- residuated algebras using proofs in the residuation-monotonicity

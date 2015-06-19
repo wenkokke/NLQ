@@ -182,48 +182,48 @@ inflate = inflateᴸ ∘ inflateᴿ
 
 -- Using the deflate/inflate approach, we can import theorems from the
 -- algebraic axiomatisation---for instance, admissible transitivity.
-trans′ : ∀ {X A Y} → Str X ⊢[ A ] → Str [ A ]⊢ Y → Str X ⊢ Y
-trans′ f g = inflate (from↑ (AT.trans′ (to f) (to g)))
+cut′ : ∀ {X A Y} → Str X ⊢[ A ] → Str [ A ]⊢ Y → Str X ⊢ Y
+cut′ f g = inflate (from↑ (AT.cut′ (to f) (to g)))
 
 
 
 -- Using transitivity, we can define the inverted versions of the
 -- invertable structural rules, which reintroduce structures.
 ◇ᴸ′ : ∀ {Y A} → Str · ◇ A · ⊢ Y → Str ⟨ · A · ⟩ ⊢ Y
-◇ᴸ′ f = trans′ (◇ᴿ ax⁺) (↽ f)
+◇ᴸ′ f = cut′ (◇ᴿ ax⁺) (↽ f)
 
 □ᴿ′ : ∀ {X A} → Str X ⊢ · □ A · → Str X ⊢ [ · A · ]
-□ᴿ′ f = trans′ (⇁ f) (□ᴸ ax⁻)
+□ᴿ′ f = cut′ (⇁ f) (□ᴸ ax⁻)
 
 ₀ᴿ′ : ∀ {X A} → Str X ⊢ · ₀ A · → Str X ⊢ ₀ · A ·
-₀ᴿ′ f = trans′ (⇁ f) (₀ᴸ ax⁺)
+₀ᴿ′ f = cut′ (⇁ f) (₀ᴸ ax⁺)
 
 ⁰ᴿ′ : ∀ {X A} → Str X ⊢ · A ⁰ · → Str X ⊢ · A · ⁰
-⁰ᴿ′ f = trans′ (⇁ f) (⁰ᴸ ax⁺)
+⁰ᴿ′ f = cut′ (⇁ f) (⁰ᴸ ax⁺)
 
 ₁ᴸ′ : ∀ {Y A} → Str · ₁ A · ⊢ Y → Str ₁ · A · ⊢ Y
-₁ᴸ′ f = trans′ (₁ᴿ ax⁻) (↽ f)
+₁ᴸ′ f = cut′ (₁ᴿ ax⁻) (↽ f)
 
 ¹ᴸ′ : ∀ {Y A} → Str · A ¹ · ⊢ Y → Str · A · ¹ ⊢ Y
-¹ᴸ′ f = trans′ (¹ᴿ ax⁻) (↽ f)
+¹ᴸ′ f = cut′ (¹ᴿ ax⁻) (↽ f)
 
 ⊗ᴸ′ : ∀ {Y A B} → Str · A ⊗ B · ⊢ Y → Str · A · ⊗ · B · ⊢ Y
-⊗ᴸ′ f = trans′ (⊗ᴿ ax⁺ ax⁺) (↽ f)
+⊗ᴸ′ f = cut′ (⊗ᴿ ax⁺ ax⁺) (↽ f)
 
 ⇒ᴿ′ : ∀ {X A B} → Str X ⊢ · A ⇒ B · → Str X ⊢ · A · ⇒ · B ·
-⇒ᴿ′ f = trans′ (⇁ f) (⇒ᴸ ax⁺ ax⁻)
+⇒ᴿ′ f = cut′ (⇁ f) (⇒ᴸ ax⁺ ax⁻)
 
 ⇐ᴿ′ : ∀ {X A B} → Str X ⊢ · B ⇐ A · → Str X ⊢ · B · ⇐ · A ·
-⇐ᴿ′ f = trans′ (⇁ f) (⇐ᴸ ax⁺ ax⁻)
+⇐ᴿ′ f = cut′ (⇁ f) (⇐ᴸ ax⁺ ax⁻)
 
 ⊕ᴿ′ : ∀ {X A B} → Str X ⊢ · B ⊕ A · → Str X ⊢ · B · ⊕ · A ·
-⊕ᴿ′ f = trans′ (⇁ f) (⊕ᴸ ax⁻ ax⁻)
+⊕ᴿ′ f = cut′ (⇁ f) (⊕ᴸ ax⁻ ax⁻)
 
 ⇚ᴸ′ : ∀ {X A B} → Str · A ⇚ B · ⊢ X → Str · A · ⇚ · B · ⊢ X
-⇚ᴸ′ f = trans′ (⇚ᴿ ax⁺ ax⁻) (↽ f)
+⇚ᴸ′ f = cut′ (⇚ᴿ ax⁺ ax⁻) (↽ f)
 
 ⇛ᴸ′ : ∀ {X A B} → Str · B ⇛ A · ⊢ X → Str · B · ⇛ · A · ⊢ X
-⇛ᴸ′ f = trans′ (⇛ᴿ ax⁺ ax⁻) (↽ f)
+⇛ᴸ′ f = cut′ (⇛ᴿ ax⁺ ax⁻) (↽ f)
 
 
 -- In addition, we can use these invertable rules to define the
