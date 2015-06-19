@@ -40,10 +40,20 @@
 \renewcommand{\fCenter}{\mathbin{\vdash}}
 
 % configure partial code blocks
-\newboolean{istruncated}%
-\setboolean{istruncated}{false}%
-\AtEndEnvironment{hscode}{\ifthenelse{\boolean{istruncated}}{\\...}{}}%
-\newenvironment{truncated}{\setboolean{istruncated}{true}}{\setboolean{istruncated}{false}}%
+\newboolean{isTruncated}%
+\setboolean{isTruncated}{false}%
+\AtEndEnvironment{hscode}{\ifthenelse{\boolean{isTruncated}}{\\...}{}}%
+\newenvironment{truncated}{\setboolean{isTruncated}{true}}{\setboolean{isTruncated}{false}}%
+
+% configure comments
+\newboolean{showNotes}%
+\setboolean{showNotes}{true}%
+\newcommand{\todo}[1]{%
+\ifthenelse%
+  {\boolean{showNotes}}
+  {{\textcolor{red}{\textbf{TODO:~}#1}}}
+  {}
+}
 
 \newcommand{\nothing}{}
 
@@ -86,3 +96,7 @@
 
 \newcommand{\holer}[1]{#1{\scriptscriptstyle\triangleright}}
 \newcommand{\holel}[1]{{\scriptscriptstyle\triangleleft}#1}
+
+
+% declare Unicode characters
+\DeclareUnicodeCharacter{7478}{\ensuremath{^{\scriptscriptstyle\text{J}}}}%

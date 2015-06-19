@@ -80,6 +80,7 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
   toBuild "main.tex" %> \out -> do
     let src = out -<.> "lagda"
     need (tocWith "tex_lagda")
+    need [toBuild "main.fmt"]
     writeFile' src mainFile
     cmd "lhs2TeX" "--agda" "-P" ":_build/" src "-o" out
 
@@ -109,6 +110,7 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
   -- import files by copying
   map toBuild ["preamble.tex","main.fmt","main.bib"] |%> \out -> do
     let src = fromBuild out
+    need [src]
     copyFile' src out
 
 

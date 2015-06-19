@@ -10,8 +10,8 @@ open import Function.Equivalence using (_⇔_; equivalence)
 module Logic.Intuitionistic.Ordered.Lambek.Res {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.Intuitionistic.Ordered.Lambek.Type Atom
-open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Judgement Atom
+open import Logic.Intuitionistic.Ordered.Lambek.Type             Atom
+open import Logic.Intuitionistic.Ordered.Lambek.ResMon.Judgement Atom public hiding (module DecEq)
 
 
 infix 1 NL_
