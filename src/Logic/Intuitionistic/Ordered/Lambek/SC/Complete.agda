@@ -23,7 +23,7 @@ private
   A ≤ B = NL A ⊢ B
 
 
-open import Relation.Binary.PartialOrderToEquivalence _≤_ ax′ trans′
+open import Relation.Binary.PartialOrderToEquivalence _≤_ ax′ cut′
 
 
 isResiduatedAlgebra : IsResiduatedAlgebra _≈_ _≤_ _⊗_ _⇒_ _⇐_

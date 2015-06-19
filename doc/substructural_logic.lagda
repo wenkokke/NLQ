@@ -19,7 +19,7 @@ language theory is in the field of linear type theory, where the
 linear properties of the type system are exploited to allow explicit
 de-allocation, in-place re-use of memory, more efficient garbage
 collection or safe parallelism
-[see @plasmeijer2002; @turner1999; @igarashi2000; @bernardy2015].
+[see @abramsky1993; @bernardy2015; @igarashi2000; @plasmeijer2002; @turner1999].
 
 Some additional work has been done in the field of ordered type
 theory, where the order sensitivity of the calculus is used to achieve

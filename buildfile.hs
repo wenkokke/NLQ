@@ -188,6 +188,7 @@ nonAssociativeLambek =
                      ]
   , include        = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
                      ,"Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin/ResMon.agda"
                      ,"Logic/Classical/Ordered/LambekGrishin/ResMon//*.agda"
                      ]
   , exclude        = ["//ToIntuitionisticLinearLambda.agda"

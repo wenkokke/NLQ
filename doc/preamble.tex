@@ -34,12 +34,18 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
-
 % configure bussproofs
 \usepackage{bussproofs}%
 \EnableBpAbbreviations%
 \renewcommand{\fCenter}{\mathbin{\vdash}}
 
+% configure partial code blocks
+\newboolean{istruncated}%
+\setboolean{istruncated}{false}%
+\AtEndEnvironment{hscode}{\ifthenelse{\boolean{istruncated}}{\\...}{}}%
+\newenvironment{truncated}{\setboolean{istruncated}{true}}{\setboolean{istruncated}{false}}%
+
+\newcommand{\nothing}{}
 
 % configure Lambek-Grishin operators
 \usepackage{stmaryrd}%
@@ -77,3 +83,6 @@
 \newcommand{\varpref}[1]{{}_{#1}}
 \newcommand{\varsuff}[1]{{}^{#1}}
 \newcommand{\vardown}[1]{\,\cdot\,#1\,\cdot\,}
+
+\newcommand{\holer}[1]{#1{\scriptscriptstyle\triangleright}}
+\newcommand{\holel}[1]{{\scriptscriptstyle\triangleleft}#1}

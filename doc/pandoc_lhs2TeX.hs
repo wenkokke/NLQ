@@ -23,7 +23,7 @@ codeEnv str = unlines ["\\begin{code}",str,"\\end{code}"]
 
 
 partEnv :: String -> String
-partEnv str = unlines ["\\begin{partial}",str,"\\end{partial}"]
+partEnv str = unlines ["\\begin{truncated}",str,"\\end{truncated}"]
 
 
 main :: IO ()
