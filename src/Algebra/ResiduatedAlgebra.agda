@@ -16,20 +16,26 @@ module Algebra.ResiduatedAlgebra where
 
 open import Level using (Level; suc; _⊔_)
 open import Algebra.FunctionProperties as FunctionProperties using (Op₂)
-open import Function.Equivalence using (_⇔_)
+open import Data.Product using (_×_; proj₁; proj₂)
 open import Relation.Binary as Rel using (Rel; _Preserves₂_⟶_⟶_; IsPartialOrder; Poset)
 open import Relation.Binary.PartialOrderReasoning as ≤-Reasoning using ()
-
+open import Function.Equality using (_⟨$⟩_)
+open import Function.Equivalence using (module Equivalence; _⇔_)
+open Equivalence
 
 
 module ResiduationProperties {a ℓ} {A : Set a} (_≤_ : Rel A ℓ) where
 
-  _LeftResidualOf_ : (⇐ ∙ : Op₂ A) → Set (a ⊔ ℓ)
-  _LeftResidualOf_ _⇐_ _∙_ = ∀ {x y z} → ((x ∙ y) ≤ z) ⇔ (x ≤ (z ⇐ y))
+  IsResidualˡ : (⇐ ∙ : Op₂ A) → Set (a ⊔ ℓ)
+  IsResidualˡ _⇐_ _∙_ = ∀ {x y z}
+    → (((x ∙ y) ≤ z) → (x ≤ (z ⇐ y)))
+    × ((x ≤ (z ⇐ y)) → ((x ∙ y) ≤ z))
 
-  _RightResidualOf_ : (⇒ ∙ : Op₂ A) → Set (a ⊔ ℓ)
-  _RightResidualOf_ _⇒_ _∙_ = ∀ {x y z} → (y ≤ (x ⇒ z)) ⇔ ((x ∙ y) ≤ z)
 
+  IsResidualʳ : (⇒ ∙ : Op₂ A) → Set (a ⊔ ℓ)
+  IsResidualʳ _⇒_ _∙_ = ∀ {x y z}
+    → ((y ≤ (x ⇒ z)) → ((x ∙ y) ≤ z))
+    × (((x ∙ y) ≤ z) → (y ≤ (x ⇒ z)))
 
 
 record IsResiduatedAlgebra
@@ -37,13 +43,13 @@ record IsResiduatedAlgebra
        (≈ : Rel A ℓ₁) (≤ : Rel A ℓ₂)
        (∙ : Op₂ A) (⇒ : Op₂ A) (⇐ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
 
-  open FunctionProperties ≈
+  open FunctionProperties    ≈
   open ResiduationProperties ≤
 
   field
     isPartialOrder : IsPartialOrder ≈ ≤
-    residual-⇒     : ⇒ RightResidualOf ∙
-    residual-⇐     : ⇐ LeftResidualOf ∙
+    residualʳ      : IsResidualʳ ⇒ ∙
+    residualˡ      : IsResidualˡ ⇐ ∙
     ∙-resp-≤       : ∙ Preserves₂ ≤ ⟶ ≤ ⟶ ≤
 
   open Rel.IsPartialOrder isPartialOrder public
@@ -90,3 +96,15 @@ record ResiduatedAlgebra c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) w
           y ∙ v ≤⟨ ∙-resp-≤ (≤-reflexive (sym x≈y)) (≤-reflexive (sym u≈v)) ⟩
           x ∙ u
         ∎
+
+
+  ⇒-with-≤ : ∀ {x y u v} → x ≤ y → u ≤ v → y ⇒ u ≤ x ⇒ v
+  ⇒-with-≤ x≤y u≤v =
+    proj₂ residualʳ (≤-trans (proj₂ residualˡ (≤-trans x≤y (
+    proj₁ residualˡ          (proj₁ residualʳ ≤-refl)))) u≤v)
+
+
+  ⇐-with-≤ : ∀ {x y u v} → x ≤ y → u ≤ v → x ⇐ v ≤ y ⇐ u
+  ⇐-with-≤  x≤y u≤v =
+    proj₁ residualˡ (≤-trans (proj₁ residualʳ (≤-trans u≤v (
+    proj₂ residualʳ          (proj₂ residualˡ ≤-refl)))) x≤y)

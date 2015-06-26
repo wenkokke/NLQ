@@ -2,6 +2,57 @@
 module introduction where
 ```
 
+
+# Overview
+
+  - **What is a type-logical grammar?**
+
+    First we will discuss what a categorial grammar is; then we will
+    move into examples of extended categorial grammars.
+
+  - **What is a categorial grammar?**
+
+    Give definition of a categorial grammar, as an interface together
+    with *some* structure. Discuss Lambek's program. Then talk about
+    residuated lattices and residuated algebras.
+
+  - **The non-associative Lambek calculus.**
+
+    Discuss the sequent calculus axiomatisation for the
+    non-associative Lambek calculus, for which a proof of
+    cut-elimination was given by @lambek1961 and later extended to
+    include the product by @kandulski1988.
+
+    Discuss Lambek's alternative combinator calculus, featuring
+    residuation instead of contexts. Discuss the advantages and
+    disadvantages of this formalisation. Discuss cut-elimination for
+    this formalisation, as given by @moortgat1999.
+
+  - **Extended categorial grammars**
+
+    Discuss the possibility to allow additional connectives in a
+    categorial grammar.
+
+    Discuss the Lambek-Grishin calculus, as an extension of the Lambek
+    calculus. Discuss the axiomatisation of the Lambek-Grishin
+    calculus building upon Belnap's Display Calculus. Discuss the
+    axiomatisation of the Lambek-Grishin calculus which restricts the
+    polarity in certain cases.
+    (minor contribution)
+    Discuss the extension which has a syntactic reset-*like* delimiter.
+
+    Discuss $\text{NL}_{CL}$, Moortgat's modal analysis of in situ
+    binding [-@moortgat1996] and
+    (minor contribution)
+    the fusion of the two systems.
+
+
+<!--
+Formally verifying your work is incredibly useful, not only for you but also for
+your audience.
+
+
+
 # Introduction
 
 - for the systems we introduce, we will not busy ourselves with
@@ -85,9 +136,6 @@ The general overview of the thesis is as follows:
           + Explain limitations of $\text{NL}_{CL}$.
           + Give merge of $\text{NL}_{CL}$ ang Moorgat's work of licensing
             movement using diamonds.
-
-
-<!--
 
 # Introduction
 

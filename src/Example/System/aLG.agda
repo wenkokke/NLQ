@@ -21,6 +21,7 @@ open import Example.System.Base public
 open import Logic.Translation
 open import Logic.ToLaTeX using (module ToLaTeX)
 open import Logic.Classical.Ordered.LambekGrishin.ResMon                 Atom public
+open import Logic.Classical.Ordered.LambekGrishin.ResMon.ProofSearch     Atom _≟-Atom_ public
 open import Logic.Classical.Ordered.LambekGrishin.ToAgda                 Atom Bool ⟦_⟧ᵁ using (CBV)
 open import Logic.Classical.Ordered.LambekGrishin.EquivalentToResMon     Atom public using (Alg→Str↓)
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.ToLaTeX         Atom using (LambekGrishinToLaTeX)

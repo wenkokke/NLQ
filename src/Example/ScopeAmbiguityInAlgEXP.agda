@@ -32,18 +32,33 @@
 --    --to "λ k → k (SAID mary (forAll (λ x → PERSON x ⊃ LEFT x)))"
 ------------------------------------------------------------------------
 
-open import Data.Colist using (fromList)
-open import Data.Bool   using (Bool; true; false; _∧_; _∨_)
-open import Data.List   using (List; _∷_; [])
-open import Data.String using (String)
-open import Data.Vec    using (_∷_; [])
-open import Function    using (id)
-open import IO          using (IO; mapM′; run)
-open import Reflection  using (Term)
+open import Data.Colist      using (fromList)
+open import Data.Bool        using (Bool; true; false; _∧_; _∨_)
+open import Data.Nat         using (ℕ; suc; zero; _≤?_; _*_)
+open import Data.Nat.Show    using (show)
+open import Data.List        using (List; _∷_; []; zip; map)
+open import Data.String      using (String; _++_)
+open import Data.Product     using (_×_; _,_)
+open import Data.Vec         using (_∷_; [])
+open import Function         using (id)
+open import IO               using (IO; mapM′; run)
+open import Reflection       using (Term)
+open import Relation.Nullary using (Dec; yes; no)
 open import Example.System.aLG
 
 
 module Example.ScopeAmbiguityInAlgEXP where
+
+private
+  _^_ : ℕ → ℕ → ℕ
+  n ^ zero  = 1
+  n ^ suc m = n * (n ^ m)
+
+  {-# TERMINATING #-}
+  [_⋯_] : ℕ → ℕ → List ℕ
+  [ n ⋯ m ] with m ≤? n
+  [ n ⋯ m ] | yes _ = n ∷ []
+  [ n ⋯ m ] | no  _ = n ∷ [ suc n ⋯ m ]
 
 
 MARY_SAID_EVERYONE_LEFT₀ : LG np ⊗ ( ( ( np ⇒ s⁻ ) ⇐ ◇ s⁻ ) ⊗ ◇ ( ( ( np ⇐ n ) ⊗ n ) ⊗ ( np ⇒ s⁻ ) ) ) ⊢ s⁻
@@ -61,3 +76,21 @@ MARY_SAID_EVERYONE_LEFT₁
 mary_said_everyone_left₁ : ⟦ s⁻  ⟧ᵀ
 mary_said_everyone_left₁
   = [ MARY_SAID_EVERYONE_LEFT₁ ]ᵀ (mary , said , everyone , left)
+
+
+synTerms
+  = findAll (np ⊗ ( ( ( np ⇒ s⁻ ) ⇐ ◇ s⁻ ) ⊗ ◇ ( ( ( np ⇐ n ) ⊗ n ) ⊗ ( np ⇒ s⁻ ) ) ) ⊢ s⁻)
+semTerms
+  = map (λ x → [ x ]ᵀ (mary , said , everyone , left)) synTerms
+texTerms
+  = map (λ {(n , x) →
+           proof
+             ("mary_said_everyone_left" ++ show n)
+             "Mary said everyone left."
+             (toLaTeX x)
+             ""
+        })
+        (zip [ 0 ⋯ 10 ] synTerms)
+
+main : _
+main = run (mapM′ writeProof (fromList texTerms))
