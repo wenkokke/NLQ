@@ -22,7 +22,7 @@ flycheck_*
 TAGS
 QUESTIONS.pdf
 Prover/Main
-esslli2015/main.tex
+tytles2015/main.tex
 src/Everything.agda
 src/Logic/Intuitionistic/Unrestricted/Lambda/Type.agda
 src/Logic/Intuitionistic/Unrestricted/Lambda/Type/
