@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, ViewPatterns, FlexibleContexts, PartialTypeSignatures, TupleSections, RecordWildCards, ScopedTypeVariables #-}
+{-# LANGUAGE OverloadedStrings, FlexibleContexts, PartialTypeSignatures, TupleSections, RecordWildCards, ScopedTypeVariables #-}
 module Main where
 
 

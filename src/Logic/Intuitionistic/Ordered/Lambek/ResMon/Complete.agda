@@ -8,6 +8,7 @@
 
 open import Function                                   using (flip)
 open import Function.Equivalence                       using (equivalence)
+open import Data.Product                               using (_,_)
 open import Relation.Binary                            using (Rel)
 open import Relation.Binary.PropositionalEquality as P using (_≡_)
 
@@ -38,8 +39,8 @@ open import Relation.Binary.PartialOrderToEquivalence _≤_ ax′ cut′
 isResiduatedAlgebra : IsResiduatedAlgebra _≈_ _≤_ _⊗_ _⇒_ _⇐_
 isResiduatedAlgebra = record
   { isPartialOrder = isPartialOrder
-  ; residual-⇒     = equivalence r⇒⊗ r⊗⇒
-  ; residual-⇐     = equivalence r⊗⇐ r⇐⊗
+  ; residualʳ      = r⇒⊗ , r⊗⇒
+  ; residualˡ      = r⊗⇐ , r⇐⊗
   ; ∙-resp-≤       = m⊗
   }
 

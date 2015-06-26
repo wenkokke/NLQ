@@ -17,7 +17,7 @@ import qualified Data.Text.IO as T
 --   1. $file.lagda
 --   2. _build/$file.md_lagda
 --   3. _build/$file.md_noimp_lagda
---   5. _build/$file.tex_lagda
+--   5. _build/$file.lagda
 --   6. _build/main.tex
 --   7. _build/main.pdf
 --
@@ -34,9 +34,10 @@ import qualified Data.Text.IO as T
 toc :: [FilePath]
 toc =
   [ "abstract"
+  , "introduction"
+  , "categorial_grammar"
   , "substructural_logic"
-  , "type_logical_grammar"
-  , "lambek_grammar"
+  , "non_associative_lambek_calculus"
   ]
 
 
@@ -65,6 +66,7 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
     need [src]
     liftIO $ T.writeFile out . formatHTML =<< T.readFile src
 
+
   toBuild "main.html_nofmt" %> \out -> do
     let ref = toBuild "references.md"
     let yml = out -<.> "yml"
@@ -77,12 +79,14 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
                  "-t" "html"
                  src ref "-o" out
 
+
   toBuild "main.tex" %> \out -> do
     let src = out -<.> "lagda"
-    need (tocWith "tex_lagda")
+    need (tocWith "lagda")
     need [toBuild "main.fmt"]
-    writeFile' src mainFile
+    writeFile' src mainFile_lhs2TeX
     cmd "lhs2TeX" "--agda" "-P" ":_build/" src "-o" out
+
 
   toBuild "main.pdf" %> \out -> do
     let src = out -<.> "tex"
@@ -128,7 +132,7 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
     cmd "./remove_implicit_args.rb" src out
 
   -- compile Markdown to LaTeX in presence of literate Agda
-  tocWith "tex_lagda_nopipe" |%> \out -> do
+  tocWith "lagda_nopipe" |%> \out -> do
     let src = out -<.> "md_noimp_lagda"
     need [src]
 
@@ -145,8 +149,8 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
                         src "-o" out
 
   -- fix a bug in Pandoc's output w.r.t. pipes
-  tocWith "tex_lagda" |%> \out -> do
-    let src = out -<.> "tex_lagda_nopipe"
+  tocWith "lagda" |%> \out -> do
+    let src = out -<.> "lagda_nopipe"
     need [src]
     liftIO $ T.writeFile out . pandocFixPipe =<< T.readFile src
 
@@ -170,13 +174,6 @@ fromBuild out = joinPath (filter (/="_build/") (splitPath out))
 
 
 -- * Formatting of specific sequences
-
-
-formatTeX :: Text -> Text
-formatTeX = formatWith
-  [
-  ]
-
 
 formatHTML :: Text -> Text
 formatHTML = formatWith
@@ -203,15 +200,29 @@ formatWith =
 
 -- * Creating `main.lagda`
 
-mainFile :: String
-mainFile = unlines
-  [ "\\documentclass{article}"
-  , "%include main.fmt"
+mainFile_agda :: String
+mainFile_agda =
+  mainFile
+  "\\usepackage{agda}%"
+  (\fn -> "\\input{"++(fn <.> "tex")++"}")
+
+mainFile_lhs2TeX :: String
+mainFile_lhs2TeX =
+  mainFile
+  "%include main.fmt"
+  (\fn -> "%include "++toBuild (fn <.> "lagda"))
+
+mainFile :: String -> (String -> String) -> String
+mainFile importFile input = unlines
+  [ "\\documentclass[usenames]{article}"
+  , importFile
   , "\\include{preamble}%"
   , "\\begin{document}"
   , "\\begin{abstract}"
-  , "%include abstract.tex_lagda"
+  , input "abstract"
   , "\\end{abstract}"
+  , "\\tableofcontents%"
+  , "\\newpage%"
   , include_all_files
   , "\\nocite{*}%"
   , "\\bibliographystyle{apalike}%"
@@ -220,7 +231,4 @@ mainFile = unlines
   ]
   where
     include_all_files
-      = unlines
-      $ map ("%include " ++)
-      $ filter (/="abstract.tex_lagda")
-      $ tocWith "tex_lagda"
+      = unlines (map input (filter (/="abstract") toc))

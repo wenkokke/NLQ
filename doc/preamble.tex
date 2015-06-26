@@ -1,5 +1,6 @@
 \usepackage{adjustbox}%
-\usepackage[usenames,dvipsnames]{color}%
+\usepackage{color}%
+\usepackage{comment}%
 \usepackage{natbib}%
 \usepackage{etoolbox}%
 \usepackage{mdframed}%
@@ -47,7 +48,7 @@
 
 % configure comments
 \newboolean{showNotes}%
-\setboolean{showNotes}{true}%
+\setboolean{showNotes}{false}%
 \newcommand{\todo}[1]{%
 \ifthenelse%
   {\boolean{showNotes}}
@@ -78,10 +79,10 @@
 }
 \makeatother
 \newcommand{\varslash}{%
-  \mathbin{\mathpalette\pictslash{{0}{1}}}%
+  \mathpalette\pictslash{{0}{1}}%
 }
 \newcommand{\varbslash}{%
-  \mathbin{\mathpalette\pictslash{{1}{-1}}}%
+  \mathpalette\pictslash{{1}{-1}}%
 }
 \newcommand{\focus}[1]{%
   \adjustbox{padding=.4em .15ex .1em .15ex,bgcolor=Cyan}{%
@@ -100,3 +101,12 @@
 
 % declare Unicode characters
 \DeclareUnicodeCharacter{7478}{\ensuremath{^{\scriptscriptstyle\text{J}}}}%
+\DeclareUnicodeCharacter{7480}{\ensuremath{^{\scriptscriptstyle\text{L}}}}%
+\DeclareUnicodeCharacter{7487}{\ensuremath{^{\scriptscriptstyle\text{R}}}}%
+\DeclareUnicodeCharacter{7488}{\ensuremath{^{\scriptscriptstyle\text{T}}}}%
+\DeclareUnicodeCharacter{7489}{\ensuremath{^{\scriptscriptstyle\text{U}}}}%
+\DeclareUnicodeCharacter{8314}{\ensuremath{^{+}}}%
+\DeclareUnicodeCharacter{8315}{\ensuremath{^{-}}}%
+\DeclareUnicodeCharacter{10003}{\ensuremath{\checkmark}}%
+\DeclareUnicodeCharacter{120792}{\ensuremath{\mathbf{0}}}%
+\DeclareUnicodeCharacter{120793}{\ensuremath{\mathbf{1}}}%
