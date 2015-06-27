@@ -14,92 +14,60 @@ infixr 4 _,_
 
 # Categorial Grammar
 
-Overview.
+## Structures and grammaticality
 
-Discuss what categorial grammar is.
 
 ``` hidden
-
-```
-
-```
 data Struct {a} (A : Set a) : Set a where
   ·_·  : A                    → Struct A
   _,_  : Struct A → Struct A  → Struct A
-```
 
-``` hidden
 mapᵀ : ∀ {a b} {A : Set a} {B : Set b} → (A → B) → Struct A → Struct B
 mapᵀ f ·  x  · = · f x ·
 mapᵀ f (l , r) = (mapᵀ f l , mapᵀ f r)
 ```
 
-A categorial grammar contains the following fields:
+A categorial grammar consists of the following objecs:
 ```
 record CategorialGrammar : Set₁ where
+  field
+    Type  : Set                       -- a set of syntactic categories
+    Word  : Set                       -- a set of words
+    lex   : Word → List⁺ Type         -- a lexicon, which assigns a finite
+                                      -- non-empty list of types to each word
+    s     : Type                      -- a type of well-formed sentences
+    _⊢_   : Struct Type → Type → Set  -- a typing relation
 ```
 ``` hidden
   infixr 1 ✓_
-  infixr 6 _⊗_
-  infixr 5 _⇒_
-  infixl 5 _⇐_
-
-  field
 ```
-A set of syntactic categories---here referred to as
-types. Traditionally, the connectives that build up syntactic
-categories are a product (|⊗|) and two directional implications
-[written |⇒| and |⇐|, after @ajdukiewicz1935]:
-```
-    Type        : Set
-    _⊗_         : Type → Type → Type
-    _⇐_         : Type → Type → Type
-    _⇒_         : Type → Type → Type
-```
-
-A set of words, and a lexicon which assigns a finite list of types to
-each word:
-```
-    Word        : Set
-    Lex         : Word → List⁺ Type
-```
-
-And lastly, some type |Start|, which represents the type for
-grammatical sentences, and a preorder |≤|, which expresses
-derivability between syntactic categories:
-```
-    Start       : Type
-    _≤_         : Type → Type → Set
-    isPreorder  : IsPreorder _≡_ _≤_
-```
+Typically, the set of syntactic categories is built up over a set of
+atomic types (usually |n|, |np| and |s|), a product (|⊗|) and two
+directional implications [written |⇒| and |⇐|, after @ajdukiewicz1935].
+Furthermore, the typing relation |⊢| is required to be at least a
+preorder, and often forms a residuated algebra or lattice. However, the
+asymmetry of its type prevents us from expressing this directly.
+In addition, for the sake of parsing, the typing relation is usually
+required to be decidable.
 
 Compute the statement that a certain sentence with a certain structure
 is grammatical:
 ```
   ✓_ : Struct Word → Set
-  ✓ t = foldr₁ _⊎_ (mapᴸ ((_≤ Start) ∘ flatten) (amb (mapᵀ Lex t)))
+  ✓ sent = foldr₁ _⊎_ (mapᴸ (λ ts → ts ⊢ s) (amb (mapᵀ lex sent)))
 ```
 ``` hidden
     where
 ```
 
 Convert a single ambiguous tree to a list of unambiguous trees:
-```
+``` hidden
       amb : Struct (List⁺ Type) → List⁺ (Struct Type)
       amb  ·   x    ·  = mapᴸ ·_· x
       amb  (l  , r  )  = amb l ,⁺ amb r
-```
-``` hidden
         where
           _,⁺_ : List⁺ (Struct Type) → List⁺ (Struct Type) → List⁺ (Struct Type)
           (x ∷ xs) ,⁺ (y ∷ ys) = (x , y) ∷ zipWith _,_ xs ys
-```
-
-Flatten a structure down to a type:
-```
-      flatten : Struct Type → Type
-      flatten ·  x  · = x
-      flatten (l , r) = flatten l ⊗ flatten r
 ```
 
 ``` hidden
@@ -116,7 +84,7 @@ may now formulate statements of grammaticality. For instance:
     MARY_FINDS_A_UNICORN =
 ```
 ```
-      ✓ · mary · , · finds · , · a · , · unicorn ·
+      ✓ (· mary · , · finds · , · a · , · unicorn ·)
 ```
 This value evaluates to a type, and if we are able to show that this
 type has an inhabitant, we have shown that the sentence "Mary finds a

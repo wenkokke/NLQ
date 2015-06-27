@@ -46,6 +46,8 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
 
   -- * top-level tasks
 
+  want ["pdf"]
+
   "html" ~> do
     let src = toBuild "main.html"
     need [src]
