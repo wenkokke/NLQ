@@ -18,15 +18,15 @@ explicit de-allocation, in-place re-use of memory, more efficient
 garbage collection and safe concurrency
 [see @abramsky1993; @turner1999; @igarashi2000; @plasmeijer2002; @bernardy2015].
 
-### Weakening
+#### Weakening
 
 If we were to allow weakening, we could add arbitrary words to a
-sentence, without changing the grammaticality of the sentence.
-For instance, "Mary read a book" would mean the same thing as \*"Mary
-twelve read blue a fly bicycle book".
+sentence, without changing the grammaticality *or meaning* of the
+sentence. For instance, "Mary read a book" would mean the same thing
+as \*"Mary twelve read blue a fly bicycle book".
 
 
-### Contraction
+#### Contraction
 
 Contraction is a bit more subtle than weakening. If we were to allow
 contraction, we could contract two words with the same syntactic
@@ -41,22 +41,35 @@ the same as "a blue book" or "a large book".
 Discarding exchange makes logics *order sensitive*, hence ordered
 logic.
 
+Because an order sensitive implication can only consume the element on
+the right-most side of the antecedent, it becomes natural to add in
+variants of the implication. For instance, categorial
+grammars (section \ref{categorial-grammar}) add a second implication, which
+consumes the elements on the left-most side of the
+antecedent. Displacement calculus adds in additional variants of the
+implication which can consume elements wrapped around or nested in the
+antecedent [see @morrill2011].
+
 Some work has been done in the field of ordered type theory, where the
 order sensitivity of the calculus is used to achieve even more
 efficient memory management, which is possible due to having an even
-more fine-grained type system than linear logic [see @petersen2003].
+more fine-grained type system than linear logic: theoretically, any
+program typed in an ordered type theory can be run using only a stack
+as memory [see @petersen2003].
 
+Below we will discuss the two structural rules that ordered type
+theory removes, and why their removal is essential to the program of
+categorial grammar.
 
-### Commutativity
+#### Commutativity
 
 If we were to allow commutativity, we could arbitrarily change the
 order of the words, without affecting the grammaticality of the
 sentence.
-For instance, "Mary read a book" would mean the same thing as "book
+For instance, "Mary read a book" would mean the same thing as \*"book
 Mary a read".
 
-
-### Associativity
+#### Associativity
 
 The original system for categorial grammars formulated in @lambek1958
 included associativity. This seemed to be a sound choice, as it
