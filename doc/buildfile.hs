@@ -38,6 +38,8 @@ toc =
   , "categorial_grammar"
   , "substructural_logic"
   , "non_associative_lambek_calculus"
+  , "intermezzo_linear_logic"
+  , "derivational_semantics"
   ]
 
 

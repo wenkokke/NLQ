@@ -9,7 +9,7 @@ open import Data.String                           using (String; _++_; unlines; 
 open import Function                              using (_$_; _∘_)
 open import IO                                    using (IO; writeFile)
 open import Logic.ToLaTeX                         using (module ToLaTeX; ToLaTeX)
-open import Reflection                            using (Term; _≟_)
+open import Reflection
 open import Relation.Nullary                      using (Dec; yes; no)
 open import Relation.Nullary.Decidable            using (⌊_⌋)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
@@ -99,7 +99,21 @@ Assert true  = TestSuccess
 Assert false = TestFailure
 
 _∈_ : Term → List Term → Bool
-y ∈ xs = any (λ x → ⌊ x ≟ y ⌋) xs
+y ∈ xs = any (λ x → ⌊ forgetAbs x ≟ forgetAbs y ⌋) xs
+  where
+    mutual
+      forgetAbs : Term → Term
+      forgetAbs (var x args)      = var x (forgetAbsArgs args)
+      forgetAbs (con c args)      = con c (forgetAbsArgs args)
+      forgetAbs (def f args)      = def f (forgetAbsArgs args)
+      forgetAbs (lam v (abs _ x)) = lam v (abs "_" (forgetAbs x))
+      forgetAbs (pi (arg i (el s₁ t₁)) (abs _ (el s₂ t₂)))
+        = pi (arg i (el s₁ (forgetAbs t₁))) (abs "_" (el s₂ (forgetAbs t₂)))
+      forgetAbs t = t
+
+      forgetAbsArgs : List (Arg Term) → List (Arg Term)
+      forgetAbsArgs []               = []
+      forgetAbsArgs (arg i x ∷ args) = arg i (forgetAbs x) ∷ forgetAbsArgs args
 
 
 data Proof : Set where
