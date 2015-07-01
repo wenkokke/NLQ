@@ -37,7 +37,11 @@ if ARGV.length == 2
     File.open(ARGV[0], "r:UTF-8") do |src|
       out.write(
         src.read.gsub(/#{BeginCode}(.*?)#{EndCode}/m) {
-          "#{BeginCode}#{ correct_indent(remove_implicit_args($1)) }\n#{EndCode}"
+          if $1.lstrip.start_with?('keep_implicit_args')
+            "#{BeginCode}#{ correct_indent($1) }\n#{EndCode}"
+          else
+            "#{BeginCode}#{ correct_indent(remove_implicit_args($1)) }\n#{EndCode}"
+          end
         }
       )
     end

@@ -4,6 +4,7 @@
 ------------------------------------------------------------------------
 
 
+open import Data.Product         using (_,_)
 open import Function.Equivalence using (equivalence)
 open import Relation.Binary      using (Rel)
 
@@ -29,8 +30,8 @@ open import Relation.Binary.PartialOrderToEquivalence _≤_ ax′ cut′
 isResiduatedAlgebra : IsResiduatedAlgebra _≈_ _≤_ _⊗_ _⇒_ _⇐_
 isResiduatedAlgebra = record
   { isPartialOrder = isPartialOrder
-  ; residual-⇒     = equivalence r⇒⊗′ r⊗⇒′
-  ; residual-⇐     = equivalence r⊗⇐′ r⇐⊗′
+  ; residualˡ      = r⊗⇐′ , r⇐⊗′
+  ; residualʳ      = r⇒⊗′ , r⊗⇒′
   ; ∙-resp-≤       = m⊗
   }
 
