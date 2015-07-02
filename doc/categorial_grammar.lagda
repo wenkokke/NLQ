@@ -1,7 +1,7 @@
 ``` hidden
 open import Level
 open import Category.Applicative                  using (module RawApplicative; RawApplicative)
-open import Category.Monad                        using (module RawMonad)
+open import Category.Monad                        using (module RawMonad; RawMonadPlus)
 open import Data.Bool                             using (T)
 open import Data.List                             using (List; _∷_; [])
 open import Data.List.NonEmpty                    using (List⁺; _∷_; [_]; map; foldr; foldr₁)
@@ -75,8 +75,14 @@ possible to *derive* any theorems in it. This is atypical, as the term
 "categorial grammar" is usually associated with the above structure
 paired with a residuated algebra or lattice.
 Therefore, in order to make this a useful structure, we have included
-the requirement that the the typing relation is decidable (through the
-decision procedure |⊢?|).
+the requirement that the the typing relation is decidable---through the
+decision procedure |⊢?|.
+
+Because it isn't possible to form any other sequents than |_⊢ s| using
+the definition above, it may be prudent to replace |s| and |⊢| with a
+single predicate |Valid|. However, we feel that this would obscure the
+type-logical nature of the grammars too much, and therefore have opted
+to keep them separate.
 
 Using an instance of a categorial grammar, we can compute the
 statement that a given sentence (represented as a structure of words)

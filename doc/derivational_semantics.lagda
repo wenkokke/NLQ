@@ -1,32 +1,115 @@
 ``` hidden
-open import Data.List using (List; _++_) renaming (_∷_ to _,_; [] to ∅)
-
-
-module derivational_semantics (Atom : Set) where
-
-open import intermezzo_linear_logic         Atom as ILL
-open import non_associative_lambek_calculus Atom as NL
-open module RM = NL.ResMon hiding (_[_])
+module derivational_semantics (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
 ```
 
-# Derivational Semantics
+## Derivational Semantics
 
-```
-⟦_⟧ : NL.Type → ILL.Type
-⟦ el   A  ⟧ = el  A
-⟦ A ⊗  B  ⟧ = ⟦ A ⟧ ⊗  ⟦ B ⟧
-⟦ A ⇒  B  ⟧ = ⟦ A ⟧ ⊸  ⟦ B ⟧
-⟦ B ⇐  A  ⟧ = ⟦ A ⟧ ⊸  ⟦ B ⟧
+
+### Translation to Linear Logic
+``` hidden
+module translation_to_linear_logic where
+
+  open import intermezzo_linear_logic Atom ⟦_⟧ᴬ as ILL hiding (⟦_⟧; [_])
+  open import non_associative_lambek_calculus Atom as NL
+  open module RM = NL.ResMon using (RM_; ax; m⊗; m⇒; m⇐; r⇒⊗; r⊗⇒; r⇐⊗; r⊗⇐)
+  open import Data.List using (List; _++_) renaming (_∷_ to _,_; [] to ∅)
 ```
 
 ```
-[_] : ∀ {A B} → RM A RM.⊢ B → ILL ⟦ A ⟧ , ∅ ILL.⊢ ⟦ B ⟧
-[ ax       ] = ax
-[ m⊗   f g ] = ⊗ₑ ax (⊗ᵢ [ f ] [ g ])
-[ m⇒   f g ] = ⊸ᵢ (⊸ₑ (⊸ᵢ [ g  ]) (e₁ (⊸ₑ ax [ f  ])))
-[ m⇐   f g ] = ⊸ᵢ (⊸ₑ (⊸ᵢ [ f  ]) (e₁ (⊸ₑ ax [ g  ])))
-[ r⇒⊗  f   ] = ⊗ₑ ax (e₁  (⊸ₑ [ f ] ax))
-[ r⇐⊗  f   ] = ⊗ₑ ax (    (⊸ₑ [ f ] ax))
-[ r⊗⇒  f   ] = ⊸ᵢ (    (⊸ₑ (⊸ᵢ [ f ]) (⊗ᵢ ax ax)))
-[ r⊗⇐  f   ] = ⊸ᵢ (e₁  (⊸ₑ (⊸ᵢ [ f ]) (⊗ᵢ ax ax)))
+  ⟦_⟧ : NL.Type → ILL.Type
+  ⟦ el   A  ⟧ = el  A
+  ⟦ A ⊗  B  ⟧ = ⟦ A ⟧ ⊗  ⟦ B ⟧
+  ⟦ A ⇒  B  ⟧ = ⟦ A ⟧ ⊸  ⟦ B ⟧
+  ⟦ B ⇐  A  ⟧ = ⟦ A ⟧ ⊸  ⟦ B ⟧
+```
+
+```
+  [_] : ∀ {A B} → RM A RM.⊢ B → ILL ⟦ A ⟧ , ∅ ILL.⊢ ⟦ B ⟧
+  [ ax        ] = ax
+  [ m⊗   f g  ] = ⊗ₑ ax (⊗ᵢ [ f ] [ g ])
+  [ m⇒   f g  ] = ⊸ᵢ (⊸ₑ (⊸ᵢ [ g  ]) (e₁ (⊸ₑ ax [ f  ])))
+  [ m⇐   f g  ] = ⊸ᵢ (⊸ₑ (⊸ᵢ [ f  ]) (e₁ (⊸ₑ ax [ g  ])))
+  [ r⇒⊗  f    ] = ⊗ₑ ax (e₁  (⊸ₑ [ f ] ax))
+  [ r⇐⊗  f    ] = ⊗ₑ ax (    (⊸ₑ [ f ] ax))
+  [ r⊗⇒  f    ] = ⊸ᵢ (    (⊸ₑ (⊸ᵢ [ f ]) (⊗ᵢ ax ax)))
+  [ r⊗⇐  f    ] = ⊸ᵢ (e₁  (⊸ₑ (⊸ᵢ [ f ]) (⊗ᵢ ax ax)))
+```
+
+
+
+### Typing Agda programs
+``` hidden
+module typing_agda where
+
+  import intermezzo_linear_logic Atom ⟦_⟧ᴬ as ILL
+  import non_associative_lambek_calculus Atom as NL
+  open NL using (Type; el; _⊗_; _⇒_; _⇐_)
+  open import Function
+  open import Data.Product
+
+  infix  1 RM_
+  infix  2 _⊢_∋_ ⊢∶-syntax ∶⊢-syntax
+```
+
+Let `⟦_⟧` now be the composition of the translation function above,
+and the translation function from intuitionistic linear logic into Agda from
+section \ref{intermezzo-linear-logic}.
+
+``` hidden
+  ⟦_⟧ : NL.Type → Set
+  ⟦_⟧ = ILL.⟦_⟧ ∘ translation_to_linear_logic.⟦_⟧
+```
+
+We can now define judgements as follows
+
+```
+  data Judgement : Set where
+    _⊢_∋_ : (A : Type) (B : Type) (f : ⟦ A ⟧ → ⟦ B ⟧) → Judgement
+```
+
+``` hidden
+  ⊢∶-syntax : (A : Type) (B : Type) (f : ⟦ A ⟧ → ⟦ B ⟧) → Judgement
+  ⊢∶-syntax = _⊢_∋_
+
+  ∶⊢-syntax : (A : Type) (B : Type) (f : ⟦ A ⟧ → ⟦ B ⟧) → Judgement
+  ∶⊢-syntax = _⊢_∋_
+```
+
+```
+  syntax ⊢∶-syntax A B (λ x →  f)  = x  ∶ A ⊢ f ∶ B
+  syntax ∶⊢-syntax A B         f   = f  ∶ A ⊢ B
+```
+
+```
+  data RM_ : Judgement → Set where
+
+    ax   : ∀ {A}
+         →  RM x  ∶ el A ⊢ x ∶ el A
+
+    m⊗   : ∀ {A B C D f g}
+         →  RM f  ∶ A ⊢ B
+         →  RM g  ∶ C ⊢ D
+         →  RM x  ∶ A ⊗ C ⊢ (map f g x) ∶ B ⊗ D
+    m⇒   : ∀ {A B C D f g}
+         →  RM f  ∶ A ⊢ B
+         →  RM g  ∶ C ⊢ D
+         →  RM h  ∶ B ⇒ C ⊢ (g ∘ h ∘ f) ∶ A ⇒ D
+    m⇐   : ∀ {A B C D f g}
+         →  RM f  ∶ A ⊢ B
+         →  RM g  ∶ C ⊢ D
+         →  RM h  ∶ A ⇐ D ⊢ (f ∘ h ∘ g) ∶ B ⇐ C
+
+
+    r⇒⊗  : ∀ {A B C f}
+         →  RM f  ∶ B ⊢ A ⇒ C
+         →  RM x  ∶ A ⊗ B ⊢ (uncurry (flip f) x) ∶ C
+    r⊗⇒  : ∀ {A B C f}
+         →  RM f  ∶ A ⊗ B ⊢ C
+         →  RM x  ∶ B ⊢ (flip (curry f) x) ∶ A ⇒ C
+    r⇐⊗  : ∀ {A B C f}
+         →  RM f  ∶ A ⊢ C ⇐ B
+         →  RM x  ∶ A ⊗ B ⊢ (uncurry f x) ∶ C
+    r⊗⇐  : ∀ {A B C f}
+         →  RM f  ∶ A ⊗ B ⊢ C
+         →  RM x  ∶ A ⊢ (curry f x) ∶ C ⇐ B
 ```

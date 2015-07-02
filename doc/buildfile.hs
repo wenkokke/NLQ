@@ -40,6 +40,7 @@ toc =
   , "non_associative_lambek_calculus"
   , "intermezzo_linear_logic"
   , "derivational_semantics"
+  , "lambek_grishin_calculus"
   ]
 
 

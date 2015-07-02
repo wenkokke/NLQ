@@ -1,8 +1,53 @@
-``` hidden
-module introduction where
-```
+# Overview
 
+  1. Categorial Grammar
+  2. Substructural Logic
+  3. The Base Logic
+       - Sequent Calculus
+       - The system R
 
+         *Incl. isomorphism with Sequent Calculus*
+       - The system RM
+
+         *Incl. executable cut-elimination procedure & isomorphism with R*
+       - Intermezzo: Linear Logic
+
+         *Incl. translation to Agda.*
+       - Derivational Semantics
+
+         *Incl. translation of RM to LL and "direct derivation" of Agda term.*
+       - Display Calculus
+
+         *Incl. isomorphism with RM*
+       - Polarity & Focusing
+
+         *Excl. isomorphism with sLG*
+  4. Extended Categorial Grammar
+       - The Lambek-Grishin Calculus
+           * The system RM
+           * Display Calculus
+           * Polarity & Focusing
+           * Intermezzo: Continuation-Passing Style
+           * Derivational Semantics
+           * Syntactically Delimited Continuations
+       - Multi-modal Lambek Calculus
+           * Barker & Shan's $\text{NL}_{CL}$
+           * Licensing units
+  5. Lessons learned
+       - Encoding logical systems
+
+         *Discussion of considerations when encoding logical systems:
+         abstraction versus readability; implicit versus explicit
+         structural rules; structural rules and spurious ambiguity;
+         extracting fragments.*
+
+       - Relation to programming language theory
+         *Discussion of the applicability of various lessons learned
+         in sections 3 and 4 to the implementation programming
+         languages.*
+  6. Conclusion
+
+<!--
 # Overview
 
   - **What is a type-logical grammar?**
@@ -46,8 +91,6 @@ module introduction where
     (minor contribution)
     the fusion of the two systems.
 
-
-<!--
 Formally verifying your work is incredibly useful, not only for you but also for
 your audience.
 
