@@ -44,7 +44,7 @@ open import Function         using (id)
 open import IO               using (IO; mapM′; run)
 open import Reflection       using (Term)
 open import Relation.Nullary using (Dec; yes; no)
-open import Example.System.aLG
+open import Example.System.AlgLG
 
 
 module Example.ScopeAmbiguityInAlgEXP where
@@ -59,23 +59,6 @@ private
   [ n ⋯ m ] with m ≤? n
   [ n ⋯ m ] | yes _ = n ∷ []
   [ n ⋯ m ] | no  _ = n ∷ [ suc n ⋯ m ]
-
-
-MARY_SAID_EVERYONE_LEFT₀ : LG np ⊗ ( ( ( np ⇒ s⁻ ) ⇐ ◇ s⁻ ) ⊗ ◇ ( ( ( np ⇐ n ) ⊗ n ) ⊗ ( np ⇒ s⁻ ) ) ) ⊢ s⁻
-MARY_SAID_EVERYONE_LEFT₀
-  = (r⇒⊗ (r⇐⊗ (m⇐ (m⇒ ax ax) (m◇ (r⇒⊗ (m⇒ (r⇐⊗ (m⇐ ax ax)) ax))))))
-mary_said_everyone_left₀ : ⟦ s⁻  ⟧ᵀ
-mary_said_everyone_left₀
-  = [ MARY_SAID_EVERYONE_LEFT₀ ]ᵀ (mary , said , everyone , left)
-
-
-
-MARY_SAID_EVERYONE_LEFT₁ : LG np ⊗ ( ( ( np ⇒ s⁻ ) ⇐ ◇ s⁻ ) ⊗ ◇ ( ( ( np ⇐ n ) ⊗ n ) ⊗ ( np ⇒ s⁻ ) ) ) ⊢ s⁻
-MARY_SAID_EVERYONE_LEFT₁
-  = (r⇒⊗ (r⇐⊗ (m⇐ (m⇒ ax ax) (m◇ (r⇐⊗ (r⇐⊗ (m⇐ (r⊗⇐ (r⇒⊗ (m⇒ ax ax))) ax)))))))
-mary_said_everyone_left₁ : ⟦ s⁻  ⟧ᵀ
-mary_said_everyone_left₁
-  = [ MARY_SAID_EVERYONE_LEFT₁ ]ᵀ (mary , said , everyone , left)
 
 
 synTerms

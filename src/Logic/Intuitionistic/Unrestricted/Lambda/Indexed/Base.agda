@@ -5,8 +5,11 @@
 
 open import Algebra      using (module Monoid)
 open import Data.Fin     using (Fin; suc; zero; #_)
-open import Data.List    using (List; _∷_; []; _++_)
+open import Data.List    using (List; _∷_; []; _++_; length)
+open import Data.Nat     using (ℕ)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
+open import Data.Unit    using (⊤; tt)
+open import Function     using (const; id)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst; subst₂)
 
 
@@ -14,8 +17,10 @@ module Logic.Intuitionistic.Unrestricted.Lambda.Indexed.Base {ℓ} (Atom : Set �
 
 
 open import Logic.Index
+open import Logic.Translation
 open import Logic.Intuitionistic.Unrestricted.Lambda.Type      Atom
 open import Logic.Intuitionistic.Unrestricted.Lambda.Judgement Atom
+open import Logic.Intuitionistic.Unrestricted.Lambda.Untyped.Base
 open Monoid (Data.List.monoid Type) using (identity; assoc)
 
 
@@ -133,3 +138,23 @@ cᴸ′ (A ∷ Γ₁) Γ₂ f = eᴸ′ [] (A ∷ []) Γ₁ Γ₂ (cᴸ′ Γ₁
     lem₀ rewrite      assoc Γ₁ Γ₁      Γ₂   = cᴸ₁′ (eᴸ′ [] (A ∷ []) (A ∷ Γ₁) (Γ₁ ++ Γ₂) f)
     lem₁ : Λ Γ₁ ++ (Γ₁ ++ A ∷ Γ₂) ⊢ _
     lem₁ rewrite sym (assoc Γ₁ Γ₁ (A ∷ Γ₂)) = eᴸ′ [] (Γ₁ ++ Γ₁) (A ∷ []) Γ₂ lem₀
+
+
+-- Theorem:
+--   we can forget about types
+size : Judgement → ℕ
+size (Γ ⊢ _) = length Γ
+
+forget : ∀ {J} → Λ J → Term (size J)
+forget (ax x)   = ax x
+forget (⇒ᵢ f)   = ⇒ᵢ (forget f)
+forget (⇒ₑ f g) = ⇒ₑ (forget f) (forget g)
+forget (⊗ᵢ f g) = ⊗ᵢ (forget f) (forget g)
+forget (⊗ₑ f g) = ⊗ₑ (forget f) (forget g)
+
+Ix→λ : Translation Type ⊤ Λ_ Term
+Ix→λ = record
+  { ⟦_⟧ᵀ = const tt
+  ; ⟦_⟧ᴶ = size
+  ; [_]  = forget
+  }

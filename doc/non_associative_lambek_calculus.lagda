@@ -250,7 +250,6 @@ ambiguity in proof search, but using monotonicity we can easily recover the
 full axiom rule as |ax′| below:
 
 ```
-  -- identity expansion
   ax′ : ∀ {A} → RM A ⊢ A
   ax′ {A =  el   A  } = ax
   ax′ {A =  A ⊗  B  } = m⊗  ax′ ax′
