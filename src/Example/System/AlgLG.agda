@@ -47,7 +47,7 @@ toLaTeXTerm _ _ = ""
 
 
 -- * create aliases for types
-np n s⁻ : Type
+np n s⁻ inf : Type
 np  = el NP
 n   = el N
 s⁻  = el S

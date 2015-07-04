@@ -3,7 +3,7 @@ open import Function     using (case_of_)
 open import Data.List    using (List; map; _++_) renaming (_∷_ to _,_; [] to ∅)
 open import Data.Product using (_×_) renaming (_,_ to _，_; uncurry′ to uncurry)
 
-module intermezzo_linear_logic (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
+module ll_base (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
 
 infix  1 ILL_
 infix  2 _⊢_
@@ -50,14 +50,14 @@ data ILL_ : Judgement → Set where
   ⊗ₑ  : ∀ {Γ₁ Γ₂ A B C}
       → ILL Γ₁ ⊢ A ⊗ B → ILL A , B , Γ₂ ⊢ C → ILL Γ₁ ++  Γ₂ ⊢ C
 
-  e   : ∀ {Γ₁ Γ₂ Γ₃ Γ₄ A}
+  ex  : ∀ {Γ₁ Γ₂ Γ₃ Γ₄ A}
       → ILL (Γ₁ ++ Γ₃) ++ (Γ₂ ++ Γ₄) ⊢ A →  ILL (Γ₁ ++ Γ₂) ++ (Γ₃ ++ Γ₄) ⊢ A
 ```
 
 ```
-e₁  : ∀ {A B C Γ}
-    → ILL B , A , Γ ⊢ C → ILL A , B , Γ ⊢ C
-e₁  = e {Γ₁ = ∅} {Γ₂ = _ , ∅} {Γ₃ = _ , ∅}
+ex₁  : ∀ {A B C Γ}
+     → ILL B , A , Γ ⊢ C → ILL A , B , Γ ⊢ C
+ex₁  = ex {Γ₁ = ∅} {Γ₂ = _ , ∅} {Γ₃ = _ , ∅}
 ```
 
 
@@ -124,5 +124,5 @@ module _ {A : Set} {f : A → Set} where
 [ ⊸ₑ  f g  ]    env     = split env as λ e₁ e₂ → [ f ] e₁  ([ g ] e₂)
 [ ⊗ᵢ  f g  ]    env     = split env as λ e₁ e₂ → [ f ] e₁ ， [ g ] e₂
 [ ⊗ₑ  f g  ]    env     = split env as λ e₁ e₂ → case [ f ] e₁ of (λ{(x ， y) → [ g ] (x , (y , e₂))})
-[ e {Γ₁}{Γ₂}{Γ₃}{Γ₄}   f    ]    env     = [ f ] (exch Γ₁ Γ₃ Γ₂ Γ₄ env)
+[ ex {Γ₁}{Γ₂}{Γ₃}{Γ₄}  f    ]    env     = [ f ] (exch Γ₁ Γ₃ Γ₂ Γ₄ env)
 ```

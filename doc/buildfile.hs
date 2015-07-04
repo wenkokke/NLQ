@@ -37,10 +37,13 @@ toc =
   , "introduction"
   , "categorial_grammar"
   , "substructural_logic"
-  , "non_associative_lambek_calculus"
-  , "intermezzo_linear_logic"
-  , "derivational_semantics"
-  , "lambek_grishin_calculus"
+  , "nl_base"
+  , "ll_base"
+  , "nl_derivational_semantics"
+  , "nl_display_calculus"
+  , "spurious_ambiguity"
+  , "nl_polarity"
+  , "lg_base"
   ]
 
 

@@ -1,5 +1,5 @@
 ``` hidden
-module derivational_semantics (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
+module nl_derivational_semantics (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
 ```
 
 ## Derivational Semantics
@@ -7,10 +7,10 @@ module derivational_semantics (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
 
 ### Translation to Linear Logic
 ``` hidden
-module translation_to_linear_logic where
+module translation_to_ll where
 
-  open import intermezzo_linear_logic Atom ⟦_⟧ᴬ as ILL hiding (⟦_⟧; [_])
-  open import non_associative_lambek_calculus Atom as NL
+  open import ll_base Atom ⟦_⟧ᴬ as ILL hiding (⟦_⟧; [_])
+  open import nl_base Atom as NL
   open module RM = NL.ResMon using (RM_; ax; m⊗; m⇒; m⇐; r⇒⊗; r⊗⇒; r⇐⊗; r⊗⇐)
   open import Data.List using (List; _++_) renaming (_∷_ to _,_; [] to ∅)
 ```
@@ -27,23 +27,22 @@ module translation_to_linear_logic where
   [_] : ∀ {A B} → RM A RM.⊢ B → ILL ⟦ A ⟧ , ∅ ILL.⊢ ⟦ B ⟧
   [ ax        ] = ax
   [ m⊗   f g  ] = ⊗ₑ ax (⊗ᵢ [ f ] [ g ])
-  [ m⇒   f g  ] = ⊸ᵢ (⊸ₑ (⊸ᵢ [ g  ]) (e₁ (⊸ₑ ax [ f  ])))
-  [ m⇐   f g  ] = ⊸ᵢ (⊸ₑ (⊸ᵢ [ f  ]) (e₁ (⊸ₑ ax [ g  ])))
-  [ r⇒⊗  f    ] = ⊗ₑ ax (e₁  (⊸ₑ [ f ] ax))
-  [ r⇐⊗  f    ] = ⊗ₑ ax (    (⊸ₑ [ f ] ax))
-  [ r⊗⇒  f    ] = ⊸ᵢ (    (⊸ₑ (⊸ᵢ [ f ]) (⊗ᵢ ax ax)))
-  [ r⊗⇐  f    ] = ⊸ᵢ (e₁  (⊸ₑ (⊸ᵢ [ f ]) (⊗ᵢ ax ax)))
+  [ m⇒   f g  ] = ⊸ᵢ (⊸ₑ (⊸ᵢ [ g  ]) (ex₁ (⊸ₑ ax [ f  ])))
+  [ m⇐   f g  ] = ⊸ᵢ (⊸ₑ (⊸ᵢ [ f  ]) (ex₁ (⊸ₑ ax [ g  ])))
+  [ r⇒⊗  f    ] = ⊗ₑ ax (ex₁  (⊸ₑ [ f ] ax))
+  [ r⇐⊗  f    ] = ⊗ₑ ax (     (⊸ₑ [ f ] ax))
+  [ r⊗⇒  f    ] = ⊸ᵢ (     (⊸ₑ (⊸ᵢ [ f ]) (⊗ᵢ ax ax)))
+  [ r⊗⇐  f    ] = ⊸ᵢ (ex₁  (⊸ₑ (⊸ᵢ [ f ]) (⊗ᵢ ax ax)))
 ```
 
 
 
 ### Typing Agda programs
 ``` hidden
-module typing_agda where
+module typing_agda_programs where
 
-  import intermezzo_linear_logic Atom ⟦_⟧ᴬ as ILL
-  import non_associative_lambek_calculus Atom as NL
-  open NL using (Type; el; _⊗_; _⇒_; _⇐_)
+  open import ll_base Atom ⟦_⟧ᴬ as LL using ()
+  open import nl_base Atom      as NL using (Type; el; _⊗_; _⇒_; _⇐_)
   open import Function
   open import Data.Product
 
@@ -57,7 +56,7 @@ section \ref{intermezzo-linear-logic}.
 
 ``` hidden
   ⟦_⟧ : NL.Type → Set
-  ⟦_⟧ = ILL.⟦_⟧ ∘ translation_to_linear_logic.⟦_⟧
+  ⟦_⟧ = LL.⟦_⟧ ∘ translation_to_ll.⟦_⟧
 ```
 
 We can now define judgements as follows
