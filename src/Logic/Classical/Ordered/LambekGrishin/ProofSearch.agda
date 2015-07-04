@@ -211,3 +211,13 @@ search {Mon} monadPlus = search′ []
     check-d⇚⇐ : (J : Judgement) → Mon (LG J)
     check-d⇚⇐ (X ⇚ W ⊢ Z ⇐ Y)    = continue (X ⊗ Y ⊢ Z ⊕ W) >>= λ x → return (d⇚⇐ x)
     check-d⇚⇐ _ = ∅
+
+
+findMaybe : (J : Judgement) → Maybe (LG J)
+findMaybe = search Data.Maybe.monadPlus
+
+find : (J : Judgement) → From-just (LG J) (findMaybe J)
+find J = from-just (findMaybe J)
+
+findAll : (J : Judgement) → List (LG J)
+findAll = search Data.List.monadPlus

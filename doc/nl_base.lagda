@@ -1,11 +1,11 @@
 ``` hidden
-module non_associative_lambek_calculus (Atom : Set) where
-
 open import Logic.Polarity                             using (Polarity; +; -; +≠-)
 open import Function                                   using (id; _∘_; flip)
 open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Nullary.Decidable                 using (True)
 open import Relation.Binary.PropositionalEquality as P hiding ([_])
+
+module nl_base (Atom : Set) where
 
 infixr 30 _⊗_
 infixr 20 _⇒_
