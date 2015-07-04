@@ -19,7 +19,7 @@ module Logic.Classical.Ordered.LambekGrishin.FocPol.Base {ℓ} (Atom : Set ℓ) 
 open import Logic.Polarity
 open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised      (Polarity × Atom) proj₁
 open import Logic.Classical.Ordered.LambekGrishin.Type                (Polarity × Atom)
-open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised (Polarity × Atom) hiding (Polarised)
+open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised (Polarity × Atom)
 open import Logic.Classical.Ordered.LambekGrishin.Judgement           (Polarity × Atom)
 
 

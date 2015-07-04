@@ -1,0 +1,121 @@
+\usepackage[unicode=true]{hyperref}
+\usepackage{adjustbox}%
+\usepackage{color}%
+\usepackage{comment}%
+\usepackage{natbib}%
+\usepackage{etoolbox}%
+\usepackage{mdframed}%
+\usepackage{pict2e}%
+\usepackage{picture}%
+\usepackage{scalerel}%
+
+% configure pandoc's required packages
+\usepackage{lmodern}%
+\usepackage{amssymb,amsmath}%
+\usepackage{ifxetex,ifluatex}%
+\usepackage{fixltx2e}%
+\usepackage{ucs}%
+\usepackage[T1]{fontenc}%
+\usepackage[utf8x]{inputenc}%
+\usepackage{xifthen}%
+
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% configure bussproofs
+\usepackage{bussproofs}%
+\EnableBpAbbreviations%
+\renewcommand{\fCenter}{\mathbin{\vdash}}
+
+% configure partial code blocks
+\newboolean{isTruncated}%
+\setboolean{isTruncated}{false}%
+\AtEndEnvironment{hscode}{\ifthenelse{\boolean{isTruncated}}{\\...}{}}%
+\newenvironment{truncated}{\setboolean{isTruncated}{true}}{\setboolean{isTruncated}{false}}%
+
+% configure comments
+\newboolean{showNotes}%
+\setboolean{showNotes}{false}%
+\newcommand{\todo}[1]{%
+\ifthenelse%
+  {\boolean{showNotes}}
+  {{\textcolor{red}{\textbf{TODO:~}#1}}}
+  {}
+}
+
+\newcommand{\nothing}{}
+
+% configure Lambek-Grishin operators
+\usepackage{stmaryrd}%
+\usepackage{textgreek}%
+\makeatletter
+\newcommand{\pictslash}[2]{%
+  \vcenter{%
+    \sbox0{$\m@th#1\varobslash$}\dimen0=.55\wd0
+    \hbox to\wd 0{%
+      \hfil\pictslash@aux#2\hfil
+    }%
+  }%
+}
+\newcommand{\pictslash@aux}[2]{%
+    \begin{picture}(\dimen0,\dimen0)
+    \roundcap
+    \linethickness{.15ex}
+    \put(0,#1\dimen0){\line(1,#2){\dimen0}}
+    \end{picture}%
+}
+\makeatother
+\newcommand{\varslash}{%
+  \mathpalette\pictslash{{0}{1}}%
+}
+\newcommand{\varbslash}{%
+  \mathpalette\pictslash{{1}{-1}}%
+}
+\newcommand{\focus}[1]{%
+  \adjustbox{padding=.4em .15ex .1em .15ex,bgcolor=Cyan}{%
+    \ensuremath{\color{white}\rule[-4pt]{0pt}{14pt}#1}
+  }%
+}
+\newcommand{\varbox}[1][]{\ifthenelse{\isempty{#1}}{\Box}{[ #1 ]}}
+\newcommand{\vardia}[1][]{\ifthenelse{\isempty{#1}}{\Diamond}{\\langle #1 \\rangle}}
+\newcommand{\varpref}[1]{{}_{#1}}
+\newcommand{\varsuff}[1]{{}^{#1}}
+\newcommand{\vardown}[1]{\,\cdot\,#1\,\cdot\,}
+
+\newcommand{\holer}[1]{#1{\scriptscriptstyle\triangleright}}
+\newcommand{\holel}[1]{{\scriptscriptstyle\triangleleft}#1}
+
+
+% declare Unicode characters
+\DeclareUnicodeCharacter{7522}{\ensuremath{_{\scriptscriptstyle\text{i}}}}%
+\DeclareUnicodeCharacter{7468}{\ensuremath{_{\scriptscriptstyle\text{A}}}}%
+\DeclareUnicodeCharacter{7478}{\ensuremath{^{\scriptscriptstyle\text{J}}}}%
+\DeclareUnicodeCharacter{7480}{\ensuremath{^{\scriptscriptstyle\text{L}}}}%
+\DeclareUnicodeCharacter{7487}{\ensuremath{^{\scriptscriptstyle\text{R}}}}%
+\DeclareUnicodeCharacter{7488}{\ensuremath{^{\scriptscriptstyle\text{T}}}}%
+\DeclareUnicodeCharacter{7489}{\ensuremath{^{\scriptscriptstyle\text{U}}}}%
+\DeclareUnicodeCharacter{8314}{\ensuremath{^{+}}}%
+\DeclareUnicodeCharacter{8315}{\ensuremath{^{-}}}%
+\DeclareUnicodeCharacter{8337}{\ensuremath{_{\scriptscriptstyle\text{e}}}}%
+\DeclareUnicodeCharacter{8656}{\ensuremath{\varslash}}%
+\DeclareUnicodeCharacter{8658}{\ensuremath{\varbslash}}%
+\DeclareUnicodeCharacter{8666}{\ensuremath{\varoslash}}%
+\DeclareUnicodeCharacter{8667}{\ensuremath{\varobslash}}%
+\DeclareUnicodeCharacter{8709}{\ensuremath{\varnothing}}%
+\DeclareUnicodeCharacter{10003}{\ensuremath{\checkmark}}%
+\DeclareUnicodeCharacter{120792}{\ensuremath{\mathbf{0}}}%
+\DeclareUnicodeCharacter{120793}{\ensuremath{\mathbf{1}}}%
+\DeclareUnicodeCharacter{738}{\ensuremath{^{\scriptscriptstyle\text{s}}}}%

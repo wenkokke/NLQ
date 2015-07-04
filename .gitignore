@@ -58,6 +58,12 @@ src/Logic/Classical/Ordered/Experimental/Structure/
 src/Logic/Classical/Ordered/Experimental/ToResMon.agda
 src/Logic/Classical/Ordered/Experimental/Type.agda
 src/Logic/Classical/Ordered/Experimental/Type/
+src/Example/System/PolEXP.agda
+osrc/Logic/Classical/Ordered/Experimental/EquivalentToFocPol.agda
+src/Logic/Classical/Ordered/Experimental/FocPol.agda
+src/Logic/Classical/Ordered/Experimental/FocPol/
+src/Logic/Classical/Ordered/Experimental/ProofSearch.agda
+src/Logic/Classical/Ordered/Experimental/ResMon/ProofSearch.agda
 src/MAlonzo/
 src/QuantifierRaising
 

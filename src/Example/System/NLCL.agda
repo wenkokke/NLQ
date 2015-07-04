@@ -39,7 +39,7 @@ smiles : ⟦ dp ⇒ s ⟧ᵀ
 smiles = SMILES
 
 left : ⟦ dp ⇒ s ⟧ᵀ
-left = LEFT
+left = LEAVES
 
 cheats : ⟦ dp ⇒ s ⟧ᵀ
 cheats = CHEATS

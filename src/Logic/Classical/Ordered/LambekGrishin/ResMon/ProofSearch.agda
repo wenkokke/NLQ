@@ -1,10 +1,14 @@
+------------------------------------------------------------------------
+-- The Lambek Calculus in Agda
+------------------------------------------------------------------------
+
+
 open import Category.Monad   using (module RawMonadPlus; RawMonadPlus)
 open import Data.Maybe       using (Maybe; From-just; from-just)
 open import Data.List        using (List; _∷_; [])
 open import Data.List.Any    using (any)
 open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P
-open import Reflection       hiding (module Type; Type)
 
 
 module Logic.Classical.Ordered.LambekGrishin.ResMon.ProofSearch

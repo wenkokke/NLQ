@@ -15,8 +15,11 @@ module Logic.Classical.Ordered.LambekGrishin.Judgement {ℓ} (Atom : Set ℓ) wh
 
 
 open import Logic.Polarity
-open import Logic.Classical.Ordered.LambekGrishin.Type                Atom
+     hiding (decSetoid)
+open import Logic.Classical.Ordered.LambekGrishin.Type Atom
+     as T hiding (module DecEq)
 open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Atom
+     as S hiding (module DecEq)
 
 
 infix  3  _⊢_ [_]⊢_ _⊢[_]
@@ -67,3 +70,34 @@ _∞ᴶ : Judgement → Judgement
 
 ⊢[]-injective : ∀ {A B Γ₁ Γ₂} → (Γ₁ ⊢[ A ]) ≡ (Γ₂ ⊢[ B ]) → Γ₁ ≡ Γ₂ × A ≡ B
 ⊢[]-injective refl = refl , refl
+
+
+module DecEq (_≟-Atom_ : (A B : Atom) → Dec (A ≡ B)) where
+
+
+  open module TEQ = T.DecEq _≟-Atom_ using (_≟-Type_)
+  open module SEQ = S.DecEq _≟-Atom_ using (_≟-Structure_)
+
+
+  _≟-Judgement_ : (I J : Judgement) → Dec (I ≡ J)
+  (  X  ⊢  Y  ) ≟-Judgement (  Z  ⊢  W  ) with X ≟-Structure Z | Y ≟-Structure W
+  ...| yes X=Z | yes Y=W = yes (P.cong₂ _⊢_ X=Z Y=W)
+  ...| no  X≠Z | _       = no (X≠Z ∘ proj₁ ∘ ⊢-injective)
+  ...| _       | no  Y≠W = no (Y≠W ∘ proj₂ ∘ ⊢-injective)
+  (  X  ⊢  Y  ) ≟-Judgement ([ C ]⊢  W  ) = no (λ ())
+  (  X  ⊢  Y  ) ≟-Judgement (  Z  ⊢[ D ]) = no (λ ())
+  ([ A ]⊢  Y  ) ≟-Judgement (  Z  ⊢  W  ) = no (λ ())
+  ([ A ]⊢  Y  ) ≟-Judgement ([ C ]⊢  W  ) with A ≟-Type C | Y ≟-Structure W
+  ...| yes A=C | yes Y=W = yes (P.cong₂ [_]⊢_ A=C Y=W)
+  ...| no  A≠C | _       = no (A≠C ∘ proj₁ ∘ []⊢-injective)
+  ...| _       | no  Y≠W = no (Y≠W ∘ proj₂ ∘ []⊢-injective)
+  ([ A ]⊢  Y  ) ≟-Judgement (  Z  ⊢[ D ]) = no (λ ())
+  (  X  ⊢[ B ]) ≟-Judgement (  Z  ⊢  W  ) = no (λ ())
+  (  X  ⊢[ B ]) ≟-Judgement ([ C ]⊢  W  ) = no (λ ())
+  (  X  ⊢[ B ]) ≟-Judgement (  Z  ⊢[ D ]) with X ≟-Structure Z | B ≟-Type D
+  ...| yes X=Z | yes B=D = yes (P.cong₂ _⊢[_] X=Z B=D)
+  ...| no  X≠Z | _       = no (X≠Z ∘ proj₁ ∘ ⊢[]-injective)
+  ...| _       | no  B≠D = no (B≠D ∘ proj₂ ∘ ⊢[]-injective)
+
+  decSetoid : DecSetoid _ _
+  decSetoid = P.decSetoid _≟-Judgement_

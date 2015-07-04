@@ -222,7 +222,7 @@ classicalNonAssociativeLambek =
 experimentalExtendedLambek :: Mapping
 experimentalExtendedLambek =
   (mkMapping "Classical Non-associative Lambek Calculus")
-  { blacklistToken = ["r□◇" , "r◇□"
+  { blacklistToken = ["r□◇" , "r◇□" , "r□◇′" , "r◇□′"
                      ,"₀", "₀_", "r₀⁰" , "m₀" , "₀>", "₀>_" , "₀ᴸ" , "₀ᴿ" , "₀-injective"
                      ,"⁰", "_⁰", "r⁰₀" , "m⁰" , "<⁰", "_<⁰" , "⁰ᴸ" , "⁰ᴿ" , "⁰-injective"
                      ,"₁", "₁_", "r₁¹" , "m₁" , "₁>", "₁>_" , "₁ᴸ" , "₁ᴿ" , "₁-injective"
@@ -231,12 +231,10 @@ experimentalExtendedLambek =
   , textMapping    = ["LambekGrishin" ==> "Experimental"
                      ,"LG"            ==> "EXP"
                      ]
-  , include        = ["Logic/Classical/Ordered/LambekGrishin//*.agda"
+  , include        = ["Example/System/PolLG.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin//*.agda"
                      ]
   , exclude        = ["//Trans.agda"
-                     ,"//FocPol.agda"
-                     ,"//FocPol//*.agda"
-                     ,"//EquivalentToFocPol.agda"
                      ,"//EquivalentToResMon.agda"
                      ]
   }
