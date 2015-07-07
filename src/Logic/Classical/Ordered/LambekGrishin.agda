@@ -7,8 +7,8 @@ module Logic.Classical.Ordered.LambekGrishin {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Classical.Ordered.LambekGrishin.Type Atom
-     public hiding (module DecEq)
-     public hiding ( ⇒-injective ; ⇐-injective ; ⊗-injective
+     public hiding (module DecEq
+                   ; ⇒-injective ; ⇐-injective ; ⊗-injective
                    ; ⇚-injective ; ⇛-injective ; ⊕-injective
                    ; ₀-injective ; ⁰-injective ; ₁-injective ; ¹-injective
                    )

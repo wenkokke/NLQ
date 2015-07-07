@@ -7,7 +7,7 @@ EndCode    = "```"
 
 # Strip the implicit arguments from a code block.
 def remove_implicit_args(ln)
-  ln.gsub(/(?<!record)(?<!λ)\s*(∀\s*)?\{([^=^\}]*)\}(\s*→)?/, '')
+  ln.gsub(/(?<!record)(?<!λ)\s*(∀\s*)?\{+([^=^\{^\}]*)\}+(\s*→)?/, '')
 end
 
 
