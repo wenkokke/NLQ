@@ -1,11 +1,13 @@
-## Focusing and polarity
+### Focusing and polarity
 ``` hidden
 open import Logic.Polarity
 open import Relation.Nullary           using (Dec; yes; no)
 open import Relation.Nullary.Decidable using (True; toWitness)
 open import Relation.Binary.PropositionalEquality as P
 
-module nl_polarity (Atom : Set) (Polarityᴬ? : Atom → Polarity) where
+module nl_focusing_and_polarity where
+
+module nl_focusing_and_polarity (Atom : Set) (Polarityᴬ? : Atom → Polarity) where
 
   infix 1 fNL_
   open import nl_base Atom using (Type; el; _⇐_; _⊗_; _⇒_)
@@ -88,4 +90,34 @@ system fNL:
     r⊗⇒  : ∀ {Y X Z}    →  fNL X ⊗ Y ⊢ Z   → fNL Y ⊢ X ⇒ Z
     r⇐⊗  : ∀ {X Y Z}    →  fNL X ⊢ Z ⇐ Y   → fNL X ⊗ Y ⊢ Z
     r⊗⇐  : ∀ {X Z Y}    →  fNL X ⊗ Y ⊢ Z   → fNL X ⊢ Z ⇐ Y
+```
+
+``` hidden
+module nl_ambiguity where
+
+  open import Data.List using (length)
+  open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+  open import Example.System.PolNL
+       hiding (mary; wants; everyone; to; leave)
+       renaming (findAll to findAllNL)
+```
+
+``` hidden
+  mary wants everyone to leave : Type
+  mary      = np
+  wants     = (np ⇒ s⁻) ⇐ s⁻
+  everyone  = (np ⇐ n ) ⊗ n
+  to        = ((np ⇒ s⁻ ) ⇐ inf)
+  leave     = inf
+```
+
+``` hidden
+  testNL :
+```
+```
+    length (findAllNL (
+      · mary · ⊗ · wants · ⊗ · everyone · ⊗ · to · ⊗ · leave · ⊢[ s⁻ ])) ≡ 3
+```
+``` hidden
+  testNL = refl
 ```

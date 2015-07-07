@@ -38,8 +38,8 @@ data ILL_ : Judgement → Set where
   ax  : ∀ {A}
       → ILL A , ∅ ⊢ A
 
-  ⊸ᵢ  : ∀ {Γ₁ A B}
-      → ILL A , Γ₁ ⊢ B →  ILL Γ₁  ⊢ A ⊸ B
+  ⊸ᵢ  : ∀ {Γ A B}
+      → ILL A , Γ ⊢ B →  ILL Γ  ⊢ A ⊸ B
 
   ⊸ₑ  : ∀ {Γ₁ Γ₂ A B}
       → ILL Γ₁ ⊢ A ⊸ B →  ILL Γ₂  ⊢ A → ILL Γ₁ ++  Γ₂  ⊢ B

@@ -24,16 +24,23 @@ open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised (Polarity × At
 
 open import Logic.Classical.Ordered.LambekGrishin.Type (Polarity × Atom) as Type
      public hiding ( ⇒-injective ; ⇐-injective ; ⊗-injective
+
                    ; ⇚-injective ; ⇛-injective ; ⊕-injective
+
                    ; ₀-injective ; ⁰-injective ; ₁-injective ; ¹-injective
-                   )
+
+            )
 
 open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised (Polarity × Atom) as Structure
-     public hiding ( module DecEq ; module Correct
+     public hiding ( module DecEq
+
                    ; ⇒-injective ; ⇐-injective ; ⊗-injective
+
                    ; ⇚-injective ; ⇛-injective ; ⊕-injective
+
                    ; ₀-injective ; ⁰-injective ; ₁-injective ; ¹-injective
-                   )
+
+            )
 
 open import Logic.Classical.Ordered.LambekGrishin.Judgement (Polarity × Atom)
      public hiding (module DecEq)

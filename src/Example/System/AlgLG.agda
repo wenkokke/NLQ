@@ -26,7 +26,7 @@ open import Logic.Classical.Ordered.LambekGrishin.ToAgda                 Atom Bo
 open import Logic.Classical.Ordered.LambekGrishin.EquivalentToResMon     Atom public using (Alg→Str↓)
 open import Logic.Classical.Ordered.LambekGrishin.ResMon.ToLaTeX         Atom using (LambekGrishinToLaTeX)
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment
-open Translation (CBV ◇ Alg→Str↓) using () renaming (⟦_⟧ᵀ to ⟦_⟧ᵀ′; [_] to [_]ᵀ′)
+open Translation (CBV ◆ Alg→Str↓) using () renaming (⟦_⟧ᵀ to ⟦_⟧ᵀ′; [_] to [_]ᵀ′)
 
 
 toLaTeX : ∀ {J} (f : LG J) → String

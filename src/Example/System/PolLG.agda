@@ -38,8 +38,8 @@ open import Logic.Intuitionistic.Unrestricted.Lambda.Untyped.Base using (norm)
 open import Logic.Intuitionistic.Unrestricted.Lambda.Untyped.ToLaTeX as UT using ()
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment public
 
-open Translation (Λ→ΛΠ ◇         LL→Λ ◇ LG→LL) public renaming ([_] to [_]ᵀ)
-open Translation (Ix→λ ◇ Un→Ix ◇ LL→Λ ◇ LG→LL) public using () renaming ([_] to LG→λ)
+open Translation (Λ→ΛΠ ◆         LL→Λ ◆ LG→LL) public renaming ([_] to [_]ᵀ)
+open Translation (Ix→λ ◆ Un→Ix ◆ LL→Λ ◆ LG→LL) public using () renaming ([_] to LG→λ)
 
 size : Structure + → ℕ
 size Γ = length ⟦ Γ ⟧ˢ

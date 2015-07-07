@@ -35,7 +35,7 @@ module NL where
     [_]⊢_  : Type      → Struct -  → Judgement
     _⊢[_]  : Struct +  → Type      → Judgement
 ```
-```
+``` hidden
 open NL public
 ```
 

@@ -23,7 +23,8 @@ open import Logic.Classical.Ordered.LambekGrishin.Structure.Polarised Atom
 
 
 infix  3  _⊢_ [_]⊢_ _⊢[_]
-infixl 50 _⋈ᴶ _∞ᴶ
+infixl 50 _⋈ᴶ
+infixl 50 _∞ᴶ
 
 
 

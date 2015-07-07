@@ -34,16 +34,19 @@ import qualified Data.Text.IO as T
 toc :: [FilePath]
 toc =
   [ "abstract"
-  , "introduction"
-  , "categorial_grammar"
-  , "substructural_logic"
+  , "int_introduction"
+  , "int_categorial_grammar"
+  , "int_substructural_logic"
   , "nl_base"
-  , "ll_base"
+  , "nl_ll_base"
   , "nl_derivational_semantics"
   , "nl_display_calculus"
-  , "spurious_ambiguity"
-  , "nl_polarity"
-  , "lg_base"
+  , "nl_spurious_ambiguity"
+  , "nl_focusing_and_polarity"
+  , "nl_cps_base"
+  , "nl_cps_translation"
+  , "ext_categorial_grammar"
+  , "ext_lg_base"
   ]
 
 

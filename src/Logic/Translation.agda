@@ -23,9 +23,9 @@ record Translation {j₁ j₂ t₁ t₂ ℓ₁ ℓ₂}
     [_]  : {J : Judgement₁} → Term₁ J → Term₂ ⟦ J ⟧ᴶ
 
 
-infixr 9 _◇_
+infixr 9 _◆_
 
-_◇_ : ∀ {j₁ j₂ j₃ t₁ t₂ t₃ ℓ₁ ℓ₂ ℓ₃}
+_◆_ : ∀ {j₁ j₂ j₃ t₁ t₂ t₃ ℓ₁ ℓ₂ ℓ₃}
         {J₁    : Set j₁}
         {J₂    : Set j₂}
         {J₃    : Set j₃}
@@ -38,7 +38,7 @@ _◇_ : ∀ {j₁ j₂ j₃ t₁ t₂ t₃ ℓ₁ ℓ₂ ℓ₃}
         → Translation Type₂ Type₃ Tm₂ Tm₃
         → Translation Type₁ Type₂ Tm₁ Tm₂
         → Translation Type₁ Type₃ Tm₁ Tm₃
-f ◇ g = record
+f ◆ g = record
   { ⟦_⟧ᵀ = Translation.⟦ f ⟧ᵀ ∘ Translation.⟦ g ⟧ᵀ
   ; ⟦_⟧ᴶ = Translation.⟦ f ⟧ᴶ ∘ Translation.⟦ g ⟧ᴶ
   ; [_]  = Translation.[ f ]  ∘ Translation.[ g ] }

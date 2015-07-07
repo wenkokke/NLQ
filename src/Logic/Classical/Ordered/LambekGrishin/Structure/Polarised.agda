@@ -30,7 +30,8 @@ infix  15 [_] ⟨_⟩
 infixr 20 _⇒_ _⇐_
 infixl 25 _⇚_ _⇛_
 infixr 30 _⊗_ _⊕_
-infixl 50 _⋈ˢ _∞ˢ
+infixl 50 _⋈ˢ
+infixl 50 _∞ˢ
 
 
 data Structure : Polarity → Set ℓ where

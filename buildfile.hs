@@ -1,6 +1,6 @@
 #!/usr/bin/env runhaskell
 
-{-# LANGUAGE PatternGuards, OverloadedStrings, RecordWildCards #-}
+{-# LANGUAGE BangPatterns, PatternGuards, OverloadedStrings, RecordWildCards #-}
 
 import           Control.Monad (when)
 import           Data.Attoparsec.Text (Parser)
@@ -78,16 +78,16 @@ main = shakeArgs shakeOptions $ do
   want [srcDir </> "Everything.agda"]
   srcDir </> "Everything.agda" %> \out -> do
 
-    modules1 <- fmap (srcDir </>) . filter ("//*.agda"?==) . concat
-                <$> mapM makeFileList mappings
-    modules2 <- fmap (srcDir </>) . filter (/="Everything.agda")
-                <$> getDirectoryFiles srcDir ["//*.agda","//*.lagda"]
+    !modules1 <- fmap (srcDir </>) . filter ("//*.agda"?==) . concat
+             <$> mapM makeFileList mappings
+    !modules2 <- fmap (srcDir </>) . filter (/="Everything.agda")
+             <$> getDirectoryFiles srcDir ["//*.agda","//*.lagda"]
     let modules = L.sort (L.nub (modules1 ++ modules2))
 
     need ("Header" : modules1)
 
-    header  <- readFile' "Header"
-    headers <- mapM (liftIO . extractHeader) modules
+    !header  <- readFile' "Header"
+    !headers <- mapM (liftIO . extractHeader) modules
 
     writeFile' out $ header ++ format (zip modules headers)
 
@@ -173,25 +173,38 @@ lambdaCMinus =
 ---------------------------------------------------------------------------------
 
 nonAssociativeLambek :: Mapping
-nonAssociativeLambek =
+nonAssociativeLambek = let
+
+  rules01 = ["₀ᴸ", "₀ᴿ", "⁰ᴸ", "⁰ᴿ", "r⁰₀", "r₀⁰"
+            ,"₁ᴸ", "₁ᴿ", "¹ᴸ", "¹ᴿ", "r¹₁", "r₁¹"
+            ,"m₀", "m⁰", "m₁", "m¹"]
+  check01 = map ("check-" `T.append`) rules01
+
+  in
   (mkMapping "Non-associative Lambek Calculus")
   { blacklistChar  = ["⊕" , "⇛" , "⇚" , "□" , "◇" , "∞"
                      ]
-  , blacklistToken = ["₀", "₀_", "r₀⁰" , "m₀" , "₀>", "₀>_" , "₀ᴸ" , "₀ᴿ" , "₀-injective"
-                     ,"⁰", "_⁰", "r⁰₀" , "m⁰" , "<⁰", "_<⁰" , "⁰ᴸ" , "⁰ᴿ" , "⁰-injective"
-                     ,"₁", "₁_", "r₁¹" , "m₁" , "₁>", "₁>_" , "₁ᴸ" , "₁ᴿ" , "₁-injective"
-                     ,"¹", "_¹", "r¹₁" , "m¹" , "<¹", "_<¹" , "¹ᴸ" , "¹ᴿ" , "¹-injective"
+  , blacklistToken = ["₀", "₀_", "₀>", "₀>_" , "₀-injective"
+                     ,"⁰", "_⁰", "<⁰", "_<⁰" , "⁰-injective"
+                     ,"₁", "₁_", "₁>", "₁>_" , "₁-injective"
+                     ,"¹", "_¹", "<¹", "_<¹" , "¹-injective"
                      ]
+                     ++ rules01
+                     ++ check01
   , textMapping    = ["LambekGrishin" ==> "Lambek"
                      ,"LG"            ==> "NL"
                      ,"Classical"     ==> "Intuitionistic"
                      ]
-  , include        = ["Logic/Classical/Ordered/LambekGrishin/Type.agda"
-                     ,"Logic/Classical/Ordered/LambekGrishin/Type//*.agda"
-                     ,"Logic/Classical/Ordered/LambekGrishin/ResMon.agda"
-                     ,"Logic/Classical/Ordered/LambekGrishin/ResMon//*.agda"
+  , include        = ["Logic/Classical/Ordered/LambekGrishin.agda"
+                     ,"Logic/Classical/Ordered/LambekGrishin//*.agda"
+                     ,"Example/System/AlgLG.agda"
+                     ,"Example/System/StrLG.agda"
+                     ,"Example/System/PolLG.agda"
                      ]
   , exclude        = ["//ToIntuitionisticLinearLambda.agda"
+                     ,"//Structure.agda"
+                     ,"//Structure//*.agda"
+                     ,"//ToAgda.agda"
                      ]
   }
 
@@ -333,7 +346,7 @@ make m@Mapping{..} = do
     putQuiet $ "Generating " ++ out
     putQuiet $ "      from " ++ src
     liftIO $ do
-      contents <- T.readFile src
+      !contents <- T.readFile src
       T.writeFile out $
         restrictToFragment src textMapping blacklistToken blacklistChar contents
 

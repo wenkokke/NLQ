@@ -112,9 +112,9 @@ contexts are that:
 due to @lambek1961
 
 ``` hidden
-module Res where
+module ResCut where
 
-  infix  1  R_
+  infix  1  R′_
   infix  2  _⊢_
 ```
 
@@ -124,25 +124,25 @@ module Res where
 ```
 
 ```
-  data R_ : Judgement → Set where
-    ax   : ∀ {A}      → R A ⊢ A
+  data R′_ : Judgement → Set where
+    ax   : ∀ {A}      → R′ A ⊢ A
 
-    cut  : ∀ {A B C}  → R A ⊢ B → R B ⊢ C → R A ⊢ C
+    cut  : ∀ {A B C}  → R′ A ⊢ B → R′ B ⊢ C → R′ A ⊢ C
 
-    r⇒⊗  : ∀ {A B C}  → R B ⊢ A ⇒ C  → R A ⊗ B ⊢ C
-    r⊗⇒  : ∀ {A B C}  → R A ⊗ B ⊢ C  → R B ⊢ A ⇒ C
-    r⇐⊗  : ∀ {A B C}  → R A ⊢ C ⇐ B  → R A ⊗ B ⊢ C
-    r⊗⇐  : ∀ {A B C}  → R A ⊗ B ⊢ C  → R A ⊢ C ⇐ B
+    r⇒⊗  : ∀ {A B C}  → R′ B ⊢ A ⇒ C  → R′ A ⊗ B ⊢ C
+    r⊗⇒  : ∀ {A B C}  → R′ A ⊗ B ⊢ C  → R′ B ⊢ A ⇒ C
+    r⇐⊗  : ∀ {A B C}  → R′ A ⊢ C ⇐ B  → R′ A ⊗ B ⊢ C
+    r⊗⇐  : ∀ {A B C}  → R′ A ⊗ B ⊢ C  → R′ A ⊢ C ⇐ B
 ```
 
 ```
-  m⊗′  : ∀ {A B C D} → R A ⊢ B → R C ⊢ D → R A ⊗ C ⊢ B ⊗ D
+  m⊗′  : ∀ {A B C D} → R′ A ⊢ B → R′ C ⊢ D → R′ A ⊗ C ⊢ B ⊗ D
   m⊗′  f g  = r⇐⊗ (cut f (r⊗⇐ (r⇒⊗ (cut g (r⊗⇒ ax)))))
 
-  m⇒′  : ∀ {A B C D} → R A ⊢ B → R C ⊢ D → R B ⇒ C ⊢ A ⇒ D
+  m⇒′  : ∀ {A B C D} → R′ A ⊢ B → R′ C ⊢ D → R′ B ⇒ C ⊢ A ⇒ D
   m⇒′  f g  = r⊗⇒ (cut (r⇐⊗ (cut f (r⊗⇐ (r⇒⊗ ax)))) g)
 
-  m⇐′  : ∀ {A B C D} → R A ⊢ B → R C ⊢ D → R A ⇐ D ⊢ B ⇐ C
+  m⇐′  : ∀ {A B C D} → R′ A ⊢ B → R′ C ⊢ D → R′ A ⇐ D ⊢ B ⇐ C
   m⇐′  f g  = r⊗⇐ (cut (r⇒⊗ (cut g (r⊗⇒ (r⇐⊗ ax)))) f)
 ```
 
@@ -154,9 +154,9 @@ We would like to be sure that the new axiomatisation for NL is
 actually equally expressive.
 
 ``` hidden
-module SC→R where
+module SC→R′ where
 
-  module R  = Res            ; open R
+  module R′ = ResCut         ; open R′
   module SC = SequentCalculus; open SC hiding (Judgement)
 ```
 
@@ -168,16 +168,16 @@ module SC→R where
 
 ```
   cutIn′  : ∀ {Γ Δ Δ′ A}
-          →  R ⌊ Δ ⌋ ⊢ ⌊ Δ′ ⌋
-          →  R ⌊ Γ [ Δ′  ] ⌋ ⊢ A
-          →  R ⌊ Γ [ Δ   ] ⌋ ⊢ A
+          →  R′ ⌊ Δ ⌋ ⊢ ⌊ Δ′ ⌋
+          →  R′ ⌊ Γ [ Δ′  ] ⌋ ⊢ A
+          →  R′ ⌊ Γ [ Δ   ] ⌋ ⊢ A
   cutIn′ {Γ = []      } f g = cut f g
   cutIn′ {Γ = _ ∙> Γ  } f g = r⇒⊗ (cutIn′ {Γ = Γ} f (r⊗⇒ g))
   cutIn′ {Γ = Γ <∙ _  } f g = r⇐⊗ (cutIn′ {Γ = Γ} f (r⊗⇐ g))
 ```
 
 ```
-  from : ∀ {Γ A} → SC Γ SC.⊢ A → R (⌊ Γ ⌋ R.⊢ A)
+  from : ∀ {Γ A} → SC Γ SC.⊢ A → R′ (⌊ Γ ⌋ R′.⊢ A)
   from    ax                  = ax
   from (  cut  {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (  from f)  (from g)
   from (  ⊗L   {Γ = Γ}  f)    = cutIn′ {Γ = Γ}    ax       (from f)
@@ -189,7 +189,7 @@ module SC→R where
 ```
 
 ```
-  to : ∀ {A B} → R A R.⊢ B → SC · A · SC.⊢ B
+  to : ∀ {A B} → R′ A R′.⊢ B → SC · A · SC.⊢ B
   to    ax         = ax
   to (  cut  f g)  = cut  {Γ = []} (to f) (to g)
   to (  r⇒⊗  f)    = ⊗L   {Γ = []} (cut {Γ = _ ∙> []} (to f) (⇒L {Γ = []} ax ax))
@@ -227,7 +227,7 @@ module ResMon where
   infixl 20 _⇐>_ _<⇐_
   infixr 30 _⊗>_ _<⊗_
 
-  open Res public using (Judgement; _⊢_)
+  open ResCut public using (Judgement; _⊢_)
 ```
 
 
@@ -513,14 +513,14 @@ full axiom rule as |ax′| below:
 ### Equivalence between R and RM
 
 ``` hidden
-module R→RM where
+module R′→RM where
 
   module RM = ResMon ; open RM
-  module R  = Res    ; open R
+  module R′ = ResCut ; open R′
 ```
 
 ```
-  from : ∀ {A B} → R A R.⊢ B → RM A RM.⊢ B
+  from : ∀ {A B} → R′ A R′.⊢ B → RM A RM.⊢ B
   from  ax         = ax′
   from (cut  f g)  = cut′  (from f) (from g)
   from (r⇒⊗  f)    = r⇒⊗   (from f)
@@ -530,7 +530,7 @@ module R→RM where
 ```
 
 ```
-  to : ∀ {A B} → RM A RM.⊢ B → R A R.⊢ B
+  to : ∀ {A B} → RM A RM.⊢ B → R′ A R′.⊢ B
   to  ax         = ax
   to (m⊗   f g)  = m⊗′  (to f) (to g)
   to (m⇒   f g)  = m⇒′  (to f) (to g)

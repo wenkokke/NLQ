@@ -48,17 +48,17 @@ search {Mon} monadPlus = search′ []
   search′ : (seen : List Judgement) (J : Judgement) → Mon (LG J)
   search′ seen J with any (J ≟-Judgement_) seen
   search′ seen J | yes J∈seen = ∅
-  search′ seen J | no  J∉seen =
-    check-ax⁺ J ∣ check-ax⁻ J ∣
-    check-⇁   J ∣ check-↽   J ∣ check-⇀   J ∣ check-↼   J ∣
-    check-◇ᴸ  J ∣ check-◇ᴿ  J ∣ check-□ᴸ  J ∣ check-□ᴿ  J ∣ check-r□◇ J ∣ check-r◇□ J ∣
-    check-₀ᴸ  J ∣ check-₀ᴿ  J ∣ check-⁰ᴸ  J ∣ check-⁰ᴿ  J ∣ check-r⁰₀ J ∣ check-r₀⁰ J ∣
-    check-₁ᴸ  J ∣ check-₁ᴿ  J ∣ check-¹ᴸ  J ∣ check-¹ᴿ  J ∣ check-r¹₁ J ∣ check-r₁¹ J ∣
-    check-⊗ᴸ  J ∣ check-⊗ᴿ  J ∣ check-⇒ᴸ  J ∣ check-⇒ᴿ  J ∣ check-⇐ᴸ  J ∣ check-⇐ᴿ J ∣
-    check-r⇒⊗ J ∣ check-r⊗⇒ J ∣ check-r⇐⊗ J ∣ check-r⊗⇐ J ∣
-    check-⊕ᴸ  J ∣ check-⊕ᴿ  J ∣ check-⇚ᴸ  J ∣ check-⇚ᴿ  J ∣ check-⇛ᴸ  J ∣ check-⇛ᴿ J ∣
-    check-r⇚⊕ J ∣ check-r⊕⇚ J ∣ check-r⇛⊕ J ∣ check-r⊕⇛ J ∣
-    check-d⇛⇐ J ∣ check-d⇛⇒ J ∣ check-d⇚⇒ J ∣ check-d⇚⇐ J
+  search′ seen J | no  J∉seen
+    = check-ax⁺ J ∣ check-ax⁻ J
+    ∣ check-⇁   J ∣ check-↽   J ∣ check-⇀   J ∣ check-↼   J
+    ∣ check-◇ᴸ  J ∣ check-◇ᴿ  J ∣ check-□ᴸ  J ∣ check-□ᴿ  J ∣ check-r□◇ J ∣ check-r◇□ J
+    ∣ check-₀ᴸ  J ∣ check-₀ᴿ  J ∣ check-⁰ᴸ  J ∣ check-⁰ᴿ  J ∣ check-r⁰₀ J ∣ check-r₀⁰ J
+    ∣ check-₁ᴸ  J ∣ check-₁ᴿ  J ∣ check-¹ᴸ  J ∣ check-¹ᴿ  J ∣ check-r¹₁ J ∣ check-r₁¹ J
+    ∣ check-⊗ᴸ  J ∣ check-⊗ᴿ  J ∣ check-⇒ᴸ  J ∣ check-⇒ᴿ  J ∣ check-⇐ᴸ  J ∣ check-⇐ᴿ J
+    ∣ check-r⇒⊗ J ∣ check-r⊗⇒ J ∣ check-r⇐⊗ J ∣ check-r⊗⇐ J
+    ∣ check-⊕ᴸ  J ∣ check-⊕ᴿ  J ∣ check-⇚ᴸ  J ∣ check-⇚ᴿ  J ∣ check-⇛ᴸ  J ∣ check-⇛ᴿ J
+    ∣ check-r⇚⊕ J ∣ check-r⊕⇚ J ∣ check-r⇛⊕ J ∣ check-r⊕⇛ J
+    ∣ check-d⇛⇐ J ∣ check-d⇛⇒ J ∣ check-d⇚⇒ J ∣ check-d⇚⇐ J
     where
     reset    = search′ []         -- for rules which make progress
     continue = search′ (J ∷ seen) -- for rules which make no progress
