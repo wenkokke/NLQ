@@ -23,7 +23,6 @@
 open import Data.Colist        using (fromList)
 open import Data.Bool          using (Bool; true; false; _∧_; _∨_)
 open import Data.Nat           using (ℕ; suc; zero; _≤?_; _*_)
-open import Data.Nat.Show      using (show)
 open import Data.List
 open import Data.String        using (String; _++_)
 open import Data.Product       using (_×_; _,_)
@@ -32,15 +31,15 @@ open import Function           using (id; _$_)
 open import IO                 using (IO; run)
 open import Reflection         using (Term)
 open import Relation.Nullary   using (Dec; yes; no)
-open import Example.System.PolEXP
+open import Example.System.PolLG
 
 
-module Example.ScopeAmbiguityInPolEXP where
+module Example.ScopeAmbiguityInPolLG where
 
 
 module mary_left where
 
-  syn : List (EXP · np · ⊗ · np ⇒ s⁻ · ⊢[ s⁻ ])
+  syn : List (LG · np · ⊗ · np ⇒ s⁻ · ⊢[ s⁻ ])
   syn = findAll (· np · ⊗ · np ⇒ s⁻ · ⊢[ s⁻ ])
 
   sem : List ⟦ s⁻ ⟧ᵀ
@@ -56,7 +55,7 @@ module mary_left where
 
 module everyone_loves_mary where
 
-  syn : List (EXP · ( np ⇐ n ) ⊗ n · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · np · ) ⊢[ s⁻ ])
+  syn : List (LG · ( np ⇐ n ) ⊗ n · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · np · ) ⊢[ s⁻ ])
   syn = findAll _
 
   sem : List ⟦ s⁻ ⟧ᵀ
@@ -72,7 +71,7 @@ module everyone_loves_mary where
 
 module mary_loves_everyone where
 
-  syn : List (EXP · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · ( np ⇐ n ) ⊗ n · ) ⊢[ s⁻ ])
+  syn : List (LG · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · ( np ⇐ n ) ⊗ n · ) ⊢[ s⁻ ])
   syn = findAll _
 
   sem : List ⟦ s⁻ ⟧ᵀ
@@ -88,7 +87,7 @@ module mary_loves_everyone where
 
 module someone_loves_everyone where
 
-  syn : List (EXP · ( np ⇐ n ) ⊗ n · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · ( np ⇐ n ) ⊗ n · ) ⊢[ s⁻ ])
+  syn : List (LG · ( np ⇐ n ) ⊗ n · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · ( np ⇐ n ) ⊗ n · ) ⊢[ s⁻ ])
   syn = findAll _
 
   sem : List ⟦ s⁻ ⟧ᵀ
@@ -105,7 +104,7 @@ module someone_loves_everyone where
 
 module mary_wants_everyone_to_leave where
 
-  syn : List (EXP · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ s⁻ · ⊗ ( · ( np ⇐ n ) ⊗ n · ⊗ ( · ( np ⇒ s⁻ ) ⇐ inf · ⊗ · inf · ) ) ) ⊢[ s⁻ ])
+  syn : List (LG · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ s⁻ · ⊗ ( · ( np ⇐ n ) ⊗ n · ⊗ ( · ( np ⇒ s⁻ ) ⇐ inf · ⊗ · inf · ) ) ) ⊢[ s⁻ ])
   syn = findAll _
 
   sem : List ⟦ s⁻ ⟧ᵀ
@@ -123,7 +122,7 @@ module mary_wants_everyone_to_leave where
 
 module mary_said_everyone_left where
 
-  syn : List (EXP · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ ◇ s⁻ · ⊗ ⟨ · ( np ⇐ n ) ⊗ n · ⊗ · np ⇒ s⁻ · ⟩) ⊢[ s⁻ ])
+  syn : List (LG · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ ◇ s⁻ · ⊗ ⟨ · ( np ⇐ n ) ⊗ n · ⊗ · np ⇒ s⁻ · ⟩) ⊢[ s⁻ ])
   syn = findAll _
 
   sem : List ⟦ s⁻ ⟧ᵀ
@@ -131,6 +130,7 @@ module mary_said_everyone_left where
 
   exp : List Term
   exp = quoteTerm (λ (k : Bool → Bool) → k (SAID mary (forAll (λ x → PERSON x ⊃ LEAVES x))))
+      ∷ quoteTerm (λ (k : Bool → Bool) → forAll (λ x → PERSON x ⊃ k (SAID mary (LEAVES x))))
       ∷ []
 
   assert : Assert (quoteTerm sem sameAs exp)

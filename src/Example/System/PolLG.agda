@@ -3,16 +3,22 @@
 ------------------------------------------------------------------------
 
 
-open import Function                              using (id; const)
-open import Data.Bool                             using (Bool; true; false; not; _∧_; _∨_)
-open import Data.List                             hiding (_++_)
+open import Level                                 using (zero)
+open import Category.Monad                        using (module RawMonad)
+open import Data.Bool                             using (Bool; true; false; not; _∨_)
+open import Data.List                             hiding (_++_; monad)
+open import Data.List.NonEmpty                    using (List⁺; _∷_)
 open import Data.Nat                              using (ℕ)
-open import Data.Nat.Show                         using (show)
-open import Data.Product                          using (_×_; proj₁; _,_)
+open import Data.Nat.Show as ℕ                    using ()
+open import Data.Maybe                            using (Maybe; just; nothing; From-just; from-just; monad)
+open import Data.Product                          using (Σ; Σ-syntax; _×_; proj₁; proj₂; _,_)
 open import Data.String                           using (String; _++_)
+open import Data.Traversable                      using (module RawTraversable)
 open import Data.Vec                              using (Vec; toList)
+open import Function                              using (flip; id; const)
 open import Relation.Nullary                      using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Reflection                            using (Term)
 
 
 module Example.System.PolLG where
@@ -22,6 +28,7 @@ open import Example.System.Base public
 
 
 -- * import focused Lambek-Grishin calculus
+open import TypeLogicalGrammar
 open import Logic.Translation
 open import Logic.Polarity public using (Polarity; +; -)
 open import Logic.Polarity.ToLaTeX Atom using (PolarisedAtomToLaTeX) public
@@ -37,6 +44,7 @@ open import Logic.Intuitionistic.Unrestricted.Lambda.Indexed.Base Atom using (Ix
 open import Logic.Intuitionistic.Unrestricted.Lambda.Untyped.Base using (norm)
 open import Logic.Intuitionistic.Unrestricted.Lambda.Untyped.ToLaTeX as UT using ()
 open import Logic.Intuitionistic.Unrestricted.Agda.Environment public
+open import Logic.Intuitionistic.Unrestricted.Agda.ToLaTeX using (show)
 
 open Translation (Λ→ΛΠ ◆         LL→Λ ◆ LG→LL) public renaming ([_] to [_]ᵀ)
 open Translation (Ix→λ ◆ Un→Ix ◆ LL→Λ ◆ LG→LL) public using () renaming ([_] to LG→λ)
@@ -62,11 +70,80 @@ s⁻   = el (- , S)
 inf  = el (+ , INF)
 inf⁻ = el (- , INF)
 
+
+-- * setup helper functions
+private
+  im : (Entity → Bool) → ⟦ n ⇐ n ⟧ᵀ
+  im p₁ (k , p₂) = k (λ x → p₂ x ∧ p₁ x)
+
+  v₀ : (Entity → Bool) → ⟦ np ⇒ s⁻ ⟧ᵀ
+  v₀ p (x , k) = k (p x)
+
+  v₁ : (Entity → Entity → Bool) → ⟦ (np ⇒ s⁻) ⇐ np ⟧ᵀ
+  v₁ p ((x , k) , y) = k (p x y)
+
+  gq : ((Entity → Bool) → Bool) → (Bool → Bool → Bool) → ⟦ np ⇐ n ⟧ᵀ
+  gq q _⊙_ (p₁ , p₂) = q (λ x → p₂ x ⊙ p₁ x)
+
+
+
+-- * create an instance of type-logical grammar
+typeLogicalGrammar : TypeLogicalGrammar
+typeLogicalGrammar = record
+  { Type           = Type
+  ; Struct         = Struct
+  ; rawTraversable = rawTraversable
+  ; _⊢_            = λ X B → LG ⌊ X ⌋ ⊢[ B ]
+  ; findAll        = λ X B → findAll (⌊ X ⌋ ⊢[ B ])
+  ; s              = s⁻
+  ; toAgdaType     = ⟦_⟧ᵀ
+  ; toAgdaTerm     = λ X f → [ f ]ᵀ (combine X)
+  ; Word           = Word
+  ; Lex            = Lex
+  }
+  where
+    ⌊_⌋ : Struct Type → Structure +
+    ⌊ · A · ⌋ = ·     A     ·
+    ⌊ ⟨ X ⟩ ⌋ = ⟨   ⌊ X ⌋   ⟩
+    ⌊ X , Y ⌋ = ⌊ X ⌋ ⊗ ⌊ Y ⌋
+
+    combine : (X : Struct (Σ[ A ∈ Type ] ⟦ A ⟧ᵀ)) → Env _
+    combine ·  A  · = proj₂ A ∷ []
+    combine ⟨  X  ⟩ = combine X
+    combine (X , Y) = append (combine X) (combine Y)
+
+    Lex : Word → List⁺ (Σ[ A ∈ Type ] ⟦ A ⟧ᵀ)
+    Lex john     = (np , JOHN) ∷ []
+    Lex mary     = (np , MARY) ∷ []
+    Lex bill     = (np , BILL) ∷ []
+    Lex unicorn  = (n , UNICORN) ∷ []
+    Lex leave    = (inf , LEAVES) ∷ []
+    Lex to       = ((np ⇒ s⁻) ⇐ inf , λ {((x , k) , p) → k (p x)}) ∷ []
+    Lex left     = (np ⇒ s⁻ , v₀ LEAVES) ∷ []
+    Lex smiles   = (np ⇒ s⁻ , v₀ SMILES) ∷ []
+    Lex cheats   = (np ⇒ s⁻ , v₀ CHEATS) ∷ []
+    Lex finds    = ((np ⇒ s⁻) ⇐ np , v₁ FINDS ) ∷ []
+    Lex loves    = ((np ⇒ s⁻) ⇐ np , v₁ LOVES) ∷ []
+    Lex wants    = ((np ⇒ s⁻) ⇐ s⁻ , λ {((x , k) , y) → k (WANTS x (y id))}) ∷ []
+    Lex said     = ((np ⇒ s⁻) ⇐ ◇ s⁻ , λ {((x , k) , y) → k (SAID x (y id))}) ∷ []
+    Lex a        = ((np ⇐ n) , gq EXISTS _∧_) ∷ []
+    Lex some     = ((np ⇐ n) , gq EXISTS _∧_) ∷ []
+    Lex every    = ((np ⇐ n) , gq FORALL _⊃_) ∷ []
+    Lex everyone = ((np ⇐ n) ⊗ n , gq FORALL _⊃_ , PERSON) ∷ []
+    Lex someone  = ((np ⇐ n) ⊗ n , gq EXISTS _∧_ , PERSON) ∷ []
+
+
+open TypeLogicalGrammar.TypeLogicalGrammar typeLogicalGrammar public using (*_; ✓_; ⟦_⟧)
+
+
 -- * write proofs
-asProof : ∀ {Γ} → Vec String (size Γ) → List (LG Γ ⊢[ s⁻ ]) → List Proof
-asProof {Γ} ws ps = map
-  (λ {(n , p) → proof (basename ++ show n) sentence (toLaTeX p) (toLaTeXTerm ws p)})
-  (zip (upTo (length ps)) ps)
+open RawMonad (monad {Level.zero}) using (_<$>_; pure; _⊛_)
+
+
+asProof′ : ∀ {Γ} (ps : List (LG Γ ⊢[ s⁻ ])) (ts : List Term) → Vec String (size Γ) → List Proof
+asProof′ {Γ} ps ts ws = map
+  (λ x → proof (basename ++ ℕ.show (proj₁ x)) sentence (toLaTeX (proj₁ (proj₂ x))) (show (proj₂ (proj₂ x))))
+  (zip (upTo (length ps)) (zip ps ts))
   where
     upTo : ℕ → List ℕ
     upTo n = reverse (downFrom n)
@@ -75,62 +152,6 @@ asProof {Γ} ws ps = map
     sentence : String
     sentence = foldr _++_ "." (intersperse " " (toList ws))
 
-
---modifier : LL el N ⇒ el N ∷ [] ⊢ ⟦ n ⇐ n ⟧ᵀ
---modifier = ⇒ᵢ (⊗ₑ ax (⇒ₑ ax (eᴸ₁ (⇒ₑ ax ax))))
---
---verb₀ : LL el NP ⇒ el S ∷ [] ⊢ ⟦ np ⇒ s⁻ ⟧ᵀ
---verb₀ = ⇒ᵢ (⊗ₑ ax (eᴸ₁ (⇒ₑ ax (eᴸ₁ (⇒ₑ ax ax)))))
---
---verb₁ : LL el NP ⇒ el NP ⇒ el S ∷ [] ⊢ ⟦ (np ⇒ s⁻) ⇐ np ⟧ᵀ
---verb₁ = ⇒ᵢ (⊗ₑ ax (⊗ₑ ax (eᴸ₁ (⇒ₑ ax (eᴸ₂ (⇒ₑ (⇒ₑ ax ax) ax))))))
---
---infinitive : LL el INF ∷ [] ⊢ ⟦ inf ⟧ᵀ
---infinitive = ax
---
---quantifier : LL (el NP ⇒ el S) ⇒ el S ∷ [] ⊢ ⟦ np ⇐ n ⟧ᵀ
---quantifier = ⇒ᵢ (⊗ₑ ax (eᴸ₂ (⇒ₑ ax {!!})))
-
-
--- * setup helper functions
-im : (Entity → Bool) → ⟦ n ⇐ n ⟧ᵀ
-im p₁ (k , p₂) = k (λ x → p₂ x ∧ p₁ x)
-
-iv : (Entity → Bool) → ⟦ np ⇒ s⁻ ⟧ᵀ
-iv p (x , k) = k (p x)
-
-tv : (Entity → Entity → Bool) → ⟦ (np ⇒ s⁻) ⇐ np ⟧ᵀ
-tv p ((x , k) , y) = k (p x y)
-
-gq : ((Entity → Bool) → Bool) → (Bool → Bool → Bool) → ⟦ np ⇐ n ⟧ᵀ
-gq q _⊙_ (p₁ , p₂) = q (λ x → p₂ x ⊙ p₁ x)
-
--- * setup lexicon
-dutch english : ⟦ n ⇐ n ⟧ᵀ
-dutch   = im DUTCH
-english = im ENGLISH
-
-left cheats smiles : ⟦ np ⇒ s⁻ ⟧ᵀ
-left   = iv LEAVES
-cheats = iv CHEATS
-smiles = iv SMILES
-
-leave :  ⟦ inf ⟧ᵀ
-leave = LEAVES
-
-to : ⟦ (np ⇒ s⁻) ⇐ inf ⟧ᵀ
-to ((x , k) , p) = k (p x)
-
-teases loves : ⟦ (np ⇒ s⁻) ⇐ np ⟧ᵀ
-teases = tv TEASES
-loves  = tv LOVES
-
-wants : ⟦ (np ⇒ s⁻) ⇐ s⁻ ⟧ᵀ
-wants ((x , k) , y) = k (WANTS x (y id))
-
-said : ⟦ (np ⇒ s⁻) ⇐ (◇ s⁻) ⟧ᵀ
-said ((x , k) , y) = k (SAID x (y id))
-
-everyone someone : ⟦ (np ⇐ n) ⊗ n ⟧ᵀ
-everyone = gq forAll _⊃_ , PERSON
-someone  = gq exists _∧_ , PERSON
+asProof : ∀ {Γ} (ws : String) (ps : List (LG Γ ⊢[ s⁻ ])) (ts : Term)
+        → From-just (List Proof) (asProof′ ps <$> list ts ⊛ ((size Γ) words ws))
+asProof {Γ} ws ps ts = from-just (asProof′ ps <$> (list ts) ⊛ ((size Γ) words ws))

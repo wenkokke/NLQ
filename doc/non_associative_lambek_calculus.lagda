@@ -1,40 +1,35 @@
+# Non-associative Lambek Calculus
 ``` hidden
-open import Logic.Polarity                             using (Polarity; +; -; +≠-)
-open import Function                                   using (id; _∘_; flip)
-open import Relation.Nullary                           using (Dec; yes; no)
-open import Relation.Nullary.Decidable                 using (True)
-open import Relation.Binary.PropositionalEquality as P hiding ([_])
-
-module nl_base (Atom : Set) where
-
-infixr 30 _⊗_
-infixr 20 _⇒_
-infixl 20 _⇐_
+module non_associative_lambek_calculus where
 ```
 
-# The non-associative Lambek calculus
+In this section we will discuss the non-associative Lambek calculus,
+which forms the basis of most categorial grammar and type-logical
+grammar systems.
 
-## Sequent calculus
 
-due to @lambek1961
 
-```
-data Type : Set where
-  el   : Atom  → Type
-  _⊗_  : Type  → Type → Type
-  _⇒_  : Type  → Type → Type
-  _⇐_  : Type  → Type → Type
-```
-
+## Sequent Calculus
 ``` hidden
-module SequentCalculus where
+module sequent_calculus (Atom : Set) where
 
   infixr 1 SC_
   infix  2 _⊢_
   infixl 3 _[_]
-  infixr 4 _∙_
-  infixr 4 _∙>_
-  infixl 4 _<∙_
+  infix  4 _∙_ _∙>_ _<∙_
+  infixr 30 _⊗_
+  infixr 20 _⇒_
+  infixl 20 _⇐_
+```
+
+due to @lambek1961
+
+```
+  data Type : Set where
+    el   : Atom  → Type
+    _⊗_  : Type  → Type → Type
+    _⇒_  : Type  → Type → Type
+    _⇐_  : Type  → Type → Type
 ```
 
 ```
@@ -93,30 +88,31 @@ reason *for* the use of contexts is that it makes your proofs much
 shorter, as we will see below. However, the reasons against using
 contexts are that:
 
- 1. it puts the plugging function `_[_]` in the return type of your
+  1. it puts the plugging function `_[_]` in the return type of your
     data type definition, which usually leads to trouble with unification,
     and theories which are much more difficult to prove with [see @mcbride2014,
     pp. 298-299];
 
- 2. it requires you to annotate your proofs with the contexts under
-    which each rule is applied;
+  2. it requires you to annotate your proofs with the contexts under
+   which each rule is applied;
 
- 3. it is hard to reduce spurious ambiguity in a sequent calculus
+  3. it is hard to reduce spurious ambiguity in a sequent calculus
     which uses contexts, as the restrictions on the orders in which
     the rules can be applied have to be put on the contexts under
     which they are applied;
 
 
+
 ## The system with residuation R
-
-due to @lambek1961
-
 ``` hidden
-module ResCut where
+module res (Atom : Set) where
 
+  open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
   infix  1  R′_
   infix  2  _⊢_
 ```
+
+due to @lambek1961
 
 ```
   data Judgement : Set where
@@ -149,16 +145,15 @@ module ResCut where
 
 
 ### Equivalence between sequent calculus and R
+``` hidden
+module sequent_calculus⇔res (Atom : Set) where
+
+  module R′ = res              Atom ; open R′ hiding (Judgement)
+  module SC = sequent_calculus Atom ; open SC hiding (Judgement)
+```
 
 We would like to be sure that the new axiomatisation for NL is
 actually equally expressive.
-
-``` hidden
-module SC→R′ where
-
-  module R′ = ResCut         ; open R′
-  module SC = SequentCalculus; open SC hiding (Judgement)
-```
 
 ```
   ⌊_⌋ : Struct → Type
@@ -198,7 +193,6 @@ module SC→R′ where
   to (  r⊗⇐  f)    = ⇐R (cut {Γ = []} (⊗R ax ax) (to f))
 ```
 
-
 We would also like to eliminate cut from out proofs, as it introduces
 a new variable in the search and is always an applicable rule---we can
 always *try* to search for a proof which connects our current proof to
@@ -208,15 +202,9 @@ Unfortunately, in the system described above we cannot fully eliminate
 cut. We will be left with the following atomic cuts, which correspond
 to the introduction rules for the three connectives[^prime].
 
-
-
-
 ## The cut-free system RM
-
-due to @moortgat1999
-
 ``` hidden
-module ResMon where
+module resmon (Atom : Set) where
 
   infix  1  RM_
   infixl 2  _⊢>_
@@ -227,9 +215,12 @@ module ResMon where
   infixl 20 _⇐>_ _<⇐_
   infixr 30 _⊗>_ _<⊗_
 
-  open ResCut public using (Judgement; _⊢_)
+  open import Function                              using (id; flip; _∘_)
+  open import Logic.Polarity                        using (Polarity; +; -)
+  open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
+  open sequent_calculus Atom        using (Type; el; _⇐_; _⊗_; _⇒_)
+  open res              Atom public using (Judgement; _⊢_)
 ```
-
 
 ```
   data RM_ : Judgement → Set where
@@ -256,8 +247,6 @@ full axiom rule as |ax′| below:
   ax′ {A =  A ⇐  B  } = m⇐  ax′ ax′
   ax′ {A =  A ⇒  B  } = m⇒  ax′ ax′
 ```
-
-
 
 ### An executable cut-elimination procedure for RM
 
@@ -511,13 +500,14 @@ full axiom rule as |ax′| below:
 
 
 ### Equivalence between R and RM
-
 ``` hidden
-module R′→RM where
+module res⇔resmon (Atom : Set) where
 
-  module RM = ResMon ; open RM
-  module R′ = ResCut ; open R′
+  open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
+  module RM = resmon Atom ; open RM
+  module R′ = res    Atom ; open R′
 ```
+
 
 ```
   from : ∀ {A B} → R′ A R′.⊢ B → RM A RM.⊢ B
@@ -540,6 +530,110 @@ module R′→RM where
   to (r⇐⊗  f)    = r⇐⊗  (to f)
   to (r⊗⇐  f)    = r⊗⇐  (to f)
 ```
+
+
+## Derivational Semantics
+
+### Translation to Agda
+``` hidden
+module resmon→agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
+
+  open import Function     using (id; flip; _∘_)
+  open import Data.Product using (_×_; map; curry; uncurry)
+  open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
+  open resmon Atom using (RM_; _⊢_; ax; m⊗; m⇒; m⇐; r⇒⊗; r⇐⊗; r⊗⇒; r⊗⇐)
+```
+
+```
+  ⟦_⟧ : Type → Set
+  ⟦ el   A ⟧ = ⟦ A ⟧ᴬ
+  ⟦ A ⊗  B ⟧ = ⟦ A ⟧ ×  ⟦ B ⟧
+  ⟦ A ⇒  B ⟧ = ⟦ A ⟧ →  ⟦ B ⟧
+  ⟦ B ⇐  A ⟧ = ⟦ A ⟧ →  ⟦ B ⟧
+```
+
+```
+  [_] : ∀ {A B} → RM A ⊢ B → ⟦ A ⟧ → ⟦ B ⟧
+  [ ax        ] = id
+  [ m⊗   f g  ] = map [ f ] [ g ]
+  [ m⇒   f g  ] = λ h → [ g ] ∘ h ∘ [ f ]
+  [ m⇐   f g  ] = λ h → [ f ] ∘ h ∘ [ g ]
+  [ r⇒⊗  f    ] = uncurry (flip  [ f ])
+  [ r⇐⊗  f    ] = uncurry (      [ f ])
+  [ r⊗⇒  f    ] = flip  (curry [ f ])
+  [ r⊗⇐  f    ] =       (curry [ f ])
+```
+
+### Typing Agda
+``` hidden
+module resmon_typing_agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
+
+  open import Function     using (id; flip; _∘_)
+  open import Data.Product using (_×_; map; curry; uncurry)
+  open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
+  open resmon Atom using (Judgement; _⊢_)
+  open resmon→agda Atom ⟦_⟧ᴬ using (⟦_⟧)
+```
+
+``` hidden
+  ⟦_⟧ʲ : Judgement → Set
+```
+```
+  ⟦ A ⊢ B ⟧ʲ = ⟦ A ⟧ → ⟦ B ⟧
+```
+
+``` hidden
+  mutual
+    infix 2 RM-syntax₁
+    infix 2 RM-syntax₂
+
+    RM-syntax₁ = λ A B f → RM_ (A ⊢ B) f
+    RM-syntax₂ = λ A B f → RM_ (A ⊢ B) f
+```
+
+```
+    syntax RM-syntax₁  A B (λ x →  f)  = f ∈ x ∶  A ⊢ B
+    syntax RM-syntax₂  A B         f   = f ∈      A ⊢ B
+```
+
+```
+    data RM_ : (J : Judgement) (f : ⟦ J ⟧ʲ) → Set where
+
+      ax   : ∀ {A}
+           →  x                      ∈ x   ∶  el A ⊢ el A
+
+      m⊗   : ∀ {A B C D f g}
+           →  f                      ∈        A ⊢ B
+           →  g                      ∈        C ⊢ D
+           →  map f g xy             ∈ xy  ∶  A ⊗ C ⊢ B ⊗ D
+
+      m⇒   : ∀ {A B C D f g}
+           →  f                      ∈        A ⊢ B
+           →  g                      ∈        C ⊢ D
+           →  g ∘ h ∘ f              ∈ h   ∶  B ⇒ C ⊢ A ⇒ D
+
+      m⇐   : ∀ {A B C D f g}
+           →  f                      ∈        A ⊢ B
+           →  g                      ∈        C ⊢ D
+           →  f ∘ h ∘ g              ∈ h   ∶  A ⇐ D ⊢ B ⇐ C
+
+      r⇒⊗  : ∀ {A B C f}
+           →  f                      ∈        B ⊢ A ⇒ C
+           →  uncurry (flip  f)  xy  ∈ xy  ∶  A ⊗ B ⊢ C
+
+      r⇐⊗  : ∀ {A B C f}
+           →  f                      ∈        A ⊢ C ⇐ B
+           →  uncurry        f   xy  ∈ xy  ∶  A ⊗ B ⊢ C
+
+      r⊗⇒  : ∀ {A B C f}
+           →  f                      ∈        A ⊗ B ⊢ C
+           →  flip (  curry f)  x    ∈ x   ∶  B ⊢ A ⇒ C
+
+      r⊗⇐  : ∀ {A B C f}
+           →  f                      ∈        A ⊗ B ⊢ C
+           →          curry f   x    ∈ x   ∶  A ⊢ C ⇐ B
+```
+
 
 
 [^prime]:  I have made it convention to label all derived and admissible rules

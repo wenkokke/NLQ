@@ -197,7 +197,6 @@ nonAssociativeLambek = let
                      ]
   , include        = ["Logic/Classical/Ordered/LambekGrishin.agda"
                      ,"Logic/Classical/Ordered/LambekGrishin//*.agda"
-                     ,"Example/System/AlgLG.agda"
                      ,"Example/System/StrLG.agda"
                      ,"Example/System/PolLG.agda"
                      ]
