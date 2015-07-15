@@ -22,8 +22,18 @@ data Env : List (Set ℓ) → Set (lsuc ℓ) where
   _∷_ : {A : Set ℓ} {Γ : List (Set ℓ)} → A → Env Γ → Env (A ∷ Γ)
 
 
+head : ∀ {A Γ} (e : Env (A ∷ Γ)) → A
+head (x ∷ _) = x
+
+tail : ∀ {A Γ} (e : Env (A ∷ Γ)) → Env Γ
+tail (_ ∷ e) = e
+
+
 module _ {a} {A : Set a} {f : A → Set ℓ} where
 
+  append : ∀ {Γ Δ} (e₁ : Env (map f Γ)) (e₂ : Env (map f Δ)) → Env (map f (Γ ++ Δ))
+  append {Γ =    []}      []  e₂ = e₂
+  append {Γ = _ ∷ Γ} (x ∷ e₁) e₂ = x ∷ (append e₁ e₂)
 
   lookup : ∀ {Γ} (e : Env (map f Γ)) (i : Fin _) → f (Γ ‼ i)
   lookup {Γ =    []} [] ()
@@ -32,7 +42,7 @@ module _ {a} {A : Set a} {f : A → Set ℓ} where
 
 
   split : ∀ {Γ₁ Γ₂} → Env (map f (Γ₁ ++ Γ₂)) → Env (map f Γ₁) × Env (map f Γ₂)
-  split {Γ₁ = []}      {Γ₂ = Γ₂}     e  = ([] , e)
+  split {Γ₁ =     []} {Γ₂ = Γ₂}     e  = ([] , e)
   split {Γ₁ = _ ∷ Γ₁} {Γ₂ = Γ₂} (x ∷ e) with split {Γ₁ = Γ₁} {Γ₂ = Γ₂} e
   split {Γ₁ = _ ∷ Γ₁} {Γ₂ = Γ₂} (x ∷ e) | (e₁ , e₂) = (x ∷ e₁) , e₂
 

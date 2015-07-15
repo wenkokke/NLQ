@@ -4,12 +4,17 @@
 
 open import Level                      using (zero)
 open import Category.Monad             using (module RawMonad)
+open import Category.Applicative       using (module RawApplicative; RawApplicative)
 open import Coinduction                using (♭; ♯_)
-open import Data.Bool                  using (Bool; true; false; _∧_; _∨_; if_then_else_)
-open import Data.Colist                using (fromList)
-open import Data.List                  using (List; _∷_; []; map; foldr; any; null)
-open import Data.String                using (String; _++_; unlines; toList)
-open import Data.Maybe                 using (Maybe; just; nothing)
+open import Data.Bool                  using (Bool; true; false; _∨_; if_then_else_)
+open import Data.Char                  using (Char)
+open import Data.Colist as C           using (fromList)
+open import Data.List   as L           using (List; _∷_; []; map; foldr; any; null)
+open import Data.String as S           using (String; _++_; unlines; toList; fromList)
+open import Data.Maybe                 using (Maybe; just; nothing; From-just; from-just)
+open import Data.Nat                   using (ℕ; suc; zero)
+open import Data.Traversable           using (RawTraversable)
+open import Data.Vec    as V           using (Vec; _∷_; [])
 open import Function                   using (_$_; _∘_)
 open import IO                         using (IO; writeFile; mapM′; _>>_)
 open import Logic.ToLaTeX              using (module ToLaTeX; ToLaTeX)
@@ -23,59 +28,130 @@ open import Relation.Binary.PropositionalEquality
 module Example.System.Base where
 
 
--- * setup entities
-data Entity : Set where
-  john  : Entity
-  mary  : Entity
-  bill  : Entity
-
-abstract
-  forAll : (Entity → Bool) → Bool
-  forAll p = foldr (λ x b → b ∧ p x) true (john ∷ mary ∷ bill ∷ [])
-
-  exists : (Entity → Bool) → Bool
-  exists p = foldr (λ x b → b ∨ p x) false (john ∷ mary ∷ bill ∷ [])
+open import Data.Bool public using (_∧_)
 
 
--- * setup helper function
-infixr 4 _⊃_
+
+-- * Set up a set of words
+
+data Word : Set where
+
+  john       : Word
+  mary       : Word
+  bill       : Word
+  unicorn    : Word
+  leave      : Word
+  to         : Word
+  left       : Word
+  smiles     : Word
+  cheats     : Word
+  finds      : Word
+  loves      : Word
+  wants      : Word
+  said       : Word
+  a          : Word
+  some       : Word
+  every      : Word
+  everyone   : Word
+  someone    : Word
+
+
+
+-- * Set up a set of meaning postulates
+
+infix  9 _TEASES_ _LOVES_ _FINDS_ _SAID_ _WANTS_
+
+postulate
+  Entity   : Set
+  FORALL   : (Entity → Bool) → Bool
+  EXISTS   : (Entity → Bool) → Bool
+  JOHN     : Entity
+  MARY     : Entity
+  BILL     : Entity
+  DUTCH    : Entity → Bool
+  ENGLISH  : Entity → Bool
+  SMILES   : Entity → Bool
+  LEAVES   : Entity → Bool
+  CHEATS   : Entity → Bool
+  _TEASES_ : Entity → Entity → Bool
+  _LOVES_  : Entity → Entity → Bool
+  _FINDS_  : Entity → Entity → Bool
+  UNICORN  : Entity → Bool
+  PERSON   : Entity → Bool
+  _SAID_   : Entity → Bool → Bool
+  _WANTS_  : Entity → Bool → Bool
+
+
+-- * Implement implication.
+
+infixr 6 _⊃_
 
 _⊃_ : Bool → Bool → Bool
-true  ⊃ true  = true
 true  ⊃ false = false
-false ⊃ _     = true
+_     ⊃ _     = true
 
 
--- * setup atomic formulas
+-- * Implement binary trees as structures (with ⟨_⟩ denoting scope islands)
+
+infixr 4 _,_
+
+data Struct {a} (A : Set a) : Set a where
+  ·_·  : A                    → Struct A
+  ⟨_⟩  : Struct A             → Struct A
+  _,_  : Struct A → Struct A  → Struct A
+
+
+rawTraversable : ∀ {a} → RawTraversable {a} Struct
+rawTraversable = record { traverse = traverse  }
+  where
+  open RawApplicative {{...}}
+  traverse : ∀ {F A B} {{AppF : RawApplicative F}} → (A → F B) → Struct A → F (Struct B)
+  traverse f  ·   x    · = ·_· <$> f x
+  traverse f  ⟨   x    ⟩ = ⟨_⟩ <$> traverse f x
+  traverse f  (l  , r  ) = _,_ <$> traverse f l ⊛ traverse f r
+
+
+-- * Set up atomic formulas
 data Atom : Set where
   N   : Atom
   NP  : Atom
   S   : Atom
   INF : Atom
+  PP  : Atom
 
 _≟-Atom_ : (A B : Atom) → Dec (A ≡ B)
 N   ≟-Atom N   = yes refl
 N   ≟-Atom NP  = no (λ ())
 N   ≟-Atom S   = no (λ ())
 N   ≟-Atom INF = no (λ ())
+N   ≟-Atom PP  = no (λ ())
 NP  ≟-Atom N   = no (λ ())
 NP  ≟-Atom NP  = yes refl
 NP  ≟-Atom S   = no (λ ())
 NP  ≟-Atom INF = no (λ ())
+NP  ≟-Atom PP  = no (λ ())
 S   ≟-Atom N   = no (λ ())
 S   ≟-Atom NP  = no (λ ())
 S   ≟-Atom S   = yes refl
 S   ≟-Atom INF = no (λ ())
+S   ≟-Atom PP  = no (λ ())
 INF ≟-Atom N   = no (λ ())
 INF ≟-Atom NP  = no (λ ())
 INF ≟-Atom S   = no (λ ())
 INF ≟-Atom INF = yes refl
+INF ≟-Atom PP  = no (λ ())
+PP  ≟-Atom N   = no (λ ())
+PP  ≟-Atom NP  = no (λ ())
+PP  ≟-Atom S   = no (λ ())
+PP  ≟-Atom INF = no (λ ())
+PP  ≟-Atom PP  = yes refl
 
 ⟦_⟧ᵁ : Atom → Set
 ⟦ N   ⟧ᵁ = Entity → Bool
 ⟦ NP  ⟧ᵁ = Entity
 ⟦ S   ⟧ᵁ = Bool
 ⟦ INF ⟧ᵁ = Entity → Bool
+⟦ PP  ⟧ᵁ = Entity
 
 AtomToLaTeX : ToLaTeX Atom
 AtomToLaTeX = record { toLaTeXPrec = λ _ → toLaTeX }
@@ -85,27 +161,11 @@ AtomToLaTeX = record { toLaTeXPrec = λ _ → toLaTeX }
     toLaTeX NP  = "np"
     toLaTeX S   = "s"
     toLaTeX INF = "inf"
-
-
--- * setup abstract lexicon
-postulate
-  DUTCH   : Entity → Bool
-  ENGLISH : Entity → Bool
-  SMILES  : Entity → Bool
-  LEAVES  : Entity → Bool
-  CHEATS  : Entity → Bool
-  TEASES  : Entity → Entity → Bool
-  LOVES   : Entity → Entity → Bool
-  UNICORN : Entity → Bool
-  PERSON  : Entity → Bool
-  TEACHER : Entity → Bool
-  SAID    : Entity → Bool → Bool
-  WANTS   : Entity → Bool → Bool
-
+    toLaTeX PP  = "pp"
 
 -- * testing semantics
 
-open RawMonad (Data.Maybe.monad {zero}) using (_<$>_)
+open RawMonad (Data.Maybe.monad {Level.zero}) using (_<$>_)
 
 infix 1 Assert_
 
@@ -155,9 +215,27 @@ _  sameAs xs | nothing = false
 data Proof : Set where
   proof : (file sentence tree term : String) → Proof
 
+
+_words_ : (k : ℕ) → String → Maybe (Vec String k)
+k words str = toVec (map S.fromList (split (toList str)))
+  where
+    toVec : ∀ {k} {A : Set} → List A → Maybe (Vec A k)
+    toVec {zero}       []  = just []
+    toVec {zero}       xs  = nothing
+    toVec {suc k}      []  = nothing
+    toVec {suc k} (x ∷ xs) = (x ∷_) <$> toVec xs
+
+    split : List Char → List (List Char)
+    split        []  = []
+    split (' ' ∷ xs) = [] ∷ split xs
+    split ( x  ∷ xs) with split xs
+    split ( x  ∷ xs) |     [] = (x ∷ []) ∷ []
+    split ( x  ∷ xs) | w ∷ ws = (x ∷ w ) ∷ ws
+
+
 mutual
   writeLaTeX : List Proof → IO _
-  writeLaTeX ps = ♯ mapM′ writeProof (fromList ps) >> ♯ writeMainFile ps
+  writeLaTeX ps = ♯ mapM′ writeProof (C.fromList ps) >> ♯ writeMainFile ps
 
   writeProof : Proof → IO _
   writeProof (proof file sentence tree term)
@@ -202,9 +280,10 @@ mutual
     ∷ "\\usepackage{picture}%"
     ∷ "\\usepackage{scalerel}%"
     ∷ "\\usepackage{stmaryrd}%"
-    ∷ "\\usepackage{textgreek}%"
     ∷ "\\usepackage{ucs}%"
     ∷ "\\usepackage[utf8x]{inputenc}%"
+    ∷ "\\DeclareUnicodeCharacter{8743}{\\ensuremath{\\wedge}}%"
+    ∷ "\\DeclareUnicodeCharacter{8835}{\\ensuremath{\\supset}}%"
     ∷ "\\usepackage{xifthen}%"
     ∷ ""
     ∷ "\\EnableBpAbbreviations%"
