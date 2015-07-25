@@ -3,16 +3,17 @@
 This thesis started out as an attempt to understand type-logical
 grammars by verifying them in a proof assistant. Whereas the original
 framework of categorial grammars [@lambek1958; @lambek1961] is rather
-easy to understand, the systems as the cutting edge are much more
+easy to understand, the systems at the cutting edge are much more
 involved, and use more recent ideas such as continuation-passing style
 translations, delimited continuations, display calculus, focused proof
 search and polarisation.
-My plan was to create a series of verified grammars which would
-gradually add these features in, while showing that these systems
-remained equivalent. I believed then, and still do, that such
-verifications could be a useful educational tool, as students would be
-able to fire up their proof assistant, and play around with the
-grammar systems in an interactive session.
+My original idea was to create a series of verified grammars which
+would gradually add these features into Lambek's categorial grammars,
+while showing that the systems remain equivalent.
+I believed then, and still do, that such verifications could be a
+useful educational tool, as students would be able to fire up their
+proof assistant, and play around with the grammar systems in an
+interactive session.
 
 In the course of doing research for this thesis, however, something
 happened which changed the mission statement as given above much more

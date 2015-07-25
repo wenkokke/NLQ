@@ -3,20 +3,32 @@
 module type_logical_grammar where
 ```
 
-While the word 'type-logical grammar' goes back to @morrill1994, the
-idea of type-logical grammars goes back to two papers written by
-Lambek [-@lambek1958; -@lambek1961].
+The word 'type-logical grammar' goes back to @morrill1994, where it is
+defined as "a refinement [of logical grammar] in which 'logical'
+applies not just to logical semantics, but also to logical types
+directing derivation." Thus, type-logical grammars are grammars in
+which a logical system is used to describe both syntax and semantics.
+The idea of having logical semantics, and a systematic translation
+between syntax and semantics go back to @montague1973, whereas the
+idea of logical syntax goes back to two papers written by Lambek
+[-@lambek1958; -@lambek1961].
 
-Type-logical grammars are substructural logics, generally fragments of
-non-commutative linear logic, designed for reasoning about the
-structure of natural language. In these type theories, the atomic
-types correspond to syntactic categories, such as *noun*, *noun
-phrase* or *sentence*. Judgements, then, correspond to
-grammaticality. For instance, the judgement
+In general, type-logical grammars tend to be are substructural logics,
+often fragments of non-commutative linear logic, which are designed
+specifically for reasoning about the structure of natural language.
+In these logical, the atomic types correspond to syntactic categories,
+such as *noun*, *noun phrase* or *sentence*.
+Judgements of type-correctness, then, correspond to grammaticality.
+For instance, the judgement
 $$\text{NP} , \; \text{NP} \to \text{S} \vdash \text{S}$$
-could be taken to mean that from an $\text{NP}$ constituent and an
-$\text{NP} \to \text{S}$ constituent, in that order, we can construct
-a valid sentence.
+could be taken to mean that from a noun phrase and an intransitive
+verb, in that order, we can construct a valid sentence. This
+corresponds to the Chomskyan grammar rule
+$$\text{S} \leftarrow \text{NP} \; \text{VP}$$
+However, when looking from the underlying type theory, there is one
+important distinction: the type-logical statement decomposes verb
+phrases into a complex type---a function from a noun phrase to a
+sentence.
 
 Below, we will briefly discuss substructural logics, and the
 differences between substructural logics and more common logics such

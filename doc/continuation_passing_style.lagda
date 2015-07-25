@@ -95,14 +95,14 @@ R|. Both these types correspond to function application.
 ```
 
 ```
-  ⟦_⟧ʲ : Judgement → Set
-  ⟦   X  ⊢  Y   ⟧ʲ = ⟦ X ⟧ˢ → ⟦ Y ⟧ˢ → R
-  ⟦ [ A ]⊢  Y   ⟧ʲ = ⟦ Y ⟧ˢ → ⟦ A ⟧⁻
-  ⟦   X  ⊢[ B ] ⟧ʲ = ⟦ X ⟧ˢ → ⟦ B ⟧⁺
+  ⟦_⟧ᴶ : Judgement → Set
+  ⟦   X  ⊢  Y   ⟧ᴶ = ⟦ X ⟧ˢ → ⟦ Y ⟧ˢ → R
+  ⟦ [ A ]⊢  Y   ⟧ᴶ = ⟦ Y ⟧ˢ → ⟦ A ⟧⁻
+  ⟦   X  ⊢[ B ] ⟧ᴶ = ⟦ X ⟧ˢ → ⟦ B ⟧⁺
 ```
 
 ```
-  ⟦_⟧ : ∀ {J} → fNL J → ⟦ J ⟧ʲ
+  ⟦_⟧ : ∀ {J} → fNL J → ⟦ J ⟧ᴶ
   ⟦ ax⁺        ⟧ = λ x → x
   ⟦ ax⁻        ⟧ = λ x → x
   ⟦ ↼{A}  f    ⟧ = λ y x → app₁ {A} (⟦ f ⟧ x) y
@@ -157,7 +157,7 @@ module typing_agda (Atom : Set) (Polarityᴬ? : Atom → Polarity) (⟦_⟧ᴬ :
 
 
 ```
-    data fNL_ : (J : Judgement) (f : ⟦ J ⟧ʲ) → Set₁ where
+    data fNL_ : (J : Judgement) (f : ⟦ J ⟧ᴶ) → Set₁ where
 
       ax⁺  : ∀ {A} → x ∈ x ∶ · A · ⊢[ A ]
       ax⁻  : ∀ {B} → x ∈[ B ]⊢ x ∶ · B ·
