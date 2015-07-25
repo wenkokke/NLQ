@@ -3,16 +3,54 @@
 module non_associative_lambek_calculus where
 ```
 
-In this section we will discuss the non-associative Lambek calculus,
-which forms the basis of most categorial grammar and type-logical
-grammar systems.
+In this section we will discuss the non-associative Lambek calculus
+(NL), which forms the basis of most categorial grammar and
+type-logical grammar systems.
 
+We will set out to discuss the two systems introced by
+@lambek1961. The first of these two is a sequent calculus, which was
+introduced in order to obtain a proof of cut elimination, and all the
+associated corollaries. The second system is a combinator calculus,
+which is considerably simpler and easier to compute with.
+After these two systems, we will discuss a cut-free combinator
+calculus, as discovered by @moortgat1999. To round this section, we
+will discuss a direct translation of the cut-free system into Agda,
+which we will use for our semantic interpretation, thereby obtaining a
+complete type-logical grammar. Further additions to the
+non-associative Lambek calculus will be discussed in section
+\ref{display-calculus}.
 
 
 ## Sequent Calculus
-``` hidden
-module sequent_calculus (Atom : Set) where
 
+In this section we will discuss the sequent calculus for the
+non-associative Lambek calculus, due to @lambek1961. This calculus was
+set up in order to obtain a cut-elimination procedure à la Gentzen.
+For NL---as opposed to the associative Lambek calculus L---this was
+not immediately obvious, and it was only proven in TODO @kandulsky.
+However, the discovery of a cut-elimination procedure for the
+combinator calculus has made this role of the sequent calculus
+obsolete. Our reason for nevertheless discussing the sequent calculus
+is as follows: we would like to have the opportunity to discuss a
+calculus and its encoding in Agda in great detail, before delving into
+the remainder of this thesis. Therefore, should you feel familiar with
+the style of encoding used in this thesis, you can skip this section
+altogether, and continue in section \ref{the-system-with-residuation-r}.
+
+The formulas for the base system NL are built up over a set of atomic
+formulas and three connectives. Usually these atomic formulas are at
+least |n|, |np| and |s| for *noun*, *noun phrase* and *sentence*, but
+we would not want to exclude others such as |pp| for *prepositional
+phrase* or |inf| for *infinitive*. In order to avoid committing to a
+certain set of atomic formulas and side-step the debate on which
+formulas should be atomic, we will simply assume there is a some data
+type representing our atomic formulas. This will be reflected in our
+module header as follows:
+
+```
+module sequent_calculus (Atom : Set) where
+```
+``` hidden
   infixr 1 SC_
   infix  2 _⊢_
   infixl 3 _[_]
@@ -22,7 +60,16 @@ module sequent_calculus (Atom : Set) where
   infixl 20 _⇐_
 ```
 
-due to @lambek1961
+Note that the type |Set| here is the type of types from type theory,
+and is not related to the sets from mathematics.
+
+Our formulas can easily be described as a data type, injecting our
+atomic formulas by means of the constructor el, and adding the
+connectives from NL as binary constructors. For these connectives, we
+have a product (|⊗|) and *two* implications (|⇒| and |⇐|).
+Note that, in Agda, we can use underscores in definitions to denote
+argument positions. This means that $\_⊗\_$ below defines an infix,
+binary connective:
 
 ```
   data Type : Set where
@@ -32,11 +79,22 @@ due to @lambek1961
     _⇐_  : Type  → Type → Type
 ```
 
+As in intuitionistic logic, the antecedent is a *structure* of
+formulas. However, while they appear similar, the structures of NL are
+binary trees as opposed to sets.
+
 ```
   data Struct : Set where
     ·_·  : Type    → Struct
     _∙_  : Struct  → Struct → Struct
 ```
+
+In addition, the rules of our sequent calculus can often apply
+anywhere in the structure. In order to deal with this, we will define
+the concept of a 'context', which is a structure with exactly one hole
+(written []) in it. The other two constructors for contexts are
+variations on the structure's $\_,\_$, annotated with a small triangle
+which points towards where the hole is:
 
 ```
   data Context : Set where
@@ -45,6 +103,10 @@ due to @lambek1961
     _<∙_  : Context  → Struct   → Context
 ```
 
+In order to give a meaningful interpretation to these context, we
+define the action of 'plugging', or inserting a structure into the
+hole in a context:
+
 ```
   _[_] : Context → Struct → Struct
   []       [ Δ ] = Δ
@@ -52,16 +114,32 @@ due to @lambek1961
   Γ <∙ Γ′  [ Δ ] = (Γ [ Δ ]) ∙ Γ′
 ```
 
+Lastly, we need to define judgements. While the term 'judgement'
+usually refers to a statement *and a proof*, we shall take judgement
+to refer to the syntactic statement alone. The reason for this is that
+it is incredibly useful to be able to talk about 'judgements' without
+having to associate these with proof. And as we will see later, the
+concept of a 'judgement context' or a judgement with a variable in the
+ante- or succedent is also incredibly useful. For the sequent calculus
+we are about to implement the judgements consist of a structure in the
+antecedent and a single formula in the succedent:
+
 ```
   data Judgement : Set where
     _⊢_ : Struct → Type → Judgement
 ```
 
-[^syntax]
-
+With all this syntactic boilerplate out of the way, we will now define
+the structure of SC (for sequent calculus).
+Note that while we would have to write $SC\;\Gamma\;⊢\;A$ to denote the type
+of a term in SC, we will allow ourselves some freedom in typesetting
+and simply write $\Gamma\;\vdash\;A$. In the case where it is unclear
+which system we are discussing, we will use superscripts to
+disambiguate and write e.g. $\Gamma\;\vdash^{\textsc{SC}}\;A$:
 
 ```
   data SC_ : Judgement → Set where
+
     ax   : ∀ {A}
          →  SC · A · ⊢ A
 
@@ -85,25 +163,33 @@ due to @lambek1961
 
 There are reasons in favour of and against the use of contexts. One
 reason *for* the use of contexts is that it makes your proofs much
-shorter, as we will see below. However, the reasons against using
+shorter[^short], as we will see below. However, the reasons against using
 contexts are that:
 
   1. it puts the plugging function `_[_]` in the return type of your
-    data type definition, which usually leads to trouble with unification,
-    and theories which are much more difficult to prove with [see @mcbride2014,
-    pp. 298-299];
+     data type definition, which usually leads to trouble with unification,
+     and theories which are much more difficult to prove with [@mcbride2014,
+     pp. 298-299]. The reason for this is that the term $\Gamma\;[A]$,
+     given an unknown $\Gamma$ does not reduce, and therefore Agda
+     cannot pattern match on a term for which the structure is not
+     known;
 
   2. it requires you to annotate your proofs with the contexts under
-   which each rule is applied;
+     which each rule is applied;
 
   3. it is hard to reduce spurious ambiguity in a sequent calculus
-    which uses contexts, as the restrictions on the orders in which
-    the rules can be applied have to be put on the contexts under
-    which they are applied;
+     which uses contexts, as the restrictions on the order in which
+     the rules can be applied have to be put on the contexts under
+     which they are applied;
+
+Because of this, we would rather have a system which does not use
+contexts in its rules. We will define such a system in the next
+section.
 
 
 
 ## The system with residuation R
+<!-- Getting contexts out of the way -->
 ``` hidden
 module res (Atom : Set) where
 
@@ -111,14 +197,17 @@ module res (Atom : Set) where
   infix  1  R′_
   infix  2  _⊢_
 ```
-
-due to @lambek1961
-
+In his paper, @lambek1961 also defines a combinator calculus, which we
+will refer to as R for residuation. The system itself is incredibly
+simple: it features reflexivity, transitivity, and two bidirectional
+residuation rules. Because this system does away with 'application
+under a context' there is also no need for structures, and we can make
+the system a direct binary relation on formulas:
 ```
   data Judgement : Set where
     _⊢_ : Type → Type → Judgement
 ```
-
+The system itself is as follows:
 ```
   data R′_ : Judgement → Set where
     ax   : ∀ {A}      → R′ A ⊢ A
@@ -131,17 +220,12 @@ due to @lambek1961
     r⊗⇐  : ∀ {A B C}  → R′ A ⊗ B ⊢ C  → R′ A ⊢ C ⇐ B
 ```
 
-```
-  m⊗′  : ∀ {A B C D} → R′ A ⊢ B → R′ C ⊢ D → R′ A ⊗ C ⊢ B ⊗ D
-  m⊗′  f g  = r⇐⊗ (cut f (r⊗⇐ (r⇒⊗ (cut g (r⊗⇒ ax)))))
-
-  m⇒′  : ∀ {A B C D} → R′ A ⊢ B → R′ C ⊢ D → R′ B ⇒ C ⊢ A ⇒ D
-  m⇒′  f g  = r⊗⇒ (cut (r⇐⊗ (cut f (r⊗⇐ (r⇒⊗ ax)))) g)
-
-  m⇐′  : ∀ {A B C D} → R′ A ⊢ B → R′ C ⊢ D → R′ A ⇐ D ⊢ B ⇐ C
-  m⇐′  f g  = r⊗⇐ (cut (r⇒⊗ (cut g (r⊗⇒ (r⇐⊗ ax)))) f)
-```
-
+The idea behind the residuation rules is that, where we used to apply
+a rule under a context, they will allow us to take the formulas apart.
+This means that an application of a rule |f| under a context |_ ⊗>
+(([] <⊗ _) <⊗ _)| now becomes a sequence of three applications of
+residuation, a cut with |f|, and three more applications of
+residuation.
 
 
 ### Equivalence between sequent calculus and R
@@ -150,38 +234,16 @@ module sequent_calculus⇔res (Atom : Set) where
 
   module R′ = res              Atom ; open R′ hiding (Judgement)
   module SC = sequent_calculus Atom ; open SC hiding (Judgement)
+  open import Relation.Binary.PropositionalEquality using (_≡_; refl; subst)
 ```
 
 We would like to be sure that the new axiomatisation for NL is
-actually equally expressive.
-
-```
-  ⌊_⌋ : Struct → Type
-  ⌊ · A ·  ⌋  = A
-  ⌊ Γ ∙ Δ  ⌋  = ⌊ Γ ⌋ ⊗ ⌊ Δ ⌋
-```
-
-```
-  cutIn′  : ∀ {Γ Δ Δ′ A}
-          →  R′ ⌊ Δ ⌋ ⊢ ⌊ Δ′ ⌋
-          →  R′ ⌊ Γ [ Δ′  ] ⌋ ⊢ A
-          →  R′ ⌊ Γ [ Δ   ] ⌋ ⊢ A
-  cutIn′ {Γ = []      } f g = cut f g
-  cutIn′ {Γ = _ ∙> Γ  } f g = r⇒⊗ (cutIn′ {Γ = Γ} f (r⊗⇒ g))
-  cutIn′ {Γ = Γ <∙ _  } f g = r⇐⊗ (cutIn′ {Γ = Γ} f (r⊗⇐ g))
-```
-
-```
-  from : ∀ {Γ A} → SC Γ SC.⊢ A → R′ (⌊ Γ ⌋ R′.⊢ A)
-  from    ax                  = ax
-  from (  cut  {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (  from f)  (from g)
-  from (  ⊗L   {Γ = Γ}  f)    = cutIn′ {Γ = Γ}    ax       (from f)
-  from (  ⇒L   {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (r⇒⊗ (m⇒′ (from g) ax)) (from f)
-  from (  ⇐L   {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (r⇐⊗ (m⇐′ ax (from g))) (from f)
-  from (  ⊗R            f g)  = m⊗′  (from f) (from g)
-  from (  ⇒R            f)    = r⊗⇒  (from f)
-  from (  ⇐R            f)    = r⊗⇐  (from f)
-```
+actually equally expressive. One direction of this proof, converting
+from the residuated system to the sequent calculus, is almost
+trivial. The residuation rules translate to sequences of left or right
+rules, depending on the direction of the residuation and the involved
+connectives. The cut rules simply translates to its more expressive
+equivalent:
 
 ```
   to : ∀ {A B} → R′ A R′.⊢ B → SC · A · SC.⊢ B
@@ -193,16 +255,107 @@ actually equally expressive.
   to (  r⊗⇐  f)    = ⇐R (cut {Γ = []} (⊗R ax ax) (to f))
 ```
 
-We would also like to eliminate cut from out proofs, as it introduces
-a new variable in the search and is always an applicable rule---we can
-always *try* to search for a proof which connects our current proof to
-our goal proof.
+However, since the sequent calculus uses structures as its antecedent,
+the other direction is much more involved, as we need a way to convert
+structures to formulas. Fortunately, we have already seen that the
+structural operator |∙| is simply a restricted version of the product
+|⊗|, so we can convert it to this:
+
+```
+  ⌊_⌋ : Struct → Type
+  ⌊ · A ·  ⌋  = A
+  ⌊ Γ ∙ Δ  ⌋  = ⌊ Γ ⌋ ⊗ ⌊ Δ ⌋
+```
+
+The second problem is the problem of applying rules under contexts. In
+the previous section, we hinted at a solution which used residuation
+to move the context out of the way. The precise definition of this is
+as follows:
+
+```
+  cutIn′  : ∀ {Γ Δ Δ′ A}
+          →  R′ ⌊ Δ ⌋ ⊢ ⌊ Δ′ ⌋
+          →  R′ ⌊ Γ [ Δ′  ] ⌋ ⊢ A
+          →  R′ ⌊ Γ [ Δ   ] ⌋ ⊢ A
+  cutIn′ {Γ = []      } f g = cut f g
+  cutIn′ {Γ = _ ∙> Γ  } f g = r⇒⊗ (cutIn′ {Γ = Γ} f (r⊗⇒ g))
+  cutIn′ {Γ = Γ <∙ _  } f g = r⇐⊗ (cutIn′ {Γ = Γ} f (r⊗⇐ g))
+```
+
+Last, we need to prove a lemma which states that in translating |⊗L|
+we don't need to do anything, as the flattening function `⌊_⌋` will
+make both sides equal. This is provable by simple induction over the
+structure of the context |Γ|:
+
+```
+  ⌊⌋-over-[]  : (Γ : Context) {A B : Type}
+              → ⌊ Γ [ · A ⊗ B · ] ⌋ ≡ ⌊ Γ [ · A · ∙ · B · ] ⌋
+```
+``` hidden
+  ⌊⌋-over-[]  []       {A} {B}  = refl
+  ⌊⌋-over-[]  (_ ∙> Γ) {A} {B}  rewrite ⌊⌋-over-[] Γ {A} {B} = refl
+  ⌊⌋-over-[]  (Γ <∙ _) {A} {B}  rewrite ⌊⌋-over-[] Γ {A} {B} = refl
+```
+
+Using these three functions, the solution becomes quite simple. The cut
+rule translates to the lemma |cutIn′|, the |⊗L| translates to the
+identity, and the remaining rules translate to some combination of the
+residuation rules with |cut| and |cutIn′|:
+
+```
+  from : ∀ {Γ A} → SC Γ SC.⊢ A → R′ ⌊ Γ ⌋ R′.⊢ A
+  from  ax                 = ax
+  from (cut {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (  from f)  (from g)
+  from (⊗L  {Γ = Γ}  {A} {B} f)     rewrite ⌊⌋-over-[] Γ {A} {B} = from f
+  from (⇒L  {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (r⇐⊗ (cut (from g) (r⊗⇐ (r⇒⊗ ax)))) (from f)
+  from (⇐L  {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (r⇒⊗ (cut (from g) (r⊗⇒ (r⇐⊗ ax)))) (from f)
+  from (⊗R           f g)  = r⇐⊗ (cut (from f) (r⊗⇐ (r⇒⊗ (cut (from g) (r⊗⇒ ax)))))
+  from (⇒R           f)    = r⊗⇒ (from f)
+  from (⇐R           f)    = r⊗⇐ (from f)
+```
+
+Now that we have eliminated the complexity introduced by contexts from
+our system, we can have a look at the other unwanted complexities
+still present. The most important of these are the |ax| and the |cut|
+rules, which unnecessarily complicate proof search. We will have a
+closer look at these rules in the next section.
+
+
+## The cut-free system RM
+
+The rules |ax| and the |cut| unnecessarily complicate proof
+search. The reasons for this are as follows:
+
+In the case of |ax|, the problem is that it can accept any
+formula. Therefore, there are two proofs for e.g. |A ⊗ B ⊢ A ⊗ B|. The
+shortest of these is simply |ax|. However, the other proof is |r⇐⊗
+(cut ax (r⊗⇐ (r⇒⊗ (cut ax (r⊗⇒ ax)))))|.
+
+In the case of |cut|, the problem is that during proof search it can
+always be applied to the current goal, as it produces a sequent of
+type |A ⊢ C| for any |A| and |C|. Additionally, it introduces a new
+formula |B|. We would therefore (TODO and for other reasons, namely
+soundness) like to eliminate cut from our proofs.
 
 Unfortunately, in the system described above we cannot fully eliminate
 cut. We will be left with the following atomic cuts, which correspond
-to the introduction rules for the three connectives[^prime].
+to introduction rules for the three connectives[^prime]:
 
-## The cut-free system RM
+```
+  m⊗′  : ∀ {A B C D} → R′ A ⊢ B → R′ C ⊢ D → R′ A ⊗ C ⊢ B ⊗ D
+  m⊗′  f g  = r⇐⊗ (cut f (r⊗⇐ (r⇒⊗ (cut g (r⊗⇒ ax)))))
+
+  m⇒′  : ∀ {A B C D} → R′ A ⊢ B → R′ C ⊢ D → R′ B ⇒ C ⊢ A ⇒ D
+  m⇒′  f g  = r⊗⇒ (cut (r⇐⊗ (cut f (r⊗⇐ (r⇒⊗ ax)))) g)
+
+  m⇐′  : ∀ {A B C D} → R′ A ⊢ B → R′ C ⊢ D → R′ A ⇐ D ⊢ B ⇐ C
+  m⇐′  f g  = r⊗⇐ (cut (r⇒⊗ (cut g (r⊗⇒ (r⇐⊗ ax)))) f)
+```
+
+Both of these problems are resolved in the system RM (for residuation
+and monotonicity), by taking the above rules as primitive and removing
+the |cut| rule:
+
 ``` hidden
 module resmon (Atom : Set) where
 
@@ -221,7 +374,6 @@ module resmon (Atom : Set) where
   open sequent_calculus Atom        using (Type; el; _⇐_; _⊗_; _⇒_)
   open res              Atom public using (Judgement; _⊢_)
 ```
-
 ```
   data RM_ : Judgement → Set where
     ax   : ∀ {A}       → RM el A ⊢ el A
@@ -236,9 +388,8 @@ module resmon (Atom : Set) where
     r⊗⇐  : ∀ {A B C}   → RM A ⊗ B ⊢ C  → RM A ⊢ C ⇐ B
 ```
 
-The reason we restrict the |ax| rule to atomic formulas is to limit spurious
-ambiguity in proof search, but using monotonicity we can easily recover the
-full axiom rule as |ax′| below:
+Using these monotonicity rules we can easily recover the full axiom
+rule as |ax′| below:
 
 ```
   ax′ : ∀ {A} → RM A ⊢ A
@@ -248,7 +399,11 @@ full axiom rule as |ax′| below:
   ax′ {A =  A ⇒  B  } = m⇒  ax′ ax′
 ```
 
+
 ### An executable cut-elimination procedure for RM
+
+Showing that |cut′| is an admissible rule in this system is
+slightly more involved.
 
 \begin{spec}
   data Polarity : Set where + - : Polarity
@@ -503,7 +658,8 @@ full axiom rule as |ax′| below:
 ``` hidden
 module res⇔resmon (Atom : Set) where
 
-  open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
+  open sequent_calculus     Atom using (Type; el; _⇐_; _⊗_; _⇒_)
+  open sequent_calculus⇔res Atom using (m⊗′; m⇐′; m⇒′)
   module RM = resmon Atom ; open RM
   module R′ = res    Atom ; open R′
 ```
@@ -545,23 +701,23 @@ module resmon→agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
 ```
 
 ```
-  ⟦_⟧ : Type → Set
-  ⟦ el   A ⟧ = ⟦ A ⟧ᴬ
-  ⟦ A ⊗  B ⟧ = ⟦ A ⟧ ×  ⟦ B ⟧
-  ⟦ A ⇒  B ⟧ = ⟦ A ⟧ →  ⟦ B ⟧
-  ⟦ B ⇐  A ⟧ = ⟦ A ⟧ →  ⟦ B ⟧
+  ⟦_⟧ᵀ : Type → Set
+  ⟦ el   A ⟧ᵀ = ⟦ A ⟧ᴬ
+  ⟦ A ⊗  B ⟧ᵀ = ⟦ A ⟧ᵀ ×  ⟦ B ⟧ᵀ
+  ⟦ A ⇒  B ⟧ᵀ = ⟦ A ⟧ᵀ →  ⟦ B ⟧ᵀ
+  ⟦ B ⇐  A ⟧ᵀ = ⟦ A ⟧ᵀ →  ⟦ B ⟧ᵀ
 ```
 
 ```
-  [_] : ∀ {A B} → RM A ⊢ B → ⟦ A ⟧ → ⟦ B ⟧
-  [ ax        ] = id
-  [ m⊗   f g  ] = map [ f ] [ g ]
-  [ m⇒   f g  ] = λ h → [ g ] ∘ h ∘ [ f ]
-  [ m⇐   f g  ] = λ h → [ f ] ∘ h ∘ [ g ]
-  [ r⇒⊗  f    ] = uncurry (flip  [ f ])
-  [ r⇐⊗  f    ] = uncurry (      [ f ])
-  [ r⊗⇒  f    ] = flip  (curry [ f ])
-  [ r⊗⇐  f    ] =       (curry [ f ])
+  ⟦_⟧ : ∀ {A B} → RM A ⊢ B → ⟦ A ⟧ᵀ → ⟦ B ⟧ᵀ
+  ⟦ ax        ⟧ = id
+  ⟦ m⊗   f g  ⟧ = map ⟦ f ⟧ ⟦ g ⟧
+  ⟦ m⇒   f g  ⟧ = λ h → ⟦ g ⟧ ∘ h ∘ ⟦ f ⟧
+  ⟦ m⇐   f g  ⟧ = λ h → ⟦ f ⟧ ∘ h ∘ ⟦ g ⟧
+  ⟦ r⇒⊗  f    ⟧ = uncurry (flip  ⟦ f ⟧)
+  ⟦ r⇐⊗  f    ⟧ = uncurry (      ⟦ f ⟧)
+  ⟦ r⊗⇒  f    ⟧ = flip  (curry ⟦ f ⟧)
+  ⟦ r⊗⇐  f    ⟧ =       (curry ⟦ f ⟧)
 ```
 
 ### Typing Agda
@@ -572,14 +728,14 @@ module resmon_typing_agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
   open import Data.Product using (_×_; map; curry; uncurry)
   open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
   open resmon Atom using (Judgement; _⊢_)
-  open resmon→agda Atom ⟦_⟧ᴬ using (⟦_⟧)
+  open resmon→agda Atom ⟦_⟧ᴬ using (⟦_⟧ᵀ)
 ```
 
 ``` hidden
-  ⟦_⟧ʲ : Judgement → Set
+  ⟦_⟧ᴶ : Judgement → Set
 ```
 ```
-  ⟦ A ⊢ B ⟧ʲ = ⟦ A ⟧ → ⟦ B ⟧
+  ⟦ A ⊢ B ⟧ᴶ = ⟦ A ⟧ᵀ → ⟦ B ⟧ᵀ
 ```
 
 ``` hidden
@@ -597,7 +753,7 @@ module resmon_typing_agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
 ```
 
 ```
-    data RM_ : (J : Judgement) (f : ⟦ J ⟧ʲ) → Set where
+    data RM_ : (J : Judgement) (f : ⟦ J ⟧ᴶ) → Set where
 
       ax   : ∀ {A}
            →  x                      ∈ x   ∶  el A ⊢ el A
@@ -634,11 +790,11 @@ module resmon_typing_agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
            →          curry f   x    ∈ x   ∶  A ⊢ C ⇐ B
 ```
 
+[^short]:  This is a slightly problematic statement: while the proofs
+           *do* become shorter, in terms of the number of rules, every
+           rule must be annotated with the context under which it applies.
 
 
 [^prime]:  I have made it convention to label all derived and admissible rules
            with a prime. This makes it clear (without syntax highlighting) which
            rules are atomic in a system.
-[^syntax]: In place of the full version (e.g. |SC_ Γ ⊢ A|) I will simply write
-           |Γ ⊢ A| for judgements, and use superscripts to disambiguate when
-           necessary (i.e. |Γ SC.⊢ A|).

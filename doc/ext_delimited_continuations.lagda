@@ -5,7 +5,7 @@ open import Function
 open import Logic.Polarity
 open import Relation.Nullary
 open import Relation.Nullary.Decidable using (True; toWitness)
-open import Relation.Binary.PropositionalEquality
+open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; inspect; trans; sym)
 
 module ext_delimited_continuations where
 
@@ -43,8 +43,8 @@ module syntactically_delimited_continuations
 
   Positive? : (A : Type) → Dec (Positive A)
   Positive? (el  A) with Polarityᴬ? A | inspect Polarityᴬ? A
-  ...| + | [ A⁺ ] = yes (el A A⁺)
-  ...| - | [ A⁻ ] = no (λ { (el .A A⁺) → +≠- (trans (sym A⁺) A⁻) })
+  ...| + | P.[ A⁺ ] = yes (el A A⁺)
+  ...| - | P.[ A⁻ ] = no (λ { (el .A A⁺) → +≠- (trans (sym A⁺) A⁻) })
   Positive? (A ⊗ B) = yes (A ⊗ B)
   Positive? (◇   A) = yes (◇   A)
   Positive? (A ⇒ B) = no (λ ())
@@ -57,8 +57,8 @@ module syntactically_delimited_continuations
 
   Negative? : (A : Type) → Dec (Negative A)
   Negative? (el  A) with Polarityᴬ? A | inspect Polarityᴬ? A
-  ...| + | [ A⁺ ] = no (λ { (el .A A⁻) → +≠- (trans (sym A⁺) A⁻) })
-  ...| - | [ A⁻ ] = yes (el A A⁻)
+  ...| + | P.[ A⁺ ] = no (λ { (el .A A⁻) → +≠- (trans (sym A⁺) A⁻) })
+  ...| - | P.[ A⁻ ] = yes (el A A⁻)
   Negative? (A ⊗ B) = no (λ ())
   Negative? (◇   A) = no (λ ())
   Negative? (A ⇒ B) = yes (A ⇒ B)
@@ -185,10 +185,94 @@ module syntactically_delimited_continuations
     r⊗⇐  : ∀ {X Z Y f} → EXP f ∈ X ⊗ Y ⊢ Z → EXP (λ {x (z , y) → f (x , y) z}) ∈ X ⊢ Z ⇐ Y
 ```
 
-```
+``` hidden
 module example where
-  open import Example.System.PolEXP
+  open import Data.Bool using (Bool)
+  open import Data.List using (List; _∷_; [])
+  open import Data.List.NonEmpty using (List⁺; [_])
+  open import Example.System.PolEXP public renaming (s⁻ to s) hiding ([_])
 
-  sent : Judgement
-    sent = · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ s⁻ · ⊗ ( · ( np ⇐ n ) ⊗ n · ⊗ · np ⇒ s⁻ · ) ) ⊢[ s⁻ ]
+  infix 9 _WANTS_ _SAID_
+
+  data Word : Set where mary leave to left wants said everyone : Word
+```
+
+```
+  postulate
+    MARY     : Entity
+    PERSON   : Entity → Bool
+    LEAVES   : Entity → Bool
+    _WANTS_  : Entity → Bool → Bool
+    _SAID_   : Entity → Bool → Bool
+```
+
+```
+  Syn : Word → Type
+  Syn mary      =    np
+  Syn everyone  = (  np ⇐ n) ⊗ n
+  Syn to        = (  np ⇒ s) ⇐ inf
+  Syn leave     =    inf
+  Syn left      =    np ⇒ s
+  Syn wants     = (  np ⇒ s) ⇐    s
+  Syn said      = (  np ⇒ s) ⇐ ◇  s
+```
+
+```
+  Sem : (w : Word) → ⟦ Syn w ⟧ᵀ
+  Sem mary      = MARY
+  Sem everyone  = (λ{(p₁ , p₂) → FORALL (λ x → p₂ x ⊃ p₁ x)}) , PERSON
+  Sem to        = (λ{((x , k) , p) → k (p x)})
+  Sem leave     = LEAVES
+  Sem left      = (λ{(x , k) → k (LEAVES x)})
+  Sem wants     = (λ{((x , k) , y) → k (x WANTS (y id))})
+  Sem said      = (λ{((x , k) , y) → k (x SAID (y id))})
+```
+
+```
+  Lex : Word → List⁺ (Σ[ A ∈ Type ] ⟦ A ⟧ᵀ)
+  Lex w = [ Syn w , Sem w ]
+```
+
+``` hidden
+  open Custom Word Lex public
+
+  example₁ :
+```
+```
+    ⟦ · mary · , · wants · , · everyone · , · to · , · leave · ⟧
+      ↦  (λ (k : Bool → Bool) → FORALL (λ x → PERSON x ⊃ k (MARY WANTS LEAVES x)))
+      ∷  (λ (k : Bool → Bool) → k (MARY WANTS FORALL (λ x → PERSON x ⊃ LEAVES x)))
+      ∷  []
+```
+``` hidden
+  example₁ = _
+  example₂ :
+```
+```
+    ⟦ · mary · , · said · , ⟨ · everyone · , · left · ⟩ ⟧
+      ↦  (λ (k : Bool → Bool) → k (MARY SAID FORALL (λ x → PERSON x ⊃ LEAVES x)))
+```
+``` hidden
+  example₂ = _
+  parses₁ :
+```
+```
+    parse (· mary · , · wants · , · everyone · , · to · , · leave ·)
+      ≡  ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ (⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))) (⇒ᴸ ax⁺ ax⁻))))))))))))))
+      ∷  ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⊗⇐ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ (⇁ (r⇐⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))) (⇒ᴸ ax⁺ ax⁻))))))))))
+      ∷  ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ (⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻))))))))))))) (⇒ᴸ ax⁺ ax⁻)))))
+      ∷  []
+```
+``` hidden
+  parses₁ = refl
+  parses₂ :
+
+```
+```
+    parse (· mary · , · said · , ⟨ · everyone · , · left · ⟩)
+      ≡  ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ (◇ᴿ (⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))))))))))) (⇒ᴸ ax⁺ ax⁻)))))
+      ∷  []
+```
+``` hidden
+  parses₂ = refl
 ```

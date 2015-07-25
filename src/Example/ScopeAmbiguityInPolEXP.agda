@@ -20,123 +20,51 @@
 ------------------------------------------------------------------------
 
 
-open import Data.Colist        using (fromList)
-open import Data.Bool          using (Bool; true; false; _∧_; _∨_)
-open import Data.Nat           using (ℕ; suc; zero; _≤?_; _*_)
-open import Data.Nat.Show      using (show)
-open import Data.List
-open import Data.String        using (String; _++_)
-open import Data.Product       using (_×_; _,_)
-open import Data.Vec           using (Vec; _∷_; []; toList)
-open import Function           using (id; _$_)
-open import IO                 using (IO; run)
-open import Reflection         using (Term)
-open import Relation.Nullary   using (Dec; yes; no)
+open import Data.Bool using (Bool)
+open import Data.List using (List; _∷_; [])
 open import Example.System.PolEXP
 
 
 module Example.ScopeAmbiguityInPolEXP where
 
 
-module mary_left where
+example₁
+  : ⟦ · mary · , · left · ⟧
+  ↦ (λ (k : Bool → Bool) → k (LEAVES MARY))
+example₁ = _
 
-  syn : List (EXP · np · ⊗ · np ⇒ s⁻ · ⊢[ s⁻ ])
-  syn = findAll (· np · ⊗ · np ⇒ s⁻ · ⊢[ s⁻ ])
+example₂
+  : ⟦ · everyone · , · loves · , · mary · ⟧
+  ↦ (λ (k : Bool → Bool) → FORALL (λ x → PERSON x ⊃ k (x LOVES MARY)))
+example₂ = _
 
-  sem : List ⟦ s⁻ ⟧ᵀ
-  sem = map (λ syn → [ syn ]ᵀ (mary ∷ left ∷ [])) syn
+example₃
+  : ⟦ · mary · , · loves · , · everyone · ⟧
+  ↦ (λ (k : Bool → Bool) → FORALL (λ x → PERSON x ⊃ k (MARY LOVES x)))
+example₃ = _
 
-  exp : List Term
-  exp = quoteTerm (λ (k : Bool → Bool) → k (LEAVES mary))
-      ∷ []
+example₄
+  : ⟦ · someone · , · loves · , · everyone · ⟧
+  ↦ (λ (k : Bool → Bool) → FORALL (λ y → PERSON y ⊃ EXISTS (λ x → PERSON x ∧ k (x LOVES y))))
+  ∷ (λ (k : Bool → Bool) → EXISTS (λ x → PERSON x ∧ FORALL (λ y → PERSON y ⊃ k (x LOVES y))))
+  ∷ []
+example₄ = _
 
-  assert : Assert (quoteTerm sem sameAs exp)
-  assert = _
+example₅
+  : ⟦ · mary · , · wants · , · everyone · , · to · , · leave · ⟧
+  ↦ (λ (k : Bool → Bool) → FORALL (λ x → PERSON x ⊃ k (MARY WANTS LEAVES x)))
+  ∷ (λ (k : Bool → Bool) → k (MARY WANTS FORALL (λ x → PERSON x ⊃ LEAVES x)))
+  ∷ []
+example₅ = _
 
-
-module everyone_loves_mary where
-
-  syn : List (EXP · ( np ⇐ n ) ⊗ n · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · np · ) ⊢[ s⁻ ])
-  syn = findAll _
-
-  sem : List ⟦ s⁻ ⟧ᵀ
-  sem = map (λ syn → [ syn ]ᵀ (everyone ∷ loves ∷ mary ∷ [])) syn
-
-  exp : List Term
-  exp = quoteTerm (λ (k : Bool → Bool) → forAll (λ x → PERSON x ⊃ k (LOVES x mary)))
-      ∷ []
-
-  assert : Assert (quoteTerm sem sameAs exp)
-  assert = _
-
-
-module mary_loves_everyone where
-
-  syn : List (EXP · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · ( np ⇐ n ) ⊗ n · ) ⊢[ s⁻ ])
-  syn = findAll _
-
-  sem : List ⟦ s⁻ ⟧ᵀ
-  sem = map (λ syn → [ syn ]ᵀ (mary ∷ loves ∷ everyone ∷ [])) syn
-
-  exp : List Term
-  exp = quoteTerm (λ (k : Bool → Bool) → forAll (λ x → PERSON x ⊃ k (LOVES mary x)))
-      ∷ []
-
-  assert : Assert (quoteTerm sem sameAs exp)
-  assert = _
+example₆
+  : ⟦ · mary · , · said · , ⟨ · everyone · , · left · ⟩ ⟧
+  ↦ (λ (k : Bool → Bool) → k (MARY SAID FORALL (λ x → PERSON x ⊃ LEAVES x)))
+example₆ = _
 
 
-module someone_loves_everyone where
 
-  syn : List (EXP · ( np ⇐ n ) ⊗ n · ⊗ ( · ( np ⇒ s⁻ ) ⇐ np · ⊗ · ( np ⇐ n ) ⊗ n · ) ⊢[ s⁻ ])
-  syn = findAll _
-
-  sem : List ⟦ s⁻ ⟧ᵀ
-  sem = map (λ syn → [ syn ]ᵀ (someone ∷ loves ∷ everyone ∷ [])) syn
-
-  exp : List Term
-  exp = quoteTerm (λ (k : Bool → Bool) → forAll (λ x₁ → PERSON x₁ ⊃ exists (λ x₂ → PERSON x₂ ∧ k (LOVES x₂ x₁))))
-      ∷ quoteTerm (λ (k : Bool → Bool) → exists (λ x₁ → PERSON x₁ ∧ forAll (λ x₂ → PERSON x₂ ⊃ k (LOVES x₁ x₂))))
-      ∷ []
-
-  assert : Assert (quoteTerm sem sameAs exp)
-  assert = _
-
-
-module mary_wants_everyone_to_leave where
-
-  syn : List (EXP · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ s⁻ · ⊗ ( · ( np ⇐ n ) ⊗ n · ⊗ ( · ( np ⇒ s⁻ ) ⇐ inf · ⊗ · inf · ) ) ) ⊢[ s⁻ ])
-  syn = findAll _
-
-  sem : List ⟦ s⁻ ⟧ᵀ
-  sem = map (λ syn → [ syn ]ᵀ (mary ∷ wants ∷ everyone ∷ to ∷ leave ∷ [])) syn
-
-  exp : List Term
-  exp = quoteTerm (λ (k : Bool → Bool) → k (WANTS mary (forAll (λ x → PERSON x ⊃ LEAVES x))))
-      ∷ quoteTerm (λ (k : Bool → Bool) → forAll (λ x → PERSON x ⊃ k (WANTS mary (LEAVES x))))
-      ∷ quoteTerm (λ (k : Bool → Bool) → k (WANTS mary (forAll (λ x → PERSON x ⊃ LEAVES x))))
-      ∷ []
-
-  assert : Assert (quoteTerm sem sameAs exp)
-  assert = _
-
-
-module mary_said_everyone_left where
-
-  syn : List (EXP · np · ⊗ ( · ( np ⇒ s⁻ ) ⇐ ◇ s⁻ · ⊗ ⟨ · ( np ⇐ n ) ⊗ n · ⊗ · np ⇒ s⁻ · ⟩) ⊢[ s⁻ ])
-  syn = findAll _
-
-  sem : List ⟦ s⁻ ⟧ᵀ
-  sem = map (λ syn → [ syn ]ᵀ (mary ∷ said ∷ everyone ∷ left ∷ [])) syn
-
-  exp : List Term
-  exp = quoteTerm (λ (k : Bool → Bool) → k (SAID mary (forAll (λ x → PERSON x ⊃ LEAVES x))))
-      ∷ []
-
-  assert : Assert (quoteTerm sem sameAs exp)
-  assert = _
-
-
+{-
 proofList : List Proof
 proofList = concat
   $ asProof "mary left"                    mary_left.syn                    (quoteTerm mary_left.sem)
@@ -146,7 +74,6 @@ proofList = concat
   ∷ asProof "mary wants everyone to leave" mary_wants_everyone_to_leave.syn (quoteTerm mary_wants_everyone_to_leave.sem)
   ∷ asProof "mary said everyone left"      mary_said_everyone_left.syn      (quoteTerm mary_said_everyone_left.sem)
   ∷ []
-
 
 main : _
 main = run (writeLaTeX proofList)

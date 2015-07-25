@@ -1,11 +1,11 @@
-------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
-------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 
 open import Level                                 using (zero)
 open import Category.Monad                        using (module RawMonad)
-open import Data.Bool                             using (Bool; true; false; not; _∨_)
+open import Data.Bool                             using (Bool; true; false; not; _∧_; _∨_)
 open import Data.List                             hiding (_++_; monad)
 open import Data.List.NonEmpty                    using (List⁺; _∷_)
 open import Data.Nat                              using (ℕ)
@@ -23,11 +23,7 @@ open import Reflection                            using (Term)
 
 module Example.System.PolLG where
 
-
-open import Example.System.Base public
-
-
--- * import focused Lambek-Grishin calculus
+open import Example.System.Base public hiding (module Default)
 open import TypeLogicalGrammar
 open import Logic.Translation
 open import Logic.Polarity public using (Polarity; +; -)
@@ -43,7 +39,7 @@ open import Logic.Intuitionistic.Unrestricted.Lambda.EquivalentToIndexed Atom us
 open import Logic.Intuitionistic.Unrestricted.Lambda.Indexed.Base Atom using (Ix→λ)
 open import Logic.Intuitionistic.Unrestricted.Lambda.Untyped.Base using (norm)
 open import Logic.Intuitionistic.Unrestricted.Lambda.Untyped.ToLaTeX as UT using ()
-open import Logic.Intuitionistic.Unrestricted.Agda.Environment public
+open import Logic.Intuitionistic.Unrestricted.Agda.Environment
 open import Logic.Intuitionistic.Unrestricted.Agda.ToLaTeX using (show)
 
 open Translation (Λ→ΛΠ ◆         LL→Λ ◆ LG→LL) public renaming ([_] to [_]ᵀ)
@@ -60,15 +56,11 @@ toLaTeXTerm xs f = UT.toLaTeXTerm xs (norm (LG→λ f))
 
 
 -- * create aliases for polarised types
-np np⁻ n n⁻ s s⁻ inf inf⁻ : Type
+np n s⁻ inf : Type
 np   = el (+ , NP)
-np⁻  = el (- , NP)
 n    = el (+ , N)
-n⁻   = el (- , N)
-s    = el (+ , S)
 s⁻   = el (- , S)
 inf  = el (+ , INF)
-inf⁻ = el (- , INF)
 
 
 -- * setup helper functions
@@ -86,59 +78,9 @@ private
   gq q _⊙_ (p₁ , p₂) = q (λ x → p₂ x ⊙ p₁ x)
 
 
-
--- * create an instance of type-logical grammar
-typeLogicalGrammar : TypeLogicalGrammar
-typeLogicalGrammar = record
-  { Type           = Type
-  ; Struct         = Struct
-  ; rawTraversable = rawTraversable
-  ; _⊢_            = λ X B → LG ⌊ X ⌋ ⊢[ B ]
-  ; findAll        = λ X B → findAll (⌊ X ⌋ ⊢[ B ])
-  ; s              = s⁻
-  ; toAgdaType     = ⟦_⟧ᵀ
-  ; toAgdaTerm     = λ X f → [ f ]ᵀ (combine X)
-  ; Word           = Word
-  ; Lex            = Lex
-  }
-  where
-    ⌊_⌋ : Struct Type → Structure +
-    ⌊ · A · ⌋ = ·     A     ·
-    ⌊ ⟨ X ⟩ ⌋ = ⟨   ⌊ X ⌋   ⟩
-    ⌊ X , Y ⌋ = ⌊ X ⌋ ⊗ ⌊ Y ⌋
-
-    combine : (X : Struct (Σ[ A ∈ Type ] ⟦ A ⟧ᵀ)) → Env _
-    combine ·  A  · = proj₂ A ∷ []
-    combine ⟨  X  ⟩ = combine X
-    combine (X , Y) = append (combine X) (combine Y)
-
-    Lex : Word → List⁺ (Σ[ A ∈ Type ] ⟦ A ⟧ᵀ)
-    Lex john     = (np , JOHN) ∷ []
-    Lex mary     = (np , MARY) ∷ []
-    Lex bill     = (np , BILL) ∷ []
-    Lex unicorn  = (n , UNICORN) ∷ []
-    Lex leave    = (inf , LEAVES) ∷ []
-    Lex to       = ((np ⇒ s⁻) ⇐ inf , λ {((x , k) , p) → k (p x)}) ∷ []
-    Lex left     = (np ⇒ s⁻ , v₀ LEAVES) ∷ []
-    Lex smiles   = (np ⇒ s⁻ , v₀ SMILES) ∷ []
-    Lex cheats   = (np ⇒ s⁻ , v₀ CHEATS) ∷ []
-    Lex finds    = ((np ⇒ s⁻) ⇐ np , v₁ FINDS ) ∷ []
-    Lex loves    = ((np ⇒ s⁻) ⇐ np , v₁ LOVES) ∷ []
-    Lex wants    = ((np ⇒ s⁻) ⇐ s⁻ , λ {((x , k) , y) → k (WANTS x (y id))}) ∷ []
-    Lex said     = ((np ⇒ s⁻) ⇐ ◇ s⁻ , λ {((x , k) , y) → k (SAID x (y id))}) ∷ []
-    Lex a        = ((np ⇐ n) , gq EXISTS _∧_) ∷ []
-    Lex some     = ((np ⇐ n) , gq EXISTS _∧_) ∷ []
-    Lex every    = ((np ⇐ n) , gq FORALL _⊃_) ∷ []
-    Lex everyone = ((np ⇐ n) ⊗ n , gq FORALL _⊃_ , PERSON) ∷ []
-    Lex someone  = ((np ⇐ n) ⊗ n , gq EXISTS _∧_ , PERSON) ∷ []
-
-
-open TypeLogicalGrammar.TypeLogicalGrammar typeLogicalGrammar public using (*_; ✓_; ⟦_⟧)
-
-
 -- * write proofs
-open RawMonad (monad {Level.zero}) using (_<$>_; pure; _⊛_)
 
+open RawMonad (monad {Level.zero}) using (_<$>_; pure; _⊛_)
 
 asProof′ : ∀ {Γ} (ps : List (LG Γ ⊢[ s⁻ ])) (ts : List Term) → Vec String (size Γ) → List Proof
 asProof′ {Γ} ps ts ws = map
@@ -155,3 +97,63 @@ asProof′ {Γ} ps ts ws = map
 asProof : ∀ {Γ} (ws : String) (ps : List (LG Γ ⊢[ s⁻ ])) (ts : Term)
         → From-just (List Proof) (asProof′ ps <$> list ts ⊛ ((size Γ) words ws))
 asProof {Γ} ws ps ts = from-just (asProof′ ps <$> (list ts) ⊛ ((size Γ) words ws))
+
+
+-- * Create a module which abstracts over the lexicon.
+
+module Custom (Word : Set) (Lex : Word → List⁺ (Σ[ A ∈ Type ] ⟦ A ⟧ᵀ)) where
+
+  -- * create an instance of type-logical grammar
+  typeLogicalGrammar : TypeLogicalGrammar
+  typeLogicalGrammar = record
+    { Type           = Type
+    ; Struct         = Struct
+    ; rawTraversable = rawTraversable
+    ; _⊢_            = λ X B → LG ⌊ X ⌋ ⊢[ B ]
+    ; findAll        = λ X B → findAll (⌊ X ⌋ ⊢[ B ])
+    ; s              = s⁻
+    ; toAgdaType     = ⟦_⟧ᵀ
+    ; toAgdaTerm     = λ X f → [ f ]ᵀ (combine X)
+    ; Word           = Word
+    ; Lex            = Lex
+    }
+    where
+      ⌊_⌋ : Struct Type → Structure +
+      ⌊ · A · ⌋ = ·     A     ·
+      ⌊ ⟨ X ⟩ ⌋ = ⟨   ⌊ X ⌋   ⟩
+      ⌊ X , Y ⌋ = ⌊ X ⌋ ⊗ ⌊ Y ⌋
+
+      combine : (X : Struct (Σ[ A ∈ Type ] ⟦ A ⟧ᵀ)) → Env _
+      combine ·  A  · = proj₂ A ∷ []
+      combine ⟨  X  ⟩ = combine X
+      combine (X , Y) = append (combine X) (combine Y)
+
+  open TypeLogicalGrammar.TypeLogicalGrammar typeLogicalGrammar public using (✓_; *_; ⟦_⟧; parse)
+
+
+
+module Default where
+
+  open Example.System.Base.Default public
+
+  Lex : Word → List⁺ (Σ[ A ∈ Type ] ⟦ A ⟧ᵀ)
+  Lex john     = (np , JOHN) ∷ []
+  Lex mary     = (np , MARY) ∷ []
+  Lex bill     = (np , BILL) ∷ []
+  Lex unicorn  = (n , UNICORN) ∷ []
+  Lex leave    = (inf , LEAVES) ∷ []
+  Lex to       = ((np ⇒ s⁻) ⇐ inf , λ {((x , k) , p) → k (p x)}) ∷ []
+  Lex left     = (np ⇒ s⁻ , v₀ LEAVES) ∷ []
+  Lex smiles   = (np ⇒ s⁻ , v₀ SMILES) ∷ []
+  Lex cheats   = (np ⇒ s⁻ , v₀ CHEATS) ∷ []
+  Lex finds    = ((np ⇒ s⁻) ⇐ np , v₁ _FINDS_) ∷ []
+  Lex loves    = ((np ⇒ s⁻) ⇐ np , v₁ _LOVES_) ∷ []
+  Lex wants    = ((np ⇒ s⁻) ⇐ s⁻ , λ {((x , k) , y) → k (_WANTS_ x (y id))}) ∷ []
+  Lex said     = ((np ⇒ s⁻) ⇐ ◇ s⁻ , λ {((x , k) , y) → k (_SAID_ x (y id))}) ∷ []
+  Lex a        = (np ⇐ n , gq EXISTS _∧_) ∷ []
+  Lex some     = (np ⇐ n , gq EXISTS _∧_) ∷ []
+  Lex every    = (np ⇐ n , gq FORALL _⊃_) ∷ []
+  Lex everyone = ((np ⇐ n) ⊗ n , gq FORALL _⊃_ , PERSON) ∷ []
+  Lex someone  = ((np ⇐ n) ⊗ n , gq EXISTS _∧_ , PERSON) ∷ []
+
+  open Custom Word Lex public

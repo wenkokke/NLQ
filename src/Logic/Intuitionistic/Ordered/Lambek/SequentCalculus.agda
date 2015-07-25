@@ -10,11 +10,11 @@ open import Logic.Intuitionistic.Ordered.Lambek.Type Atom
 
 
 infixr 1 NL_
-infix  2 _⊢_
-infixr 4 _,_
-infixr 4 _,>_
-infixl 4 _<,_
-infixl 3 _[_]
+infix  3 _⊢_
+infixr 5 _,_
+infixr 5 _,>_
+infixl 5 _<,_
+infixl 4 _[_]
 
 
 data Struct : Set ℓ where

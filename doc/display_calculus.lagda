@@ -6,6 +6,30 @@ module display_calculus where
   open import non_associative_lambek_calculus
 ```
 
+In this section, we will discuss the system of structural NL,
+a fragment of the structural Lambek-Grishin calculus as introduced in
+@moortgat2009. This calculus is the result of implementing the Lambek
+calculus in the theoretical framework of display logic
+[@belnap1982]. As @gore1998 puts it:
+
+> The Display Logic of Nuel Belnap is a general Gentzen-style proof
+> theoretical framework designed to capture many different logics in
+> one uniform setting. The beauty of display logic is a general
+> cut-elimination theorem, due to Belnap, which applies whenever the
+> rules of the display calculus obey certain, easily checked,
+> conditions.
+
+Working within the framework of display logic is an incredibly useful
+tool for research, especially in the area of type-logical grammars, as
+as it allows you to add and remove operators without having to worry
+about things like maintaining a proof of cut-elimination.
+
+However, as formalising the theory behind display logic is beyond the
+scope of this thesis, we will only present the system that is the
+*result* of the implementation in display logic. We can obtain a
+cut-elimination procedure for this system from the proof of
+equivalence with RM.
+
 ``` hidden
 module display_calculus (Atom : Set) where
 
