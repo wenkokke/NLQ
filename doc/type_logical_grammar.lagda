@@ -156,7 +156,8 @@ assignments:
       Struct          : Set → Set
       rawTraversable  : RawTraversable Struct
       _⊢_             : Struct Type → Type → Set
-      s               : Type
+
+s               : Type
       findAll         : (Γ : Struct Type) (B : Type) → List (Γ ⊢ B)
 
       Word            : Set

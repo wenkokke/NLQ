@@ -1,1 +1,0 @@
-# Lambek-Grishin Calculus
