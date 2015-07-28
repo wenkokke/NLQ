@@ -234,7 +234,7 @@ module sequent_calculus⇔res (Atom : Set) where
 
   module R′ = res              Atom ; open R′ hiding (Judgement)
   module SC = sequent_calculus Atom ; open SC hiding (Judgement)
-  open import Relation.Binary.PropositionalEquality using (_≡_; refl; subst)
+  open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 ```
 
 We would like to be sure that the new axiomatisation for NL is
@@ -274,9 +274,7 @@ as follows:
 
 ```
   cutIn′  : ∀ {Γ Δ Δ′ A}
-          →  R′ ⌊ Δ ⌋ ⊢ ⌊ Δ′ ⌋
-          →  R′ ⌊ Γ [ Δ′  ] ⌋ ⊢ A
-          →  R′ ⌊ Γ [ Δ   ] ⌋ ⊢ A
+          → R′ ⌊ Δ ⌋ ⊢ ⌊ Δ′ ⌋ → R′ ⌊ Γ [ Δ′  ] ⌋ ⊢ A → R′ ⌊ Γ [ Δ   ] ⌋ ⊢ A
   cutIn′ {Γ = []      } f g = cut f g
   cutIn′ {Γ = _ ∙> Γ  } f g = r⇒⊗ (cutIn′ {Γ = Γ} f (r⊗⇒ g))
   cutIn′ {Γ = Γ <∙ _  } f g = r⇐⊗ (cutIn′ {Γ = Γ} f (r⊗⇐ g))
@@ -288,13 +286,10 @@ make both sides equal. This is provable by simple induction over the
 structure of the context |Γ|:
 
 ```
-  ⌊⌋-over-[]  : (Γ : Context) {A B : Type}
-              → ⌊ Γ [ · A ⊗ B · ] ⌋ ≡ ⌊ Γ [ · A · ∙ · B · ] ⌋
-```
-``` hidden
-  ⌊⌋-over-[]  []       {A} {B}  = refl
-  ⌊⌋-over-[]  (_ ∙> Γ) {A} {B}  rewrite ⌊⌋-over-[] Γ {A} {B} = refl
-  ⌊⌋-over-[]  (Γ <∙ _) {A} {B}  rewrite ⌊⌋-over-[] Γ {A} {B} = refl
+  lemma-⌊_⌋  : ∀ Γ → ∀ {A B} → ⌊ Γ [ · A ⊗ B · ] ⌋ ≡ ⌊ Γ [ · A · ∙ · B · ] ⌋
+  lemma-⌊_⌋  []       {A} {B}  = refl
+  lemma-⌊_⌋  (_ ∙> Γ) {A} {B}  = cong (_ ∙>_) (lemma-⌊_⌋ Γ {A} {B})
+  lemma-⌊_⌋  (Γ <∙ _) {A} {B}  = cong (_<∙ _) (lemma-⌊_⌋ Γ {A} {B})
 ```
 
 Using these three functions, the solution becomes quite simple. The cut
@@ -304,14 +299,14 @@ residuation rules with |cut| and |cutIn′|:
 
 ```
   from : ∀ {Γ A} → SC Γ SC.⊢ A → R′ ⌊ Γ ⌋ R′.⊢ A
-  from  ax                 = ax
-  from (cut {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (  from f)  (from g)
-  from (⊗L  {Γ = Γ}  {A} {B} f)     rewrite ⌊⌋-over-[] Γ {A} {B} = from f
-  from (⇒L  {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (r⇐⊗ (cut (from g) (r⊗⇐ (r⇒⊗ ax)))) (from f)
-  from (⇐L  {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (r⇒⊗ (cut (from g) (r⊗⇒ (r⇐⊗ ax)))) (from f)
-  from (⊗R           f g)  = r⇐⊗ (cut (from f) (r⊗⇐ (r⇒⊗ (cut (from g) (r⊗⇒ ax)))))
-  from (⇒R           f)    = r⊗⇒ (from f)
-  from (⇐R           f)    = r⊗⇐ (from f)
+  from    ax                 = ax
+  from (  cut {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (from f)  (from g)
+  from (  ⊗L  {Γ = Γ}  {A} {B} f)     rewrite lemma-⌊_⌋ Γ {A} {B} = from f
+  from (  ⊗R           f g)  = r⇐⊗ (cut (from f) (r⊗⇐ (r⇒⊗ (cut (from g) (r⊗⇒ ax)))))
+  from (  ⇒L  {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (r⇐⊗ (cut (from g) (r⊗⇐ (r⇒⊗ ax)))) (from f)
+  from (  ⇐L  {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (r⇒⊗ (cut (from g) (r⊗⇒ (r⇐⊗ ax)))) (from f)
+  from (  ⇒R           f)    = r⊗⇒ (from f)
+  from (  ⇐R           f)    = r⊗⇐ (from f)
 ```
 
 Now that we have eliminated the complexity introduced by contexts from
@@ -371,8 +366,8 @@ module resmon (Atom : Set) where
   open import Function                              using (id; flip; _∘_)
   open import Logic.Polarity                        using (Polarity; +; -)
   open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
-  open sequent_calculus Atom        using (Type; el; _⇐_; _⊗_; _⇒_)
-  open res              Atom public using (Judgement; _⊢_)
+  open sequent_calculus Atom                        using (Type; el; _⇐_; _⊗_; _⇒_)
+  open res              Atom public                 using (Judgement; _⊢_)
 ```
 ```
   data RM_ : Judgement → Set where
@@ -399,9 +394,6 @@ rule as |ax′| below:
   ax′ {A =  A ⇒  B  } = m⇒  ax′ ax′
 ```
 
-
-### An executable cut-elimination procedure for RM
-
 Showing that |cut′| is an admissible rule in this system is
 slightly more involved.
 
@@ -424,10 +416,10 @@ slightly more involved.
   _[_] : ∀ {p₁ p₂} → Context p₁ p₂ → Type → Type
   []      [ A ] = A
   B ⊗> C  [ A ] = B ⊗ (C [ A ])
-  C <⊗ B  [ A ] = (C [ A ]) ⊗ B
   B ⇒> C  [ A ] = B ⇒ (C [ A ])
-  C <⇒ B  [ A ] = (C [ A ]) ⇒ B
   B ⇐> C  [ A ] = B ⇐ (C [ A ])
+  C <⊗ B  [ A ] = (C [ A ]) ⊗ B
+  C <⇒ B  [ A ] = (C [ A ]) ⇒ B
   C <⇐ B  [ A ] = (C [ A ]) ⇐ B
 ```
 
@@ -642,13 +634,13 @@ slightly more involved.
 
 ```
   cut′ : ∀ {A B C} → RM A ⊢ B → RM B ⊢ C → RM A ⊢ C
-  cut′ {B = el B}       f  g   with el.view ([] <⊢ _) g
+  cut′ {B = el    B }   f  g   with el.view ([] <⊢ _) g
   ... | el.origin          g′  _ = g′ f
-  cut′ {B = B₁ ⊗ B₂}    f  g   with ⊗.view (_ ⊢> []) f
+  cut′ {B = B₁ ⊗  B₂}   f  g   with ⊗.view (_ ⊢> []) f
   ... | ⊗.origin h₁ h₂  f′     _ = f′ (r⇐⊗ (cut′ h₁ (r⊗⇐ (r⇒⊗ (cut′ h₂ (r⊗⇒ g))))))
-  cut′ {B = B₁ ⇐ B₂}    f  g   with ⇐.view ([] <⊢ _) g
+  cut′ {B = B₁ ⇐  B₂}   f  g   with ⇐.view ([] <⊢ _) g
   ... | ⇐.origin h₁ h₂     g′  _ = g′ (r⊗⇐ (r⇒⊗ (cut′ h₂ (r⊗⇒ (cut′ (r⇐⊗ f) h₁)))))
-  cut′ {B = B₁ ⇒ B₂}    f  g   with ⇒.view ([] <⊢ _) g
+  cut′ {B = B₁ ⇒  B₂}   f  g   with ⇒.view ([] <⊢ _) g
   ... | ⇒.origin h₁ h₂     g′  _ = g′ (r⊗⇒ (r⇐⊗ (cut′ h₁ (r⊗⇐ (cut′ (r⇒⊗ f) h₂)))))
 ```
 
@@ -710,14 +702,15 @@ module resmon→agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
 
 ```
   ⟦_⟧ : ∀ {A B} → RM A ⊢ B → ⟦ A ⟧ᵀ → ⟦ B ⟧ᵀ
-  ⟦ ax        ⟧ = id
-  ⟦ m⊗   f g  ⟧ = map ⟦ f ⟧ ⟦ g ⟧
-  ⟦ m⇒   f g  ⟧ = λ h → ⟦ g ⟧ ∘ h ∘ ⟦ f ⟧
-  ⟦ m⇐   f g  ⟧ = λ h → ⟦ f ⟧ ∘ h ∘ ⟦ g ⟧
-  ⟦ r⇒⊗  f    ⟧ = uncurry (flip  ⟦ f ⟧)
-  ⟦ r⇐⊗  f    ⟧ = uncurry (      ⟦ f ⟧)
-  ⟦ r⊗⇒  f    ⟧ = flip  (curry ⟦ f ⟧)
-  ⟦ r⊗⇐  f    ⟧ =       (curry ⟦ f ⟧)
+  ⟦ ax        ⟧ = λ x → x
+  ⟦ m⊗   f g  ⟧ = λ{(x , y) → (⟦ f ⟧ x , ⟦ g ⟧ y)}
+  ⟦ m⇒   f g  ⟧ = λ h x → ⟦ g ⟧ (h (⟦ f ⟧ x))
+  ⟦ m⇐   f g  ⟧ = λ h x → ⟦ f ⟧ (h (⟦ g ⟧ x))
+  ⟦ r⇒⊗  f    ⟧ = λ{(x , y) → ⟦ f ⟧ y x}
+  ⟦ r⇐⊗  f    ⟧ = λ{(x , y) → ⟦ f ⟧ x y}
+  ⟦ r⊗⇒  f    ⟧ = λ x y → ⟦ f ⟧ (y , x)
+  ⟦ r⊗⇐  f    ⟧ = λ x y → ⟦ f ⟧ (x , y)
+
 ```
 
 ### Typing Agda

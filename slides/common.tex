@@ -1,0 +1,63 @@
+\usepackage[greek,english]{babel}%
+
+\usetheme{Boadilla}%
+\usecolortheme{seagull}%
+\beamertemplatenavigationsymbolsempty%
+
+\DeclareUnicodeCharacter{7522}{\ensuremath{_{\scriptscriptstyle\text{i}}}}%
+\DeclareUnicodeCharacter{7468}{\ensuremath{^{\scriptscriptstyle\text{A}}}}%
+\DeclareUnicodeCharacter{7478}{\ensuremath{^{\scriptscriptstyle\text{J}}}}%
+\DeclareUnicodeCharacter{7480}{\ensuremath{^{\scriptscriptstyle\text{L}}}}%
+\DeclareUnicodeCharacter{7487}{\ensuremath{^{\scriptscriptstyle\text{R}}}}%
+\DeclareUnicodeCharacter{7488}{\ensuremath{^{\scriptscriptstyle\text{T}}}}%
+\DeclareUnicodeCharacter{7489}{\ensuremath{^{\scriptscriptstyle\text{U}}}}%
+\DeclareUnicodeCharacter{7510}{\ensuremath{^{\scriptscriptstyle\text{p}}}}%
+\DeclareUnicodeCharacter{8314}{\ensuremath{^{+}}}%
+\DeclareUnicodeCharacter{8315}{\ensuremath{^{-}}}%
+\DeclareUnicodeCharacter{8337}{\ensuremath{_{\scriptscriptstyle\text{e}}}}%
+\DeclareUnicodeCharacter{738}{\ensuremath{^{\scriptscriptstyle\text{s}}}}%
+\DeclareUnicodeCharacter{10003}{\ensuremath{\checkmark}}%
+
+\definecolor{green}{HTML}{008B00}
+
+\usepackage{comment}%
+\usepackage{pict2e}%
+\usepackage{picture}%
+\usepackage{stmaryrd}%
+\usepackage{textgreek}%
+\usepackage{varwidth}%
+\usepackage{catchfilebetweentags}%
+
+\makeatletter
+\newcommand{\pictslash}[2]{%
+  \vcenter{%
+    \sbox0{$\m@th#1\varobslash$}\dimen0=.55\wd0
+    \hbox to\wd 0{%
+      \hfil\pictslash@aux#2\hfil
+    }%
+  }%
+}
+\newcommand{\pictslash@aux}[2]{%
+    \begin{picture}(\dimen0,\dimen0)
+    \roundcap
+    \linethickness{.15ex}
+    \put(0,#1\dimen0){\line(1,#2){\dimen0}}
+    \end{picture}%
+}
+\makeatother
+\newcommand{\varslash}{%
+  \mathpalette\pictslash{{0}{1}}%
+}
+\newcommand{\varbslash}{%
+  \mathpalette\pictslash{{1}{-1}}%
+}
+
+
+% setup buss proofs
+\usepackage{bussproofs}
+\EnableBpAbbreviations%
+\def\fCenter{\ \vdash\ }
+\def\limpl{\multimap}
+\newenvironment{scprooftree}[1]%
+  {\gdef\scalefactor{#1}\begin{center}\proofSkipAmount \leavevmode}%
+  {\scalebox{\scalefactor}{\DisplayProof}\proofSkipAmount \end{center} }
