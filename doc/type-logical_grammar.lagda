@@ -1,6 +1,6 @@
 # Type-Logical Grammar
 ``` hidden
-module type_logical_grammar where
+module type-logical_grammar where
 ```
 
 The word 'type-logical grammar' goes back to @morrill1994, where it is
@@ -105,9 +105,9 @@ lists of formulas, as opposed to trees. However, in allowing
 associativity, one invariably allows some undesirable sentences to be
 accepted as grammatical [see @moot2012, pp. 105-106].
 One example of this is is that in the calculus *with* associativity,
-|(n ⇐ n) ⊗ (n ⇐ n) ⊢ n ⇐ n| (i.e. left function composition) is a
+`(n ⇐ n) ⊗ (n ⇐ n) ⊢ n ⇐ n` (i.e. left function composition) is a
 theorem. Since the most natural type assignment for adjectives and the
-verb "to be" are |n ⇐ n| and |(np ⇒ s) ⇐ (n ⇐ n)| respectively, the
+verb "to be" are `n ⇐ n` and `(np ⇒ s) ⇐ (n ⇐ n)` respectively, the
 sentence \*"The Hulk is green incredible" becomes derivable.
 
 In the context of type theory, Some work has been done in the field of
@@ -123,8 +123,8 @@ theory can be run using only a stack as memory [see @petersen2003].
 Though the removal of unit elements is uncommon in type theory, it is
 nonetheless essential for our program [see @moot2012, pp. 33].
 The reason for this is that if we were to allow unit elements (or
-empty antecedents) |𝟙 ⊢ n ⇐ n| would be a theorem. Joined with the
-fact that |(n ⇐ n) ⇐ (n ⇐ n)| is a natural type for "very", we can see
+empty antecedents) `𝟙 ⊢ n ⇐ n` would be a theorem. Joined with the
+fact that `(n ⇐ n) ⇐ (n ⇐ n)` is a natural type for "very", we can see
 that we could supply the empty sequence as the first argument for
 "very". We could use this trick to show that, for instance, \*"a very
 book" is grammatical.
@@ -146,7 +146,7 @@ module structures_and_grammaticality where
   open RawFunctor {{...}} using (_<$>_)
 ```
 A type-logical grammar consists of a decidable type theory with a type
-|s| for sentences, and a set of words with possibly ambiguous type
+`s` for sentences, and a set of words with possibly ambiguous type
 assignments:
 ```
   record TypeLogicalGrammar : Set₁ where
@@ -156,10 +156,8 @@ assignments:
       Struct          : Set → Set
       rawTraversable  : RawTraversable Struct
       _⊢_             : Struct Type → Type → Set
-
-s               : Type
+      s               : Type
       findAll         : (Γ : Struct Type) (B : Type) → List (Γ ⊢ B)
-
       Word            : Set
       Lex             : Word → List⁺ Type
 ```
@@ -171,27 +169,25 @@ s               : Type
     instance listApplicative = RawMonad.rawIApplicative (NonEmpty.monad {f = zero})
 ```
 Typically, the set of syntactic categories -- or *types* -- is built
-up over a set of atomic types (usually |n|, |np| and |s|), a product
-(|⊗|) and two directional implications
-[written |⇒| and |⇐|, after @ajdukiewicz1935].
+up over a set of atomic types (usually `n`, `np` and `s`), a product
+(`⊗`) and two directional implications
+[written `⇒` and `⇐`, after @ajdukiewicz1935].
 
-The |Struct| represents the structure of the antecedent, which is
+The `Struct` represents the structure of the antecedent, which is
 usually instantiated to a list (if classify strings) or a binary
 tree (if we classify constituency trees). However, it is safe to think
 of this structure as always being a binary tree, as other common
 structures (list, bag, set) are degenerate cases of binary trees under
 certain axioms (associativity, commutativity, contraction).
 
-In addition, the |Struct| is required to be traversable, which means
-that it is required to implement the |traverse| function (where F is
+In addition, the `Struct` is required to be traversable, which means
+that it is required to implement the `traverse` function (where F is
 an applicative functor):
-\begin{spec}
-traverse : (A → F B) → Struct A → F (Struct B)
-\end{spec}
-For a quick intuition, |traverse| is like |map| (or `⟨$⟩`) in that it
+\par\ExecuteMetaData[other.tex]{DataTraversabletraverse}
+For a quick intuition, `traverse` is like `map` (or `⟨$⟩`) in that it
 allows you to apply a function to every element of a
-structure. However, it also allows you to have effects like |IO| and
-ambiguity (i.e. |List|) while rebuilding the data structure
+structure. However, it also allows you to have effects like `IO` and
+ambiguity (i.e. `List`) while rebuilding the data structure
 [see @mcbride2008].
 
 Furthermore, the typing relation `⊢` is required to be at least a
@@ -204,11 +200,11 @@ above is not explicitly paired with a structure over `⊢`, it is not
 possible to *derive* any theorems in it.
 Therefore, in order to make this a useful structure, we have included
 the requirement that the the typing relation must be
-decidable through the decision procedure |findAll|.
+decidable through the decision procedure `findAll`.
 
 Because it isn't possible to form any other sequents than `_⊢ s` using
-the definition above, it may be prudent to replace |s| and `⊢` with a
-single predicate |Valid|. However, we feel that this would obscure the
+the definition above, it may be prudent to replace `s` and `⊢` with a
+single predicate `Valid`. However, we feel that this would obscure the
 type-logical nature of the grammars too much, and therefore have opted
 to keep them separate.
 
@@ -224,15 +220,15 @@ The above function:
  1. traverses the given sentence structure, and looks up the possible
     ambiguous interpretations for each word, resulting in a list of
     all possible interpretations for the given sentence; then
- 2. for each interpretation |Γ|, forms the judgement |Γ ⊢ s|; and lastly,
- 3. joins the list of possible judgements with the disjoint union (|⊎|).
+ 2. for each interpretation `Γ`, forms the judgement `Γ ⊢ s`; and lastly,
+ 3. joins the list of possible judgements with the disjoint union (`⊎`).
 
-This results in a type for which an inhabitant can be given by 1)
-selecting the correct interpretation of the sentence using |inj₁| and
-|inj₂|, and 2) giving a derivation for the chosen interpretation.
+This results in a type for which an inhabitant can be given by
+selecting the correct interpretation of the sentence using `inj₁` and
+`inj₂`, and then giving a derivation for the chosen interpretation.
 
 In addition, because we have required the typing relation to be
-decidable, we can implement a function called |parse|, which uses the
+decidable, we can implement a function called `parse`, which uses the
 decision procedure to try and parse a given sentence:
 ```
     parse : (ws : Struct Word) → List (Parse ws)
@@ -240,77 +236,64 @@ decision procedure to try and parse a given sentence:
     parse ws | Γ ∷ Γs = parse′ Γ Γs
       where
         parse′ : (Γ : _) (Γs : List _) → List (foldr₁ _⊎_ (map⁺ (_⊢ s) (Γ ∷ Γs)))
-        parse′ Γ       []  = findAll Γ s
-        parse′ Γ (Γ′ ∷ Γs) = map inj₁ (findAll Γ s) ++ map inj₂ (parse′ Γ′ Γs)
+        parse′ Γ        []   = findAll Γ s
+        parse′ Γ (Γ′ ∷  Γs)  = map inj₁ (findAll Γ s) ++ map inj₂ (parse′ Γ′ Γs)
 ```
-The function |parse| will generate the same sequence of potential
-interpretations as |✓|, and then try to prove them all in
-succession, wrapping them it in the correct prefix of |inj₁|s and
-|inj₂|s.  Should none of the interpretations be valid, it will return
+The function `parse` will generate the same sequence of potential
+interpretations as `✓`, and then try to prove them all in
+succession, wrapping them it in the correct prefix of `inj₁`s and
+`inj₂`s.  Should none of the interpretations be valid, it will return
 the empty list.
 
 We can now use a trick from dependently-typed programming. Below we
-define a function |✓|, which evaluations the expression |parse ws| at
-compile time, for a known |ws|, and checks that it is successful. The
-function |T| is defined as follows:
-\begin{spec}
-T : Bool → Set
-T true   =  ⊤
-T false  =  ⊥
-\end{spec}
-Thus, in the case that |parse| succeeds, the type below evaluates to
-the unit type |⊤|, which has only one inhabitant (|tt|) and can
-therefore be inferred. However, should |parse| fail, the type
-evaluates to the empty type |⊥|, for which no inhabitant exists.
+define a function `✓`, which evaluations the expression `parse ws` at
+compile time, for a known `ws`, and checks that it is successful. This
+trick uses a function `T`, which is defined as follows:
+\par\ExecuteMetaData[other.tex]{DataBoolT}
+Thus, in the case that `parse` succeeds, the type below evaluates to
+the unit type `⊤`, which has only one inhabitant (`tt`) and can
+therefore be inferred. However, should `parse` fail, the type
+evaluates to the empty type `⊥`, for which no inhabitant exists.
 
-Using this trick we can define |✓| in such a way that it checks
-whether or not |parse ws| succeeds during type checking, and results
+Using this trick we can define `✓` in such a way that it checks
+whether or not `parse ws` succeeds during type checking, and results
 in a type error if it does not:
 
 ```
     ✓_ : Struct Word → Set
     ✓ ws = T (not (null (parse ws)))
 ```
-Analogously, we can define the function |*|, which attempts to parse
+
+Analogously, we can define the function `*`, which attempts to parse
 the sentence, and ensures that the parse is not successful. This will
 allow you to write out claims about sentences which should not and are
 not accepted by your grammar:
+
 ```
     *_ : Struct Word → Set
     * ws = T (null (parse ws))
 ```
 ``` hidden
 module example₁ where
-  open import Example.System.AlgLG
+  open import Example.System.AlgLG renaming (_,_ to _∙_); open Default
 ```
+
 Given a type-logical grammar with the necessary words in its lexicon, we
 may now formulate statements of grammaticality. For instance:
-``` hidden
-  example₁ :
+
 ```
-```
-    ✓ · mary · , · finds · , · a · , · unicorn ·
-```
-``` hidden
-  example₁ = _
-  example₂ :
-```
-```
-    ✓ (· a · , · unicorn ·) , · finds · , · mary ·
-```
-``` hidden
-  example₂ = _
-  example₃ :
-```
-```
-    * · unicorn · , · mary · , · a · , · finds ·
-```
-``` hidden
-  example₃ = _
+  ex₁ : ✓ · mary · ∙ · finds · ∙ · a · ∙ · unicorn ·
+  ex₁ = _
+
+  ex₂ : ✓ (· a · ∙ · unicorn ·) ∙ · finds · ∙ · mary ·
+  ex₂ = _
+
+  ex₃ : * · unicorn · ∙ · unicorn · ∙ · unicorn · ∙ · unicorn ·
+  ex₃ = _
 ```
 The fact that the above code compiles is witness to the fact that
 "mary finds a unicorn" and "a unicorn finds mary" are accepted by our
-grammar, but \*"unicorn mary a finds" is not.
+grammar, but \*"unicorn unicorn unicorn unicorn" is not.
 
 
 
@@ -334,7 +317,7 @@ In the previous section we gave a definition of type-logical grammars
 which allowed us define two operators `✓` and `*`, which can asses the
 grammaticality and ungrammaticality, respectively, of sentences at
 compile time. In this section, we will expand on this definition by
-adding a pair of operators `⟦_⟧` and |↦|, which will compute a list of
+adding a pair of operators `⟦_⟧` and `↦`, which will compute a list of
 all possible interpretations of a given sentence, and compare two
 lists of terms, respectively.
 
@@ -365,30 +348,26 @@ almost no implementation effort.
 ```
 We would like to extend the previous definition for type-logical
 grammars with the two following functions:
-\begin{spec}
-    field
-      toAgdaType : Type → Set
-      toAgdaTerm : Γ ⊢ B → toAgdaType B
-\end{spec}
+\par\ExecuteMetaData[other.tex]{OldTypeLogicalGrammar}
 One function to convert types in our grammar to types in Agda -- denoted
-by "the type of types" |Set|. Our second function would ideally take
+by "the type of types" `Set`. Our second function would ideally take
 proofs in our grammar, and return well-typed Agda programs. However,
 as it stands, there are some problems with the above type. First, the
-term |Γ ⊢ B| is not closed, and therefore cannot be translated to an
-Agda program of type |toAgdaType B|. Moreover, the decision to ban
+term `Γ ⊢ B` is not closed, and therefore cannot be translated to an
+Agda program of type `toAgdaType B`. Moreover, the decision to ban
 empty contexts and unit types means that the term cannot possibly be
 closed.
-This means that we somehow have to translate our term |Γ ⊢ B| to a
+This means that we somehow have to translate our term `Γ ⊢ B` to a
 function.
 
 One option would be to translate it as a function, but then we would
-need some translation |f| from contexts |Struct Type| to |Set|, and a
-translation of values of type |Γ : Struct Type| to values of type |f
-Γ|. We would rather not do this, as not only would we have to add two
+need some translation `f` from contexts `Struct Type` to `Set`, and a
+translation of values of type `Γ : Struct Type` to values of type `f
+Γ`. We would rather not do this, as not only would we have to add two
 new functions to the definition of type-logical grammars, but we would
 also have to find a way to insert the denotations associated with the
 types into the the term, something that is not entirely trivial when
-are trying to stay agnostic to the specific implementation of |Struct|!
+are trying to stay agnostic to the specific implementation of `Struct`!
 
 A more reasonable alternative is to redefine our lexicon function to
 provide not only the type of words, but also their denotation, wrapped
@@ -417,9 +396,9 @@ translation of its syntactic category to an Agda type.
           }
       open Old.TypeLogicalGrammar typeLogicalGrammar public using (✓_; *_)
 ```
-Now we can define the type for |toAgdaTerm|: it will be a function
-which takes a structure |Γ|, populated by both types and terms, and a
-term which has as its context only the types in |Γ|:
+Now we can define the type for `toAgdaTerm`: it will be a function
+which takes a structure `Γ`, populated by both types and terms, and a
+term which has as its context only the types in `Γ`:
 ```
     field
       toAgdaTerm  :  (Γ : Struct (Σ[ A ∈ Type ] (toAgdaType A)))
@@ -430,38 +409,31 @@ And using these functions, we can define the function `⟦_⟧`:
 ```
     ⟦_⟧ : (ws : Struct Word) → List (toAgdaType s)
     ⟦ ws ⟧  with traverse Lex ws
-    ⟦ ws ⟧  | Γ ∷ Γs = ⟦⟧-all Γ Γs
+    ⟦ ws ⟧  | Γ ∷ Γs = all Γ Γs
       where
-        ⟦⟧-one  : (Γ : Struct _) → List _
-        ⟦⟧-one  Γ = map (toAgdaTerm Γ) (findAll (proj₁ ⟨$⟩ Γ) s)
+        one  : (Γ : Struct _) → List _
+        one  Γ = map (toAgdaTerm Γ) (findAll (proj₁ ⟨$⟩ Γ) s)
 
-        ⟦⟧-all  : (Γ : _) (Γs : List _) → List _
-        ⟦⟧-all  Γ        []   = ⟦⟧-one Γ
-        ⟦⟧-all  Γ (Γ′ ∷  Γs)  = ⟦⟧-one Γ ++ ⟦⟧-all Γ′ Γs
+        all  : (Γ : _) (Γs : List _) → List _
+        all  Γ        []   = one Γ
+        all  Γ (Γ′ ∷  Γs)  = one Γ ++ all Γ′ Γs
 ```
-The helper function `⟦⟧-one` takes a single interpretation of
+The helper function `one` takes a single interpretation of
 sentence, finds all the proofs of that interpretation, and then
-transforms those proofs into Agda terms. The helper function `⟦⟧-all`
+transforms those proofs into Agda terms. The helper function `all`
 then applies this function to all possible interpretations of a
 sentence.
 ``` hidden
 module example₂ where
   open import Data.List using (_∷_; [])
-  open import Example.System.AlgNL
-  open import assertions public using (_↦_)
+  open import Example.System.AlgNL renaming (_,_ to _∙_); open Default
+  open import Reflection.Assertion public using (_↦_)
 ```
 We assume a simple set of meaning postulates, and a suitable
 type-logical grammar (we use the non-associative Lambek calculus for
 these examples, see section \ref{non-associative-lambek-calculus}):
+\par\ExecuteMetaData[other.tex]{SampleMeaningPostulates}
 \begin{spec}
-  postulate
-    FORALL     : (Entity → Bool) → Bool
-    EXISTS     : (Entity → Bool) → Bool
-    MARY       : Entity
-    FINDS      : Entity → Entity → Bool
-    UNICORN    : Entity → Bool
-    PERSON     : Entity → Bool
-    LOVES      : Entity → Entity → Bool
 \end{spec}
 Using our newly defined interpretation function `⟦_⟧`, and the
 function `↦`, we can now make claims about the interpretation of
@@ -470,7 +442,7 @@ sentences, for instance:
   example₄  :
 ```
 ```
-    ⟦ · mary · , · finds · , · a · , · unicorn · ⟧
+    ⟦ · mary · ∙ · finds · ∙ · a · ∙ · unicorn · ⟧
       ↦ EXISTS (λ y → UNICORN y ∧ MARY FINDS y)
 ```
 ``` hidden
@@ -482,7 +454,7 @@ second argument, which is where `↦` really starts becoming useful:
   example₅  :
 ```
 ```
-    ⟦ · someone · , · loves · , · everyone · ⟧
+    ⟦ · someone · ∙ · loves · ∙ · everyone · ⟧
       ↦  EXISTS  (λ x  → PERSON x  ∧  FORALL  (λ y  →  PERSON y  ⊃  x LOVES y))
       ∷  FORALL  (λ y  → PERSON y  ⊃  EXISTS  (λ x  →  PERSON x  ∧  x LOVES y))
       ∷  []

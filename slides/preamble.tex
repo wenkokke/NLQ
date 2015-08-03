@@ -1,8 +1,35 @@
+\usepackage{agda}%
+\usepackage{amssymb,amsmath}%
 \usepackage[greek,english]{babel}%
+\usepackage{catchfilebetweentags}%
+\usepackage{comment}%
+\usepackage{pict2e}%
+\usepackage{picture}%
+\usepackage{stmaryrd}%
+\usepackage{textgreek}%
+\usepackage{ucs}%
+\usepackage[utf8x]{inputenc}%
+\usepackage{varwidth}%
+\usepackage{pgfpages}%
+
 
 \usetheme{Boadilla}%
 \usecolortheme{seagull}%
 \beamertemplatenavigationsymbolsempty%
+\makeatletter
+\defbeamertemplate{note page}{fixed-plain}
+{
+  \vskip.25em
+  \nointerlineskip%
+  \begin{minipage}{\textwidth} % this is an addition
+  \insertnote%
+  \end{minipage}               % this is an addition
+}
+\makeatother
+\setbeamertemplate{note page}[fixed-plain]
+\setbeamerfont{note page}{size=\footnotesize}
+\setbeameroption{show notes}
+%\setbeameroption{show notes on second screen}
 
 \DeclareUnicodeCharacter{7522}{\ensuremath{_{\scriptscriptstyle\text{i}}}}%
 \DeclareUnicodeCharacter{7468}{\ensuremath{^{\scriptscriptstyle\text{A}}}}%
@@ -17,16 +44,21 @@
 \DeclareUnicodeCharacter{8337}{\ensuremath{_{\scriptscriptstyle\text{e}}}}%
 \DeclareUnicodeCharacter{738}{\ensuremath{^{\scriptscriptstyle\text{s}}}}%
 \DeclareUnicodeCharacter{10003}{\ensuremath{\checkmark}}%
+\DeclareUnicodeCharacter{737}{\textsuperscript{l}}
+\DeclareUnicodeCharacter{8718}{\ensuremath{\blacksquare}}
+\DeclareUnicodeCharacter{8759}{::}
+\DeclareUnicodeCharacter{9669}{\ensuremath{\triangleleft}1}
+\DeclareUnicodeCharacter{8799}{\ensuremath{\stackrel{\scriptscriptstyle ?}{=}}}
+\DeclareUnicodeCharacter{10214}{\ensuremath{\llbracket}}
+\DeclareUnicodeCharacter{10215}{\ensuremath{\rrbracket}}
 
-\definecolor{green}{HTML}{008B00}
-
-\usepackage{comment}%
-\usepackage{pict2e}%
-\usepackage{picture}%
-\usepackage{stmaryrd}%
-\usepackage{textgreek}%
-\usepackage{varwidth}%
-\usepackage{catchfilebetweentags}%
+\makeatletter
+\def\ignorespacesandallpars{%
+  \@ifnextchar\par
+    {\expandafter\ignorespacesandallpars\@gobble}%
+    {}%
+}
+\makeatother
 
 \makeatletter
 \newcommand{\pictslash}[2]{%

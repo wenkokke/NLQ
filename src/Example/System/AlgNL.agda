@@ -69,6 +69,7 @@ typeLogicalGrammar = record
   }
   where
     open RawTraversable rawTraversable using (_<$>_)
+    open Example.System.Base.Default
 
     ⌊_⌋ : Struct Type → Type
     ⌊ · A · ⌋ =       A
