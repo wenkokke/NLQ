@@ -8,6 +8,14 @@ import           Data.String (IsString(..))
 import           Data.Text (Text)
 import qualified Data.Text    as T
 import qualified Data.Text.IO as T
+import           System.Directory (renameFile)
+
+
+buildType :: String
+buildType = "BUILD_TYPE"
+
+buildTypeFast :: Action Bool
+buildTypeFast = do bt <- getEnv buildType; return (bt == Just "fast")
 
 
 -- The sequences of generated files are as follows:
@@ -35,21 +43,22 @@ toc :: [FilePath]
 toc =
   [ "abstract"
   , "motivation"
-  , "type_logical_grammar"
-  , "non_associative_lambek_calculus"
+  , "type-logical_grammar"
+  , "non-associative_lambek_calculus"
   , "display_calculus"
-  , "continuation_passing_style"
-  , "ext_type_logical_grammar"
-  , "ext_lg_base"
-  , "ext_delimited_continuations"
+  , "continuation-passing_style"
+  , "extended_categorial_grammar"
+  , "lambek-grishin_calculus"
+  , "syntactically_delimited_continuations"
+  , "other"
   ]
 
 
 main :: IO ()
-main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
+main = do
+  shakeArgs shakeOptions { shakeFiles = "_build" } $ do
 
   -- * top-level tasks
-
   want ["pdf"]
 
   "html" ~> do
@@ -70,7 +79,7 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
   toBuild "main.html" %> \out -> do
     let src = out -<.> "html_nofmt"
     need [src]
-    liftIO $ T.writeFile out . formatHTML =<< T.readFile src
+    liftIO $ T.writeFile out . formatHTML (dropExtension out) =<< T.readFile src
 
 
   toBuild "main.html_nofmt" %> \out -> do
@@ -87,11 +96,17 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
 
 
   toBuild "main.tex" %> \out -> do
-    let src = out -<.> "lagda"
-    need (tocWith "lagda")
-    need [toBuild "main.fmt"]
-    writeFile' src mainFile_lhs2TeX
-    cmd "lhs2TeX" "--agda" "-P" ":_build/" src "-o" out
+    btFast <- buildTypeFast
+    if btFast
+      then do let src = out -<.> "lagda"
+              need (tocWith "lagda")
+              need [toBuild "main.fmt"]
+              writeFile' src mainFile_lhs2TeX
+              cmd "lhs2TeX" "--agda" "-P" ":_build/" src "-o" out
+      else do let src = out -<.> "tex"
+              need (tocWith "tex")
+              need [toBuild "main.fmt"]
+              writeFile' src mainFile_agda
 
 
   toBuild "main.pdf" %> \out -> do
@@ -118,7 +133,7 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
     writeFile' out yml
 
   -- import files by copying
-  map toBuild ["preamble.tex","main.fmt","main.bib"] |%> \out -> do
+  map toBuild ["preamble.tex","main.fmt","main.bib","agda.sty"] |%> \out -> do
     let src = fromBuild out
     need [src]
     copyFile' src out
@@ -129,17 +144,16 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
   -- import Markdown/Literate Agda files
   tocWith "md_lagda" |%> \out -> do
     let src = fromBuild (out -<.> "lagda")
-    copyFile' src out
-
-  -- remove implicit arguments
-  tocWith "md_noimp_lagda" |%> \out -> do
-    let src = out -<.> "md_lagda"
     need [src]
-    cmd "./remove_implicit_args.rb" src out
+
+    btFast <- buildTypeFast
+    if btFast
+      then cmd "./remove_implicit_args.rb" "raw" src out
+      else copyFile' src out
 
   -- compile Markdown to LaTeX in presence of literate Agda
-  tocWith "lagda_nopipe" |%> \out -> do
-    let src = out -<.> "md_noimp_lagda"
+  tocWith "lagda" |%> \out -> do
+    let src = out -<.> "md_lagda"
     need [src]
 
     -- workaround: Pandoc will crash on empty files
@@ -154,17 +168,44 @@ main = shakeArgs shakeOptions { shakeFiles = "_build" } $ do
                         "-t" "latex"
                         src "-o" out
 
-  -- fix a bug in Pandoc's output w.r.t. pipes
-  tocWith "lagda" |%> \out -> do
-    let src = out -<.> "lagda_nopipe"
-    need [src]
-    liftIO $ T.writeFile out . pandocFixPipe =<< T.readFile src
+  -- compile literate Agda to TeX
+  tocWith "tex" |%> \out -> do
+    btFast <- buildTypeFast
+    if btFast
+      then error "This step should not be called in fast mode."
+      else do let src = out -<.> "stage1_tex"
+              need ("remove_implicit_args.rb" : tocWith "stage1_tex")
+              command_ [] "./remove_implicit_args.rb" ["tex", src, out]
 
+  tocWith "stage1_tex" |%> \out -> do
+    btFast <- buildTypeFast
+    if btFast
+      then error "This step should not be called in fast mode."
+      else do let src = out -<.> "lagda"
+              let tex = out -<.> "tex"
+              need (toBuild "agda.sty" : tocWith "lagda")
+              imports <- map ("-i"++) <$> agdaPath
+              command_ [] agdaExec ("--latex":"--latex-dir=_build":imports++[src])
+              liftIO (renameFile tex out)
 
   "clean" ~>
     removeFilesAfter "_build" ["//*"]
 
 
+-- * Agda path
+
+agdaExec :: FilePath
+agdaExec = "/usr/local/Cellar/agda/agda-latex/bin/agda"
+
+agdaPath :: Action [FilePath]
+agdaPath = do path <- getEnv "AGDA_PATH"
+              return . ("_build" :) $
+                maybe [] (splitBy searchPathSeparator) path
+  where
+    splitBy :: Char -> String -> [String]
+    splitBy c str = case break (==c) str of
+      (pr,[]) -> pr : []
+      (pr,sf) -> pr : splitBy c (tail sf)
 
 
 -- * Path management
@@ -181,17 +222,11 @@ fromBuild out = joinPath (filter (/="_build/") (splitPath out))
 
 -- * Formatting of specific sequences
 
-formatHTML :: Text -> Text
-formatHTML = formatWith
+formatHTML :: FilePath -> Text -> Text
+formatHTML file = formatWith
   [ "|" ==> ""
   , "⇐" ==> "&#47;"
   , "⇒" ==> "&#92;"
-  ]
-
-
-pandocFixPipe :: Text -> Text
-pandocFixPipe = formatWith
-  [ "\\textbar{}" ==> "|"
   ]
 
 
@@ -209,20 +244,26 @@ formatWith =
 mainFile_agda :: String
 mainFile_agda =
   mainFile
-  "\\usepackage{agda}%"
+  [ "\\usepackage{agda}%"
+  , "\\usepackage{bbm}%"
+  , "\\let\\spec\\code%"
+  , "\\let\\endspec\\endcode%"
+  ]
   (\fn -> "\\input{"++(fn <.> "tex")++"}")
 
 mainFile_lhs2TeX :: String
 mainFile_lhs2TeX =
   mainFile
-  "%include main.fmt"
+  [ "%include main.fmt"
+  , "\\usepackage[bw]{agda}%"
+  ]
   (\fn -> "%include "++toBuild (fn <.> "lagda"))
 
-mainFile :: String -> (String -> String) -> String
+mainFile :: [String] -> (String -> String) -> String
 mainFile importFile input = unlines
   [ "\\documentclass[usenames]{article}"
-  , importFile
   , "\\include{preamble}%"
+  , unlines importFile
   , "\\begin{document}"
   , "\\begin{abstract}"
   , input "abstract"
@@ -238,3 +279,6 @@ mainFile importFile input = unlines
   where
     include_all_files
       = unlines (map input (filter (/="abstract") toc))
+
+
+--format :: FilePath ->

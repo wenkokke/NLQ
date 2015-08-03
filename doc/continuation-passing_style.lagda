@@ -1,9 +1,10 @@
 ## Continuation-Passing Style
 ``` hidden
-module continuation_passing_style where
+module continuation-passing_style where
+
   open import Logic.Polarity
-  open import non_associative_lambek_calculus
-  open import display_calculus
+  open import non-associative_lambek_calculus
+  open import display_calculus renaming (module display_calculus to dispcalc)
 ```
 
 ## CPS Semantics
@@ -15,7 +16,7 @@ module translation_to_agda (Atom : Set) (Polarityᴬ? : Atom → Polarity) (⟦_
   open import Function                   using (flip)
   open import Relation.Nullary.Decidable using (True; toWitness)
   open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
-  open display_calculus.display_calculus Atom using (Struct; ·_·; _⇐_; _⊗_; _⇒_; Judgement; _⊢_; [_]⊢_; _⊢[_])
+  open dispcalc Atom using (Struct; ·_·; _⇐_; _⊗_; _⇒_; Judgement; _⊢_; [_]⊢_; _⊢[_])
   open focpol Atom Polarityᴬ?
 
 ```
@@ -38,25 +39,19 @@ module translation_to_agda (Atom : Set) (Polarityᴬ? : Atom → Polarity) (⟦_
     ⟦ A ⇐ B  ⟧⁻      = (  ⟦ A ⟧⁻ × ⟦ B ⟧⁺)
 ```
 
-\begin{spec}
-  app₁ : {{n : True (Negative?  A)}} →    ⟦ A ⟧⁻ → ⟦ A ⟧⁺ → R
-  app₂ : {{p : True (Positive?  A)}} →    ⟦ A ⟧⁺ → ⟦ A ⟧⁻ → R
-  app₃ : {{p : True (Positive?  A)}} → (  ⟦ A ⟧⁺ → R) → ⟦ A ⟧⁻
-  app₄ : {{n : True (Negative?  A)}} → (  ⟦ A ⟧⁻ → R) → ⟦ A ⟧⁺
-\end{spec}
+```
+  app₁ : ∀ {A} {{n : True (Negative?  A)}}  →  ⟦ A ⟧⁻ → ⟦ A ⟧⁺ → R
+  app₂ : ∀ {B} {{p : True (Positive?  B)}}  →  ⟦ B ⟧⁺ → ⟦ B ⟧⁻ → R
+  app₃ : ∀ {A} {{p : True (Positive?  A)}}  → (⟦ A ⟧⁺ → R) → ⟦ A ⟧⁻
+  app₄ : ∀ {B} {{n : True (Negative?  B)}}  → (⟦ B ⟧⁻ → R) → ⟦ B ⟧⁺
+```
 
 Given the knowledge that A is a negative and positive types,
-respectively, the types for |app₁| and |app₂| unfold to |⟦ A ⟧ᵖ →
-(⟦ A ⟧ᵖ → R) → R|. Likewise, given the knowledge about A in |app₃| and
-|app₄|, we know that their types unfold to |(⟦ A ⟧ᵖ → R) → ⟦ A ⟧ᵖ →
-R|. Both these types correspond to function application.
+respectively, the types for `app₁` and `app₂` unfold to `⟦ A ⟧ᵖ →
+(⟦ A ⟧ᵖ → R) → R`. Likewise, given the knowledge about A in `app₃` and
+`app₄`, we know that their types unfold to `(⟦ A ⟧ᵖ → R) → ⟦ A ⟧ᵖ →
+R`. Both these types correspond to function application.
 
-``` hidden
-  app₁ : ∀ {A} {{n : True (Negative? A)}} →  ⟦ A ⟧⁻ → ⟦ A ⟧⁺ → R
-  app₂ : ∀ {B} {{p : True (Positive? B)}} →  ⟦ B ⟧⁺ → ⟦ B ⟧⁻ → R
-  app₃ : ∀ {A} {{p : True (Positive? A)}} → (⟦ A ⟧⁺ → R) → ⟦ A ⟧⁻
-  app₄ : ∀ {B} {{n : True (Negative? B)}} → (⟦ B ⟧⁻ → R) → ⟦ B ⟧⁺
-```
 ``` hidden
   app₁ {{n}} = app (toWitness n)
     where
@@ -125,17 +120,18 @@ R|. Both these types correspond to function application.
 ### Typing Agda programs
 ``` hidden
 module typing_agda (Atom : Set) (Polarityᴬ? : Atom → Polarity) (⟦_⟧ᴬ : Atom → Set) (R : Set) where
+
   open import Data.Product
   open import Function                   using (flip)
   open import Relation.Nullary.Decidable using (True; toWitness)
   open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
   open display_calculus.display_calculus Atom using (Struct; ·_·; _⇐_; _⊗_; _⇒_; Judgement; _⊢_; [_]⊢_; _⊢[_])
-  open focpol Atom using (Positive?; Negative?)
-  open translation_to_agda Atom Polarityᴬ?
+  open focpol Atom Polarityᴬ? using (Positive?; Negative?)
+  open translation_to_agda Atom Polarityᴬ? ⟦_⟧ᴬ R
 
   mutual
     infix 2 fNL-syntax₁ fNL-syntax₂ fNL-syntax₃
-            fNL-syntax₄ fNL-syntax₅ fNL-syntax₆ fNL-syntax₇
+    infix 2 fNL-syntax₄ fNL-syntax₅ fNL-syntax₆ fNL-syntax₇
 
     fNL-syntax₁ = λ X Y f → fNL_ (  X  ⊢  Y  )       f
     fNL-syntax₂ = λ X Y f → fNL_ (  X  ⊢  Y  )       f
@@ -145,7 +141,8 @@ module typing_agda (Atom : Set) (Polarityᴬ? : Atom → Polarity) (⟦_⟧ᴬ :
     fNL-syntax₆ = λ X B f → fNL_ (  X  ⊢[ B ])       f
     fNL-syntax₇ = λ X B f → fNL_ (  X  ⊢[ B ])       f
 ```
-```
+
+``` hidden
     syntax fNL-syntax₁  X  Y         f   = f ∈      X  ⊢      Y
     syntax fNL-syntax₂  X  Y (λ x →  f)  = f ∈ x ∶  X  ⊢      Y
     syntax fNL-syntax₃  X  Y (λ y →  f)  = f ∈      X  ⊢ y ∶  Y

@@ -1,13 +1,13 @@
 ## Syntactically Delimited Continuations
 ``` hidden
 open import Data.Product
-open import Function
+open import Function using (id; flip)
 open import Logic.Polarity
 open import Relation.Nullary
 open import Relation.Nullary.Decidable using (True; toWitness)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; inspect; trans; sym)
 
-module ext_delimited_continuations where
+module syntactically_delimited_continuations where
 
 open import Data.Product                          using (∃; _×_; proj₁)
 open import Relation.Nullary.Decidable            using (True; toWitness)
@@ -15,7 +15,7 @@ open import Relation.Nullary.Decidable            using (True; toWitness)
 module syntactically_delimited_continuations
        (Atom : Set) (Polarityᴬ? : Atom → Polarity) (⟦_⟧ᴬ : Atom → Set) (R : Set) where
 
-  infix 1 EXP_
+  infix 1 NL◇_
   infix 2 ∈⊢-syntax ∈∶⊢-syntax ∈⊢∶-syntax
   infix 2 ∈[]⊢-syntax ∈[]⊢∶-syntax
   infix 2 ∈⊢[]-syntax ∈∶⊢[]-syntax
@@ -141,48 +141,49 @@ module syntactically_delimited_continuations
     [_]⊢_∋_  : (A : Type    ) (Y : Struct -) (f : ⟦ Y ⟧ → ⟦ A ⟧⁻) → Judgement
     _⊢[_]∋_  : (X : Struct +) (B : Type    ) (f : ⟦ X ⟧ → ⟦ B ⟧⁺) → Judgement
 
-  ∈⊢-syntax    = _⊢_∋_
-  ∈∶⊢-syntax   = _⊢_∋_
-  ∈⊢∶-syntax   = λ X Y f → X ⊢ Y ∋ flip f
-  ∈[]⊢-syntax  = [_]⊢_∋_
-  ∈[]⊢∶-syntax = [_]⊢_∋_
-  ∈⊢[]-syntax  = _⊢[_]∋_
-  ∈∶⊢[]-syntax = _⊢[_]∋_
+  mutual
+    ∈⊢-syntax    = λ X Y f → NL◇ (X ⊢ Y ∋ f)
+    ∈∶⊢-syntax   = λ X Y f → NL◇ (X ⊢ Y ∋ f)
+    ∈⊢∶-syntax   = λ X Y f → NL◇ (X ⊢ Y ∋ flip f)
+    ∈[]⊢-syntax  = λ A Y f → NL◇ ([ A ]⊢ Y ∋ f)
+    ∈[]⊢∶-syntax = λ A Y f → NL◇ ([ A ]⊢ Y ∋ f)
+    ∈⊢[]-syntax  = λ X B f → NL◇ (X ⊢[ B ]∋ f)
+    ∈∶⊢[]-syntax = λ X B f → NL◇ (X ⊢[ B ]∋ f)
 
-  syntax ∈⊢-syntax    X Y        f  = f ∈ X ⊢ Y
-  syntax ∈∶⊢-syntax   X Y (λ x → f) = f ∈ x ∶ X ⊢ Y
-  syntax ∈⊢∶-syntax   X Y (λ y → f) = f ∈ X ⊢ y ∶ Y
-  syntax ∈[]⊢-syntax  A Y        f  = f ∈[ A ]⊢ Y
-  syntax ∈[]⊢∶-syntax A Y (λ y → f) = f ∈[ A ]⊢ y ∶ Y
-  syntax ∈⊢[]-syntax  X B        f  = f ∈ X ⊢[ B ]
-  syntax ∈∶⊢[]-syntax X B (λ x → f) = f ∈ x ∶  X ⊢[ B ]
+    syntax ∈⊢-syntax    X Y        f  = f ∈ X ⊢ Y
+    syntax ∈∶⊢-syntax   X Y (λ x → f) = f ∈ x ∶ X ⊢ Y
+    syntax ∈⊢∶-syntax   X Y (λ y → f) = f ∈ X ⊢ y ∶ Y
+    syntax ∈[]⊢-syntax  A Y        f  = f ∈[ A ]⊢ Y
+    syntax ∈[]⊢∶-syntax A Y (λ y → f) = f ∈[ A ]⊢ y ∶ Y
+    syntax ∈⊢[]-syntax  X B        f  = f ∈ X ⊢[ B ]
+    syntax ∈∶⊢[]-syntax X B (λ x → f) = f ∈ x ∶  X ⊢[ B ]
 ```
 ```
-  data EXP_ : Judgement → Set where
+    data NL◇_ : Judgement → Set where
 
-    -- rules for fNL
+      -- rules for fNL
 
-    ◇ᴿ   : ∀ {X B f}
-         →  EXP f ∈ x ∶    X    ⊢[    B ]
-         →  EXP f ∈ x ∶ ⟨  X ⟩  ⊢[ ◇  B ]
+      ◇ᴿ   : ∀ {X B f}
+           →  f ∈ x ∶    X    ⊢[    B ]
+           →  f ∈ x ∶ ⟨  X ⟩  ⊢[ ◇  B ]
 ```
 ``` hidden
-    ax⁺  : ∀ {A} → EXP x ∈ x ∶ · A · ⊢[ A ]
-    ax⁻  : ∀ {B} → EXP x ∈[ B ]⊢ x ∶ · B ·
-    ↼    : ∀ {A Y f} {p : True (Negative? A)} →  EXP f ∈[ A ]⊢ y ∶ Y    →  EXP (app₁ {A} f) ∈ · A · ⊢  y ∶ Y
-    ⇀    : ∀ {X B f} {p : True (Positive? B)} →  EXP f ∈ x ∶ X ⊢[ B ]   →  EXP (app₂ {B} f) ∈ x ∶ X ⊢ · B ·
-    ↽    : ∀ {A Y f} {p : True (Positive? A)} →  EXP f ∈ · A · ⊢ y ∶ Y  →  EXP (app₃ {A} f) ∈[ A ]⊢ y ∶ Y
-    ⇁    : ∀ {X B f} {p : True (Negative? B)} →  EXP f ∈ x ∶ X ⊢ · B ·  →  EXP (app₄ {B} f) ∈ x ∶ X ⊢[ B ]
-    ⊗ᴸ   : ∀ {A B Y f} → EXP f ∈ · A · ⊗ · B · ⊢ Y → EXP f ∈ · A ⊗ B · ⊢ Y
-    ⇒ᴸ   : ∀ {A B X Y f g} → EXP f ∈ X ⊢[ A ] → EXP g ∈[ B ]⊢ Y → EXP (map f g) ∈[ A ⇒ B ]⊢ X ⇒ Y
-    ⇐ᴸ   : ∀ {B A Y X f g} → EXP f ∈ X ⊢[ A ] → EXP g ∈[ B ]⊢ Y → EXP (map g f) ∈[ B ⇐ A ]⊢ Y ⇐ X
-    ⊗ᴿ   : ∀ {X Y A B f g} → EXP f ∈ X ⊢[ A ] → EXP g ∈ Y ⊢[ B ] → EXP (map f g) ∈ X ⊗ Y ⊢[ A ⊗ B ]
-    ⇒ᴿ   : ∀ {X A B f} → EXP f ∈ X ⊢ · A · ⇒ · B · → EXP f ∈ X ⊢ · A ⇒ B ·
-    ⇐ᴿ   : ∀ {X B A f} → EXP f ∈ X ⊢ · B · ⇐ · A · → EXP f ∈ X ⊢ · B ⇐ A ·
-    r⇒⊗  : ∀ {X Y Z f} → EXP f ∈ Y ⊢ X ⇒ Z → EXP (λ {(x , y) z → f y (x , z)}) ∈ X ⊗ Y ⊢ Z
-    r⊗⇒  : ∀ {Y X Z f} → EXP f ∈ X ⊗ Y ⊢ Z → EXP (λ {y (x , z) → f (x , y) z}) ∈ Y ⊢ X ⇒ Z
-    r⇐⊗  : ∀ {X Y Z f} → EXP f ∈ X ⊢ Z ⇐ Y → EXP (λ {(x , y) z → f x (z , y)}) ∈ X ⊗ Y ⊢ Z
-    r⊗⇐  : ∀ {X Z Y f} → EXP f ∈ X ⊗ Y ⊢ Z → EXP (λ {x (z , y) → f (x , y) z}) ∈ X ⊢ Z ⇐ Y
+      ax⁺  : ∀ {A} → x ∈ x ∶ · A · ⊢[ A ]
+      ax⁻  : ∀ {B} → x ∈[ B ]⊢ x ∶ · B ·
+      ↼    : ∀ {A Y f} {p : True (Negative? A)} →  f ∈[ A ]⊢ y ∶ Y    →  (app₁ {A} f) ∈ · A · ⊢  y ∶ Y
+      ⇀    : ∀ {X B f} {p : True (Positive? B)} →  f ∈ x ∶ X ⊢[ B ]   →  (app₂ {B} f) ∈ x ∶ X ⊢ · B ·
+      ↽    : ∀ {A Y f} {p : True (Positive? A)} →  f ∈ · A · ⊢ y ∶ Y  →  (app₃ {A} f) ∈[ A ]⊢ y ∶ Y
+      ⇁    : ∀ {X B f} {p : True (Negative? B)} →  f ∈ x ∶ X ⊢ · B ·  →  (app₄ {B} f) ∈ x ∶ X ⊢[ B ]
+      ⊗ᴸ   : ∀ {A B Y f} → f ∈ · A · ⊗ · B · ⊢ Y → f ∈ · A ⊗ B · ⊢ Y
+      ⇒ᴸ   : ∀ {A B X Y f g} → f ∈ X ⊢[ A ] → g ∈[ B ]⊢ Y → (map f g) ∈[ A ⇒ B ]⊢ X ⇒ Y
+      ⇐ᴸ   : ∀ {B A Y X f g} → f ∈ X ⊢[ A ] → g ∈[ B ]⊢ Y → (map g f) ∈[ B ⇐ A ]⊢ Y ⇐ X
+      ⊗ᴿ   : ∀ {X Y A B f g} → f ∈ X ⊢[ A ] → g ∈ Y ⊢[ B ] → (map f g) ∈ X ⊗ Y ⊢[ A ⊗ B ]
+      ⇒ᴿ   : ∀ {X A B f} → f ∈ X ⊢ · A · ⇒ · B · → f ∈ X ⊢ · A ⇒ B ·
+      ⇐ᴿ   : ∀ {X B A f} → f ∈ X ⊢ · B · ⇐ · A · → f ∈ X ⊢ · B ⇐ A ·
+      r⇒⊗  : ∀ {X Y Z f} → f ∈ Y ⊢ X ⇒ Z → (λ {(x , y) z → f y (x , z)}) ∈ X ⊗ Y ⊢ Z
+      r⊗⇒  : ∀ {Y X Z f} → f ∈ X ⊗ Y ⊢ Z → (λ {y (x , z) → f (x , y) z}) ∈ Y ⊢ X ⇒ Z
+      r⇐⊗  : ∀ {X Y Z f} → f ∈ X ⊢ Z ⇐ Y → (λ {(x , y) z → f x (z , y)}) ∈ X ⊗ Y ⊢ Z
+      r⊗⇐  : ∀ {X Z Y f} → f ∈ X ⊗ Y ⊢ Z → (λ {x (z , y) → f (x , y) z}) ∈ X ⊢ Z ⇐ Y
 ```
 
 ``` hidden
@@ -190,7 +191,7 @@ module example where
   open import Data.Bool using (Bool)
   open import Data.List using (List; _∷_; [])
   open import Data.List.NonEmpty using (List⁺; [_])
-  open import Example.System.PolEXP public renaming (s⁻ to s) hiding ([_])
+  open import Example.System.PolEXP public renaming (_,_ to _∙_; s⁻ to s) hiding ([_])
 
   infix 9 _WANTS_ _SAID_
 
@@ -239,7 +240,7 @@ module example where
   example₁ :
 ```
 ```
-    ⟦ · mary · , · wants · , · everyone · , · to · , · leave · ⟧
+    ⟦ · mary · ∙ · wants · ∙ · everyone · ∙ · to · ∙ · leave · ⟧
       ↦  (λ (k : Bool → Bool) → FORALL (λ x → PERSON x ⊃ k (MARY WANTS LEAVES x)))
       ∷  (λ (k : Bool → Bool) → k (MARY WANTS FORALL (λ x → PERSON x ⊃ LEAVES x)))
       ∷  []
@@ -249,30 +250,9 @@ module example where
   example₂ :
 ```
 ```
-    ⟦ · mary · , · said · , ⟨ · everyone · , · left · ⟩ ⟧
+    ⟦ · mary · ∙ · said · ∙ ⟨ · everyone · ∙ · left · ⟩ ⟧
       ↦  (λ (k : Bool → Bool) → k (MARY SAID FORALL (λ x → PERSON x ⊃ LEAVES x)))
 ```
 ``` hidden
   example₂ = _
-  parses₁ :
-```
-```
-    parse (· mary · , · wants · , · everyone · , · to · , · leave ·)
-      ≡  ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ (⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))) (⇒ᴸ ax⁺ ax⁻))))))))))))))
-      ∷  ⇁ (r⇒⊗ (r⇒⊗ (r⇐⊗ (⊗ᴸ (r⊗⇐ (r⊗⇒ (r⇐⊗ (↼ (⇐ᴸ (⇁ (r⇐⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻)))))))))))) (⇒ᴸ ax⁺ ax⁻))))))))))
-      ∷  ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ (⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (⇒ᴸ ax⁺ ax⁻))))))))))))) (⇒ᴸ ax⁺ ax⁻)))))
-      ∷  []
-```
-``` hidden
-  parses₁ = refl
-  parses₂ :
-
-```
-```
-    parse (· mary · , · said · , ⟨ · everyone · , · left · ⟩)
-      ≡  ⇁ (r⇒⊗ (r⇐⊗ (↼ (⇐ᴸ (◇ᴿ (⇁ (r⇐⊗ (⊗ᴸ (r⇐⊗ (↼ (⇐ᴸ ax⁺ (↽ (r⊗⇐ (r⇒⊗ (↼ (⇒ᴸ ax⁺ ax⁻)))))))))))) (⇒ᴸ ax⁺ ax⁻)))))
-      ∷  []
-```
-``` hidden
-  parses₂ = refl
 ```

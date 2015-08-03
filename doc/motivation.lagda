@@ -36,7 +36,7 @@ Lastly, there is the problem of disparate technologies when it comes
 to formatting: while research papers are almost always typeset in
 \LaTeX, people often still write their code in ASCII, and make little
 use of the flexibility their programming language has to offer. This
-often leads to formulas such as |A × B → C| being written in the code
+often leads to formulas such as `A × B → C` being written in the code
 as something as unsightly as `Formula(IMPLIES, Formula(PRODUCT, "A",
 "B"), "C")`. This is what I mean with 'unreadable'.
 
