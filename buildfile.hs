@@ -14,7 +14,6 @@ import           Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import           Data.Tuple (swap)
-import           Debug.Trace (trace)
 import           Development.Shake hiding ((*>))
 import           Development.Shake.FilePath
 import           System.IO (hSetEncoding,hGetContents,utf8,IOMode(..),openFile)
@@ -206,6 +205,9 @@ exp = let
   , exclude        = ["//LG/ToAgda.agda"
                      ,"//LG/Structure.agda"
                      ,"//LG/Structure//*.agda"
+                     ,"//LG/EquivalentToResMon.agda"
+                     ,"//LG/ResMon/Cut.agda"
+                     ,"//LG/ResMon/Origin.agda"
                      ,"//LG/ResMon/Origin/Box.agda"
                      ,"//LG/ResMon/Origin/Sub*.agda"
                      ,"//LG/ResMon/Origin/Sup0.agda"
