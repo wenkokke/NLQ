@@ -279,6 +279,3 @@ mainFile importFile input = unlines
   where
     include_all_files
       = unlines (map input (filter (/="abstract") toc))
-
-
---format :: FilePath ->
