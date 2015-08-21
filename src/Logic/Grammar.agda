@@ -28,12 +28,14 @@ open import Logic.Translation                     using (module Translation)
 module Logic.Grammar where
 
 
+
 private
   instance
     rawApplicative = RawMonad.rawIApplicative (Data.List.NonEmpty.monad {f = zero})
 
 
-record TypeLogicalGrammar : Set₁ where
+
+record Grammar : Set₁ where
 
   infix 2 _⊢_
 
@@ -46,17 +48,28 @@ record TypeLogicalGrammar : Set₁ where
     findAll         : (Γ : Struct Type) (B : Type) → List (Γ ⊢ B)
     s               : Type
 
-  open RawTraversable rawTraversable using (_<$>_; traverse)
+  open RawTraversable rawTraversable using (_<$>_)
 
   -- a translation to Agda terms
   field
-    toAgdaType  : Type → Set
-    toAgdaTerm  : (Γ : Struct (Σ Type toAgdaType)) → proj₁ <$> Γ ⊢ s → toAgdaType s
+    ⟦_⟧ᵀ            : Type → Set
+    ⟦_⟧             : (Γ : Struct (Σ Type ⟦_⟧ᵀ)) → proj₁ <$> Γ ⊢ s → ⟦ s ⟧ᵀ
+
+
+
+record Lexicon : Set₁ where
+
+  field
+    grammar : Grammar
+
+  open Grammar grammar
+  open RawTraversable rawTraversable using (_<$>_; traverse)
 
   -- a set of words and translations to ambiguous Agda terms
   field
-    Word            : Set
-    Lex             : Word → List⁺ (Σ Type toAgdaType)
+    Word : Set
+    Lex  : Word → List⁺ (Σ Type ⟦_⟧ᵀ)
+
 
   Parse : Struct Word → Set
   Parse ws = foldr₁ _⊎_ (map⁺ (_⊢ s) (traverse (map⁺ proj₁ ∘ Lex) ws))
@@ -71,12 +84,12 @@ record TypeLogicalGrammar : Set₁ where
       parse′ Γ (Γ′ ∷ Γs) = map inj₁ (findAll Γ s) ++ map inj₂ (parse′ Γ′ Γs)
 
 
-  ⟦_⟧ : (ws : Struct Word) → List (toAgdaType s)
-  ⟦ ws ⟧ with traverse Lex ws
-  ⟦ ws ⟧ | Γ ∷ Γs = forAll Γ Γs
+  interpret : (ws : Struct Word) → List ⟦ s ⟧ᵀ
+  interpret ws with traverse Lex ws
+  interpret ws | Γ ∷ Γs = forAll Γ Γs
     where
       forOne : (Γ : Struct _) → List _
-      forOne = λ Γ → map (toAgdaTerm Γ) (findAll (proj₁ <$> Γ) s)
+      forOne = λ Γ → map ⟦ Γ ⟧ (findAll (proj₁ <$> Γ) s)
       forAll : (Γ : _) (Γs : List _) → List _
       forAll Γ       []  = forOne Γ
       forAll Γ (Γ′ ∷ Γs) = forOne Γ ++ forAll Γ′ Γs
@@ -89,3 +102,34 @@ record TypeLogicalGrammar : Set₁ where
 
   *_ : Struct Word → Set
   * ws = T (null (parse ws))
+
+
+
+module Default where
+
+  data Word : Set where
+    john       : Word
+    mary       : Word
+    bill       : Word
+    unicorn    : Word
+    leave      : Word
+    to         : Word
+    left       : Word
+    smiles     : Word
+    cheats     : Word
+    finds      : Word
+    loves      : Word
+    wants      : Word
+    said       : Word
+    a          : Word
+    some       : Word
+    every      : Word
+    everyone   : Word
+    someone    : Word
+
+
+  open Grammar {{...}} using (Type; ⟦_⟧ᵀ)
+
+
+  fromLex : (g : Grammar) (l : Word → List⁺ (Σ Type ⟦_⟧ᵀ)) → Lexicon
+  fromLex g l = record { grammar = g ; Word = Word ; Lex = l }

@@ -19,59 +19,63 @@ open import Logic.LG.Type             Atom
 open import Logic.LG.ResMon.Judgement Atom
 
 
-infix  1  LG_
+infix  1  LG_ _⊢LG_
 infixl 50 _⋈ᵗ _∞ᵗ
 
-data LG_ : Judgement → Set ℓ where
+mutual
+  _⊢LG_ : Type → Type → Set ℓ
+  A ⊢LG B = LG A ⊢ B
 
-  ax  : ∀ {A}       → LG el A ⊢ el A
+  data LG_ : Judgement → Set ℓ where
 
-  -- rules for residuation and monotonicity for (□ , ◇)
-  m□  : ∀ {A B}     → LG   A ⊢   B → LG □ A ⊢ □ B
-  m◇  : ∀ {A B}     → LG   A ⊢   B → LG ◇ A ⊢ ◇ B
-  r□◇ : ∀ {A B}     → LG   A ⊢ □ B → LG ◇ A ⊢   B
-  r◇□ : ∀ {A B}     → LG ◇ A ⊢   B → LG   A ⊢ □ B
+    ax  : ∀ {A}       → el A ⊢LG el A
 
-  -- rules for residuation and monotonicity for (₀ , ⁰)
-  m⁰  : ∀ {A B}     → LG B ⊢   A   → LG   A ⁰ ⊢   B ⁰
-  m₀  : ∀ {A B}     → LG B ⊢   A   → LG ₀ A   ⊢ ₀ B
-  r⁰₀ : ∀ {A B}     → LG B ⊢   A ⁰ → LG   A   ⊢ ₀ B
-  r₀⁰ : ∀ {A B}     → LG B ⊢ ₀ A   → LG   A   ⊢   B ⁰
+    -- rules for residuation and monotonicity for (□ , ◇)
+    m□  : ∀ {A B}     →   A ⊢LG   B → □ A ⊢LG □ B
+    m◇  : ∀ {A B}     →   A ⊢LG   B → ◇ A ⊢LG ◇ B
+    r□◇ : ∀ {A B}     →   A ⊢LG □ B → ◇ A ⊢LG   B
+    r◇□ : ∀ {A B}     → ◇ A ⊢LG   B →   A ⊢LG □ B
 
-  -- rules for residuation and monotonicity for (₁ , ¹)
-  m₁  : ∀ {A B}     → LG   B   ⊢ A → LG ₁ A   ⊢ ₁ B
-  m¹  : ∀ {A B}     → LG   B   ⊢ A → LG   A ¹ ⊢   B ¹
-  r¹₁ : ∀ {A B}     → LG   B ¹ ⊢ A → LG ₁ A   ⊢   B
-  r₁¹ : ∀ {A B}     → LG ₁ B   ⊢ A → LG   A ¹ ⊢   B
+    -- rules for residuation and monotonicity for (₀ , ⁰)
+    m⁰  : ∀ {A B}     → B ⊢LG   A   →   A ⁰ ⊢LG   B ⁰
+    m₀  : ∀ {A B}     → B ⊢LG   A   → ₀ A   ⊢LG ₀ B
+    r⁰₀ : ∀ {A B}     → B ⊢LG   A ⁰ →   A   ⊢LG ₀ B
+    r₀⁰ : ∀ {A B}     → B ⊢LG ₀ A   →   A   ⊢LG   B ⁰
 
-  -- rules for residuation and monotonicity for (⇐ , ⊗ , ⇒)
-  m⊗  : ∀ {A B C D} → LG A ⊢ B     → LG C ⊢ D     → LG A ⊗ C ⊢ B ⊗ D
-  m⇒  : ∀ {A B C D} → LG A ⊢ B     → LG C ⊢ D     → LG B ⇒ C ⊢ A ⇒ D
-  m⇐  : ∀ {A B C D} → LG A ⊢ B     → LG C ⊢ D     → LG A ⇐ D ⊢ B ⇐ C
-  r⇒⊗ : ∀ {A B C}   → LG B ⊢ A ⇒ C → LG A ⊗ B ⊢ C
-  r⊗⇒ : ∀ {A B C}   → LG A ⊗ B ⊢ C → LG B ⊢ A ⇒ C
-  r⇐⊗ : ∀ {A B C}   → LG A ⊢ C ⇐ B → LG A ⊗ B ⊢ C
-  r⊗⇐ : ∀ {A B C}   → LG A ⊗ B ⊢ C → LG A ⊢ C ⇐ B
+    -- rules for residuation and monotonicity for (₁ , ¹)
+    m₁  : ∀ {A B}     →   B   ⊢LG A → ₁ A   ⊢LG ₁ B
+    m¹  : ∀ {A B}     →   B   ⊢LG A →   A ¹ ⊢LG   B ¹
+    r¹₁ : ∀ {A B}     →   B ¹ ⊢LG A → ₁ A   ⊢LG   B
+    r₁¹ : ∀ {A B}     → ₁ B   ⊢LG A →   A ¹ ⊢LG   B
 
-  -- rules for residuation and monotonicity for (⇚ , ⊕ , ⇛)
-  m⊕  : ∀ {A B C D} → LG A ⊢ B     → LG C ⊢ D     → LG A ⊕ C ⊢ B ⊕ D
-  m⇛  : ∀ {A B C D} → LG C ⊢ D     → LG A ⊢ B     → LG D ⇛ A ⊢ C ⇛ B
-  m⇚  : ∀ {A B C D} → LG A ⊢ B     → LG C ⊢ D     → LG A ⇚ D ⊢ B ⇚ C
-  r⇛⊕ : ∀ {A B C}   → LG B ⇛ C ⊢ A → LG C ⊢ B ⊕ A
-  r⊕⇛ : ∀ {A B C}   → LG C ⊢ B ⊕ A → LG B ⇛ C ⊢ A
-  r⊕⇚ : ∀ {A B C}   → LG C ⊢ B ⊕ A → LG C ⇚ A ⊢ B
-  r⇚⊕ : ∀ {A B C}   → LG C ⇚ A ⊢ B → LG C ⊢ B ⊕ A
+    -- rules for residuation and monotonicity for (⇐ , ⊗ , ⇒)
+    m⊗  : ∀ {A B C D} → A ⊢LG B     → C ⊢LG D     → A ⊗ C ⊢LG B ⊗ D
+    m⇒  : ∀ {A B C D} → A ⊢LG B     → C ⊢LG D     → B ⇒ C ⊢LG A ⇒ D
+    m⇐  : ∀ {A B C D} → A ⊢LG B     → C ⊢LG D     → A ⇐ D ⊢LG B ⇐ C
+    r⇒⊗ : ∀ {A B C}   → B ⊢LG A ⇒ C → A ⊗ B ⊢LG C
+    r⊗⇒ : ∀ {A B C}   → A ⊗ B ⊢LG C → B ⊢LG A ⇒ C
+    r⇐⊗ : ∀ {A B C}   → A ⊢LG C ⇐ B → A ⊗ B ⊢LG C
+    r⊗⇐ : ∀ {A B C}   → A ⊗ B ⊢LG C → A ⊢LG C ⇐ B
 
-  -- grishin distributives
-  d⇛⇐ : ∀ {A B C D} → LG A ⊗ B ⊢ C ⊕ D → LG C ⇛ A ⊢ D ⇐ B
-  d⇛⇒ : ∀ {A B C D} → LG A ⊗ B ⊢ C ⊕ D → LG C ⇛ B ⊢ A ⇒ D
-  d⇚⇒ : ∀ {A B C D} → LG A ⊗ B ⊢ C ⊕ D → LG B ⇚ D ⊢ A ⇒ C
-  d⇚⇐ : ∀ {A B C D} → LG A ⊗ B ⊢ C ⊕ D → LG A ⇚ D ⊢ C ⇐ B
+    -- rules for residuation and monotonicity for (⇚ , ⊕ , ⇛)
+    m⊕  : ∀ {A B C D} → A ⊢LG B     → C ⊢LG D     → A ⊕ C ⊢LG B ⊕ D
+    m⇛  : ∀ {A B C D} → C ⊢LG D     → A ⊢LG B     → D ⇛ A ⊢LG C ⇛ B
+    m⇚  : ∀ {A B C D} → A ⊢LG B     → C ⊢LG D     → A ⇚ D ⊢LG B ⇚ C
+    r⇛⊕ : ∀ {A B C}   → B ⇛ C ⊢LG A → C ⊢LG B ⊕ A
+    r⊕⇛ : ∀ {A B C}   → C ⊢LG B ⊕ A → B ⇛ C ⊢LG A
+    r⊕⇚ : ∀ {A B C}   → C ⊢LG B ⊕ A → C ⇚ A ⊢LG B
+    r⇚⊕ : ∀ {A B C}   → C ⇚ A ⊢LG B → C ⊢LG B ⊕ A
+
+    -- grishin distributives
+    d⇛⇐ : ∀ {A B C D} → A ⊗ B ⊢LG C ⊕ D → C ⇛ A ⊢LG D ⇐ B
+    d⇛⇒ : ∀ {A B C D} → A ⊗ B ⊢LG C ⊕ D → C ⇛ B ⊢LG A ⇒ D
+    d⇚⇒ : ∀ {A B C D} → A ⊗ B ⊢LG C ⊕ D → B ⇚ D ⊢LG A ⇒ C
+    d⇚⇐ : ∀ {A B C D} → A ⊗ B ⊢LG C ⊕ D → A ⇚ D ⊢LG C ⇐ B
 
 
 -- Derived rule for identity, which holds as long as the type A only
 -- connectives from the non-associative Lambek calculus `LG`.
-ax′ : ∀ {A} → LG A ⊢ A
+ax′ : ∀ {A} → A ⊢LG A
 ax′ {el A}  = ax
 ax′ {□  A}  = m□ ax′
 ax′ {◇  A}  = m◇ ax′
@@ -87,27 +91,27 @@ ax′ {A ⇐ B} = m⇐ ax′ ax′
 ax′ {A ⇒ B} = m⇒ ax′ ax′
 
 -- Derived rules for two-step residuations.
-r⇐⇒′ : ∀ {A B C} → LG A ⊢ C ⇐ B → LG B ⊢ A ⇒ C
+r⇐⇒′ : ∀ {A B C} → A ⊢LG C ⇐ B → B ⊢LG A ⇒ C
 r⇐⇒′ = r⊗⇒ ∘ r⇐⊗
-r⇒⇐′ : ∀ {A B C} → LG B ⊢ A ⇒ C → LG A ⊢ C ⇐ B
+r⇒⇐′ : ∀ {A B C} → B ⊢LG A ⇒ C → A ⊢LG C ⇐ B
 r⇒⇐′ = r⊗⇐ ∘ r⇒⊗
 
 -- Derived rules for two-step co-residuations.
-r⇚⇛′ : ∀ {A B C} → LG C ⇚ A ⊢ B → LG B ⇛ C ⊢ A
+r⇚⇛′ : ∀ {A B C} → C ⇚ A ⊢LG B → B ⇛ C ⊢LG A
 r⇚⇛′ = r⊕⇛ ∘ r⇚⊕
-r⇛⇚′ : ∀ {A B C} → LG B ⇛ C ⊢ A → LG C ⇚ A ⊢ B
+r⇛⇚′ : ∀ {A B C} → B ⇛ C ⊢LG A → C ⇚ A ⊢LG B
 r⇛⇚′ = r⊕⇚ ∘ r⇛⊕
 
 -- Derived rules for application.
-appl-⇒′ : ∀ {A B C} → LG B ⊢ C → LG A ⊗ (A ⇒ B) ⊢ C
+appl-⇒′ : ∀ {A B C} → B ⊢LG C → A ⊗ (A ⇒ B) ⊢LG C
 appl-⇒′ f = r⇒⊗ (m⇒ ax′ f)
-appl-⇐′ : ∀ {A B C} → LG B ⊢ C → LG (B ⇐ A) ⊗ A ⊢ C
+appl-⇐′ : ∀ {A B C} → B ⊢LG C → (B ⇐ A) ⊗ A ⊢LG C
 appl-⇐′ f = r⇐⊗ (m⇐ f ax′)
 
 -- Derived rules for co-application.
-appl-⇛′ : ∀ {A B C} → LG B ⊢ C → LG B ⊢ A ⊕ (A ⇛ C)
+appl-⇛′ : ∀ {A B C} → B ⊢LG C → B ⊢LG A ⊕ (A ⇛ C)
 appl-⇛′ f = r⇛⊕ (m⇛ ax′ f)
-appl-⇚′ : ∀ {A B C} → LG B ⊢ C → LG B ⊢ (C ⇚ A) ⊕ A
+appl-⇚′ : ∀ {A B C} → B ⊢LG C → B ⊢LG (C ⇚ A) ⊕ A
 appl-⇚′ f = r⇚⊕ (m⇚ f ax′)
 
 
@@ -192,13 +196,13 @@ infix 5 is-ax_ is-ax?_
 
 -- Heterogeneous equality of proofs, checking if the proof is equal to
 -- the identity proof.
-is-ax_ : ∀ {A B} (f : LG A ⊢ B) → Set ℓ
+is-ax_ : ∀ {A B} (f : A ⊢LG B) → Set ℓ
 is-ax_ f = ∃ (λ A → f ≅ ax {A})
 
 
 -- Decision procedure for heterogeneous equality of proofs, checking
 -- if the proof is equal to the identity proof.
-is-ax?_ : ∀ {A B} (f : LG A ⊢ B) → Dec (is-ax f)
+is-ax?_ : ∀ {A B} (f : A ⊢LG B) → Dec (is-ax f)
 is-ax? ax      = yes (_ , H.refl)
 is-ax? m□  _   = no (λ {(_ , ())})
 is-ax? m◇  _   = no (λ {(_ , ())})

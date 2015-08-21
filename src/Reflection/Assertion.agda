@@ -8,22 +8,26 @@ open import Data.List                  using (List; _∷_; []; map; any; all)
 open import Data.String                using (String; _++_)
 open import Data.Unit                  using (⊤; tt)
 open import Reflection
+open import Reflection.Show            using (show)
 open import Relation.Nullary.Decidable using (⌊_⌋)
-open import Logic.Intuitionistic.Unrestricted.Agda.Show
 
 
 module Reflection.Assertion where
 
+
 data AssertionFailed : String → Set where
+
 
 assert : String → Bool → Term
 assert msg true  = def (quote ⊤) []
 assert msg false = def (quote AssertionFailed) (arg (arg-info visible relevant) (lit (string msg)) ∷ [])
 
+
 list : Term → List Term
 list (con (quote List._∷_) (_ ∷ _ ∷ arg _ y ∷ arg _ ys ∷ _)) = y ∷ list ys
 list (con (quote List.[])   _                              ) = []
 list y                                                       = y ∷ []
+
 
 mutual
   drop-abs : Term → Term
@@ -38,11 +42,14 @@ mutual
   drop-abs-args []               = []
   drop-abs-args (arg i x ∷ args) = arg i (drop-abs x) ∷ drop-abs-args args
 
+
 _∈_ : Term → List Term → Bool
 y ∈ xs = any (λ x → ⌊ x ≟ y ⌋) xs
 
+
 _⇔_ : List Term → List Term → Bool
 ys ⇔ xs = all (_∈ xs) ys ∧ all (_∈ ys) xs
+
 
 infix 1 _↦_
 
