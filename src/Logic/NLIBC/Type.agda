@@ -12,7 +12,6 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 module Logic.NLIBC.Type {ℓ} (Atom : Set ℓ) where
 
 
-infixr 20 _⊗_ _∘_
 infixr 30 _⇒_ _⇨_
 infixl 30 _⇐_ _⇦_
 
@@ -20,14 +19,9 @@ infixl 30 _⇐_ _⇦_
 data Type : Set ℓ where
 
   el  : Atom → Type
-  _⊗_ : Type → Type → Type
+
   _⇒_ : Type → Type → Type
   _⇐_ : Type → Type → Type
 
-  _∘_ : Type → Type → Type
   _⇨_ : Type → Type → Type
   _⇦_ : Type → Type → Type
-
-  I   : Type
-  B   : Type
-  C   : Type
