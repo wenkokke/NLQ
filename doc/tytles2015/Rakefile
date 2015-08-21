@@ -1,0 +1,74 @@
+# encoding: utf-8
+require 'rake/clean'
+
+BibTeXFiles   = FileList['*.bib']
+FormatFiles   = FileList['*.fmt']
+LaTeXFiles    = FileList['*.tex']
+LiterateFiles = FileList['*.lagda']
+
+
+desc "Compile the paper"
+task :default => 'main.pdf' do
+  runCmd "open main.pdf"
+end
+
+
+desc "Compile the paper"
+file 'main.pdf' => BibTeXFiles + FormatFiles + LaTeXFiles + LiterateFiles.ext('tex') do
+  runCmd "pdflatex -draftmode main.tex"
+  if $?.success?
+    runCmd "bibtex main"
+    if $?.success?
+      runCmd "pdflatex -draftmode main.tex"
+      runCmd "pdflatex main.tex"
+    end
+  end
+end
+
+desc "Compile literate Agda to TeX (and remove implicits)"
+rule '.tex' => ['.lagda'] do |t|
+
+  f_abs            = File.absolute_path(t.name)
+  f_lagda          = f_abs.ext('.lagda')
+  f_implicit_lagda = f_abs.ext('.implicit.lagda')
+  f_tex            = f_abs.ext('.tex')
+  f_dir            = File.dirname(f_abs)
+
+  Dir.chdir(f_dir) do
+
+    src = IO.read( f_lagda , :encoding => 'utf-8' )
+    src = strip_implicits( src )
+    IO.write( f_implicit_lagda , src , :encoding => 'utf-8' )
+
+    runCmd "lhs2TeX --agda #{ f_implicit_lagda } -o #{ f_tex }"
+
+    File.delete f_implicit_lagda
+
+    fail unless $?.success?
+  end
+end
+
+desc "Extract the source code from the paper"
+file 'main.agda' => 'main.lagda' do
+  runCmd "runhaskell Unlit.lhs < main.lagda > main.agda"
+end
+
+
+# Variant of `system` which puts the command.
+def runCmd(cmd)
+  puts   cmd
+  system cmd
+end
+
+# Regular expression that filters implicit arguments from Agda source.
+RE_IMPLICIT = /(?<!record)(?<!λ)\s*(∀\s*)?\{([^=^\}]*)\}(\s*→)?/
+
+# Strip implicits from literate Agda source.
+def strip_implicits(src)
+  src.gsub(/\\begin\{code\}(.*?)\\end\{code\}/m) do |m|
+    "\\begin{code}#{ $1.gsub(RE_IMPLICIT,'') }\\end{code}"
+  end
+end
+
+CLOBBER.include('main.pdf')
+CLEAN.include(['*.blg', '*.out', '*.agdai', '*.aux', '*.implicit.tex', '*.ptb', '*.bbl', 'main.tex', '*.log'])
