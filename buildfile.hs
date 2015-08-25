@@ -161,7 +161,7 @@ nl = let
   , include        = ["Logic/LG.agda"
                      ,"Logic/LG//*.agda"
                      ]
-  , exclude        = ["//LG/ToAgda.agda"
+  , exclude        = ["//ToAgda.agda"
                      ,"//LG/Structure.agda"
                      ,"//LG/Structure//*.agda"
                      ,"//LG/ResMon/Origin/Box.agda"

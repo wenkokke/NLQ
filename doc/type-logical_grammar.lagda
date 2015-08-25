@@ -275,7 +275,7 @@ not accepted by your grammar:
 ```
 ``` hidden
 module example₁ where
-  open import Example.System.AlgLG renaming (_,_ to _∙_); open Default
+  open import Example.NL.ResMon renaming (_,_ to _∙_)
 ```
 
 Given a type-logical grammar with the necessary words in its lexicon, we
@@ -405,11 +405,11 @@ term which has as its context only the types in `Γ`:
                   →  (proj₁ ⟨$⟩ Γ) ⊢ s
                   →  toAgdaType s
 ```
-And using these functions, we can define the function `⟦_⟧`:
+And using these functions, we can define the function `interpret`:
 ```
-    ⟦_⟧ : (ws : Struct Word) → List (toAgdaType s)
-    ⟦ ws ⟧  with traverse Lex ws
-    ⟦ ws ⟧  | Γ ∷ Γs = all Γ Γs
+    interpret : (ws : Struct Word) → List (toAgdaType s)
+    interpret ws  with traverse Lex ws
+    interpret ws  | Γ ∷ Γs = all Γ Γs
       where
         one  : (Γ : Struct _) → List _
         one  Γ = map (toAgdaTerm Γ) (findAll (proj₁ ⟨$⟩ Γ) s)
@@ -426,8 +426,7 @@ sentence.
 ``` hidden
 module example₂ where
   open import Data.List using (_∷_; [])
-  open import Example.System.AlgNL renaming (_,_ to _∙_); open Default
-  open import Reflection.Assertion public using (_↦_)
+  open import Example.NL.ResMon renaming (_,_ to _∙_)
 ```
 We assume a simple set of meaning postulates, and a suitable
 type-logical grammar (we use the non-associative Lambek calculus for
@@ -442,8 +441,8 @@ sentences, for instance:
   example₄  :
 ```
 ```
-    ⟦ · mary · ∙ · finds · ∙ · a · ∙ · unicorn · ⟧
-      ↦ EXISTS (λ y → UNICORN y ∧ MARY FINDS y)
+    interpret (· mary · ∙ · finds · ∙ · a · ∙ · unicorn ·)
+      ↦ EXISTS (λ y → UNICORN y ∧ FINDS MARY y)
 ```
 ``` hidden
   example₄  = _
@@ -454,9 +453,9 @@ second argument, which is where `↦` really starts becoming useful:
   example₅  :
 ```
 ```
-    ⟦ · someone · ∙ · loves · ∙ · everyone · ⟧
-      ↦  EXISTS  (λ x  → PERSON x  ∧  FORALL  (λ y  →  PERSON y  ⊃  x LOVES y))
-      ∷  FORALL  (λ y  → PERSON y  ⊃  EXISTS  (λ x  →  PERSON x  ∧  x LOVES y))
+    interpret (· someone · ∙ · likes · ∙ · everyone ·)
+      ↦  EXISTS  (λ x  → PERSON x  ∧  FORALL  (λ y  →  PERSON y  ⊃  LIKES x y))
+      ∷  FORALL  (λ y  → PERSON y  ⊃  EXISTS  (λ x  →  PERSON x  ∧  LIKES x y))
       ∷  []
 ```
 ``` hidden

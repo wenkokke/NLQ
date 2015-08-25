@@ -4,7 +4,7 @@
 
 
 open import Category.Applicative using (module RawApplicative; RawApplicative)
-open import Data.Bool            using (Bool; true; false; _∨_; if_then_else_)
+open import Data.List            using (List; _∷_; [])
 open import Data.String          using (String)
 open import Data.Traversable     using (module RawTraversable; RawTraversable)
 open import Logic.ToLaTeX        using (module ToLaTeX; ToLaTeX)
@@ -12,7 +12,10 @@ open import Relation.Nullary     using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality
 
 
-module Example.Base where
+module Example.System.Base where
+
+
+open import Data.Bool public using (Bool; true; false; _∧_; _∨_)
 
 
 -- * Postulates
@@ -52,6 +55,7 @@ data Atom : Set where
   INF : Atom
   PP  : Atom
 
+
 _≟-Atom_ : (A B : Atom) → Dec (A ≡ B)
 N   ≟-Atom N   = yes refl
 N   ≟-Atom NP  = no (λ ())
@@ -79,12 +83,14 @@ PP  ≟-Atom S   = no (λ ())
 PP  ≟-Atom INF = no (λ ())
 PP  ≟-Atom PP  = yes refl
 
+
 ⟦_⟧ᴬ : Atom → Set
 ⟦ N   ⟧ᴬ = Entity → Bool
 ⟦ NP  ⟧ᴬ = Entity
 ⟦ S   ⟧ᴬ = Bool
 ⟦ INF ⟧ᴬ = Entity → Bool
 ⟦ PP  ⟧ᴬ = Entity
+
 
 instance
   AtomToLaTeX : ToLaTeX Atom
@@ -98,24 +104,36 @@ instance
       toLaTeX PP  = "pp"
 
 
+-- * Utility for constructing lists of Boolean values
+[_,_] : Bool → Bool → List Bool
+[ x , y ] = x ∷ y ∷ []
+
+[_,_,_] : Bool → Bool → Bool → List Bool
+[ x , y , z ] = x ∷ y ∷ z ∷ []
+
+[_,_,_,_] : Bool → Bool → Bool → Bool → List Bool
+[ x , y , z , w ] = x ∷ y ∷ z ∷ w ∷ []
+
 -- * Lexicon
 
-data Word : Set where
-  john     : Word
-  mary     : Word
-  bill     : Word
-  unicorn  : Word
-  leave    : Word
-  to       : Word
-  left     : Word
-  smiles   : Word
-  cheats   : Word
-  finds    : Word
-  loves    : Word
-  wants    : Word
-  said     : Word
-  a        : Word
-  some     : Word
-  every    : Word
-  everyone : Word
-  someone  : Word
+module Default where
+
+  data Word : Set where
+    john     : Word
+    mary     : Word
+    bill     : Word
+    unicorn  : Word
+    leave    : Word
+    to       : Word
+    left     : Word
+    smiles   : Word
+    cheats   : Word
+    finds    : Word
+    loves    : Word
+    wants    : Word
+    said     : Word
+    a        : Word
+    some     : Word
+    every    : Word
+    everyone : Word
+    someone  : Word
