@@ -52,8 +52,8 @@ record Grammar : Set₁ where
 
   -- a translation to Agda terms
   field
-    ⟦_⟧ᵀ            : Type → Set
-    ⟦_⟧             : (Γ : Struct (Σ Type ⟦_⟧ᵀ)) → proj₁ <$> Γ ⊢ s → ⟦ s ⟧ᵀ
+    ⟦_⟧ᵗ            : Type → Set
+    ⟦_⟧             : (Γ : Struct (Σ Type ⟦_⟧ᵗ)) → proj₁ <$> Γ ⊢ s → ⟦ s ⟧ᵗ
 
 
 
@@ -68,7 +68,7 @@ record Lexicon : Set₁ where
   -- a set of words and translations to ambiguous Agda terms
   field
     Word : Set
-    Lex  : Word → List⁺ (Σ Type ⟦_⟧ᵀ)
+    Lex  : Word → List⁺ (Σ Type ⟦_⟧ᵗ)
 
 
   Parse : Struct Word → Set
@@ -84,7 +84,7 @@ record Lexicon : Set₁ where
       parse′ Γ (Γ′ ∷ Γs) = map inj₁ (findAll Γ s) ++ map inj₂ (parse′ Γ′ Γs)
 
 
-  interpret : (ws : Struct Word) → List ⟦ s ⟧ᵀ
+  interpret : (ws : Struct Word) → List ⟦ s ⟧ᵗ
   interpret ws with traverse Lex ws
   interpret ws | Γ ∷ Γs = forAll Γ Γs
     where
@@ -104,32 +104,8 @@ record Lexicon : Set₁ where
   * ws = T (null (parse ws))
 
 
-
-module Default where
-
-  data Word : Set where
-    john       : Word
-    mary       : Word
-    bill       : Word
-    unicorn    : Word
-    leave      : Word
-    to         : Word
-    left       : Word
-    smiles     : Word
-    cheats     : Word
-    finds      : Word
-    loves      : Word
-    wants      : Word
-    said       : Word
-    a          : Word
-    some       : Word
-    every      : Word
-    everyone   : Word
-    someone    : Word
+open Grammar {{...}} using (Type; ⟦_⟧ᵗ)
 
 
-  open Grammar {{...}} using (Type; ⟦_⟧ᵀ)
-
-
-  fromLex : (g : Grammar) (l : Word → List⁺ (Σ Type ⟦_⟧ᵀ)) → Lexicon
-  fromLex g l = record { grammar = g ; Word = Word ; Lex = l }
+fromLex : {Word : Set} (g : Grammar) (l : Word → List⁺ (Σ Type ⟦_⟧ᵗ)) → Lexicon
+fromLex {Word} g l = record { grammar = g ; Word = Word ; Lex = l }
