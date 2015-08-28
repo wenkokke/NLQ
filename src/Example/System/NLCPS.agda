@@ -37,9 +37,10 @@ open ListOf ((Bool → Bool) → Bool) public
 open RawTraversable (rawTraversable {zero}) using (_<$>_)
 
 
-s n np inf pp iv tv : Type
+s n q np inf pp iv tv : Type
 s   = el (- , S)
 n   = el (+ , N)
+q   = el (+ , Q)
 np  = el (+ , NP)
 inf = el (+ , INF)
 pp  = el (+ , PP)

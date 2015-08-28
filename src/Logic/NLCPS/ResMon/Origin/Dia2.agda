@@ -21,15 +21,15 @@ module Logic.NLCPS.ResMon.Origin.Dia2 {ℓ} (Atom : Set ℓ) where
   open import Logic.NLCPS.ResMon.Base                        Atom as NLCPSB
 
 
-  data Origin {A} ( J : Contextᴶ + ) (f : NLCPS J [ ◇ A ]ᴶ) : Set ℓ where
+  data Origin {A} ( J : Contextʲ + ) (f : NLCPS J [ ◇ A ]ʲ) : Set ℓ where
        origin : ∀ {B}
                 → (h : NLCPS A ⊢ B)
-                → (f′ : ∀ {G} → NLCPS G ⊢ ◇ B → NLCPS J [ G ]ᴶ)
+                → (f′ : ∀ {G} → NLCPS G ⊢ ◇ B → NLCPS J [ G ]ʲ)
                 → (pr : f ≡ f′ (m◇ h))
                 → Origin J f
 
   mutual
-    view : ∀ {B} ( J : Contextᴶ + ) (f : NLCPS J [ ◇ B ]ᴶ) → Origin J f
+    view : ∀ {B} ( J : Contextʲ + ) (f : NLCPS J [ ◇ B ]ʲ) → Origin J f
     view ([] <⊢ ._)       (m◇  f)   = origin f id refl
 
     view ((A <⊗ _) <⊢ ._) (m⊗  f g) = go (A <⊢ _)               f (flip m⊗ g)
@@ -53,8 +53,8 @@ module Logic.NLCPS.ResMon.Origin.Dia2 {ℓ} (Atom : Set ℓ) where
     view ((◇> A) <⊢ ._)   (m◇  f)   = go (A <⊢ _)               f m◇
     private
       go : ∀ {B}
-         → ( I : Contextᴶ + ) (f : NLCPS I [ ◇ B ]ᴶ)
-         → { J : Contextᴶ + } (g : ∀ {G} → NLCPS I [ G ]ᴶ → NLCPS J [ G ]ᴶ)
+         → ( I : Contextʲ + ) (f : NLCPS I [ ◇ B ]ʲ)
+         → { J : Contextʲ + } (g : ∀ {G} → NLCPS I [ G ]ʲ → NLCPS J [ G ]ʲ)
          → Origin J (g f)
       go I f {J} g with view I f
       ... | origin h f′ pr rewrite pr = origin h (g ∘ f′) refl

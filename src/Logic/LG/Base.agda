@@ -1,16 +1,5 @@
 ------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
---
--- Why are `⇀` and `↼` included?
---
---   While the defocussing rules (⇀ , ↼) can be derived using cut,
---   the suggested procedure for "cut elimination" leaves some cuts in
---   the derivation---namely, those cuts with axiomatic premises. This
---   means that we, in effect, take an axiomatisation where we have the
---   rule `cut` instead of `⇀` and `↼`, but restrict it to only allow
---   for axiomatic premises (i.e. `cut ax⁺ _` and `cut _ ax⁻`)... which
---   in reality is the same axiomatisation, but more cumbersome.
---
 ------------------------------------------------------------------------
 
 
@@ -23,6 +12,17 @@ module Logic.LG.Base {ℓ} (Atom : Set ℓ) where
 open import Logic.LG.Type                Atom
 open import Logic.LG.Structure.Polarised Atom
 open import Logic.LG.Judgement           Atom
+
+
+-- Why are `⇀` and `↼` included?
+--
+--   While the defocussing rules (⇀ , ↼) can be derived using cut,
+--   the suggested procedure for "cut elimination" leaves some cuts in
+--   the derivation---namely, those cuts with axiomatic premises. This
+--   means that we, in effect, take an axiomatisation where we have the
+--   rule `cut` instead of `⇀` and `↼`, but restrict it to only allow
+--   for axiomatic premises (i.e. `cut ax⁺ _` and `cut _ ax⁻`)... which
+--   in reality is the same axiomatisation, but more cumbersome.
 
 
 infix 1  LG_
@@ -115,7 +115,7 @@ m¹′ : ∀ {A B} → LG · B · ⊢ · A · → LG ·  A ¹ · ⊢ · B ¹ ·
 m¹′ f = ¹ᴸ (⇀ (¹ᴿ (↽ f)))
 
 -- symmetries that hold
-_⋈ᵗ : ∀ {J} → LG J → LG J ⋈ᴶ
+_⋈ᵗ : ∀ {J} → LG J → LG J ⋈ʲ
 ax⁺     ⋈ᵗ = ax⁺
 ax⁻     ⋈ᵗ = ax⁻
 ⇁   f   ⋈ᵗ = ⇁ (f ⋈ᵗ)
@@ -165,7 +165,7 @@ d⇛⇒ f   ⋈ᵗ = d⇚⇐ (f ⋈ᵗ)
 d⇚⇒ f   ⋈ᵗ = d⇛⇐ (f ⋈ᵗ)
 d⇚⇐ f   ⋈ᵗ = d⇛⇒ (f ⋈ᵗ)
 
-_∞ᵗ : ∀ {J} → LG J → LG J ∞ᴶ
+_∞ᵗ : ∀ {J} → LG J → LG J ∞ʲ
 ax⁺     ∞ᵗ = ax⁻
 ax⁻     ∞ᵗ = ax⁺
 ⇁   f   ∞ᵗ = ↽ (f ∞ᵗ)

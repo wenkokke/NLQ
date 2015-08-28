@@ -116,7 +116,7 @@ appl-⇚′ f = r⇚⊕ (m⇚ f ax′)
 
 
 -- Symmetries that do hold
-_⋈ᵗ : ∀ {J} → LG J → LG (J ⋈ᴶ)
+_⋈ᵗ : ∀ {J} → LG J → LG (J ⋈ʲ)
 _⋈ᵗ  ax       = ax
 _⋈ᵗ (m□  f  ) = m□  (f ⋈ᵗ)
 _⋈ᵗ (m◇  f  ) = m◇  (f ⋈ᵗ)
@@ -150,7 +150,7 @@ _⋈ᵗ (d⇚⇒ f  ) = d⇛⇐ (f ⋈ᵗ)
 _⋈ᵗ (d⇚⇐ f  ) = d⇛⇒ (f ⋈ᵗ)
 
 
-_∞ᵗ : ∀ {J} → LG J → LG (J ∞ᴶ)
+_∞ᵗ : ∀ {J} → LG J → LG (J ∞ʲ)
 _∞ᵗ  ax       = ax
 _∞ᵗ (m□  f  ) = m◇  (f ∞ᵗ)
 _∞ᵗ (m◇  f  ) = m□  (f ∞ᵗ)
@@ -184,12 +184,12 @@ _∞ᵗ (d⇚⇒ f  ) = d⇚⇒ (f ∞ᵗ)
 _∞ᵗ (d⇚⇐ f  ) = d⇛⇒ (f ∞ᵗ)
 
 
-_⋈ᵗ⁻¹ : ∀ {J} → LG (J ⋈ᴶ) → LG J
-_⋈ᵗ⁻¹ {J} f = P.subst LG_ (⋈ᴶ-inv J) (f ⋈ᵗ)
+_⋈ᵗ⁻¹ : ∀ {J} → LG (J ⋈ʲ) → LG J
+_⋈ᵗ⁻¹ {J} f = P.subst LG_ (⋈ʲ-inv J) (f ⋈ᵗ)
 
 
-_∞ᵗ⁻¹ : ∀ {J} → LG (J ∞ᴶ) → LG J
-_∞ᵗ⁻¹ {J} f = P.subst LG_ (∞ᴶ-inv J) (f ∞ᵗ)
+_∞ᵗ⁻¹ : ∀ {J} → LG (J ∞ʲ) → LG J
+_∞ᵗ⁻¹ {J} f = P.subst LG_ (∞ʲ-inv J) (f ∞ᵗ)
 
 
 infix 5 is-ax_ is-ax?_

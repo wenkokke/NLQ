@@ -90,13 +90,13 @@ app₄ {{n}} = app (toWitness n)
 ⟦     X ⇐ Y   ⟧ˢ = ⟦ X ⟧ˢ × ⟦ Y ⟧ˢ
 
 
-⟦_⟧ᴶ : Judgement → Set ℓ
-⟦   X  ⊢  Y   ⟧ᴶ = ⟦ X ⟧ˢ → ⟦ Y ⟧ˢ → R
-⟦ [ A ]⊢  Y   ⟧ᴶ = ⟦ Y ⟧ˢ → ⟦ A ⟧⁻
-⟦   X  ⊢[ B ] ⟧ᴶ = ⟦ X ⟧ˢ → ⟦ B ⟧⁺
+⟦_⟧ʲ : Judgement → Set ℓ
+⟦   X  ⊢  Y   ⟧ʲ = ⟦ X ⟧ˢ → ⟦ Y ⟧ˢ → R
+⟦ [ A ]⊢  Y   ⟧ʲ = ⟦ Y ⟧ˢ → ⟦ A ⟧⁻
+⟦   X  ⊢[ B ] ⟧ʲ = ⟦ X ⟧ˢ → ⟦ B ⟧⁺
 
 
-⟦_⟧ : ∀ {J} → fNL J → ⟦ J ⟧ᴶ
+⟦_⟧ : ∀ {J} → fNL J → ⟦ J ⟧ʲ
 ⟦ ax⁺      ⟧ = λ x → x
 ⟦ ax⁻      ⟧ = λ x → x
 ⟦ ↼{A} f   ⟧ = λ y x → app₁ {A} (⟦ f ⟧ x) y
@@ -114,4 +114,4 @@ app₄ {{n}} = app (toWitness n)
 ⟦ r⇐⊗  f   ⟧ = λ{(x , y) z → ⟦ f ⟧ x (z , y)}
 ⟦ r⊗⇐  f   ⟧ = λ{x (z , y) → ⟦ f ⟧ (x , y) z}
 fNL→λΠ : Translation Type (Set ℓ) fNL_ id
-fNL→λΠ = record { ⟦_⟧ᵀ = ⟦_⟧⁺ ; ⟦_⟧ᴶ = ⟦_⟧ᴶ ; [_]  = ⟦_⟧ }
+fNL→λΠ = record { ⟦_⟧ᵗ = ⟦_⟧⁺ ; ⟦_⟧ʲ = ⟦_⟧ʲ ; [_]  = ⟦_⟧ }

@@ -21,13 +21,13 @@ open ListOf Bool public
 open RawTraversable (rawTraversable {zero}) using (_<$>_)
 
 
-s n np inf pp a iv tv : Type
+s n np inf pp q iv tv : Type
 s   = el S
 n   = el N
 np  = el NP
 inf = el INF
 pp  = el PP
-a   = n ⇐ n
+q   = el Q
 iv  = np ⇒ s
 tv  = iv ⇐ np
 

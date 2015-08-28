@@ -18,14 +18,14 @@ module Logic.LG.ResMon.Origin.El {ℓ} (Atom : Set ℓ) where
   open import Logic.LG.ResMon.Base                        Atom as LGB
 
 
-  data Origin {B} ( J : Contextᴶ + ) (f : LG J [ el B ]ᴶ) : Set ℓ where
-       origin : (f′ : ∀ {G} → LG G ⊢ el B → LG J [ G ]ᴶ)
+  data Origin {B} ( J : Contextʲ + ) (f : LG J [ el B ]ʲ) : Set ℓ where
+       origin : (f′ : ∀ {G} → LG G ⊢ el B → LG J [ G ]ʲ)
               → (pr : f ≡ f′ ax)
               → Origin J f
 
 
   mutual
-    view : ∀ {B} ( J : Contextᴶ + ) (f : LG J [ el B ]ᴶ) → Origin J f
+    view : ∀ {B} ( J : Contextʲ + ) (f : LG J [ el B ]ʲ) → Origin J f
     view ([] <⊢ ._)       ax        = origin id refl
 
     -- cases for (⇐ , ⊗ , ⇒) and (⇚ , ⊕ , ⇛)
@@ -106,8 +106,8 @@ module Logic.LG.ResMon.Origin.El {ℓ} (Atom : Set ℓ) where
 
     private
       go : ∀ {B}
-         → ( I : Contextᴶ + ) (f : LG I [ el B ]ᴶ)
-         → { J : Contextᴶ + } (g : ∀ {G} → LG I [ G ]ᴶ → LG J [ G ]ᴶ)
+         → ( I : Contextʲ + ) (f : LG I [ el B ]ʲ)
+         → { J : Contextʲ + } (g : ∀ {G} → LG I [ G ]ʲ → LG J [ G ]ʲ)
          → Origin J (g f)
       go I f {J} g with view I f
       ... | origin f′ pr rewrite pr = origin (g ∘ f′) refl

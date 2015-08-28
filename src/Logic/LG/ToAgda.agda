@@ -33,24 +33,24 @@ private
 -- * Call-by-value translation
 
 private
-  ⌈_⌉ᵀ : Type → Set ℓ
-  ⌈ el  A ⌉ᵀ =      ⌈ A ⌉ᵁ
-  ⌈ ◇   A ⌉ᵀ =      ⌈ A ⌉ᵀ
-  ⌈ □   A ⌉ᵀ =      ⌈ A ⌉ᵀ
-  ⌈ ₀   A ⌉ᵀ = ¬    ⌈ A ⌉ᵀ
-  ⌈ A   ⁰ ⌉ᵀ = ¬    ⌈ A ⌉ᵀ
-  ⌈ ₁   A ⌉ᵀ = ¬    ⌈ A ⌉ᵀ
-  ⌈ A   ¹ ⌉ᵀ = ¬    ⌈ A ⌉ᵀ
-  ⌈ A ⊗ B ⌉ᵀ =   (  ⌈ A ⌉ᵀ ×   ⌈ B ⌉ᵀ)
-  ⌈ A ⇒ B ⌉ᵀ =   (¬ ⌈ B ⌉ᵀ → ¬ ⌈ A ⌉ᵀ)
-  ⌈ B ⇐ A ⌉ᵀ =   (¬ ⌈ B ⌉ᵀ → ¬ ⌈ A ⌉ᵀ)
-  ⌈ B ⊕ A ⌉ᵀ = ¬ (¬ ⌈ B ⌉ᵀ × ¬ ⌈ A ⌉ᵀ)
-  ⌈ B ⇚ A ⌉ᵀ = ¬ (¬ ⌈ A ⌉ᵀ → ¬ ⌈ B ⌉ᵀ)
-  ⌈ A ⇛ B ⌉ᵀ = ¬ (¬ ⌈ A ⌉ᵀ → ¬ ⌈ B ⌉ᵀ)
+  ⌈_⌉ᵗ : Type → Set ℓ
+  ⌈ el  A ⌉ᵗ =      ⌈ A ⌉ᵁ
+  ⌈ ◇   A ⌉ᵗ =      ⌈ A ⌉ᵗ
+  ⌈ □   A ⌉ᵗ =      ⌈ A ⌉ᵗ
+  ⌈ ₀   A ⌉ᵗ = ¬    ⌈ A ⌉ᵗ
+  ⌈ A   ⁰ ⌉ᵗ = ¬    ⌈ A ⌉ᵗ
+  ⌈ ₁   A ⌉ᵗ = ¬    ⌈ A ⌉ᵗ
+  ⌈ A   ¹ ⌉ᵗ = ¬    ⌈ A ⌉ᵗ
+  ⌈ A ⊗ B ⌉ᵗ =   (  ⌈ A ⌉ᵗ ×   ⌈ B ⌉ᵗ)
+  ⌈ A ⇒ B ⌉ᵗ =   (¬ ⌈ B ⌉ᵗ → ¬ ⌈ A ⌉ᵗ)
+  ⌈ B ⇐ A ⌉ᵗ =   (¬ ⌈ B ⌉ᵗ → ¬ ⌈ A ⌉ᵗ)
+  ⌈ B ⊕ A ⌉ᵗ = ¬ (¬ ⌈ B ⌉ᵗ × ¬ ⌈ A ⌉ᵗ)
+  ⌈ B ⇚ A ⌉ᵗ = ¬ (¬ ⌈ A ⌉ᵗ → ¬ ⌈ B ⌉ᵗ)
+  ⌈ A ⇛ B ⌉ᵗ = ¬ (¬ ⌈ A ⌉ᵗ → ¬ ⌈ B ⌉ᵗ)
 
 
   ⌈_⌉ˢ_ : ∀ {p} → Structure p → Polarity → Set ℓ
-  ⌈ X ⌉ˢ q = flatten (λ { + A → ⌈ A ⌉ᵀ ; - A → ¬ ⌈ A ⌉ᵀ }) q X
+  ⌈ X ⌉ˢ q = flatten (λ { + A → ⌈ A ⌉ᵗ ; - A → ¬ ⌈ A ⌉ᵗ }) q X
     where
       flatten : ∀ {p} (f : Polarity → Type → Set ℓ) (q : Polarity) (X : Structure p) → Set ℓ
       flatten f + ·  A  · = f + A
@@ -68,13 +68,13 @@ private
       flatten f _ (X ⇒ Y) = flatten f + X × flatten f - Y
       flatten f _ (X ⇐ Y) = flatten f - X × flatten f + Y
 
-  ⌈_⌉ᴶ : Judgement → Set ℓ
-  ⌈   X  ⊢  Y   ⌉ᴶ = ⌈ X ⌉ˢ + → ⌈ Y ⌉ˢ - → R
-  ⌈ [ A ]⊢  Y   ⌉ᴶ = ⌈ Y ⌉ˢ - →   ¬ ⌈ A ⌉ᵀ
-  ⌈   X  ⊢[ B ] ⌉ᴶ = ⌈ X ⌉ˢ + → ¬ ¬ ⌈ B ⌉ᵀ
+  ⌈_⌉ʲ : Judgement → Set ℓ
+  ⌈   X  ⊢  Y   ⌉ʲ = ⌈ X ⌉ˢ + → ⌈ Y ⌉ˢ - → R
+  ⌈ [ A ]⊢  Y   ⌉ʲ = ⌈ Y ⌉ˢ - →   ¬ ⌈ A ⌉ᵗ
+  ⌈   X  ⊢[ B ] ⌉ʲ = ⌈ X ⌉ˢ + → ¬ ¬ ⌈ B ⌉ᵗ
 
 
-  ⌈_⌉ : ∀ {J} → LG J → ⌈ J ⌉ᴶ
+  ⌈_⌉ : ∀ {J} → LG J → ⌈ J ⌉ʲ
   ⌈ ax⁺     ⌉ x y = y x
   ⌈ ax⁻     ⌉ x y = x y
   ⌈ ⇁   f   ⌉ x y = ⌈ f ⌉ x y
@@ -126,24 +126,24 @@ private
 
 
 CBV : Translation Type (Set ℓ) LG_ id
-CBV = record { ⟦_⟧ᵀ = ⌈_⌉ᵀ ; ⟦_⟧ᴶ = ⌈_⌉ᴶ ; [_]  = ⌈_⌉ }
+CBV = record { ⟦_⟧ᵗ = ⌈_⌉ᵗ ; ⟦_⟧ʲ = ⌈_⌉ʲ ; [_]  = ⌈_⌉ }
 
 
 -- * Call-by-name translation
 
 private
-  ⌊_⌋ᵀ : Type → Set ℓ
-  ⌊ A ⌋ᵀ = ⌈ A ∞ ⌉ᵀ
+  ⌊_⌋ᵗ : Type → Set ℓ
+  ⌊ A ⌋ᵗ = ⌈ A ∞ ⌉ᵗ
 
-  ⌊_⌋ᴶ : Judgement → Set ℓ
-  ⌊ J ⌋ᴶ = ⌈ J ∞ᴶ ⌉ᴶ
+  ⌊_⌋ʲ : Judgement → Set ℓ
+  ⌊ J ⌋ʲ = ⌈ J ∞ʲ ⌉ʲ
 
-  ⌊_⌋ : ∀ {J} → LG J → ⌊ J ⌋ᴶ
+  ⌊_⌋ : ∀ {J} → LG J → ⌊ J ⌋ʲ
   ⌊ f ⌋ = ⌈ f ∞ᵗ ⌉
 
 CBN : Translation Type (Set ℓ) LG_ id
 CBN = record
-  { ⟦_⟧ᵀ = ⌊_⌋ᵀ
-  ; ⟦_⟧ᴶ = ⌊_⌋ᴶ
+  { ⟦_⟧ᵗ = ⌊_⌋ᵗ
+  ; ⟦_⟧ʲ = ⌊_⌋ʲ
   ; [_]  = ⌊_⌋
   }

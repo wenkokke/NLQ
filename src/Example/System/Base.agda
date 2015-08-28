@@ -53,6 +53,7 @@ rawTraversable = record { traverse = traverse′  }
 
 data Atom : Set where
   N   : Atom
+  Q   : Atom
   NP  : Atom
   S   : Atom
   INF : Atom
@@ -61,26 +62,37 @@ data Atom : Set where
 
 _≟-Atom_ : (A B : Atom) → Dec (A ≡ B)
 N   ≟-Atom N   = yes refl
+N   ≟-Atom Q   = no (λ ())
 N   ≟-Atom NP  = no (λ ())
 N   ≟-Atom S   = no (λ ())
 N   ≟-Atom INF = no (λ ())
 N   ≟-Atom PP  = no (λ ())
+Q   ≟-Atom N   = no (λ ())
+Q   ≟-Atom Q   = yes refl
+Q   ≟-Atom NP  = no (λ ())
+Q   ≟-Atom S   = no (λ ())
+Q   ≟-Atom INF = no (λ ())
+Q   ≟-Atom PP  = no (λ ())
 NP  ≟-Atom N   = no (λ ())
+NP  ≟-Atom Q   = no (λ ())
 NP  ≟-Atom NP  = yes refl
 NP  ≟-Atom S   = no (λ ())
 NP  ≟-Atom INF = no (λ ())
 NP  ≟-Atom PP  = no (λ ())
 S   ≟-Atom N   = no (λ ())
+S   ≟-Atom Q   = no (λ ())
 S   ≟-Atom NP  = no (λ ())
 S   ≟-Atom S   = yes refl
 S   ≟-Atom INF = no (λ ())
 S   ≟-Atom PP  = no (λ ())
 INF ≟-Atom N   = no (λ ())
+INF ≟-Atom Q   = no (λ ())
 INF ≟-Atom NP  = no (λ ())
 INF ≟-Atom S   = no (λ ())
 INF ≟-Atom INF = yes refl
 INF ≟-Atom PP  = no (λ ())
 PP  ≟-Atom N   = no (λ ())
+PP  ≟-Atom Q   = no (λ ())
 PP  ≟-Atom NP  = no (λ ())
 PP  ≟-Atom S   = no (λ ())
 PP  ≟-Atom INF = no (λ ())
@@ -89,6 +101,7 @@ PP  ≟-Atom PP  = yes refl
 
 ⟦_⟧ᴬ : Atom → Set
 ⟦ N   ⟧ᴬ = Entity → Bool
+⟦ Q   ⟧ᴬ = Entity
 ⟦ NP  ⟧ᴬ = Entity
 ⟦ S   ⟧ᴬ = Bool
 ⟦ INF ⟧ᴬ = Entity → Bool
@@ -101,6 +114,7 @@ instance
     where
       toLaTeX : Atom → String
       toLaTeX N   = "n"
+      toLaTeX Q   = "q"
       toLaTeX NP  = "np"
       toLaTeX S   = "s"
       toLaTeX INF = "inf"
