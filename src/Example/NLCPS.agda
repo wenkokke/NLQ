@@ -16,28 +16,35 @@ open import Example.System.NLCPS public
 
 
 postulate
-  JOHN    : Entity
-  MARY    : Entity
-  BILL    : Entity
-  DUTCH   : Entity → Bool
-  ENGLISH : Entity → Bool
-  SMILES  : Entity → Bool
-  LEAVES  : Entity → Bool
-  CHEATS  : Entity → Bool
-  TEASES  : Entity → Entity → Bool
-  LOVES   : Entity → Entity → Bool
-  FINDS   : Entity → Entity → Bool
-  UNICORN : Entity → Bool
-  PERSON  : Entity → Bool
-  SAID    : Entity → Bool → Bool
-  WANTS   : Entity → Bool → Bool
+  SLAUGHTERHOUSE-FIVE : Entity
+  JOHN                : Entity
+  MARY                : Entity
+  BILL                : Entity
+  DUTCH               : Entity → Bool
+  ENGLISH             : Entity → Bool
+  SMILE               : Entity → Bool
+  LEAVE               : Entity → Bool
+  CHEAT               : Entity → Bool
+  TEASE               : Entity → Entity → Bool
+  LIKE                : Entity → Entity → Bool
+  LOVE                : Entity → Entity → Bool
+  FIND                : Entity → Entity → Bool
+  UNICORN             : Entity → Bool
+  PERSON              : Entity → Bool
+  SAY                 : Entity → Bool → Bool
+  WANT                : Entity → Bool → Bool
+  AUTHOR              : Entity → Bool
+  THE                 : (Entity → Bool) → Entity
+  OF                  : Entity → (Entity → Bool) → Entity → Bool
+  SPEAKER             : Entity
 
 
 data Word : Set where
   john mary bill unicorn leave to left
-    smiles cheats finds loves wants said
+    smiles cheats finds loves likes wants said
       some a every everyone someone
-        : Word
+        I like the author of slaughterhouse-five
+            : Word
 
 
 private
@@ -55,27 +62,39 @@ private
 
 
 Lex : Word → List⁺ (Σ Type ⟦_⟧⁺)
-Lex john      = (np , JOHN) ∷ []
-Lex mary      = (np , MARY) ∷ []
-Lex bill      = (np , BILL) ∷ []
-Lex unicorn   = (n , UNICORN) ∷ []
-Lex leave     = (inf , LEAVES) ∷ []
-Lex to        = ((np ⇒ s) ⇐ inf , λ {((x , k) , p) → k (p x)}) ∷ []
-Lex left      = (np ⇒ s , v₀ LEAVES) ∷ []
-Lex smiles    = (np ⇒ s , v₀ SMILES) ∷ []
-Lex cheats    = (np ⇒ s , v₀ CHEATS) ∷ []
-Lex finds     = ((np ⇒ s) ⇐ np , v₁ FINDS) ∷ []
-Lex loves     = ((np ⇒ s) ⇐ np , v₁ LOVES) ∷ []
-Lex wants     = ((np ⇒ s) ⇐ s , λ {((x , k) , y) → k (WANTS x (y (λ z → z)))}) ∷ []
-Lex said      = ((np ⇒ s) ⇐ ◇ s , λ {((x , k) , y) → k (WANTS x (y (λ z → z)))}) ∷ []
-Lex a         = (np ⇐ n , gq EXISTS _∧_) ∷ []
-Lex some      = (np ⇐ n , gq EXISTS _∧_) ∷ []
-Lex every     = (np ⇐ n , gq FORALL _⊃_) ∷ []
-Lex everyone  = ((np ⇐ n) ⊗ n , gq FORALL _⊃_ , PERSON) ∷ []
-Lex someone   = ((np ⇐ n) ⊗ n , gq EXISTS _∧_ , PERSON) ∷ []
+Lex I                   = (np , SPEAKER) ∷ []
+Lex slaughterhouse-five = (np , SLAUGHTERHOUSE-FIVE) ∷ []
+Lex john                = (np , JOHN) ∷ []
+Lex mary                = (np , MARY) ∷ []
+Lex bill                = (np , BILL) ∷ []
+Lex unicorn             = (n , UNICORN) ∷ []
+Lex leave               = (inf , LEAVE) ∷ []
+Lex to                  = ((np ⇒ s) ⇐ inf , λ {((x , k) , p) → k (p x)}) ∷ []
+Lex left                = (np ⇒ s , v₀ LEAVE) ∷ []
+Lex smiles              = (np ⇒ s , v₀ SMILE) ∷ []
+Lex cheats              = (np ⇒ s , v₀ CHEAT) ∷ []
+Lex finds               = ((np ⇒ s) ⇐ np , v₁ FIND) ∷ []
+Lex like                = ((np ⇒ s) ⇐ np , v₁ LIKE) ∷ []
+Lex likes               = ((np ⇒ s) ⇐ np , v₁ LIKE) ∷ []
+Lex loves               = ((np ⇒ s) ⇐ np , v₁ LOVE) ∷ []
+Lex wants               = ((np ⇒ s) ⇐ s , λ {((x , k) , y) → k (WANT x (y (λ z → z)))}) ∷ []
+Lex said                = ((np ⇒ s) ⇐ ◇ s , λ {((x , k) , y) → k (WANT x (y (λ z → z)))}) ∷ []
+Lex a                   = (np ⇐ n , gq EXISTS _∧_) ∷ []
+Lex some                = (np ⇐ n , gq EXISTS _∧_) ∷ []
+Lex every               = (np ⇐ n , gq FORALL _⊃_) ∷ []
+Lex everyone            = ((np ⇐ n) ⊗ n , gq FORALL _⊃_ , PERSON) ∷ []
+Lex someone             = ((np ⇐ n) ⊗ n , gq EXISTS _∧_ , PERSON) ∷ []
+Lex the                 = ((np ⇐ n) , (λ {(k , p) → k (THE p)})) ∷ []
+Lex author              = (n , AUTHOR) ∷ []
+Lex of                  = ((n ⇒ n) ⇐ np , (λ {((p , k) , y) → k (λ x → OF x p y)})) ∷ []
 
 
 open Lexicon (fromLex grammar Lex) public using (✓_; *_; Parse; parse; interpret)
+
+
+s₁ : ✓ · I · , · like · , · the · , · author · , · of · , · slaughterhouse-five ·
+s₁ = _
+
 
 
 -- -}

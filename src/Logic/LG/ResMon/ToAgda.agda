@@ -114,13 +114,13 @@ mutual
   ⌈ d⇚⇐ f    ⌉ᴿ (x , y) k  = k (λ {(z , w) → ⌈ f ⌉ᴿ (x , w) (λ k → k (z , y))})
 
 
-⌈_⌉ᴶ : Judgement → Set ℓ
-⌈ A ⊢ B ⌉ᴶ = ⌈ A ⌉ → ¬ ¬ ⌈ B ⌉
+⌈_⌉ʲ : Judgement → Set ℓ
+⌈ A ⊢ B ⌉ʲ = ⌈ A ⌉ → ¬ ¬ ⌈ B ⌉
 
 CBV : Translation Type (Set ℓ) LG_ id
 CBV = record
-  { ⟦_⟧ᵀ = ⌈_⌉
-  ; ⟦_⟧ᴶ = ⌈_⌉ᴶ
+  { ⟦_⟧ᵗ = ⌈_⌉
+  ; ⟦_⟧ʲ = ⌈_⌉ʲ
   ; [_]  = λ { {_ ⊢ _} f → ⌈_⌉ᴿ f}
   }
 
@@ -139,13 +139,13 @@ module _ where -- TODO: HACK! ∞
   ⌊_⌋ᴿ : ∀ {A B} → LG A ⊢ B → (⌊ B ⌋ → ¬ ¬ ⌊ A ⌋)
   ⌊_⌋ᴿ = ⌈_⌉ᴿ ∘ _∞ᵗ
 
-  ⌊_⌋ᴶ : Judgement → Set ℓ
-  ⌊ A ⊢ B ⌋ᴶ = ¬ ⌊ A ⌋ → ¬ ⌊ B ⌋
+  ⌊_⌋ʲ : Judgement → Set ℓ
+  ⌊ A ⊢ B ⌋ʲ = ¬ ⌊ A ⌋ → ¬ ⌊ B ⌋
 
   CBN : Translation Type (Set ℓ) LG_ id
   CBN = record
-    { ⟦_⟧ᵀ = ⌊_⌋
-    ; ⟦_⟧ᴶ = ⌊_⌋ᴶ
+    { ⟦_⟧ᵗ = ⌊_⌋
+    ; ⟦_⟧ʲ = ⌊_⌋ʲ
     ; [_]  = λ { {_ ⊢ _} f → ⌊_⌋ᴸ f}
     }
 
@@ -236,13 +236,13 @@ mutual
   ⌈ d⇚⇐ f    ⌉′ᴿ = λ k k′ → k (λ z w → k′ (λ x y → ⌈ f ⌉′ᴿ (w , y) (λ k → k (x , z))))
 
 
-⌈_⌉′ᴶ : Judgement → Set ℓ
-⌈ A ⊢ B ⌉′ᴶ = ⌈ A ⌉′ → ¬ ¬ ⌈ B ⌉′
+⌈_⌉′ʲ : Judgement → Set ℓ
+⌈ A ⊢ B ⌉′ʲ = ⌈ A ⌉′ → ¬ ¬ ⌈ B ⌉′
 
 
 CBV′ : Translation Type (Set ℓ) LG_ id
 CBV′ = record
-  { ⟦_⟧ᵀ = ⌈_⌉′
-  ; ⟦_⟧ᴶ = ⌈_⌉′ᴶ
+  { ⟦_⟧ᵗ = ⌈_⌉′
+  ; ⟦_⟧ʲ = ⌈_⌉′ʲ
   ; [_]  = λ { {_ ⊢ _} f → ⌈_⌉′ᴿ f}
   }

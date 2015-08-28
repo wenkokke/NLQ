@@ -17,31 +17,31 @@ open import Logic.LG.Type Atom as T hiding (module DecEq)
 
 
 infix  3  _⊢_
-infixl 50 _⋈ᴶ
-infixl 50 _∞ᴶ
+infixl 50 _⋈ʲ
+infixl 50 _∞ʲ
 
 
 data Judgement : Set ℓ where
   _⊢_ : Type → Type → Judgement
 
 
-_⋈ᴶ : Judgement → Judgement
-(A ⊢ B) ⋈ᴶ = A ⋈ ⊢ B ⋈
+_⋈ʲ : Judgement → Judgement
+(A ⊢ B) ⋈ʲ = A ⋈ ⊢ B ⋈
 
 
-_∞ᴶ : Judgement → Judgement
-(A ⊢ B) ∞ᴶ = B ∞ ⊢ A ∞
+_∞ʲ : Judgement → Judgement
+(A ⊢ B) ∞ʲ = B ∞ ⊢ A ∞
 
 
 open import Algebra.FunctionProperties {A = Judgement} _≡_
 
 
-⋈ᴶ-inv : Involutive _⋈ᴶ
-⋈ᴶ-inv (A ⊢ B) rewrite ⋈-inv A | ⋈-inv B = refl
+⋈ʲ-inv : Involutive _⋈ʲ
+⋈ʲ-inv (A ⊢ B) rewrite ⋈-inv A | ⋈-inv B = refl
 
 
-∞ᴶ-inv : Involutive _∞ᴶ
-∞ᴶ-inv (A ⊢ B) rewrite ∞-inv A | ∞-inv B = refl
+∞ʲ-inv : Involutive _∞ʲ
+∞ʲ-inv (A ⊢ B) rewrite ∞-inv A | ∞-inv B = refl
 
 
 ⊢-injective : ∀ {A B C D} → (A ⊢ B) ≡ (C ⊢ D) → A ≡ C × B ≡ D

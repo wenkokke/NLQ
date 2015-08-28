@@ -18,9 +18,9 @@ record Translation {j₁ j₂ t₁ t₂ ℓ₁ ℓ₂}
                    (Term₂ : Judgement₂ → Set t₂)
                    : Set (suc (j₁ ⊔ j₂ ⊔ t₁ ⊔ t₂ ⊔ ℓ₁ ⊔ ℓ₂)) where
   field
-    ⟦_⟧ᵀ : Type₁ → Type₂
-    ⟦_⟧ᴶ : Judgement₁ → Judgement₂
-    [_]  : {J : Judgement₁} → Term₁ J → Term₂ ⟦ J ⟧ᴶ
+    ⟦_⟧ᵗ : Type₁ → Type₂
+    ⟦_⟧ʲ : Judgement₁ → Judgement₂
+    [_]  : {J : Judgement₁} → Term₁ J → Term₂ ⟦ J ⟧ʲ
 
 
 infixr 9 _◆_
@@ -39,6 +39,6 @@ _◆_ : ∀ {j₁ j₂ j₃ t₁ t₂ t₃ ℓ₁ ℓ₂ ℓ₃}
         → Translation Type₁ Type₂ Tm₁ Tm₂
         → Translation Type₁ Type₃ Tm₁ Tm₃
 f ◆ g = record
-  { ⟦_⟧ᵀ = Translation.⟦ f ⟧ᵀ ∘ Translation.⟦ g ⟧ᵀ
-  ; ⟦_⟧ᴶ = Translation.⟦ f ⟧ᴶ ∘ Translation.⟦ g ⟧ᴶ
+  { ⟦_⟧ᵗ = Translation.⟦ f ⟧ᵗ ∘ Translation.⟦ g ⟧ᵗ
+  ; ⟦_⟧ʲ = Translation.⟦ f ⟧ʲ ∘ Translation.⟦ g ⟧ʲ
   ; [_]  = Translation.[ f ]  ∘ Translation.[ g ] }

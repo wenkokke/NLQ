@@ -3,7 +3,7 @@ default:
 
 clean:
 	./buildfile.hs clobber
-	find . -name "*.agdai" -exec rm {} \;
+
 
 listings:
 	./buildfile.hs listings

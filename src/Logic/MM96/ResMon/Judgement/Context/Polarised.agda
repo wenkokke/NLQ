@@ -25,18 +25,18 @@ open import Logic.MM96.Type.Context.Polarised   Atom as TCP
 open import Logic.MM96.ResMon.Judgement         Atom
 
 
-infix 50 _[_]ᴶ
+infix 50 _[_]ʲ
 infix 3 _<⊢_ _⊢>_
 
 
-data Contextᴶ (p : Polarity) : Set ℓ where
-  _<⊢_  : Context p +  → Type         → Contextᴶ p
-  _⊢>_  : Type         → Context p -  → Contextᴶ p
+data Contextʲ (p : Polarity) : Set ℓ where
+  _<⊢_  : Context p +  → Type         → Contextʲ p
+  _⊢>_  : Type         → Context p -  → Contextʲ p
 
 
 
-_[_]ᴶ : ∀ {p} → Contextᴶ p → Type → Judgement
-(A <⊢ B) [ C ]ᴶ = A [ C ] ⊢ B
-(A ⊢> B) [ C ]ᴶ = A ⊢ B [ C ]
+_[_]ʲ : ∀ {p} → Contextʲ p → Type → Judgement
+(A <⊢ B) [ C ]ʲ = A [ C ] ⊢ B
+(A ⊢> B) [ C ]ʲ = A ⊢ B [ C ]
 
 

@@ -20,8 +20,8 @@ open import Logic.LG.Structure.Polarised Atom as S hiding (module DecEq)
 
 
 infix  3  _⊢_ [_]⊢_ _⊢[_]
-infixl 50 _⋈ᴶ
-infixl 50 _∞ᴶ
+infixl 50 _⋈ʲ
+infixl 50 _∞ʲ
 
 
 
@@ -35,27 +35,27 @@ data Judgement : Set ℓ where
 open import Algebra.FunctionProperties {A = Judgement} _≡_
 
 
-_⋈ᴶ : Judgement → Judgement
-(  X  ⊢  Y  ) ⋈ᴶ = X ⋈ˢ ⊢ Y ⋈ˢ
-([ A ]⊢  Y  ) ⋈ᴶ = [ A ⋈ ]⊢ Y ⋈ˢ
-(  X  ⊢[ B ]) ⋈ᴶ = X ⋈ˢ ⊢[ B ⋈ ]
+_⋈ʲ : Judgement → Judgement
+(  X  ⊢  Y  ) ⋈ʲ = X ⋈ˢ ⊢ Y ⋈ˢ
+([ A ]⊢  Y  ) ⋈ʲ = [ A ⋈ ]⊢ Y ⋈ˢ
+(  X  ⊢[ B ]) ⋈ʲ = X ⋈ˢ ⊢[ B ⋈ ]
 
-_∞ᴶ : Judgement → Judgement
-(  X  ⊢  Y  ) ∞ᴶ = Y ∞ˢ ⊢ X ∞ˢ
-([ A ]⊢  Y  ) ∞ᴶ = Y ∞ˢ ⊢[ A ∞ ]
-(  X  ⊢[ B ]) ∞ᴶ = [ B ∞ ]⊢ X ∞ˢ
-
-
-⋈ᴶ-inv : Involutive _⋈ᴶ
-⋈ᴶ-inv (  X  ⊢  Y  ) rewrite ⋈ˢ-inv X | ⋈ˢ-inv Y = refl
-⋈ᴶ-inv ([ A ]⊢  Y  ) rewrite ⋈-inv A | ⋈ˢ-inv Y = refl
-⋈ᴶ-inv (  X  ⊢[ B ]) rewrite ⋈ˢ-inv X | ⋈-inv B = refl
+_∞ʲ : Judgement → Judgement
+(  X  ⊢  Y  ) ∞ʲ = Y ∞ˢ ⊢ X ∞ˢ
+([ A ]⊢  Y  ) ∞ʲ = Y ∞ˢ ⊢[ A ∞ ]
+(  X  ⊢[ B ]) ∞ʲ = [ B ∞ ]⊢ X ∞ˢ
 
 
-∞ᴶ-inv : Involutive _∞ᴶ
-∞ᴶ-inv (  X  ⊢  Y  ) rewrite ≅-to-≡ (∞ˢ-inv X) | ≅-to-≡ (∞ˢ-inv Y) = refl
-∞ᴶ-inv ([ A ]⊢  Y  ) rewrite ∞-inv A | ≅-to-≡ (∞ˢ-inv Y) = refl
-∞ᴶ-inv (  X  ⊢[ B ]) rewrite ≅-to-≡ (∞ˢ-inv X) | ∞-inv B = refl
+⋈ʲ-inv : Involutive _⋈ʲ
+⋈ʲ-inv (  X  ⊢  Y  ) rewrite ⋈ˢ-inv X | ⋈ˢ-inv Y = refl
+⋈ʲ-inv ([ A ]⊢  Y  ) rewrite ⋈-inv A | ⋈ˢ-inv Y = refl
+⋈ʲ-inv (  X  ⊢[ B ]) rewrite ⋈ˢ-inv X | ⋈-inv B = refl
+
+
+∞ʲ-inv : Involutive _∞ʲ
+∞ʲ-inv (  X  ⊢  Y  ) rewrite ≅-to-≡ (∞ˢ-inv X) | ≅-to-≡ (∞ˢ-inv Y) = refl
+∞ʲ-inv ([ A ]⊢  Y  ) rewrite ∞-inv A | ≅-to-≡ (∞ˢ-inv Y) = refl
+∞ʲ-inv (  X  ⊢[ B ]) rewrite ≅-to-≡ (∞ˢ-inv X) | ∞-inv B = refl
 
 
 ⊢-injective : ∀ {Γ₁ Γ₂ Γ₃ Γ₄} → (Γ₁ ⊢ Γ₂) ≡ (Γ₃ ⊢ Γ₄) → Γ₁ ≡ Γ₃ × Γ₂ ≡ Γ₄

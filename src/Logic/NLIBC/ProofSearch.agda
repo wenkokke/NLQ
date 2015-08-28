@@ -57,8 +57,9 @@ trace _             = []
 {-# TERMINATING #-}
 search : {Mon : Set ℓ → Set ℓ} {{monadPlus : RawMonadPlus Mon}} (J : Judgement) → Mon (NL J)
 search {Mon} {{monadPlus}} J =
-  check-ax    J ∣ check-⇒ᴿ/⇐ᴿ J ∣ check-⇒ᴸ/⇐ᴸ J ∣
-  check-⇨ᴿ/⇦ᴿ J ∣ check-⇦ᴸλ′  J ∣ check-⇨ᴿλ′  J
+  check-ax        J ∣ check-⇒ᴿ/⇐ᴿ J ∣ check-⇒ᴸ/⇐ᴸ J ∣ -- direct composition
+  check-⇨ᴿ/⇦ᴿ     J ∣ check-⇦ᴸλ′  J ∣ check-⇨ᴿλ′  J ∣ -- scope taking
+  check-⇨ᴿgᴸ/⇨ᴿgᴿ J                                 -- gapping
   where
   open RawMonadPlus monadPlus using (∅; _∣_; return; _>>=_; _<$>_) renaming (_⊛_ to _<*>_)
 
@@ -160,6 +161,17 @@ search {Mon} {{monadPlus}} J =
     check-IBC′ (Σ , p ∘ ((C ∙ q) ∙ r) , pr) =
       (λ f → subst (_⊢NL s) pr (Cₑ Σ f)) <$> search (Σ [ (p ∘ q) ∙ r ] ⊢ s)
     check-IBC′ _ = ∅
+
+  -- gapping
+  check-⇨ᴿgᴸ/⇨ᴿgᴿ : (J : Judgement) → Mon (NL J)
+  check-⇨ᴿgᴸ/⇨ᴿgᴿ (Γ ⊢ q ⇨ r) = foldr _∣_ ∅ (map check-⇨ᴿgᴸ/⇨ᴿgᴿ′ (focus Γ))
+    where
+    check-⇨ᴿgᴸ/⇨ᴿgᴿ′ : (∃₂ (λ (Σ : Context) (Δ : Structure) → Σ [ Δ ] ≡ Γ)) → Mon (Γ ⊢NL q ⇨ r)
+    check-⇨ᴿgᴸ/⇨ᴿgᴿ′ (Σ , · p · , pr) =
+      (λ f → subst (_⊢NL q ⇨ r) pr (⇨ᴿgᴸ Σ f)) <$> search (Σ [ · q · ∙ · p · ] ⊢ r) ∣
+      (λ f → subst (_⊢NL q ⇨ r) pr (⇨ᴿgᴿ Σ f)) <$> search (Σ [ · p · ∙ · q · ] ⊢ r)
+    check-⇨ᴿgᴸ/⇨ᴿgᴿ′ _ =  ∅
+  check-⇨ᴿgᴸ/⇨ᴿgᴿ _ = ∅
 
 
 findMaybe : (J : Judgement) → Maybe (NL J)

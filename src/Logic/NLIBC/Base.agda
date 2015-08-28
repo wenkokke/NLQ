@@ -100,6 +100,16 @@ mutual
          → Γ [ p ∘ ((C ∙ q) ∙ r) ] ⊢NL s
 
 
+    -- logical rules for gapping
+
+    ⇨ᴿgᴸ : ∀ (Γ : Context) {p q r}
+         → Γ [ · q · ∙ p ] ⊢NL r
+         → Γ [ p ] ⊢NL q ⇨ r
+
+    ⇨ᴿgᴿ : ∀ (Γ : Context) {p q r}
+         → Γ [ p ∙ · q · ] ⊢NL r
+         → Γ [ p ] ⊢NL q ⇨ r
+
 
 λx_[x] : (Γ : Context₁) → Structure
 λx   []   [x] = I
@@ -162,6 +172,9 @@ down Σ (Γ <∙ q) {Δ} f = Cₑ Σ lem₁
   lem₁ rewrite     (<>-def Σ ([] <∙ q) (Δ ∘ λx Γ [x])) = down (Σ < [] <∙ q >) Γ lem₂
 
 
+
+-- Derived rules for scope taking
+
 ⇦ᴸλ : ∀ (Σ : Context) (Γ : Context₁) {p q r}
     → λx Γ [x] ⊢NL p → Σ [ · q · ] ⊢NL r → Σ [ Γ [ · q ⇦ p · ] ] ⊢NL r
 ⇦ᴸλ Σ Γ f g = up Σ Γ (⇦ᴸ Σ f g)
@@ -170,7 +183,6 @@ down Σ (Γ <∙ q) {Δ} f = Cₑ Σ lem₁
 ⇨ᴿλ : ∀ (Γ : Context₁) {p q}
     → Γ [ · p · ] ⊢NL q → λx Γ [x] ⊢NL p ⇨ q
 ⇨ᴿλ Γ f = ⇨ᴿ (down [] Γ f)
-
 
 
 -- Paths for contexts with multiple holes
@@ -209,6 +221,10 @@ private
 
 
 
+
+
+
+-- TODO: an attempt at deriving the rule for full parasitic scope
 {-
 para : ∀ (Σ : Context) (Γ : Contextᵢ 2) {Δ p q r}
      → (i : Fin 2)

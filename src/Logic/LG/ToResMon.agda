@@ -107,4 +107,4 @@ private
 
 
 Str→Alg : Translation Type Type Str_ Alg_
-Str→Alg = record { ⟦_⟧ᵀ = id ; ⟦_⟧ᴶ = To ; [_] = to }
+Str→Alg = record { ⟦_⟧ᵗ = id ; ⟦_⟧ʲ = To ; [_] = to }

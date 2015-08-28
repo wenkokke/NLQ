@@ -53,11 +53,15 @@ record Grammar : Set₁ where
   -- a translation to Agda terms
   field
     ⟦_⟧ᵗ            : Type → Set
-    ⟦_⟧             : (Γ : Struct (Σ Type ⟦_⟧ᵗ)) → proj₁ <$> Γ ⊢ s → ⟦ s ⟧ᵗ
+    ⟦_⟧             : ∀ (Γ : Struct (Σ Type ⟦_⟧ᵗ)) {t} → proj₁ <$> Γ ⊢ t → ⟦ t ⟧ᵗ
 
 
 
 record Lexicon : Set₁ where
+
+  infix 2 Parse_As_
+  infix 2 parse_as_
+  infix 2 interpret_as_
 
   field
     grammar : Grammar
@@ -71,28 +75,36 @@ record Lexicon : Set₁ where
     Lex  : Word → List⁺ (Σ Type ⟦_⟧ᵗ)
 
 
-  Parse : Struct Word → Set
-  Parse ws = foldr₁ _⊎_ (map⁺ (_⊢ s) (traverse (map⁺ proj₁ ∘ Lex) ws))
+  Parse_As_ : Struct Word → Type → Set
+  Parse_As_ ws t = foldr₁ _⊎_ (map⁺ (_⊢ t) (traverse (map⁺ proj₁ ∘ Lex) ws))
 
-
-  parse : (ws : Struct Word) → List (Parse ws)
-  parse ws with traverse (map⁺ proj₁ ∘ Lex) ws
-  parse ws | Γ ∷ Γs = parse′ Γ Γs
+  parse_as_ : (ws : Struct Word) (t : Type) → List (Parse ws As t)
+  parse ws as t with traverse (map⁺ proj₁ ∘ Lex) ws
+  parse ws as t | Γ ∷ Γs = parse′ Γ Γs
     where
-      parse′ : (Γ : _) (Γs : List _) → List (foldr₁ _⊎_ (map⁺ (_⊢ s) (Γ ∷ Γs)))
-      parse′ Γ       []  = findAll Γ s
-      parse′ Γ (Γ′ ∷ Γs) = map inj₁ (findAll Γ s) ++ map inj₂ (parse′ Γ′ Γs)
+      parse′ : (Γ : _) (Γs : List _) → List (foldr₁ _⊎_ (map⁺ (_⊢ t) (Γ ∷ Γs)))
+      parse′ Γ       []  = findAll Γ t
+      parse′ Γ (Γ′ ∷ Γs) = map inj₁ (findAll Γ t) ++ map inj₂ (parse′ Γ′ Γs)
 
-
-  interpret : (ws : Struct Word) → List ⟦ s ⟧ᵗ
-  interpret ws with traverse Lex ws
-  interpret ws | Γ ∷ Γs = forAll Γ Γs
+  interpret_as_ : (ws : Struct Word) (t : Type) → List ⟦ t ⟧ᵗ
+  interpret ws as t with traverse Lex ws
+  interpret ws as t | Γ ∷ Γs = forAll Γ Γs
     where
       forOne : (Γ : Struct _) → List _
-      forOne = λ Γ → map ⟦ Γ ⟧ (findAll (proj₁ <$> Γ) s)
+      forOne = λ Γ → map ⟦ Γ ⟧ (findAll (proj₁ <$> Γ) t)
       forAll : (Γ : _) (Γs : List _) → List _
       forAll Γ       []  = forOne Γ
       forAll Γ (Γ′ ∷ Γs) = forOne Γ ++ forAll Γ′ Γs
+
+
+  Parse : Struct Word → Set
+  Parse ws = Parse ws As s
+
+  parse : (ws : Struct Word) → List (Parse ws)
+  parse ws = parse ws as s
+
+  interpret : (ws : Struct Word) → List ⟦ s ⟧ᵗ
+  interpret ws = interpret ws as s
 
 
   infixr 1 ✓_ *_

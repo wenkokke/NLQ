@@ -149,7 +149,7 @@ eq↑ : ∀ {A B} → (Alg A ⊢ B) ⇔ (Str ↑ A ⊢ ↑ B)
 eq↑ = equivalence from↑ (to ∘ deflate)
 
 Alg→Str↑ : Translation Type Type Alg_ Str_
-Alg→Str↑ = record { ⟦_⟧ᵀ = id ; ⟦_⟧ᴶ = λ {(A ⊢ B) → ↑ A ⊢ ↑ B} ; [_] = λ { {A ⊢ B} → from↑} }
+Alg→Str↑ = record { ⟦_⟧ᵗ = id ; ⟦_⟧ʲ = λ {(A ⊢ B) → ↑ A ⊢ ↑ B} ; [_] = λ { {A ⊢ B} → from↑} }
 
 
 -- Alternatively, if we know that a type comes from a deflated
@@ -329,4 +329,4 @@ eq↓ : ∀ {A B} → (Alg A ⊢ B) ⇔ (Str · A ·  ⊢ · B · )
 eq↓ = equivalence from↓ to
 
 Alg→Str↓ : Translation Type Type Alg_ Str_
-Alg→Str↓ = record { ⟦_⟧ᵀ = id ; ⟦_⟧ᴶ = λ {(A ⊢ B) → · A · ⊢ · B ·} ; [_] = λ { {A ⊢ B} → from↓} }
+Alg→Str↓ = record { ⟦_⟧ᵗ = id ; ⟦_⟧ʲ = λ {(A ⊢ B) → · A · ⊢ · B ·} ; [_] = λ { {A ⊢ B} → from↓} }
