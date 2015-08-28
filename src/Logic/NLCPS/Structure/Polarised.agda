@@ -14,11 +14,11 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 open import Relation.Binary.HeterogeneousEquality as H using (_≅_; refl)
 
 
-module Logic.EXP.Structure.Polarised {ℓ} (Atom : Set ℓ) where
+module Logic.NLCPS.Structure.Polarised {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.EXP.Type Atom as T
+open import Logic.NLCPS.Type Atom as T
      using ( Type ; el
            ; _⇐_ ; _⊗_ ; _⇒_
            ; _⋈ ; ⋈-inv
@@ -67,7 +67,7 @@ _⋈ˢ : ∀ {p} → Structure p → Structure p
 ⋈ˢ-inv (X ⊗ Y) rewrite ⋈ˢ-inv X | ⋈ˢ-inv Y = refl
 module Correct where
 
-  open import Logic.EXP.Structure Atom as Unpolarised
+  open import Logic.NLCPS.Structure Atom as Unpolarised
        hiding (module Structure ; Structure
               ; _⋈ˢ  ; ⋈ˢ-inv
               )

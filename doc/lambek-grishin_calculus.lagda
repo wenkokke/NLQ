@@ -83,8 +83,8 @@ module FocPol where
   open import Data.Product using (_×_; proj₁)
   open import Relation.Nullary.Decidable using (True)
   open import Logic.Polarity
-  open import Logic.Classical.Ordered.LambekGrishin.Type           (Polarity × Atom)
-  open import Logic.Classical.Ordered.LambekGrishin.Type.Polarised (Polarity × Atom) proj₁
+  open import Logic.LG.Type           (Polarity × Atom)
+  open import Logic.LG.Type.Polarised (Polarity × Atom) proj₁
 
   infix 1 fLG_
   infix 2 _⊢fLG_ [_]⊢fLG_ _⊢fLG[_]

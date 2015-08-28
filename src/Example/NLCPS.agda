@@ -9,10 +9,10 @@ open import Data.List          using (List; _∷_; [])
 open import Data.List.NonEmpty using (List⁺; _∷_)
 
 
-module Example.NL.Pol where
+module Example.NLCPS where
 
 
-open import Example.System.NL.Pol public
+open import Example.System.NLCPS public
 
 
 postulate
@@ -35,8 +35,8 @@ postulate
 
 data Word : Set where
   john mary bill unicorn leave to left
-    smiles cheats finds loves wants some a
-      every everyone someone
+    smiles cheats finds loves wants said
+      some a every everyone someone
         : Word
 
 
@@ -67,6 +67,7 @@ Lex cheats    = (np ⇒ s , v₀ CHEATS) ∷ []
 Lex finds     = ((np ⇒ s) ⇐ np , v₁ FINDS) ∷ []
 Lex loves     = ((np ⇒ s) ⇐ np , v₁ LOVES) ∷ []
 Lex wants     = ((np ⇒ s) ⇐ s , λ {((x , k) , y) → k (WANTS x (y (λ z → z)))}) ∷ []
+Lex said      = ((np ⇒ s) ⇐ ◇ s , λ {((x , k) , y) → k (WANTS x (y (λ z → z)))}) ∷ []
 Lex a         = (np ⇐ n , gq EXISTS _∧_) ∷ []
 Lex some      = (np ⇐ n , gq EXISTS _∧_) ∷ []
 Lex every     = (np ⇐ n , gq FORALL _⊃_) ∷ []

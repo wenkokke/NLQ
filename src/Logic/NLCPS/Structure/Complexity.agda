@@ -9,11 +9,11 @@
 open import Data.Nat using (ℕ; suc; _+_)
 
 
-module Logic.EXP.Structure.Complexity {ℓ} (Atom : Set ℓ) where
+module Logic.NLCPS.Structure.Complexity {ℓ} (Atom : Set ℓ) where
 
 
-import Logic.EXP.Type.Complexity Atom as T
-open import Logic.EXP.Structure.Polarised Atom
+import Logic.NLCPS.Type.Complexity Atom as T
+open import Logic.NLCPS.Structure.Polarised Atom
 
 
 infix 10 ⌈_⌉ ⌊_⌋

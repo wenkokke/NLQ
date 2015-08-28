@@ -3,5 +3,9 @@ default:
 
 clean:
 	./buildfile.hs clobber
+	find . -name "*.agdai" -exec rm {} \;
 
-.phony: clean
+listings:
+	./buildfile.hs listings
+
+.phony: clean listings

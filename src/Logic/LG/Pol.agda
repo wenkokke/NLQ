@@ -34,4 +34,4 @@ open import Logic.LG.Structure.Polarised (Polarity × Atom) as Structure public
 open import Logic.LG.Judgement (Polarity × Atom) public
      hiding (module DecEq)
 
-open import Logic.LG.Pol.Base Atom public
+open import Logic.LG.Pol.Base (Polarity × Atom) proj₁ public

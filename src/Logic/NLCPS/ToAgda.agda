@@ -11,16 +11,16 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂; uncurry)
 open import Relation.Binary.PropositionalEquality as P
 
 
-module Logic.EXP.ToAgda
+module Logic.NLCPS.ToAgda
   {a ℓ} (Atom : Set a) (R : Set ℓ) (⌈_⌉ᵁ : Atom → Set ℓ) where
 
 
 open import Logic.Polarity
 open import Logic.Translation
-open import Logic.EXP.Type                Atom
-open import Logic.EXP.Structure.Polarised Atom
-open import Logic.EXP.Judgement           Atom
-open import Logic.EXP.Base                Atom
+open import Logic.NLCPS.Type                Atom
+open import Logic.NLCPS.Structure.Polarised Atom
+open import Logic.NLCPS.Judgement           Atom
+open import Logic.NLCPS.Base                Atom
 
 
 private
@@ -59,7 +59,7 @@ private
   ⌈   X  ⊢[ B ] ⌉ᴶ = ⌈ X ⌉ˢ + → ¬ ¬ ⌈ B ⌉ᵀ
 
 
-  ⌈_⌉ : ∀ {J} → EXP J → ⌈ J ⌉ᴶ
+  ⌈_⌉ : ∀ {J} → NLCPS J → ⌈ J ⌉ᴶ
   ⌈ ax⁺     ⌉ x y = y x
   ⌈ ax⁻     ⌉ x y = x y
   ⌈ ⇁   f   ⌉ x y = ⌈ f ⌉ x y
@@ -78,5 +78,5 @@ private
   ⌈ r⊗⇒ f   ⌉ x (y , z) = ⌈ f ⌉ (y , x) z
   ⌈ r⇐⊗ f   ⌉ (x , y) z = ⌈ f ⌉ x (z , y)
   ⌈ r⊗⇐ f   ⌉ x (y , z) = ⌈ f ⌉ (x , z) y
-CBV : Translation Type (Set ℓ) EXP_ id
+CBV : Translation Type (Set ℓ) NLCPS_ id
 CBV = record { ⟦_⟧ᵀ = ⌈_⌉ᵀ ; ⟦_⟧ᴶ = ⌈_⌉ᴶ ; [_]  = ⌈_⌉ }
