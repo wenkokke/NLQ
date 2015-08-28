@@ -14,12 +14,12 @@ open import Logic.ToLaTeX
 open import Relation.Nullary.Decidable
 
 
-module Logic.EXP.Structure.ToLaTeX {ℓ} (Atom : Set ℓ) where
+module Logic.NLCPS.Structure.ToLaTeX {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.EXP.Type         Atom
-open import Logic.EXP.Type.ToLaTeX Atom
-open import Logic.EXP.Structure    Atom
+open import Logic.NLCPS.Type         Atom
+open import Logic.NLCPS.Type.ToLaTeX Atom
+open import Logic.NLCPS.Structure    Atom
 
 
 instance

@@ -810,6 +810,16 @@ module resmon_typing_agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
            →          curry f   x    ∈ x   ∶  A ⊢ C ⇐ B
 ```
 
+[eval](../src/Example/System/NL/ResMon.agda "asRule (quote ax )")
+[eval](../src/Example/System/NL/ResMon.agda "asRule (quote m⊗ )")
+[eval](../src/Example/System/NL/ResMon.agda "asRule (quote m⇒ )")
+[eval](../src/Example/System/NL/ResMon.agda "asRule (quote m⇐ )")
+[eval](../src/Example/System/NL/ResMon.agda "asRule (quote r⇒⊗)")
+[eval](../src/Example/System/NL/ResMon.agda "asRule (quote r⇐⊗)")
+[eval](../src/Example/System/NL/ResMon.agda "asRule (quote r⊗⇒)")
+[eval](../src/Example/System/NL/ResMon.agda "asRule (quote r⊗⇐)")
+
+
 [^short]:  This is a slightly problematic statement: while the proofs
            *do* become shorter, in terms of the number of rules, every
            rule must be annotated with the context under which it applies.

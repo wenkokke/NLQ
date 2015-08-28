@@ -58,7 +58,7 @@ mkMapping name = Mapping
 --------------------------------------------------------------------------------
 
 mappings :: [Mapping]
-mappings = [nl,exp]
+mappings = [nl,nlcps]
 
 
 main :: IO ()
@@ -178,8 +178,8 @@ nl = let
 -- Make: NL + CPS
 ---------------------------------------------------------------------------------
 
-exp :: Mapping
-exp = let
+nlcps :: Mapping
+nlcps = let
 
   rules01 = ["₀ᴸ", "₀ᴿ", "⁰ᴸ", "⁰ᴿ", "r⁰₀", "r₀⁰"
             ,"₁ᴸ", "₁ᴿ", "¹ᴸ", "¹ᴿ", "r¹₁", "r₁¹"
@@ -197,7 +197,7 @@ exp = let
                      ]
                      ++ rules01
                      ++ check01
-  , textMapping    = ["LG" ==> "EXP"
+  , textMapping    = ["LG" ==> "NLCPS"
                      ]
   , include        = ["Logic/LG.agda"
                      ,"Logic/LG//*.agda"

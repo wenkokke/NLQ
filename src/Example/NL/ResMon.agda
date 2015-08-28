@@ -13,11 +13,9 @@ module Example.NL.ResMon where
 
 
 open import Example.System.NL.ResMon public
-open import Reflection.Assertion     public using (_↦_)
 
 
 postulate
-  _⊃_     : Bool → Bool → Bool
   MARY    : Entity
   JOHN    : Entity
   UNICORN : Entity → Bool

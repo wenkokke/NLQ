@@ -10,12 +10,14 @@ open import Data.Traversable     using (module RawTraversable; RawTraversable)
 open import Logic.ToLaTeX        using (module ToLaTeX; ToLaTeX)
 open import Relation.Nullary     using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality
+open import Reflection       using (Name)
 
 
 module Example.System.Base where
 
 
 open import Data.Bool public using (Bool; true; false; _∧_; _∨_)
+open import Reflection.Assertion public using (_↦_)
 
 
 -- * Postulates
@@ -24,6 +26,7 @@ postulate
   Entity   : Set
   FORALL   : (Entity → Bool) → Bool
   EXISTS   : (Entity → Bool) → Bool
+  _⊃_      : Bool → Bool → Bool
 
 
 -- * Binary structures
@@ -105,14 +108,18 @@ instance
 
 
 -- * Utility for constructing lists of Boolean values
-[_,_] : Bool → Bool → List Bool
-[ x , y ] = x ∷ y ∷ []
 
-[_,_,_] : Bool → Bool → Bool → List Bool
-[ x , y , z ] = x ∷ y ∷ z ∷ []
+module ListOf (A : Set) where
 
-[_,_,_,_] : Bool → Bool → Bool → Bool → List Bool
-[ x , y , z , w ] = x ∷ y ∷ z ∷ w ∷ []
+  [_,_] : A → A → List A
+  [ x , y ] = x ∷ y ∷ []
+
+  [_,_,_] : A → A → A → List A
+  [ x , y , z ] = x ∷ y ∷ z ∷ []
+
+  [_,_,_,_] : A → A → A → A → List A
+  [ x , y , z , w ] = x ∷ y ∷ z ∷ w ∷ []
+
 
 -- * Lexicon
 
@@ -137,3 +144,12 @@ module Default where
     every    : Word
     everyone : Word
     someone  : Word
+
+
+-- * Open up "print constructor as LaTeX inference rule""
+
+isBanned : Name → Bool
+isBanned (quote Atom) = true
+isBanned _            = false
+
+open import Reflection.Show.InferenceRule isBanned public

@@ -4,7 +4,7 @@ module continuation-passing_style where
 
   open import Logic.Polarity
   open import non-associative_lambek_calculus
-  open import display_calculus renaming (module display_calculus to dispcalc)
+  open import display_calculus renaming (module display_calculus to dspcal)
 ```
 
 ## CPS Semantics
@@ -16,7 +16,7 @@ module translation_to_agda (Atom : Set) (Polarityᴬ? : Atom → Polarity) (⟦_
   open import Function                   using (flip)
   open import Relation.Nullary.Decidable using (True; toWitness)
   open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
-  open dispcalc Atom using (Struct; ·_·; _⇐_; _⊗_; _⇒_; Judgement; _⊢_; [_]⊢_; _⊢[_])
+  open dspcal Atom using (Struct; ·_·; _⇐_; _⊗_; _⇒_; Judgement; _⊢_; [_]⊢_; _⊢[_])
   open focpol Atom Polarityᴬ?
 
 ```

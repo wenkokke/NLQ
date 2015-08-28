@@ -6,17 +6,16 @@
 open import Data.Product       using (Σ; _,_)
 open import Data.List          using (List; _∷_; [])
 open import Data.List.NonEmpty using (List⁺; _∷_)
+open import Reflection         using (type)
 
 
 module Example.NLIBC where
 
 
 open import Example.System.NLIBC public
-open import Reflection.Assertion public using (_↦_)
 
 
 postulate
-  _⊃_    : Bool → Bool → Bool
   MARY   : Entity
   JOHN   : Entity
   PERSON : Entity → Bool

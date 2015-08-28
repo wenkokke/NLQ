@@ -16,7 +16,7 @@ open import Logic.Grammar                         public
 open import Logic.NLIBC             Atom          public
 open import Logic.NLIBC.ProofSearch Atom _≟-Atom_ public
 open import Logic.NLIBC.ToAgda      Atom ⟦_⟧ᴬ     public
-
+open ListOf Bool public
 
 open RawTraversable (rawTraversable {zero}) using (_<$>_)
 

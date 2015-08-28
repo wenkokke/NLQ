@@ -11,11 +11,11 @@ open import Data.String
 open import Logic.ToLaTeX
 
 
-module Logic.EXP.Structure.Polarised.ToLaTeX {ℓ} (Atom : Set ℓ) where
+module Logic.NLCPS.Structure.Polarised.ToLaTeX {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.EXP.Structure.Polarised Atom
-open import Logic.EXP.Structure.ToLaTeX   Atom
+open import Logic.NLCPS.Structure.Polarised Atom
+open import Logic.NLCPS.Structure.ToLaTeX   Atom
 
 
 instance

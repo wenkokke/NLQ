@@ -9,19 +9,19 @@
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.EXP.ResMon.Cut {ℓ} (Atom : Set ℓ) where
+module Logic.NLCPS.ResMon.Cut {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
-open import Logic.EXP.Type                               Atom as T
-open import Logic.EXP.Type.Context.Polarised             Atom as TCP using ([])
-open import Logic.EXP.ResMon.Judgement                   Atom
-open import Logic.EXP.ResMon.Judgement.Context.Polarised Atom as JCP
-open import Logic.EXP.ResMon.Base                        Atom as EXPB
-open import Logic.EXP.ResMon.Origin                      Atom as EXPO
+open import Logic.NLCPS.Type                               Atom as T
+open import Logic.NLCPS.Type.Context.Polarised             Atom as TCP using ([])
+open import Logic.NLCPS.ResMon.Judgement                   Atom
+open import Logic.NLCPS.ResMon.Judgement.Context.Polarised Atom as JCP
+open import Logic.NLCPS.ResMon.Base                        Atom as NLCPSB
+open import Logic.NLCPS.ResMon.Origin                      Atom as NLCPSO
 
 
-cut′ : ∀ {A B C} (f : EXP A ⊢ B) (g : EXP B ⊢ C) → EXP A ⊢ C
+cut′ : ∀ {A B C} (f : NLCPS A ⊢ B) (g : NLCPS B ⊢ C) → NLCPS A ⊢ C
 
 cut′ {B = el B}      f  g with el.view ([] <⊢ _) g
 ... | el.origin         g′ _ = g′ f

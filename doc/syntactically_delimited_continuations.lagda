@@ -190,21 +190,22 @@ module syntactically_delimited_continuations
 module example where
   open import Data.Bool using (Bool)
   open import Data.List using (List; _∷_; [])
-  open import Data.List.NonEmpty using (List⁺; [_])
-  open import Example.System.PolEXP public renaming (_,_ to _∙_; s⁻ to s) hiding ([_])
+  open import Data.List.NonEmpty using (List⁺; _∷_)
+  open import Data.Product using (_,_)
+  open import Example.System.EXP public renaming (_,_ to _∙_)
 
-  infix 9 _WANTS_ _SAID_
-
-  data Word : Set where mary leave to left wants said everyone : Word
+  data Word : Set where
+    mary leave to left wants said everyone
+      : Word
 ```
 
 ```
   postulate
-    MARY     : Entity
-    PERSON   : Entity → Bool
-    LEAVES   : Entity → Bool
-    _WANTS_  : Entity → Bool → Bool
-    _SAID_   : Entity → Bool → Bool
+    MARY    : Entity
+    PERSON  : Entity → Bool
+    LEAVES  : Entity → Bool
+    WANTS   : Entity → Bool → Bool
+    SAID    : Entity → Bool → Bool
 ```
 
 ```
@@ -219,39 +220,39 @@ module example where
 ```
 
 ```
-  Sem : (w : Word) → ⟦ Syn w ⟧ᵀ
+  Sem : (w : Word) → ⟦ Syn w ⟧⁺
   Sem mary      = MARY
   Sem everyone  = (λ{(p₁ , p₂) → FORALL (λ x → p₂ x ⊃ p₁ x)}) , PERSON
   Sem to        = (λ{((x , k) , p) → k (p x)})
   Sem leave     = LEAVES
   Sem left      = (λ{(x , k) → k (LEAVES x)})
-  Sem wants     = (λ{((x , k) , y) → k (x WANTS (y id))})
-  Sem said      = (λ{((x , k) , y) → k (x SAID (y id))})
+  Sem wants     = (λ{((x , k) , y) → k (WANTS x (y id))})
+  Sem said      = (λ{((x , k) , y) → k (SAID x (y id))})
 ```
 
 ```
-  Lex : Word → List⁺ (Σ[ A ∈ Type ] ⟦ A ⟧ᵀ)
-  Lex w = [ Syn w , Sem w ]
+  Lex : Word → List⁺ (Σ[ A ∈ Type ] ⟦ A ⟧⁺)
+  Lex w = (Syn w , Sem w) ∷ []
 ```
 
 ``` hidden
-  open Custom Word Lex public
+  open Lexicon (fromLex grammar Lex) public using (interpret)
 
   example₁ :
 ```
 ```
-    ⟦ · mary · ∙ · wants · ∙ · everyone · ∙ · to · ∙ · leave · ⟧
-      ↦  (λ (k : Bool → Bool) → FORALL (λ x → PERSON x ⊃ k (MARY WANTS LEAVES x)))
-      ∷  (λ (k : Bool → Bool) → k (MARY WANTS FORALL (λ x → PERSON x ⊃ LEAVES x)))
-      ∷  []
+    interpret (· mary · ∙ · wants · ∙ · everyone · ∙ · to · ∙ · leave ·)
+      ↦  [ (λ k → FORALL (λ x → PERSON x ⊃ k (WANTS MARY (LEAVES x))))
+         , (λ k → k (WANTS MARY (FORALL (λ x → PERSON x ⊃ LEAVES x))))
+         ]
 ```
 ``` hidden
   example₁ = _
   example₂ :
 ```
 ```
-    ⟦ · mary · ∙ · said · ∙ ⟨ · everyone · ∙ · left · ⟩ ⟧
-      ↦  (λ (k : Bool → Bool) → k (MARY SAID FORALL (λ x → PERSON x ⊃ LEAVES x)))
+    interpret (· mary · ∙ · said · ∙ ⟨ · everyone · ∙ · left · ⟩)
+      ↦  (λ (k : Bool → Bool) → k (SAID MARY (FORALL (λ x → PERSON x ⊃ LEAVES x))))
 ```
 ``` hidden
   example₂ = _

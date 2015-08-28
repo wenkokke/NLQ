@@ -10,12 +10,12 @@ open import Relation.Nullary                      using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 
 
-module Example.System.NL.Pol where
+module Example.System.NLCPS where
 
 
-open import Example.System.Base     public
-open import Logic.Polarity          public
-open import Logic.NL.Pol Atom public
+open import Example.System.Base public
+open import Logic.Polarity      public
+open import Logic.NLCPS.Pol  Atom public
 
 
 _≟-PolarisedAtom_ : (A B : Polarity × Atom) → Dec (A ≡ B)
@@ -30,8 +30,8 @@ _≟-PolarisedAtom_ : (A B : Polarity × Atom) → Dec (A ≡ B)
 
 
 open import Logic.Grammar public
-open import Logic.NL.Pol.ProofSearch (Polarity × Atom) proj₁ _≟-PolarisedAtom_ public
-open import Logic.NL.Pol.ToAgda (Polarity × Atom) ⟦_⟧ᴾ Bool proj₁ public
+open import Logic.NLCPS.Pol.ProofSearch (Polarity × Atom) proj₁ _≟-PolarisedAtom_ public
+open import Logic.NLCPS.Pol.ToAgda (Polarity × Atom) ⟦_⟧ᴾ Bool proj₁ public
 open ListOf ((Bool → Bool) → Bool) public
 
 open RawTraversable (rawTraversable {zero}) using (_<$>_)
@@ -50,7 +50,7 @@ tv  = iv ⇐ np
 private
   flatten : Struct Type → Structure +
   flatten ·  A  · = ·  A  ·
-  flatten ⟨  X  ⟩ = flatten X
+  flatten ⟨  X  ⟩ = ⟨ flatten X ⟩
   flatten (X , Y) = flatten X ⊗ flatten Y
 
   combine : (Γ : Struct (Σ Type ⟦_⟧⁺)) → ⟦ flatten (proj₁ <$> Γ) ⟧ˢ
@@ -65,7 +65,7 @@ instance
     { Type           = Type
     ; Struct         = Struct
     ; rawTraversable = rawTraversable
-    ; _⊢_            = λ Γ B → fNL (flatten Γ) ⊢[ B ]
+    ; _⊢_            = λ Γ B → fNLCPS (flatten Γ) ⊢[ B ]
     ; findAll        = λ Γ B → findAll (flatten Γ ⊢[ B ])
     ; s              = s
     ; ⟦_⟧ᵗ           = ⟦_⟧⁺

@@ -10,26 +10,26 @@ open import Function                              using (id; flip; _∘_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst)
 
 
-module Logic.EXP.ResMon.Origin.Dia2 {ℓ} (Atom : Set ℓ) where
+module Logic.NLCPS.ResMon.Origin.Dia2 {ℓ} (Atom : Set ℓ) where
 
 
   open import Logic.Polarity
-  open import Logic.EXP.Type                               Atom as T
-  open import Logic.EXP.Type.Context.Polarised             Atom as TC
-  open import Logic.EXP.ResMon.Judgement                   Atom
-  open import Logic.EXP.ResMon.Judgement.Context.Polarised Atom as JC
-  open import Logic.EXP.ResMon.Base                        Atom as EXPB
+  open import Logic.NLCPS.Type                               Atom as T
+  open import Logic.NLCPS.Type.Context.Polarised             Atom as TC
+  open import Logic.NLCPS.ResMon.Judgement                   Atom
+  open import Logic.NLCPS.ResMon.Judgement.Context.Polarised Atom as JC
+  open import Logic.NLCPS.ResMon.Base                        Atom as NLCPSB
 
 
-  data Origin {A} ( J : Contextᴶ + ) (f : EXP J [ ◇ A ]ᴶ) : Set ℓ where
+  data Origin {A} ( J : Contextᴶ + ) (f : NLCPS J [ ◇ A ]ᴶ) : Set ℓ where
        origin : ∀ {B}
-                → (h : EXP A ⊢ B)
-                → (f′ : ∀ {G} → EXP G ⊢ ◇ B → EXP J [ G ]ᴶ)
+                → (h : NLCPS A ⊢ B)
+                → (f′ : ∀ {G} → NLCPS G ⊢ ◇ B → NLCPS J [ G ]ᴶ)
                 → (pr : f ≡ f′ (m◇ h))
                 → Origin J f
 
   mutual
-    view : ∀ {B} ( J : Contextᴶ + ) (f : EXP J [ ◇ B ]ᴶ) → Origin J f
+    view : ∀ {B} ( J : Contextᴶ + ) (f : NLCPS J [ ◇ B ]ᴶ) → Origin J f
     view ([] <⊢ ._)       (m◇  f)   = origin f id refl
 
     view ((A <⊗ _) <⊢ ._) (m⊗  f g) = go (A <⊢ _)               f (flip m⊗ g)
@@ -53,8 +53,8 @@ module Logic.EXP.ResMon.Origin.Dia2 {ℓ} (Atom : Set ℓ) where
     view ((◇> A) <⊢ ._)   (m◇  f)   = go (A <⊢ _)               f m◇
     private
       go : ∀ {B}
-         → ( I : Contextᴶ + ) (f : EXP I [ ◇ B ]ᴶ)
-         → { J : Contextᴶ + } (g : ∀ {G} → EXP I [ G ]ᴶ → EXP J [ G ]ᴶ)
+         → ( I : Contextᴶ + ) (f : NLCPS I [ ◇ B ]ᴶ)
+         → { J : Contextᴶ + } (g : ∀ {G} → NLCPS I [ G ]ᴶ → NLCPS J [ G ]ᴶ)
          → Origin J (g f)
       go I f {J} g with view I f
       ... | origin h f′ pr rewrite pr = origin h (g ∘ f′) refl
