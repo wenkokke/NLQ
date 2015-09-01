@@ -136,6 +136,23 @@ open Composable {{...}} public using (_<_>)
 open IsContext  {{...}} public using (<>-def)
 
 
+λx_[x] : (Γ : Context₁) → Structure
+λx   []   [x] = I
+λx p ∙> Γ [x] = (B ∙ p) ∙ λx Γ [x]
+λx Γ <∙ r [x] = (C ∙ λx Γ [x]) ∙ r
+
+
+
+
+-- HERE BE DRAGONS
+--
+-- The code below isn't really used, but it's a work-in-progress
+-- version of linear contexts. Yes, I'm well aware this shouldn't be
+-- in 'master', but it's my project and only I am working on it.
+--
+-- TODO: move experimental code into separate branch
+
+
 data Contextᵢ : ℕ → Set ℓ where
   var : Contextᵢ 1
   con : Structure → Contextᵢ 0
