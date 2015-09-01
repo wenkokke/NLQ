@@ -4,9 +4,9 @@
 
 
 open import Category.Monad   using (module RawMonadPlus; RawMonadPlus)
-open import Data.Maybe       using (Maybe; From-just; from-just)
-open import Data.List        using (List; foldr; map; _++_; _∷_; [])
+open import Data.List        using (List; foldr; map; _++_; _∷_; []; concat)
 open import Data.List.Any    using (any)
+open import Data.Nat         using (ℕ; suc; zero; _+_)
 open import Data.Product     using (∃; ∃₂; _×_; _,_; proj₁; proj₂)
 open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; trans; cong; subst)
@@ -23,18 +23,13 @@ open import Logic.NLIBC.Judgement         Atom as J; open J.DecEq _≟-Atom_
 open import Logic.NLIBC.Base              Atom
 
 
-
 focus : (Γ : Structure) → List (∃₂ (λ (Γ′ : Context) (Δ : Structure) → Γ′ [ Δ ] ≡ Γ))
-focus Γ = ([] , Γ , refl) ∷ focus′ Γ
-  where
-    focus′ : (Γ : Structure) → List (∃₂ (λ (Γ′ : Context) (Δ : Structure) → Γ′ [ Δ ] ≡ Γ))
-    focus′ (Γ₁ ∙ Γ₂) =
+focus (·  p  ·) = ([] , · p · , refl) ∷ []
+focus (Γ₁ ∙ Γ₂) =
+      ([] , Γ₁ ∙ Γ₂ , refl) ∷
       map (λ {(Γ₁′ , Δ , p) → Γ₁′ <∙ Γ₂ , Δ , cong (_∙ Γ₂) p}) (focus Γ₁) ++
       map (λ {(Γ₂′ , Δ , p) → Γ₁ ∙> Γ₂′ , Δ , cong (Γ₁ ∙_) p}) (focus Γ₂)
-    focus′ (Γ₁ ∘ Γ₂) =
-      map (λ {(Γ₁′ , Δ , p) → Γ₁′ <∘ Γ₂ , Δ , cong (_∘ Γ₂) p}) (focus Γ₁) ++
-      map (λ {(Γ₂′ , Δ , p) → Γ₁ ∘> Γ₂′ , Δ , cong (Γ₁ ∘_) p}) (focus Γ₂)
-    focus′     Γ     = []
+focus     Γ     = []
 
 
 focus₁ : (Γ : Structure) → List (∃₂ (λ (Γ′ : Context₁) (Δ : Structure) → Γ′ [ Δ ] ≡ Γ))
@@ -54,131 +49,114 @@ trace ((C ∙ Γ) ∙ r) = map (λ {(Γ′ , pr) → Γ′ <∙ r , cong (λ Γ�
 trace _             = []
 
 
-{-# TERMINATING #-}
-search : {Mon : Set ℓ → Set ℓ} {{monadPlus : RawMonadPlus Mon}} (J : Judgement) → Mon (NL J)
-search {Mon} {{monadPlus}} J =
-  check-ax        J ∣ check-⇒ᴿ/⇐ᴿ J ∣ check-⇒ᴸ/⇐ᴸ J ∣ -- direct composition
-  check-⇨ᴿ/⇦ᴿ     J ∣ check-⇦ᴸλ′  J ∣ check-⇨ᴿλ′  J ∣ -- scope taking
-  check-⇨ᴿgᴸ/⇨ᴿgᴿ J                                 -- gapping
-  where
-  open RawMonadPlus monadPlus using (∅; _∣_; return; _>>=_; _<$>_) renaming (_⊛_ to _<*>_)
+-- Compute the number of logical connectives
+connᵗ : Type → ℕ
+connᵗ (el  p) = 1
+connᵗ (p ⇒ q) = suc (connᵗ p + connᵗ q)
+connᵗ (q ⇐ p) = suc (connᵗ p + connᵗ q)
+connᵗ (p ⇨ q) = suc (connᵗ p + connᵗ q)
+connᵗ (q ⇦ p) = suc (connᵗ p + connᵗ q)
 
-  check-ax : (J : Judgement) → Mon (NL J)
-  check-ax (· p · ⊢ q) with p ≟-Type q
-  ... | yes p=q rewrite p=q = return ax
-  ... | no  p≠q             = ∅
-  check-ax _ = ∅
+connˢ : Structure → ℕ
+connˢ · p · = connᵗ p
+connˢ (Γ₁ ∙ Γ₂) = connˢ Γ₁ + connˢ Γ₂
+connˢ (Γ₁ ∘ Γ₂) = connˢ Γ₁ + connˢ Γ₂
+connˢ I = 0
+connˢ B = 0
+connˢ C = 0
 
-  check-⇒ᴿ/⇐ᴿ : (J : Judgement) → Mon (NL J)
-  check-⇒ᴿ/⇐ᴿ (Γ ⊢ p ⇒ q) = ⇒ᴿ <$> search (· p · ∙ Γ ⊢ q)
-  check-⇒ᴿ/⇐ᴿ (Γ ⊢ q ⇐ p) = ⇐ᴿ <$> search (Γ ∙ · p · ⊢ q)
-  check-⇒ᴿ/⇐ᴿ _ = ∅
+connʲ : Judgement → ℕ
+connʲ (Γ ⊢ p) = connˢ Γ + connᵗ p
 
-  check-⇒ᴸ/⇐ᴸ : (J : Judgement) → Mon (NL J)
-  check-⇒ᴸ/⇐ᴸ (Γ ⊢ r) = foldr _∣_ ∅ (map check-⇒ᴸ/⇐ᴸ′ (focus Γ))
-    where
-    check-⇒ᴸ/⇐ᴸ′ : (∃₂ (λ (Σ : Context) (Δ : Structure) → Σ [ Δ ] ≡ Γ)) → Mon (Γ ⊢NL r)
-    check-⇒ᴸ/⇐ᴸ′ (Σ , Δ ∙ · p ⇒ q · , pr)
-      = (λ f g → subst (_⊢NL r) pr (⇒ᴸ Σ f g)) <$> search (Δ ⊢ p) <*> search (Σ [ · q · ] ⊢ r)
-    check-⇒ᴸ/⇐ᴸ′ (Σ , · q ⇐ p · ∙ Δ , pr)
-      = (λ f g → subst (_⊢NL r) pr (⇐ᴸ Σ f g)) <$> search (Δ ⊢ p) <*> search (Σ [ · q · ] ⊢ r)
-    check-⇒ᴸ/⇐ᴸ′ _ = ∅
-
-  check-⇨ᴿ/⇦ᴿ : (J : Judgement) → Mon (NL J)
-  check-⇨ᴿ/⇦ᴿ (Γ ⊢ p ⇨ q) = ⇨ᴿ <$> search (· p · ∘ Γ ⊢ q)
-  check-⇨ᴿ/⇦ᴿ (Γ ⊢ q ⇦ p) = ⇦ᴿ <$> search (Γ ∘ · p · ⊢ q)
-  check-⇨ᴿ/⇦ᴿ _ = ∅
-
-  check-⇨ᴸ/⇦ᴸ : (J : Judgement) → Mon (NL J)
-  check-⇨ᴸ/⇦ᴸ (Γ ⊢ r) = foldr _∣_ ∅ (map check-⇨ᴸ/⇦ᴸ′ (focus Γ))
-    where
-    check-⇨ᴸ/⇦ᴸ′ : (∃₂ (λ (Σ : Context) (Δ : Structure) → Σ [ Δ ] ≡ Γ)) → Mon (Γ ⊢NL r)
-    check-⇨ᴸ/⇦ᴸ′ (Σ , Δ ∘ · p ⇨ q · , pr)
-      = (λ f g → subst (_⊢NL r) pr (⇨ᴸ Σ f g)) <$> search (Δ ⊢ p) <*> search (Σ [ · q · ] ⊢ r)
-    check-⇨ᴸ/⇦ᴸ′ (Σ , · q ⇦ p · ∘ Δ , pr)
-      = (λ f g → subst (_⊢NL r) pr (⇦ᴸ Σ f g)) <$> search (Δ ⊢ p) <*> search (Σ [ · q · ] ⊢ r)
-    check-⇨ᴸ/⇦ᴸ′ _ = ∅
-
-  -- QR upwards
-  check-⇦ᴸλ : (J : Judgement) → Mon (NL J)
-  check-⇦ᴸλ (Γ ⊢ r) = foldr _∣_ ∅ (map check-⇦ᴸλ′ (focus Γ))
-    where
-    check-⇦ᴸλ′ : (∃₂ (λ (Σ : Context) (Γ′ : Structure) → Σ [ Γ′ ] ≡ Γ)) → Mon (Γ ⊢NL r)
-    check-⇦ᴸλ′ (Σ , Γ′ , pr₁) = foldr _∣_ ∅ (map check-⇦ᴸλ″ (focus₁ Γ′))
-      where
-      check-⇦ᴸλ″ : (∃₂ (λ (Γ″ : Context₁) (Δ : Structure) → Γ″ [ Δ ] ≡ Γ′)) → Mon (Γ ⊢NL r)
-      check-⇦ᴸλ″ (Γ″ , · q ⇦ p · , pr₂) =
-        let pr = trans (cong (Σ [_]) pr₂) pr₁ in
-        search (λx Γ″ [x] ⊢ p)   >>= λ f →
-        search (Σ [ · q · ] ⊢ r) >>= λ g →
-        return (subst (_⊢NL r) pr (⇦ᴸλ Σ Γ″ f g))
-      check-⇦ᴸλ″ _ = ∅
-
-  -- QR to the top
-  check-⇦ᴸλ′ : (J : Judgement) → Mon (NL J)
-  check-⇦ᴸλ′ (Γ ⊢ r) = foldr _∣_ ∅ (map check-⇦ᴸλ″ (focus₁ Γ))
-    where
-    check-⇦ᴸλ″ : (∃₂ (λ (Γ′ : Context₁) (Δ : Structure) → Γ′ [ Δ ] ≡ Γ)) → Mon (Γ ⊢NL r)
-    check-⇦ᴸλ″ (Γ′ , · q ⇦ p · , pr) =
-      search (λx Γ′ [x] ⊢ p) >>= λ f →
-      search (· q · ⊢ r)     >>= λ g →
-      return (subst (_⊢NL r) pr (⇦ᴸλ [] Γ′ f g))
-    check-⇦ᴸλ″ _ = ∅
-
-  -- QR downwards
-  check-⇨ᴿλ : (J : Judgement) → Mon (NL J)
-  check-⇨ᴿλ (Γ ⊢ r) = foldr _∣_ ∅ (map check-⇨ᴿλ′ (focus Γ))
-    where
-    check-⇨ᴿλ′ : (∃₂ (λ (Σ : Context) (Γ′ : Structure) → Σ [ Γ′ ] ≡ Γ)) → Mon (Γ ⊢NL r)
-    check-⇨ᴿλ′  (Σ , Δ ∘ Γ′ , pr₁) = foldr _∣_ ∅ (map check-⇨ᴿλ″ (trace Γ′))
-      where
-      check-⇨ᴿλ″ : ∃ (λ Γ″ → λx Γ″ [x] ≡ Γ′) → Mon (Γ ⊢NL r)
-      check-⇨ᴿλ″ (Γ″ , pr₂) =
-        let pr = trans (cong (λ Γ′ → Σ [ Δ ∘ Γ′ ]) pr₂) pr₁ in
-        search (Σ [ Γ″ [ Δ ] ] ⊢ r) >>= λ f →
-        return (subst (_⊢NL r) pr (down Σ Γ″ f))
-    check-⇨ᴿλ′ _ = ∅
-
-  -- QR all the way down
-  check-⇨ᴿλ′ : (J : Judgement) → Mon (NL J)
-  check-⇨ᴿλ′ (Δ ∘ Γ ⊢ r) = foldr _∣_ ∅ (map check-⇨ᴿλ″ (trace Γ))
-    where
-    check-⇨ᴿλ″ : ∃ (λ Γ′ → λx Γ′ [x] ≡ Γ) → Mon (Δ ∘ Γ ⊢NL r)
-    check-⇨ᴿλ″ (Γ′ , pr) =
-      search (Γ′ [ Δ ] ⊢ r) >>= λ f →
-      return (subst (_⊢NL r) (cong (Δ ∘_) pr) (down [] Γ′ f))
-  check-⇨ᴿλ′ _ = ∅
-
-  -- QR downwards freely
-  check-IBC : (J : Judgement) → Mon (NL J)
-  check-IBC (Γ ⊢ s) = foldr _∣_ ∅ (map check-IBC′ (focus Γ))
-    where
-    check-IBC′ : (∃₂ (λ (Σ : Context) (Γ′ : Structure) → Σ [ Γ′ ] ≡ Γ)) → Mon (Γ ⊢NL s)
-    check-IBC′ (Σ , p ∘ I , pr) =
-      (λ f → subst (_⊢NL s) pr (Iₑ Σ f)) <$> search (Σ [ p ] ⊢ s)
-    check-IBC′ (Σ , q ∘ ((B ∙ p) ∙ r) , pr) =
-      (λ f → subst (_⊢NL s) pr (Bₑ Σ f)) <$> search (Σ [ p ∙ (q ∘ r) ] ⊢ s)
-    check-IBC′ (Σ , p ∘ ((C ∙ q) ∙ r) , pr) =
-      (λ f → subst (_⊢NL s) pr (Cₑ Σ f)) <$> search (Σ [ (p ∘ q) ∙ r ] ⊢ s)
-    check-IBC′ _ = ∅
-
-  -- gapping
-  check-⇨ᴿgᴸ/⇨ᴿgᴿ : (J : Judgement) → Mon (NL J)
-  check-⇨ᴿgᴸ/⇨ᴿgᴿ (Γ ⊢ q ⇨ r) = foldr _∣_ ∅ (map check-⇨ᴿgᴸ/⇨ᴿgᴿ′ (focus Γ))
-    where
-    check-⇨ᴿgᴸ/⇨ᴿgᴿ′ : (∃₂ (λ (Σ : Context) (Δ : Structure) → Σ [ Δ ] ≡ Γ)) → Mon (Γ ⊢NL q ⇨ r)
-    check-⇨ᴿgᴸ/⇨ᴿgᴿ′ (Σ , · p · , pr) =
-      (λ f → subst (_⊢NL q ⇨ r) pr (⇨ᴿgᴸ Σ f)) <$> search (Σ [ · q · ∙ · p · ] ⊢ r) ∣
-      (λ f → subst (_⊢NL q ⇨ r) pr (⇨ᴿgᴿ Σ f)) <$> search (Σ [ · p · ∙ · q · ] ⊢ r)
-    check-⇨ᴿgᴸ/⇨ᴿgᴿ′ _ =  ∅
-  check-⇨ᴿgᴸ/⇨ᴿgᴿ _ = ∅
-
-
-findMaybe : (J : Judgement) → Maybe (NL J)
-findMaybe = search {{Data.Maybe.monadPlus}}
-
-find : (J : Judgement) → From-just (NL J) (findMaybe J)
-find J = from-just (findMaybe J)
 
 findAll : (J : Judgement) → List (NL J)
-findAll = search {{Data.List.monadPlus}}
+findAll J = search (connʲ J) J
+  where
+  open RawMonadPlus Data.List.monadPlus using (∅; _∣_; return; _<$>_) renaming (_⊛_ to _<*>_)
+
+  search : (n : ℕ) (J : Judgement) → List (NL J)
+  search n J =
+    {- composition -} check-ax        n J ∣ check-⇒ᴿ/⇐ᴿ n J ∣ check-⇒ᴸ/⇐ᴸ n J ∣
+    {-   scoping   -} check-⇦ᴸλ       n J ∣ check-⇨ᴿλ   n J ∣
+    {-   gapping   -} check-⇨ᴿgᴸ/⇨ᴿgᴿ n J
+    where
+    check-ax : (n : ℕ) (J : Judgement) → List (NL J)
+    check-ax _ (· p · ⊢ q) with p ≟-Type q
+    ... | yes p=q rewrite p=q = return ax
+    ... | no  p≠q             = ∅
+    check-ax _ _ = ∅
+
+    check-⇒ᴿ/⇐ᴿ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇒ᴿ/⇐ᴿ (suc n) (Γ ⊢ p ⇒ q) = ⇒ᴿ <$> search n (· p · ∙ Γ ⊢ q)
+    check-⇒ᴿ/⇐ᴿ (suc n) (Γ ⊢ q ⇐ p) = ⇐ᴿ <$> search n (Γ ∙ · p · ⊢ q)
+    check-⇒ᴿ/⇐ᴿ _ _ = ∅
+
+    check-⇒ᴸ/⇐ᴸ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇒ᴸ/⇐ᴸ (suc n) (Γ ⊢ r) = concat (map check-⇒ᴸ/⇐ᴸ′ (focus Γ))
+      where
+      check-⇒ᴸ/⇐ᴸ′ : (∃₂ (λ (Σ : Context) (Δ : Structure) → Σ [ Δ ] ≡ Γ)) → List (Γ ⊢NL r)
+      check-⇒ᴸ/⇐ᴸ′ (Σ , Δ ∙ · p ⇒ q · , pr)
+        = (λ f g → subst (_⊢NL r) pr (⇒ᴸ Σ f g)) <$> search n (Δ ⊢ p) <*> search n (Σ [ · q · ] ⊢ r)
+      check-⇒ᴸ/⇐ᴸ′ (Σ , · q ⇐ p · ∙ Δ , pr)
+        = (λ f g → subst (_⊢NL r) pr (⇐ᴸ Σ f g)) <$> search n (Δ ⊢ p) <*> search n (Σ [ · q · ] ⊢ r)
+      check-⇒ᴸ/⇐ᴸ′ _ = ∅
+    check-⇒ᴸ/⇐ᴸ _ _ = ∅
+
+    check-⇨ᴿ/⇦ᴿ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇨ᴿ/⇦ᴿ (suc n) (Γ ⊢ p ⇨ q) = ⇨ᴿ <$> search n (· p · ∘ Γ ⊢ q)
+    check-⇨ᴿ/⇦ᴿ (suc n) (Γ ⊢ q ⇦ p) = ⇦ᴿ <$> search n (Γ ∘ · p · ⊢ q)
+    check-⇨ᴿ/⇦ᴿ _ _ = ∅
+
+    -- QR up
+    check-⇦ᴸλ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇦ᴸλ (suc n) (Γ ⊢ r) = concat (map check-⇦ᴸλ′ (focus Γ))
+      where
+      check-⇦ᴸλ′ : (∃₂ (λ (Σ : Context) (Γ′ : Structure) → Σ [ Γ′ ] ≡ Γ)) → List (Γ ⊢NL r)
+      check-⇦ᴸλ′ (Σ , Γ′ , pr₁) = concat (map check-⇦ᴸλ″ (focus₁ Γ′))
+        where
+        check-⇦ᴸλ″ : (∃₂ (λ (Γ″ : Context₁) (Δ : Structure) → Γ″ [ Δ ] ≡ Γ′)) → List (Γ ⊢NL r)
+        check-⇦ᴸλ″ (Γ″ , · q ⇦ p · , pr₂) =
+          let pr = trans (cong (Σ [_]) pr₂) pr₁ in
+          (λ f g → subst (_⊢NL r) pr (⇦ᴸλ Σ Γ″ f g))
+            <$> search n (λx Γ″ [x] ⊢ p)
+            <*> search n (Σ [ · q · ] ⊢ r)
+        check-⇦ᴸλ″ _ = ∅
+    check-⇦ᴸλ _ _ = ∅
+
+    -- QR to the top
+    check-⇦ᴸλ′ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇦ᴸλ′ (suc n) (Γ ⊢ r) = concat (map check-⇦ᴸλ″ (focus₁ Γ))
+      where
+      check-⇦ᴸλ″ : (∃₂ (λ (Γ′ : Context₁) (Δ : Structure) → Γ′ [ Δ ] ≡ Γ)) → List (Γ ⊢NL r)
+      check-⇦ᴸλ″ (Γ′ , · q ⇦ p · , pr) =
+        (λ f g → subst (_⊢NL r) pr (⇦ᴸλ [] Γ′ f g))
+          <$> search n (λx Γ′ [x] ⊢ p)
+          <*> search n (· q · ⊢ r)
+      check-⇦ᴸλ″ _ = ∅
+    check-⇦ᴸλ′ _ _ = ∅
+
+    -- QR down
+    check-⇨ᴿλ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇨ᴿλ (suc n) (Γ ⊢ p ⇨ q) = concat (map check-⇨ᴿλ′ (trace Γ))
+      where
+      check-⇨ᴿλ′ : ∃ (λ Γ′ → λx Γ′ [x] ≡ Γ) → List (Γ ⊢NL p ⇨ q)
+      check-⇨ᴿλ′ (Γ′ , pr) =
+        (λ f → subst (_⊢NL _) pr (⇨ᴿλ Γ′ f)) <$> search n (Γ′ [ · p · ] ⊢ q)
+    check-⇨ᴿλ _ _ = ∅
+
+    -- gapping
+    check-⇨ᴿgᴸ/⇨ᴿgᴿ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇨ᴿgᴸ/⇨ᴿgᴿ (suc n) (Γ ⊢ q ⇨ r) = foldr _∣_ ∅ (map check-⇨ᴿgᴸ/⇨ᴿgᴿ′ (focus Γ))
+      where
+      check-⇨ᴿgᴸ/⇨ᴿgᴿ′ : (∃₂ (λ (Σ : Context) (Δ : Structure) → Σ [ Δ ] ≡ Γ)) → List (Γ ⊢NL q ⇨ r)
+      check-⇨ᴿgᴸ/⇨ᴿgᴿ′ (Σ , · p · , pr) =
+        (λ f → subst (_⊢NL _) pr (⇨ᴿgᴸ Σ f)) <$> search n (Σ [ · q · ∙ · p · ] ⊢ r) ∣
+        (λ f → subst (_⊢NL _) pr (⇨ᴿgᴿ Σ f)) <$> search n (Σ [ · p · ∙ · q · ] ⊢ r)
+      check-⇨ᴿgᴸ/⇨ᴿgᴿ′ _ =  ∅
+    check-⇨ᴿgᴸ/⇨ᴿgᴿ _ _ = ∅
+
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}

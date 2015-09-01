@@ -1163,4 +1163,9 @@ module example where
 %</example>
 \end{comment}
 
+\begin{frame}
+\vfill%
+\includegraphics[width=\linewidth]{ufondslogo.jpg}
+\end{frame}
+
 \end{document}

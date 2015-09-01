@@ -5,7 +5,7 @@ agda=/usr/local/Cellar/agda/agda-latex/bin/agda
 default: _build/$(main).pdf
 	open _build/$(main).pdf
 
-_build/$(main).pdf: _build/$(main).tex _build/preamble.tex
+_build/$(main).pdf: _build/$(main).tex _build/preamble.tex _build/ufondslogo.jpg
 	cd _build/; pdflatex $(main).tex
 
 _build/$(main).tex: _build/ _build/agda.sty $(main).lagda
@@ -24,6 +24,9 @@ _build/preamble.tex: preamble.tex
 
 _build/agda.sty: agda.sty
 	cp agda.sty _build/
+
+_build/ufondslogo.jpg: ufondslogo.jpg
+	cp ufondslogo.jpg _build/
 
 _build/:
 	mkdir _build
