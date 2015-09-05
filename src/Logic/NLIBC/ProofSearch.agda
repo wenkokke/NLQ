@@ -76,9 +76,9 @@ findAll J = search (connʲ J) J
 
   search : (n : ℕ) (J : Sequent) → List (NL J)
   search n J =
-    {- composition -} check-ax        n J ∣ check-⇒ᴿ/⇐ᴿ n J ∣ check-⇒ᴸ/⇐ᴸ n J ∣
-    {-   scoping   -} check-⇦ᴸλ       n J ∣ check-⇨ᴿλ   n J ∣
-    {-   gapping   -} check-⇨ᴿgᴸ/⇨ᴿgᴿ n J
+    {- composition -} check-ax        n J ∣ check-⇒R/⇐R n J ∣ check-⇒L/⇐L n J ∣
+    {-   scoping   -} check-⇦Lλ       n J ∣ check-⇨Rλ   n J ∣
+    {-   gapping   -} check-⇨RgL/⇨RgR n J
     where
     check-ax : (n : ℕ) (J : Sequent) → List (NL J)
     check-ax _ (· p · ⊢ q) with p ≟-Type q
@@ -86,74 +86,74 @@ findAll J = search (connʲ J) J
     ... | no  p≠q             = ∅
     check-ax _ _ = ∅
 
-    check-⇒ᴿ/⇐ᴿ : (n : ℕ) (J : Sequent) → List (NL J)
-    check-⇒ᴿ/⇐ᴿ (suc n) (Γ ⊢ p ⇒ q) = ⇒ᴿ <$> search n (· p · ∙ Γ ⊢ q)
-    check-⇒ᴿ/⇐ᴿ (suc n) (Γ ⊢ q ⇐ p) = ⇐ᴿ <$> search n (Γ ∙ · p · ⊢ q)
-    check-⇒ᴿ/⇐ᴿ _ _ = ∅
+    check-⇒R/⇐R : (n : ℕ) (J : Sequent) → List (NL J)
+    check-⇒R/⇐R (suc n) (Γ ⊢ p ⇒ q) = ⇒R <$> search n (· p · ∙ Γ ⊢ q)
+    check-⇒R/⇐R (suc n) (Γ ⊢ q ⇐ p) = ⇐R <$> search n (Γ ∙ · p · ⊢ q)
+    check-⇒R/⇐R _ _ = ∅
 
-    check-⇒ᴸ/⇐ᴸ : (n : ℕ) (J : Sequent) → List (NL J)
-    check-⇒ᴸ/⇐ᴸ (suc n) (Γ ⊢ r) = concat (map check-⇒ᴸ/⇐ᴸ′ (focus Γ))
+    check-⇒L/⇐L : (n : ℕ) (J : Sequent) → List (NL J)
+    check-⇒L/⇐L (suc n) (Γ ⊢ r) = concat (map check-⇒L/⇐L′ (focus Γ))
       where
-      check-⇒ᴸ/⇐ᴸ′ : (∃₂ (λ (Σ : Context) (Δ : Structure) → Σ [ Δ ] ≡ Γ)) → List (Γ ⊢NL r)
-      check-⇒ᴸ/⇐ᴸ′ (Σ , Δ ∙ · p ⇒ q · , pr)
-        = (λ f g → subst (_⊢NL r) pr (⇒ᴸ Σ f g)) <$> search n (Δ ⊢ p) <*> search n (Σ [ · q · ] ⊢ r)
-      check-⇒ᴸ/⇐ᴸ′ (Σ , · q ⇐ p · ∙ Δ , pr)
-        = (λ f g → subst (_⊢NL r) pr (⇐ᴸ Σ f g)) <$> search n (Δ ⊢ p) <*> search n (Σ [ · q · ] ⊢ r)
-      check-⇒ᴸ/⇐ᴸ′ _ = ∅
-    check-⇒ᴸ/⇐ᴸ _ _ = ∅
+      check-⇒L/⇐L′ : (∃₂ (λ (Σ : Context) (Δ : Structure) → Σ [ Δ ] ≡ Γ)) → List (Γ ⊢NL r)
+      check-⇒L/⇐L′ (Σ , Δ ∙ · p ⇒ q · , pr)
+        = (λ f g → subst (_⊢NL r) pr (⇒L Σ f g)) <$> search n (Δ ⊢ p) <*> search n (Σ [ · q · ] ⊢ r)
+      check-⇒L/⇐L′ (Σ , · q ⇐ p · ∙ Δ , pr)
+        = (λ f g → subst (_⊢NL r) pr (⇐L Σ f g)) <$> search n (Δ ⊢ p) <*> search n (Σ [ · q · ] ⊢ r)
+      check-⇒L/⇐L′ _ = ∅
+    check-⇒L/⇐L _ _ = ∅
 
-    check-⇨ᴿ/⇦ᴿ : (n : ℕ) (J : Sequent) → List (NL J)
-    check-⇨ᴿ/⇦ᴿ (suc n) (Γ ⊢ p ⇨ q) = ⇨ᴿ <$> search n (· p · ∘ Γ ⊢ q)
-    check-⇨ᴿ/⇦ᴿ (suc n) (Γ ⊢ q ⇦ p) = ⇦ᴿ <$> search n (Γ ∘ · p · ⊢ q)
-    check-⇨ᴿ/⇦ᴿ _ _ = ∅
+    check-⇨R/⇦R : (n : ℕ) (J : Sequent) → List (NL J)
+    check-⇨R/⇦R (suc n) (Γ ⊢ p ⇨ q) = ⇨R <$> search n (· p · ∘ Γ ⊢ q)
+    check-⇨R/⇦R (suc n) (Γ ⊢ q ⇦ p) = ⇦R <$> search n (Γ ∘ · p · ⊢ q)
+    check-⇨R/⇦R _ _ = ∅
 
     -- QR up
-    check-⇦ᴸλ : (n : ℕ) (J : Sequent) → List (NL J)
-    check-⇦ᴸλ (suc n) (Γ ⊢ r) = concat (map check-⇦ᴸλ′ (focus Γ))
+    check-⇦Lλ : (n : ℕ) (J : Sequent) → List (NL J)
+    check-⇦Lλ (suc n) (Γ ⊢ r) = concat (map check-⇦Lλ′ (focus Γ))
       where
-      check-⇦ᴸλ′ : (∃₂ (λ (Σ : Context) (Γ′ : Structure) → Σ [ Γ′ ] ≡ Γ)) → List (Γ ⊢NL r)
-      check-⇦ᴸλ′ (Σ , Γ′ , pr₁) = concat (map check-⇦ᴸλ″ (focus₁ Γ′))
+      check-⇦Lλ′ : (∃₂ (λ (Σ : Context) (Γ′ : Structure) → Σ [ Γ′ ] ≡ Γ)) → List (Γ ⊢NL r)
+      check-⇦Lλ′ (Σ , Γ′ , pr₁) = concat (map check-⇦Lλ″ (focus₁ Γ′))
         where
-        check-⇦ᴸλ″ : (∃₂ (λ (Γ″ : Context₁) (Δ : Structure) → Γ″ [ Δ ] ≡ Γ′)) → List (Γ ⊢NL r)
-        check-⇦ᴸλ″ (Γ″ , · q ⇦ p · , pr₂) =
+        check-⇦Lλ″ : (∃₂ (λ (Γ″ : Context₁) (Δ : Structure) → Γ″ [ Δ ] ≡ Γ′)) → List (Γ ⊢NL r)
+        check-⇦Lλ″ (Γ″ , · q ⇦ p · , pr₂) =
           let pr = trans (cong (Σ [_]) pr₂) pr₁ in
-          (λ f g → subst (_⊢NL r) pr (⇦ᴸλ Σ Γ″ f g))
+          (λ f g → subst (_⊢NL r) pr (⇦Lλ Σ Γ″ f g))
             <$> search n (λx Γ″ [x] ⊢ p)
             <*> search n (Σ [ · q · ] ⊢ r)
-        check-⇦ᴸλ″ _ = ∅
-    check-⇦ᴸλ _ _ = ∅
+        check-⇦Lλ″ _ = ∅
+    check-⇦Lλ _ _ = ∅
 
     -- QR to the top
-    check-⇦ᴸλ′ : (n : ℕ) (J : Sequent) → List (NL J)
-    check-⇦ᴸλ′ (suc n) (Γ ⊢ r) = concat (map check-⇦ᴸλ″ (focus₁ Γ))
+    check-⇦Lλ′ : (n : ℕ) (J : Sequent) → List (NL J)
+    check-⇦Lλ′ (suc n) (Γ ⊢ r) = concat (map check-⇦Lλ″ (focus₁ Γ))
       where
-      check-⇦ᴸλ″ : (∃₂ (λ (Γ′ : Context₁) (Δ : Structure) → Γ′ [ Δ ] ≡ Γ)) → List (Γ ⊢NL r)
-      check-⇦ᴸλ″ (Γ′ , · q ⇦ p · , pr) =
-        (λ f g → subst (_⊢NL r) pr (⇦ᴸλ [] Γ′ f g))
+      check-⇦Lλ″ : (∃₂ (λ (Γ′ : Context₁) (Δ : Structure) → Γ′ [ Δ ] ≡ Γ)) → List (Γ ⊢NL r)
+      check-⇦Lλ″ (Γ′ , · q ⇦ p · , pr) =
+        (λ f g → subst (_⊢NL r) pr (⇦Lλ [] Γ′ f g))
           <$> search n (λx Γ′ [x] ⊢ p)
           <*> search n (· q · ⊢ r)
-      check-⇦ᴸλ″ _ = ∅
-    check-⇦ᴸλ′ _ _ = ∅
+      check-⇦Lλ″ _ = ∅
+    check-⇦Lλ′ _ _ = ∅
 
     -- QR down
-    check-⇨ᴿλ : (n : ℕ) (J : Sequent) → List (NL J)
-    check-⇨ᴿλ (suc n) (Γ ⊢ p ⇨ q) = concat (map check-⇨ᴿλ′ (trace Γ))
+    check-⇨Rλ : (n : ℕ) (J : Sequent) → List (NL J)
+    check-⇨Rλ (suc n) (Γ ⊢ p ⇨ q) = concat (map check-⇨Rλ′ (trace Γ))
       where
-      check-⇨ᴿλ′ : ∃ (λ Γ′ → λx Γ′ [x] ≡ Γ) → List (Γ ⊢NL p ⇨ q)
-      check-⇨ᴿλ′ (Γ′ , pr) =
-        (λ f → subst (_⊢NL _) pr (⇨ᴿλ Γ′ f)) <$> search n (Γ′ [ · p · ] ⊢ q)
-    check-⇨ᴿλ _ _ = ∅
+      check-⇨Rλ′ : ∃ (λ Γ′ → λx Γ′ [x] ≡ Γ) → List (Γ ⊢NL p ⇨ q)
+      check-⇨Rλ′ (Γ′ , pr) =
+        (λ f → subst (_⊢NL _) pr (⇨Rλ Γ′ f)) <$> search n (Γ′ [ · p · ] ⊢ q)
+    check-⇨Rλ _ _ = ∅
 
     -- gapping
-    check-⇨ᴿgᴸ/⇨ᴿgᴿ : (n : ℕ) (J : Sequent) → List (NL J)
-    check-⇨ᴿgᴸ/⇨ᴿgᴿ (suc n) (Γ ⊢ q ⇨ r) = foldr _∣_ ∅ (map check-⇨ᴿgᴸ/⇨ᴿgᴿ′ (focus Γ))
+    check-⇨RgL/⇨RgR : (n : ℕ) (J : Sequent) → List (NL J)
+    check-⇨RgL/⇨RgR (suc n) (Γ ⊢ q ⇨ r) = foldr _∣_ ∅ (map check-⇨RgL/⇨RgR′ (focus Γ))
       where
-      check-⇨ᴿgᴸ/⇨ᴿgᴿ′ : (∃₂ (λ (Σ : Context) (Δ : Structure) → Σ [ Δ ] ≡ Γ)) → List (Γ ⊢NL q ⇨ r)
-      check-⇨ᴿgᴸ/⇨ᴿgᴿ′ (Σ , · p · , pr) =
-        (λ f → subst (_⊢NL _) pr (⇨ᴿgᴸ Σ f)) <$> search n (Σ [ · q · ∙ · p · ] ⊢ r) ∣
-        (λ f → subst (_⊢NL _) pr (⇨ᴿgᴿ Σ f)) <$> search n (Σ [ · p · ∙ · q · ] ⊢ r)
-      check-⇨ᴿgᴸ/⇨ᴿgᴿ′ _ =  ∅
-    check-⇨ᴿgᴸ/⇨ᴿgᴿ _ _ = ∅
+      check-⇨RgL/⇨RgR′ : (∃₂ (λ (Σ : Context) (Δ : Structure) → Σ [ Δ ] ≡ Γ)) → List (Γ ⊢NL q ⇨ r)
+      check-⇨RgL/⇨RgR′ (Σ , · p · , pr) =
+        (λ f → subst (_⊢NL _) pr (⇨RgL Σ f)) <$> search n (Σ [ · q · ∙ · p · ] ⊢ r) ∣
+        (λ f → subst (_⊢NL _) pr (⇨RgR Σ f)) <$> search n (Σ [ · p · ∙ · q · ] ⊢ r)
+      check-⇨RgL/⇨RgR′ _ =  ∅
+    check-⇨RgL/⇨RgR _ _ = ∅
 
 -- -}
 -- -}

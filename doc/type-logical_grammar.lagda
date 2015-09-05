@@ -174,8 +174,8 @@ up over a set of atomic types (usually `n`, `np` and `s`), a product
 [written `⇒` and `⇐`, after @ajdukiewicz1935].
 
 The `Struct` represents the structure of the antecedent, which is
-usually instantiated to a list (if classify strings) or a binary
-tree (if we classify constituency trees). However, it is safe to think
+usually instantiated to a list---if ws classify strings---or a binary
+tree---if we classify constituency trees. However, it is safe to think
 of this structure as always being a binary tree, as other common
 structures (list, bag, set) are degenerate cases of binary trees under
 certain axioms (associativity, commutativity, contraction).
@@ -187,7 +187,7 @@ an applicative functor):
 For a quick intuition, `traverse` is like `map` (or `⟨$⟩`) in that it
 allows you to apply a function to every element of a
 structure. However, it also allows you to have effects like `IO` and
-ambiguity (i.e. `List`) while rebuilding the data structure
+ambiguity---i.e. `List`---while rebuilding the data structure
 [see @mcbride2008].
 
 Furthermore, the typing relation `⊢` is required to be at least a

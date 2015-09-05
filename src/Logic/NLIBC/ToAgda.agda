@@ -46,18 +46,18 @@ private
 ⟦_⟧ : ∀ {J} → NL J → ⟦ J ⟧ʲ
 ⟦ ax                   ⟧ x   = x
 
-⟦ ⇒ᴸ   Σ           f g ⟧ x   = ⟦ g ⟧ (cut Σ (λ p → proj₂ p (⟦ f ⟧ (proj₁ p))) x)
-⟦ ⇒ᴿ               f   ⟧ x y = ⟦ f ⟧ (y , x)
-⟦ ⇐ᴸ   Σ           f g ⟧ x   = ⟦ g ⟧ (cut Σ (λ p → proj₁ p (⟦ f ⟧ (proj₂ p))) x)
-⟦ ⇐ᴿ               f   ⟧ x y = ⟦ f ⟧ (x , y)
+⟦ ⇒L   Σ           f g ⟧ x   = ⟦ g ⟧ (cut Σ (λ p → proj₂ p (⟦ f ⟧ (proj₁ p))) x)
+⟦ ⇒R               f   ⟧ x y = ⟦ f ⟧ (y , x)
+⟦ ⇐L   Σ           f g ⟧ x   = ⟦ g ⟧ (cut Σ (λ p → proj₁ p (⟦ f ⟧ (proj₂ p))) x)
+⟦ ⇐R               f   ⟧ x y = ⟦ f ⟧ (x , y)
 
-⟦ ⇨ᴸ   Σ           f g ⟧ x   = ⟦ g ⟧ (cut Σ (λ p → proj₂ p (⟦ f ⟧ (proj₁ p))) x)
-⟦ ⇨ᴿ               f   ⟧ x y = ⟦ f ⟧ (y , x)
-⟦ ⇦ᴸ   Σ           f g ⟧ x   = ⟦ g ⟧ (cut Σ (λ p → proj₁ p (⟦ f ⟧ (proj₂ p))) x)
-⟦ ⇦ᴿ               f   ⟧ x y = ⟦ f ⟧ (x , y)
+⟦ ⇨L   Σ           f g ⟧ x   = ⟦ g ⟧ (cut Σ (λ p → proj₂ p (⟦ f ⟧ (proj₁ p))) x)
+⟦ ⇨R               f   ⟧ x y = ⟦ f ⟧ (y , x)
+⟦ ⇦L   Σ           f g ⟧ x   = ⟦ g ⟧ (cut Σ (λ p → proj₁ p (⟦ f ⟧ (proj₂ p))) x)
+⟦ ⇦R               f   ⟧ x y = ⟦ f ⟧ (x , y)
 
-⟦ ⇨ᴿgᴸ Σ           f   ⟧ x y = ⟦ f ⟧ (cut Σ (y ,_) x)
-⟦ ⇨ᴿgᴿ Σ           f   ⟧ x y = ⟦ f ⟧ (cut Σ (_, y) x)
+⟦ ⇨RgL Σ           f   ⟧ x y = ⟦ f ⟧ (cut Σ (y ,_) x)
+⟦ ⇨RgR Σ           f   ⟧ x y = ⟦ f ⟧ (cut Σ (_, y) x)
 
 ⟦ Iᵢ Σ {p}         f   ⟧ x   = ⟦ f ⟧ (cut Σ Iᵢ′ x)
   where

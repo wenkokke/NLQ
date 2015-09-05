@@ -80,13 +80,13 @@ module display_calculus (Atom : Set) where
       ⇀    : ∀ {X B}     →  X ⊢NL[ B ] → X ⊢NL · B ·
       ↼    : ∀ {A Y}     →  [ A ]⊢NL Y → · A · ⊢NL Y
 
-      ⊗ᴸ   : ∀ {A B Y}   →  · A · ⊗ · B · ⊢NL Y → · A ⊗ B · ⊢NL Y
-      ⇒ᴸ   : ∀ {A B X Y} →  X ⊢NL[ A ] → [ B ]⊢NL Y → [ A ⇒ B ]⊢NL X ⇒ Y
-      ⇐ᴸ   : ∀ {B A Y X} →  X ⊢NL[ A ] → [ B ]⊢NL Y → [ B ⇐ A ]⊢NL Y ⇐ X
+      ⊗L   : ∀ {A B Y}   →  · A · ⊗ · B · ⊢NL Y → · A ⊗ B · ⊢NL Y
+      ⇒L   : ∀ {A B X Y} →  X ⊢NL[ A ] → [ B ]⊢NL Y → [ A ⇒ B ]⊢NL X ⇒ Y
+      ⇐L   : ∀ {B A Y X} →  X ⊢NL[ A ] → [ B ]⊢NL Y → [ B ⇐ A ]⊢NL Y ⇐ X
 
-      ⊗ᴿ   : ∀ {X Y A B} →  X ⊢NL[ A ] → Y ⊢NL[ B ] → X ⊗ Y ⊢NL[ A ⊗ B ]
-      ⇒ᴿ   : ∀ {X A B}   →  X ⊢NL · A · ⇒ · B · → X ⊢NL · A ⇒ B ·
-      ⇐ᴿ   : ∀ {X B A}   →  X ⊢NL · B · ⇐ · A · → X ⊢NL · B ⇐ A ·
+      ⊗R   : ∀ {X Y A B} →  X ⊢NL[ A ] → Y ⊢NL[ B ] → X ⊗ Y ⊢NL[ A ⊗ B ]
+      ⇒R   : ∀ {X A B}   →  X ⊢NL · A · ⇒ · B · → X ⊢NL · A ⇒ B ·
+      ⇐R   : ∀ {X B A}   →  X ⊢NL · B · ⇐ · A · → X ⊢NL · B ⇐ A ·
 
       r⇒⊗  : ∀ {X Y Z}   →  Y ⊢NL X ⇒ Z → X ⊗ Y ⊢NL Z
       r⊗⇒  : ∀ {Y X Z}   →  X ⊗ Y ⊢NL Z → Y ⊢NL X ⇒ Z
@@ -119,27 +119,27 @@ module resmon⇔display_calculus (Atom : Set) where
 ```
 ```
     to   : ∀ {X Y} →       X  NL.⊢NL   Y    → ⌊  X ⌋  RM.⊢RM ⌊  Y ⌋
-    toᴸ  : ∀ {A Y} → NL.[  A  ]⊢NL     Y    →    A    RM.⊢RM ⌊  Y ⌋
-    toᴿ  : ∀ {X B} →       X  NL.⊢NL[  B ]  → ⌊  X ⌋  RM.⊢RM    B
+    toL  : ∀ {A Y} → NL.[  A  ]⊢NL     Y    →    A    RM.⊢RM ⌊  Y ⌋
+    toR  : ∀ {X B} →       X  NL.⊢NL[  B ]  → ⌊  X ⌋  RM.⊢RM    B
 
-    to   (  ⇀    f  )  = toᴿ f
-    to   (  ↼    f  )  = toᴸ f
-    to   (  ⊗ᴸ   f  )  = to f
-    to   (  ⇒ᴿ   f  )  = to f
-    to   (  ⇐ᴿ   f  )  = to f
+    to   (  ⇀    f  )  = toR f
+    to   (  ↼    f  )  = toL f
+    to   (  ⊗L   f  )  = to f
+    to   (  ⇒R   f  )  = to f
+    to   (  ⇐R   f  )  = to f
     to   (  r⇒⊗  f  )  = r⇒⊗ (to f)
     to   (  r⊗⇒  f  )  = r⊗⇒ (to f)
     to   (  r⇐⊗  f  )  = r⇐⊗ (to f)
     to   (  r⊗⇐  f  )  = r⊗⇐ (to f)
 
-    toᴸ     ax⁻        = ax′
-    toᴸ  (  ↽    f  )  = to f
-    toᴸ  (  ⇒ᴸ   f g)  = m⇒  (toᴿ f) (toᴸ g)
-    toᴸ  (  ⇐ᴸ   f g)  = m⇐  (toᴸ g) (toᴿ f)
+    toL     ax⁻        = ax′
+    toL  (  ↽    f  )  = to f
+    toL  (  ⇒L   f g)  = m⇒  (toR f) (toL g)
+    toL  (  ⇐L   f g)  = m⇐  (toL g) (toR f)
 
-    toᴿ     ax⁺        = ax′
-    toᴿ  (  ⇁    f  )  = to f
-    toᴿ  (  ⊗ᴿ   f g)  = m⊗  (toᴿ f) (toᴿ g)
+    toR     ax⁺        = ax′
+    toR  (  ⇁    f  )  = to f
+    toR  (  ⊗R   f g)  = m⊗  (toR f) (toR g)
 ```
 
 ```
@@ -154,25 +154,25 @@ module resmon⇔display_calculus (Atom : Set) where
   mutual
 ```
 ```
-    deflateᴸ : ∀ {A Y} → ⌈ A ⌉ ⊢NL Y → · A · ⊢NL Y
-    deflateᴸ {A = el   A} f = f
-    deflateᴸ {A = A ⇒  B} f = f
-    deflateᴸ {A = A ⇐  B} f = f
-    deflateᴸ {A = A ⊗  B} f = ⊗ᴸ (r⇐⊗ (deflateᴸ (r⊗⇐ (r⇒⊗ (deflateᴸ (r⊗⇒ f))))))
+    deflateL : ∀ {A Y} → ⌈ A ⌉ ⊢NL Y → · A · ⊢NL Y
+    deflateL {A = el   A} f = f
+    deflateL {A = A ⇒  B} f = f
+    deflateL {A = A ⇐  B} f = f
+    deflateL {A = A ⊗  B} f = ⊗L (r⇐⊗ (deflateL (r⊗⇐ (r⇒⊗ (deflateL (r⊗⇒ f))))))
 
-    deflateᴿ : ∀ {X B} → X ⊢NL ⌈ B ⌉ → X ⊢NL · B ·
-    deflateᴿ {B = el   B} f = f
-    deflateᴿ {B = B ⇒  C} f = ⇒ᴿ (r⊗⇒ (deflateᴿ (r⇐⊗ (deflateᴸ (r⊗⇐ (r⇒⊗ f))))))
-    deflateᴿ {B = B ⇐  C} f = ⇐ᴿ (r⊗⇐ (deflateᴿ (r⇒⊗ (deflateᴸ (r⊗⇒ (r⇐⊗ f))))))
-    deflateᴿ {B = B ⊗  C} f = f
+    deflateR : ∀ {X B} → X ⊢NL ⌈ B ⌉ → X ⊢NL · B ·
+    deflateR {B = el   B} f = f
+    deflateR {B = B ⇒  C} f = ⇒R (r⊗⇒ (deflateR (r⇐⊗ (deflateL (r⊗⇐ (r⇒⊗ f))))))
+    deflateR {B = B ⇐  C} f = ⇐R (r⊗⇐ (deflateR (r⇒⊗ (deflateL (r⊗⇒ (r⇐⊗ f))))))
+    deflateR {B = B ⊗  C} f = f
 ```
 
 ```
     from : ∀ {A B} → A RM.⊢RM B → ⌈ A ⌉ NL.⊢NL ⌈ B ⌉
     from (ax      )  = ⇀ ax⁺
-    from (m⊗   f g)  = ⇀  (⊗ᴿ  (⇁ (deflateᴿ (from f  ))) (⇁ (deflateᴿ (from g  ))))
-    from (m⇒   f g)  = ↼  (⇒ᴸ  (⇁ (deflateᴿ (from f  ))) (↽ (deflateᴸ (from g  ))))
-    from (m⇐   f g)  = ↼  (⇐ᴸ  (⇁ (deflateᴿ (from g  ))) (↽ (deflateᴸ (from f  ))))
+    from (m⊗   f g)  = ⇀  (⊗R  (⇁ (deflateR (from f  ))) (⇁ (deflateR (from g  ))))
+    from (m⇒   f g)  = ↼  (⇒L  (⇁ (deflateR (from f  ))) (↽ (deflateL (from g  ))))
+    from (m⇐   f g)  = ↼  (⇐L  (⇁ (deflateR (from g  ))) (↽ (deflateL (from f  ))))
     from (r⇒⊗  f  )  = r⇒⊗ (from f)
     from (r⊗⇒  f  )  = r⊗⇒ (from f)
     from (r⇐⊗  f  )  = r⇐⊗ (from f)
@@ -183,14 +183,14 @@ module resmon⇔display_calculus (Atom : Set) where
   mutual
 ```
 ```
-    inflateᴸ : ∀ {X Y} → ⌈ ⌊ X ⌋ ⌉ ⊢NL Y → X ⊢NL Y
-    inflateᴸ {X =  ·  A  ·  }  f = deflateᴸ f
-    inflateᴸ {X =  X  ⊗  Y  }  f = r⇐⊗ (inflateᴸ (r⊗⇐ (r⇒⊗ (inflateᴸ (r⊗⇒ f)))))
+    inflateL : ∀ {X Y} → ⌈ ⌊ X ⌋ ⌉ ⊢NL Y → X ⊢NL Y
+    inflateL {X =  ·  A  ·  }  f = deflateL f
+    inflateL {X =  X  ⊗  Y  }  f = r⇐⊗ (inflateL (r⊗⇐ (r⇒⊗ (inflateL (r⊗⇒ f)))))
 
-    inflateᴿ : ∀ {X Y} → X ⊢NL ⌈ ⌊ Y ⌋ ⌉ → X ⊢NL Y
-    inflateᴿ {Y =  ·  A  ·  }  f = deflateᴿ f
-    inflateᴿ {Y =  X  ⇒  Y  }  f = r⊗⇒ (inflateᴿ (r⇐⊗ (inflateᴸ (r⊗⇐ (r⇒⊗ f)))))
-    inflateᴿ {Y =  X  ⇐  Y  }  f = r⊗⇐ (inflateᴿ (r⇒⊗ (inflateᴸ (r⊗⇒ (r⇐⊗ f)))))
+    inflateR : ∀ {X Y} → X ⊢NL ⌈ ⌊ Y ⌋ ⌉ → X ⊢NL Y
+    inflateR {Y =  ·  A  ·  }  f = deflateR f
+    inflateR {Y =  X  ⇒  Y  }  f = r⊗⇒ (inflateR (r⇐⊗ (inflateL (r⊗⇐ (r⇒⊗ f)))))
+    inflateR {Y =  X  ⇐  Y  }  f = r⊗⇐ (inflateR (r⇒⊗ (inflateL (r⊗⇒ (r⇐⊗ f)))))
 ```
 
 Using the deflate/inflate approach, we can import theorems from the
@@ -198,21 +198,21 @@ algebraic axiomatisation---for instance, the cut rule:
 
 ```
   cut′ : ∀ {X A Y} → X ⊢NL[ A ] → [ A ]⊢NL Y → X ⊢NL Y
-  cut′ f g = inflateᴸ (inflateᴿ (from (RM.cut′ (toᴿ f) (toᴸ g))))
+  cut′ f g = inflateL (inflateR (from (RM.cut′ (toR f) (toL g))))
 ```
 
 And once cut becomes available, we can derive the inverses of the left
 and right rules, which convert logical formulas back to structures:
 
 ```
-  ⊗ᴸ′  : ∀ {Y A B} → · A ⊗ B · ⊢NL Y  → · A · ⊗ · B · ⊢NL Y
-  ⊗ᴸ′  f = cut′ (⊗ᴿ ax⁺ ax⁺) (↽ f)
+  ⊗L′  : ∀ {Y A B} → · A ⊗ B · ⊢NL Y  → · A · ⊗ · B · ⊢NL Y
+  ⊗L′  f = cut′ (⊗R ax⁺ ax⁺) (↽ f)
 
-  ⇒ᴿ′  : ∀ {X A B} → X ⊢NL · A ⇒ B · → X ⊢NL · A · ⇒ · B ·
-  ⇒ᴿ′  f = cut′ (⇁ f) (⇒ᴸ ax⁺ ax⁻)
+  ⇒R′  : ∀ {X A B} → X ⊢NL · A ⇒ B · → X ⊢NL · A · ⇒ · B ·
+  ⇒R′  f = cut′ (⇁ f) (⇒L ax⁺ ax⁻)
 
-  ⇐ᴿ′  : ∀ {X A B} → X ⊢NL · B ⇐ A · → X ⊢NL · B · ⇐ · A ·
-  ⇐ᴿ′  f = cut′ (⇁ f) (⇐ᴸ ax⁺ ax⁻)
+  ⇐R′  : ∀ {X A B} → X ⊢NL · B ⇐ A · → X ⊢NL · B · ⇐ · A ·
+  ⇐R′  f = cut′ (⇁ f) (⇐L ax⁺ ax⁻)
 ```
 
 And these inverses can be used to derive the logical equivalents of
@@ -220,16 +220,16 @@ the residuation rules:
 
 ```
   r⇒⊗′  : ∀ {A B C} → · B · ⊢NL · A ⇒ C ·  → · A ⊗ B · ⊢NL · C ·
-  r⇒⊗′  f = ⊗ᴸ (r⇒⊗ (⇒ᴿ′ f))
+  r⇒⊗′  f = ⊗L (r⇒⊗ (⇒R′ f))
 
   r⊗⇒′  : ∀ {A B C} → · A ⊗ B · ⊢NL · C ·  → · B · ⊢NL · A ⇒ C ·
-  r⊗⇒′  f = ⇒ᴿ (r⊗⇒ (⊗ᴸ′ f))
+  r⊗⇒′  f = ⇒R (r⊗⇒ (⊗L′ f))
 
   r⇐⊗′  : ∀ {A B C} → · A · ⊢NL · C ⇐ B ·  → · A ⊗ B · ⊢NL · C ·
-  r⇐⊗′  f = ⊗ᴸ (r⇐⊗ (⇐ᴿ′ f))
+  r⇐⊗′  f = ⊗L (r⇐⊗ (⇐R′ f))
 
   r⊗⇐′  : ∀ {A B C} → · A ⊗ B · ⊢NL · C ·  → · A · ⊢NL · C ⇐ B ·
-  r⊗⇐′  f = ⇐ᴿ (r⊗⇐ (⊗ᴸ′ f))
+  r⊗⇐′  f = ⇐R (r⊗⇐ (⊗L′ f))
 ```
 
 Lastly, using these rules, we can define a second equivalence
@@ -243,9 +243,9 @@ between types and structures.
 ```
   from′ : ∀ {A B} → A RM.⊢RM B → · A · NL.⊢NL · B ·
   from′    ax         = ⇀ ax⁺
-  from′ (  m⊗   f g)  = ⊗ᴸ (⇀ (⊗ᴿ (⇁ (from′ f)) (⇁ (from′ g))))
-  from′ (  m⇒   f g)  = ⇒ᴿ (↼ (⇒ᴸ (⇁ (from′ f)) (↽ (from′ g))))
-  from′ (  m⇐   f g)  = ⇐ᴿ (↼ (⇐ᴸ (⇁ (from′ g)) (↽ (from′ f))))
+  from′ (  m⊗   f g)  = ⊗L (⇀ (⊗R (⇁ (from′ f)) (⇁ (from′ g))))
+  from′ (  m⇒   f g)  = ⇒R (↼ (⇒L (⇁ (from′ f)) (↽ (from′ g))))
+  from′ (  m⇐   f g)  = ⇐R (↼ (⇐L (⇁ (from′ g)) (↽ (from′ f))))
   from′ (  r⇒⊗  f  )  = r⇒⊗′ (from′ f)
   from′ (  r⊗⇒  f  )  = r⊗⇒′ (from′ f)
   from′ (  r⇐⊗  f  )  = r⇐⊗′ (from′ f)
@@ -388,13 +388,13 @@ system fNL:
       ↼    : ∀ {A X} {p : True (Negative?  A)} →  [ A ]⊢fNL X   → · A · ⊢fNL X
 ```
 ``` hidden
-      ⊗ᴸ   : ∀ {A B Y}    →  · A · ⊗ · B · ⊢fNL Y → · A ⊗ B · ⊢fNL Y
-      ⇒ᴸ   : ∀ {A B X Y}  →  X ⊢fNL[ A ]  → [ B ]⊢fNL Y  → [ A ⇒ B ]⊢fNL X ⇒ Y
-      ⇐ᴸ   : ∀ {B A Y X}  →  X ⊢fNL[ A ]  → [ B ]⊢fNL Y  → [ B ⇐ A ]⊢fNL Y ⇐ X
+      ⊗L   : ∀ {A B Y}    →  · A · ⊗ · B · ⊢fNL Y → · A ⊗ B · ⊢fNL Y
+      ⇒L   : ∀ {A B X Y}  →  X ⊢fNL[ A ]  → [ B ]⊢fNL Y  → [ A ⇒ B ]⊢fNL X ⇒ Y
+      ⇐L   : ∀ {B A Y X}  →  X ⊢fNL[ A ]  → [ B ]⊢fNL Y  → [ B ⇐ A ]⊢fNL Y ⇐ X
 
-      ⊗ᴿ   : ∀ {X Y A B}  →  X ⊢fNL[ A ] → Y ⊢fNL[ B ] → X ⊗ Y ⊢fNL[ A ⊗ B ]
-      ⇒ᴿ   : ∀ {X A B}    →  X ⊢fNL · A · ⇒ · B ·  → X ⊢fNL · A ⇒ B ·
-      ⇐ᴿ   : ∀ {X B A}    →  X ⊢fNL · B · ⇐ · A ·  → X ⊢fNL · B ⇐ A ·
+      ⊗R   : ∀ {X Y A B}  →  X ⊢fNL[ A ] → Y ⊢fNL[ B ] → X ⊗ Y ⊢fNL[ A ⊗ B ]
+      ⇒R   : ∀ {X A B}    →  X ⊢fNL · A · ⇒ · B ·  → X ⊢fNL · A ⇒ B ·
+      ⇐R   : ∀ {X B A}    →  X ⊢fNL · B · ⇐ · A ·  → X ⊢fNL · B ⇐ A ·
 
 
       r⇒⊗  : ∀ {X Y Z}    →  Y ⊢fNL X ⇒ Z   → X ⊗ Y ⊢fNL Z

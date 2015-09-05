@@ -128,12 +128,12 @@ module FocPol where
 
       -- rules for fNL
 
-      ⊕ᴸ   : ∀ {X Y A B} →  [ B ]⊢fLG Y →  [ A ]⊢fLG X →  [ B ⊕ A ]⊢fLG Y ⊕ X
-      ⊕ᴿ   : ∀ {X A B}   →  X ⊢fLG · B · ⊕ · A · →  X ⊢fLG · B ⊕ A ·
-      ⇚ᴸ   : ∀ {X A B}   →  · A · ⇚ · B · ⊢fLG X →  · A ⇚ B · ⊢fLG X
-      ⇚ᴿ   : ∀ {X Y A B} →  X ⊢fLG[ A ] →  [ B ]⊢fLG Y →  X ⇚ Y ⊢fLG[ A ⇚ B ]
-      ⇛ᴸ   : ∀ {X A B}   →  · B · ⇛ · A · ⊢fLG X →  · B ⇛ A · ⊢fLG X
-      ⇛ᴿ   : ∀ {X Y A B} →  X ⊢fLG[ A ] →  [ B ]⊢fLG Y →  Y ⇛ X ⊢fLG[ B ⇛ A ]
+      ⊕L   : ∀ {X Y A B} →  [ B ]⊢fLG Y →  [ A ]⊢fLG X →  [ B ⊕ A ]⊢fLG Y ⊕ X
+      ⊕R   : ∀ {X A B}   →  X ⊢fLG · B · ⊕ · A · →  X ⊢fLG · B ⊕ A ·
+      ⇚L   : ∀ {X A B}   →  · A · ⇚ · B · ⊢fLG X →  · A ⇚ B · ⊢fLG X
+      ⇚R   : ∀ {X Y A B} →  X ⊢fLG[ A ] →  [ B ]⊢fLG Y →  X ⇚ Y ⊢fLG[ A ⇚ B ]
+      ⇛L   : ∀ {X A B}   →  · B · ⇛ · A · ⊢fLG X →  · B ⇛ A · ⊢fLG X
+      ⇛R   : ∀ {X Y A B} →  X ⊢fLG[ A ] →  [ B ]⊢fLG Y →  Y ⇛ X ⊢fLG[ B ⇛ A ]
       r⇚⊕  : ∀ {X Y Z}   →  Z ⇚ X ⊢fLG Y →  Z ⊢fLG Y ⊕ X
       r⊕⇚  : ∀ {X Y Z}   →  Z ⊢fLG Y ⊕ X →  Z ⇚ X ⊢fLG Y
       r⇛⊕  : ∀ {X Y Z}   →  Y ⇛ Z ⊢fLG X →  Z ⊢fLG Y ⊕ X
@@ -151,12 +151,12 @@ module FocPol where
       ↽   : ∀ {X A} {p : True (Positive? A)} →  · A · ⊢fLG X → [  A  ]⊢fLG X
       ⇀   : ∀ {X A} {p : True (Positive? A)} → X ⊢fLG[  A  ] → X ⊢fLG · A ·
       ↼   : ∀ {X A} {p : True (Negative? A)} → [  A  ]⊢fLG X →  · A · ⊢fLG X
-      ⊗ᴸ  : ∀ {Y A B}   →  · A · ⊗ · B · ⊢fLG Y → · A ⊗ B · ⊢fLG Y
-      ⊗ᴿ  : ∀ {X Y A B} →  X ⊢fLG[ A ] → Y ⊢fLG[ B ] → X ⊗ Y ⊢fLG[ A ⊗ B ]
-      ⇒ᴸ  : ∀ {X Y A B} →  X ⊢fLG[ A ] → [ B ]⊢fLG Y → [ A ⇒ B ]⊢fLG X ⇒ Y
-      ⇒ᴿ  : ∀ {X A B}   →  X ⊢fLG · A · ⇒ · B · → X ⊢fLG · A ⇒ B ·
-      ⇐ᴸ  : ∀ {X Y A B} →  X ⊢fLG[ A ] → [ B ]⊢fLG Y → [ B ⇐ A ]⊢fLG Y ⇐ X
-      ⇐ᴿ  : ∀ {X A B}   →  X ⊢fLG · B · ⇐ · A · → X ⊢fLG · B ⇐ A ·
+      ⊗L  : ∀ {Y A B}   →  · A · ⊗ · B · ⊢fLG Y → · A ⊗ B · ⊢fLG Y
+      ⊗R  : ∀ {X Y A B} →  X ⊢fLG[ A ] → Y ⊢fLG[ B ] → X ⊗ Y ⊢fLG[ A ⊗ B ]
+      ⇒L  : ∀ {X Y A B} →  X ⊢fLG[ A ] → [ B ]⊢fLG Y → [ A ⇒ B ]⊢fLG X ⇒ Y
+      ⇒R  : ∀ {X A B}   →  X ⊢fLG · A · ⇒ · B · → X ⊢fLG · A ⇒ B ·
+      ⇐L  : ∀ {X Y A B} →  X ⊢fLG[ A ] → [ B ]⊢fLG Y → [ B ⇐ A ]⊢fLG Y ⇐ X
+      ⇐R  : ∀ {X A B}   →  X ⊢fLG · B · ⇐ · A · → X ⊢fLG · B ⇐ A ·
       r⇒⊗ : ∀ {X Y Z}   →  Y ⊢fLG X ⇒ Z → X ⊗ Y ⊢fLG Z
       r⊗⇒ : ∀ {X Y Z}   →  X ⊗ Y ⊢fLG Z → Y ⊢fLG X ⇒ Z
       r⇐⊗ : ∀ {X Y Z}   →  X ⊢fLG Z ⇐ Y → X ⊗ Y ⊢fLG Z
@@ -164,4 +164,4 @@ module FocPol where
 ```
 
 
-[compute](Example/System/LG/Pol.agda "((quote ⊕ᴸ) ∷ (quote ⊕ᴿ) ∷ (quote ⇚ᴸ) ∷ (quote ⇚ᴿ) ∷ (quote ⇛ᴸ) ∷ (quote ⇛ᴿ) ∷ (quote r⇚⊕) ∷ (quote r⊕⇚) ∷ (quote r⇛⊕) ∷ (quote r⊕⇛) ∷ (quote d⇛⇐) ∷ (quote d⇛⇒) ∷ (quote d⇚⇒) ∷ (quote d⇚⇐) ∷ []) asMathParOf (quote fLG_)")
+[compute](Example/System/LG/Pol.agda "((quote ⊕L) ∷ (quote ⊕R) ∷ (quote ⇚L) ∷ (quote ⇚R) ∷ (quote ⇛L) ∷ (quote ⇛R) ∷ (quote r⇚⊕) ∷ (quote r⊕⇚) ∷ (quote r⇛⊕) ∷ (quote r⊕⇛) ∷ (quote d⇛⇐) ∷ (quote d⇛⇒) ∷ (quote d⇚⇒) ∷ (quote d⇚⇐) ∷ []) asMathParOf (quote fLG_)")
