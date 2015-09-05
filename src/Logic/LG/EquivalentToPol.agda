@@ -22,7 +22,7 @@ module Logic.LG.EquivalentToPol
 open import Logic.LG.Type.Polarised      Atom Polarityᴬ?
 open import Logic.LG.Type                Atom
 open import Logic.LG.Structure.Polarised Atom
-open import Logic.LG.Judgement           Atom
+open import Logic.LG.Sequent           Atom
 open import Logic.LG.Base                Atom
 open import Logic.LG.Pol.Base            Atom Polarityᴬ?
 

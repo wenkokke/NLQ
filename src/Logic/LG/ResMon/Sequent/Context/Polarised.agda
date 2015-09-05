@@ -14,13 +14,13 @@ open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.LG.ResMon.Judgement.Context.Polarised {ℓ} (Atom : Set ℓ) where
+module Logic.LG.ResMon.Sequent.Context.Polarised {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity
 open import Logic.LG.Type                     Atom as T
 open import Logic.LG.Type.Context.Polarised   Atom as TCP
-open import Logic.LG.ResMon.Judgement         Atom
+open import Logic.LG.ResMon.Sequent         Atom
 
 
 infix 50 _[_]ʲ
@@ -33,7 +33,7 @@ data Contextʲ (p : Polarity) : Set ℓ where
 
 
 
-_[_]ʲ : ∀ {p} → Contextʲ p → Type → Judgement
+_[_]ʲ : ∀ {p} → Contextʲ p → Type → Sequent
 (A <⊢ B) [ C ]ʲ = A [ C ] ⊢ B
 (A ⊢> B) [ C ]ʲ = A ⊢ B [ C ]
 

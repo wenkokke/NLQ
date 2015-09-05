@@ -10,17 +10,17 @@ module Logic.Translation where
 
 
 record Translation {j₁ j₂ t₁ t₂ ℓ₁ ℓ₂}
-                   {Judgement₁ : Set j₁}
-                   {Judgement₂ : Set j₂}
+                   {Sequent₁ : Set j₁}
+                   {Sequent₂ : Set j₂}
                    (Type₁ : Set ℓ₁)
                    (Type₂ : Set ℓ₂)
-                   (Term₁ : Judgement₁ → Set t₁)
-                   (Term₂ : Judgement₂ → Set t₂)
+                   (Term₁ : Sequent₁ → Set t₁)
+                   (Term₂ : Sequent₂ → Set t₂)
                    : Set (suc (j₁ ⊔ j₂ ⊔ t₁ ⊔ t₂ ⊔ ℓ₁ ⊔ ℓ₂)) where
   field
     ⟦_⟧ᵗ : Type₁ → Type₂
-    ⟦_⟧ʲ : Judgement₁ → Judgement₂
-    [_]  : {J : Judgement₁} → Term₁ J → Term₂ ⟦ J ⟧ʲ
+    ⟦_⟧ʲ : Sequent₁ → Sequent₂
+    [_]  : {J : Sequent₁} → Term₁ J → Term₂ ⟦ J ⟧ʲ
 
 
 infixr 9 _◆_

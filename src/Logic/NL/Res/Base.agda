@@ -11,7 +11,7 @@ module Logic.NL.Res.Base {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.NL.Type          Atom
-open import Logic.NL.Res.Judgement Atom public hiding (module DecEq)
+open import Logic.NL.Res.Sequent Atom public hiding (module DecEq)
 
 
 infix 1 NL_ _⊢NL_
@@ -21,7 +21,7 @@ mutual
   _⊢NL_ : Type → Type → Set ℓ
   A ⊢NL B = NL A ⊢ B
 
-  data NL_ : Judgement → Set ℓ where
+  data NL_ : Sequent → Set ℓ where
     ax   : ∀ {A}      → A ⊢NL A
     cut  : ∀ {A B C}  → A ⊢NL B → B ⊢NL C → A ⊢NL C
     r⇒⊗  : ∀ {A B C}  → B ⊢NL A ⇒ C → A ⊗ B ⊢NL C

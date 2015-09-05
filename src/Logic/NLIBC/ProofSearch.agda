@@ -19,7 +19,7 @@ module Logic.NLIBC.ProofSearch
 open import Logic.NLIBC.Type              Atom as T; open T.DecEq _≟-Atom_
 open import Logic.NLIBC.Structure         Atom as S; open S.DecEq _≟-Atom_
 open import Logic.NLIBC.Structure.Context Atom as C
-open import Logic.NLIBC.Judgement         Atom as J; open J.DecEq _≟-Atom_
+open import Logic.NLIBC.Sequent         Atom as J; open J.DecEq _≟-Atom_
 open import Logic.NLIBC.Base              Atom
 
 
@@ -65,33 +65,33 @@ connˢ I = 0
 connˢ B = 0
 connˢ C = 0
 
-connʲ : Judgement → ℕ
+connʲ : Sequent → ℕ
 connʲ (Γ ⊢ p) = connˢ Γ + connᵗ p
 
 
-findAll : (J : Judgement) → List (NL J)
+findAll : (J : Sequent) → List (NL J)
 findAll J = search (connʲ J) J
   where
   open RawMonadPlus Data.List.monadPlus using (∅; _∣_; return; _<$>_) renaming (_⊛_ to _<*>_)
 
-  search : (n : ℕ) (J : Judgement) → List (NL J)
+  search : (n : ℕ) (J : Sequent) → List (NL J)
   search n J =
     {- composition -} check-ax        n J ∣ check-⇒ᴿ/⇐ᴿ n J ∣ check-⇒ᴸ/⇐ᴸ n J ∣
     {-   scoping   -} check-⇦ᴸλ       n J ∣ check-⇨ᴿλ   n J ∣
     {-   gapping   -} check-⇨ᴿgᴸ/⇨ᴿgᴿ n J
     where
-    check-ax : (n : ℕ) (J : Judgement) → List (NL J)
+    check-ax : (n : ℕ) (J : Sequent) → List (NL J)
     check-ax _ (· p · ⊢ q) with p ≟-Type q
     ... | yes p=q rewrite p=q = return ax
     ... | no  p≠q             = ∅
     check-ax _ _ = ∅
 
-    check-⇒ᴿ/⇐ᴿ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇒ᴿ/⇐ᴿ : (n : ℕ) (J : Sequent) → List (NL J)
     check-⇒ᴿ/⇐ᴿ (suc n) (Γ ⊢ p ⇒ q) = ⇒ᴿ <$> search n (· p · ∙ Γ ⊢ q)
     check-⇒ᴿ/⇐ᴿ (suc n) (Γ ⊢ q ⇐ p) = ⇐ᴿ <$> search n (Γ ∙ · p · ⊢ q)
     check-⇒ᴿ/⇐ᴿ _ _ = ∅
 
-    check-⇒ᴸ/⇐ᴸ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇒ᴸ/⇐ᴸ : (n : ℕ) (J : Sequent) → List (NL J)
     check-⇒ᴸ/⇐ᴸ (suc n) (Γ ⊢ r) = concat (map check-⇒ᴸ/⇐ᴸ′ (focus Γ))
       where
       check-⇒ᴸ/⇐ᴸ′ : (∃₂ (λ (Σ : Context) (Δ : Structure) → Σ [ Δ ] ≡ Γ)) → List (Γ ⊢NL r)
@@ -102,13 +102,13 @@ findAll J = search (connʲ J) J
       check-⇒ᴸ/⇐ᴸ′ _ = ∅
     check-⇒ᴸ/⇐ᴸ _ _ = ∅
 
-    check-⇨ᴿ/⇦ᴿ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇨ᴿ/⇦ᴿ : (n : ℕ) (J : Sequent) → List (NL J)
     check-⇨ᴿ/⇦ᴿ (suc n) (Γ ⊢ p ⇨ q) = ⇨ᴿ <$> search n (· p · ∘ Γ ⊢ q)
     check-⇨ᴿ/⇦ᴿ (suc n) (Γ ⊢ q ⇦ p) = ⇦ᴿ <$> search n (Γ ∘ · p · ⊢ q)
     check-⇨ᴿ/⇦ᴿ _ _ = ∅
 
     -- QR up
-    check-⇦ᴸλ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇦ᴸλ : (n : ℕ) (J : Sequent) → List (NL J)
     check-⇦ᴸλ (suc n) (Γ ⊢ r) = concat (map check-⇦ᴸλ′ (focus Γ))
       where
       check-⇦ᴸλ′ : (∃₂ (λ (Σ : Context) (Γ′ : Structure) → Σ [ Γ′ ] ≡ Γ)) → List (Γ ⊢NL r)
@@ -124,7 +124,7 @@ findAll J = search (connʲ J) J
     check-⇦ᴸλ _ _ = ∅
 
     -- QR to the top
-    check-⇦ᴸλ′ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇦ᴸλ′ : (n : ℕ) (J : Sequent) → List (NL J)
     check-⇦ᴸλ′ (suc n) (Γ ⊢ r) = concat (map check-⇦ᴸλ″ (focus₁ Γ))
       where
       check-⇦ᴸλ″ : (∃₂ (λ (Γ′ : Context₁) (Δ : Structure) → Γ′ [ Δ ] ≡ Γ)) → List (Γ ⊢NL r)
@@ -136,7 +136,7 @@ findAll J = search (connʲ J) J
     check-⇦ᴸλ′ _ _ = ∅
 
     -- QR down
-    check-⇨ᴿλ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇨ᴿλ : (n : ℕ) (J : Sequent) → List (NL J)
     check-⇨ᴿλ (suc n) (Γ ⊢ p ⇨ q) = concat (map check-⇨ᴿλ′ (trace Γ))
       where
       check-⇨ᴿλ′ : ∃ (λ Γ′ → λx Γ′ [x] ≡ Γ) → List (Γ ⊢NL p ⇨ q)
@@ -145,7 +145,7 @@ findAll J = search (connʲ J) J
     check-⇨ᴿλ _ _ = ∅
 
     -- gapping
-    check-⇨ᴿgᴸ/⇨ᴿgᴿ : (n : ℕ) (J : Judgement) → List (NL J)
+    check-⇨ᴿgᴸ/⇨ᴿgᴿ : (n : ℕ) (J : Sequent) → List (NL J)
     check-⇨ᴿgᴸ/⇨ᴿgᴿ (suc n) (Γ ⊢ q ⇨ r) = foldr _∣_ ∅ (map check-⇨ᴿgᴸ/⇨ᴿgᴿ′ (focus Γ))
       where
       check-⇨ᴿgᴸ/⇨ᴿgᴿ′ : (∃₂ (λ (Σ : Context) (Δ : Structure) → Σ [ Δ ] ≡ Γ)) → List (Γ ⊢NL q ⇨ r)

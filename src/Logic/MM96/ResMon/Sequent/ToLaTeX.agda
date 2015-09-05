@@ -2,7 +2,7 @@
 -- The Lambek Calculus in Agda
 --
 -- This file was generated from:
---   src/Logic/LG/ResMon/Judgement/ToLaTeX.agda
+--   src/Logic/LG/ResMon/Sequent/ToLaTeX.agda
 --------------------------------------------------------------------------------
 
 
@@ -10,20 +10,20 @@ open import Data.String
 open import Logic.ToLaTeX
 
 
-module Logic.MM96.ResMon.Judgement.ToLaTeX {ℓ} (Atom : Set ℓ) where
+module Logic.MM96.ResMon.Sequent.ToLaTeX {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.MM96.Type             Atom
 open import Logic.MM96.Type.ToLaTeX     Atom
-open import Logic.MM96.ResMon.Judgement Atom
+open import Logic.MM96.ResMon.Sequent Atom
 
 
 
 instance
-  JudgementToLaTeX : {{AtomToLaTeX : ToLaTeX Atom}} → ToLaTeX Judgement
-  JudgementToLaTeX = record { toLaTeXPrec = λ _ → go }
+  SequentToLaTeX : {{AtomToLaTeX : ToLaTeX Atom}} → ToLaTeX Sequent
+  SequentToLaTeX = record { toLaTeXPrec = λ _ → go }
     where
       open ToLaTeX {{...}}
 
-      go : Judgement → String
+      go : Sequent → String
       go (A ⊢ B) = toLaTeX A ++  " \\fCenter " ++ toLaTeX B

@@ -9,7 +9,7 @@ open import Relation.Binary                            using (DecSetoid)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.NLIBC.Judgement {ℓ} (Atom : Set ℓ) where
+module Logic.NLIBC.Sequent {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.NLIBC.Type      Atom as T hiding (module DecEq)
@@ -19,8 +19,8 @@ open import Logic.NLIBC.Structure Atom as S hiding (module DecEq)
 infix 3 _⊢_
 
 
-data Judgement : Set ℓ where
-  _⊢_ : Structure → Type → Judgement
+data Sequent : Set ℓ where
+  _⊢_ : Structure → Type → Sequent
 
 
 -- Proofs which show that constructors of types (as all Agda
@@ -35,14 +35,14 @@ module DecEq (_≟-Atom_ : (A B : Atom) → Dec (A ≡ B)) where
   open T.DecEq _≟-Atom_ using (_≟-Type_)
   open S.DecEq _≟-Atom_ using (_≟-Structure_)
 
-  infix 4 _≟-Judgement_
+  infix 4 _≟-Sequent_
 
-  _≟-Judgement_ : (J₁ J₂ : Judgement) → Dec (J₁ ≡ J₂)
-  (Γ ⊢ p) ≟-Judgement (Δ ⊢ q) with Γ ≟-Structure Δ | p ≟-Type q
+  _≟-Sequent_ : (J₁ J₂ : Sequent) → Dec (J₁ ≡ J₂)
+  (Γ ⊢ p) ≟-Sequent (Δ ⊢ q) with Γ ≟-Structure Δ | p ≟-Type q
   ... | yes Γ=Δ | yes p=q rewrite Γ=Δ | p=q = yes refl
   ... | no  Γ≠Δ | _       = no (λ x → Γ≠Δ (proj₁ (⊢-injective x)))
   ... | _       | no  p≠q = no (λ x → p≠q (proj₂ (⊢-injective x)))
 
   instance
     decSetoid : DecSetoid _ _
-    decSetoid = P.decSetoid _≟-Judgement_
+    decSetoid = P.decSetoid _≟-Sequent_

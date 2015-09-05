@@ -25,7 +25,7 @@ open import Logic.Translation
 open import Logic.NL.Type.Polarised      Atom Polarityᴬ?
 open import Logic.NL.Type                Atom
 open import Logic.NL.Structure.Polarised Atom
-open import Logic.NL.Judgement           Atom
+open import Logic.NL.Sequent           Atom
 open import Logic.NL.Pol.Base            Atom Polarityᴬ?
 
 
@@ -90,7 +90,7 @@ app₄ {{n}} = app (toWitness n)
 ⟦     X ⇐ Y   ⟧ˢ = ⟦ X ⟧ˢ × ⟦ Y ⟧ˢ
 
 
-⟦_⟧ʲ : Judgement → Set ℓ
+⟦_⟧ʲ : Sequent → Set ℓ
 ⟦   X  ⊢  Y   ⟧ʲ = ⟦ X ⟧ˢ → ⟦ Y ⟧ˢ → R
 ⟦ [ A ]⊢  Y   ⟧ʲ = ⟦ Y ⟧ˢ → ⟦ A ⟧⁻
 ⟦   X  ⊢[ B ] ⟧ʲ = ⟦ X ⟧ˢ → ⟦ B ⟧⁺

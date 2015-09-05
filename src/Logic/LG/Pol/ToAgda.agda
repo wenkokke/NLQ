@@ -23,7 +23,7 @@ open import Logic.Translation
 open import Logic.LG.Type.Polarised      Atom Polarityᴬ?
 open import Logic.LG.Type                Atom
 open import Logic.LG.Structure.Polarised Atom
-open import Logic.LG.Judgement           Atom
+open import Logic.LG.Sequent           Atom
 open import Logic.LG.Pol.Base            Atom Polarityᴬ?
 
 
@@ -135,7 +135,7 @@ app₄ {{n}} = app (toWitness n)
 ⟦     X ⇐ Y   ⟧ˢ = ⟦ X ⟧ˢ × ⟦ Y ⟧ˢ
 
 
-⟦_⟧ʲ : Judgement → Set ℓ
+⟦_⟧ʲ : Sequent → Set ℓ
 ⟦   X  ⊢  Y   ⟧ʲ = ⟦ X ⟧ˢ → ⟦ Y ⟧ˢ → R
 ⟦ [ A ]⊢  Y   ⟧ʲ = ⟦ Y ⟧ˢ → ⟦ A ⟧⁻
 ⟦   X  ⊢[ B ] ⟧ʲ = ⟦ X ⟧ˢ → ⟦ B ⟧⁺

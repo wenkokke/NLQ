@@ -13,8 +13,8 @@ module Logic.LG.ResMon.Origin.Dia {ℓ} (Atom : Set ℓ) where
   open import Logic.Polarity
   open import Logic.LG.Type                               Atom as T
   open import Logic.LG.Type.Context.Polarised             Atom as TC
-  open import Logic.LG.ResMon.Judgement                   Atom
-  open import Logic.LG.ResMon.Judgement.Context.Polarised Atom as JC
+  open import Logic.LG.ResMon.Sequent                   Atom
+  open import Logic.LG.ResMon.Sequent.Context.Polarised Atom as JC
   open import Logic.LG.ResMon.Base                        Atom as LGB
 
 

@@ -92,17 +92,17 @@ def format(file,str)
 
   when 'display_calculus'
     str.
-      gsub("\\AgdaFunction{findAllRM}"  , "\\AgdaFunction{findAll\textsuperscript{RM}}").
+      gsub("\\AgdaFunction{findAllRM}"  , "\\AgdaFunction{findAll\\textsuperscript{RM}}").
       gsub("\\AgdaModule{RM\\_}"           , "\\AgdaModule{RM}").
       gsub("\\AgdaDatatype{RM\\_}"         , "\\AgdaDatatype{RM}").
       gsub("\\AgdaFunction{⊢RM}"           , "\\AgdaFunction{⊢}").
       gsub("\\AgdaFunction{RM.⊢RM}"        , "\\AgdaFunction{⊢\\textsuperscript{RM}}").
 
-      gsub("\\AgdaFunction{findAllNL}"     , "\\AgdaFunction{findAll\textsuperscript{NL}}").
+      gsub("\\AgdaFunction{findAllNL}"     , "\\AgdaFunction{findAll\\textsuperscript{NL}}").
       gsub(%r{(\\AgdaFunction\{NL\.\[\})
-              (.(?<!\\AgdaFunction\{\[\})(?<!\\AgdaFunction\{NL\.\[\}))*
+              ((.(?<!\\AgdaFunction\{\[\})(?<!\\AgdaFunction\{NL\.\[\}))*)
               (\\AgdaFunction\{\]⊢NL\})}xm)\
-          { "\\AgdaFunction{[#{$2}}\\AgdaFunction{]⊢\\textsuperscript{NL}}" }.
+          { "\\AgdaFunction{[}#{$2}\\AgdaFunction{]⊢\\textsuperscript{NL}}" }.
       gsub("\\AgdaFunction{NL.⊢NL}"        , "\\AgdaFunction{⊢\\textsuperscript{NL}}").
       gsub("\\AgdaFunction{NL.⊢NL[}"       , "\\AgdaFunction{⊢\\textsuperscript{NL}[}").
       gsub("\\AgdaModule{NL\\_}"           , "\\AgdaModule{NL}").
@@ -112,9 +112,9 @@ def format(file,str)
       gsub("\\AgdaFunction{]⊢NL}"          , "\\AgdaFunction{]⊢}").
 
       gsub(%r{(\\AgdaFunction\{fNL\.\[\})
-              (.(?<!\\AgdaFunction\{\[\})(?<!\\AgdaFunction\{fNL\.\[\}))*
+              ((.(?<!\\AgdaFunction\{\[\})(?<!\\AgdaFunction\{fNL\.\[\}))*)
               (\\AgdaFunction\{\]⊢fNL\})}xm)\
-          { "\\AgdaFunction{[#{$2}}\\AgdaFunction{]⊢\\textsuperscript{fNL}}" }.
+          { "\\AgdaFunction{[}#{$2}\\AgdaFunction{]⊢\\textsuperscript{fNL}}" }.
       gsub("\\AgdaFunction{fNL.⊢fNL}"      , "\\AgdaFunction{⊢\\textsuperscript{fNL}}").
       gsub("\\AgdaFunction{fNL.⊢fNL[}"     , "\\AgdaFunction{⊢\\textsuperscript{fNL}[}").
       gsub("\\AgdaModule{fNL\\_}"          , "\\AgdaModule{fNL}").
@@ -134,9 +134,9 @@ def format(file,str)
       gsub("\\AgdaFunction{RM.⊢RM}"        , "\\AgdaFunction{⊢\\textsuperscript{RM}}").
 
       gsub(%r{(\\AgdaFunction\{LG\.\[\})
-              (.(?<!\\AgdaFunction\{\[\})(?<!\\AgdaFunction\{LG\.\[\}))*
+              ((.(?<!\\AgdaFunction\{\[\})(?<!\\AgdaFunction\{LG\.\[\}))*)
               (\\AgdaFunction\{\]⊢LG\})}xm)\
-          { "\\AgdaFunction{[#{$2}}\\AgdaFunction{]⊢\\textsuperscript{LG}}" }.
+          { "\\AgdaFunction{[}#{$2}\\AgdaFunction{]⊢\\textsuperscript{LG}}" }.
       gsub("\\AgdaFunction{LG.⊢LG}"        , "\\AgdaFunction{⊢\\textsuperscript{LG}}").
       gsub("\\AgdaFunction{LG.⊢LG[}"       , "\\AgdaFunction{⊢\\textsuperscript{LG}[}").
       gsub("\\AgdaModule{LG\\_}"           , "\\AgdaModule{LG}").
@@ -145,9 +145,9 @@ def format(file,str)
       gsub("\\AgdaFunction{]⊢LG}"          , "\\AgdaFunction{]⊢}").
 
       gsub(%r{(\\AgdaFunction\{fLG\.\[\})
-              (.(?<!\\AgdaFunction\{\[\})(?<!\\AgdaFunction\{fLG\.\[\}))*
+              ((.(?<!\\AgdaFunction\{\[\})(?<!\\AgdaFunction\{fLG\.\[\}))*)
               (\\AgdaFunction\{\]⊢fLG\})}xm)\
-          { "\\AgdaFunction{[#{$2}}\\AgdaFunction{]⊢\\textsuperscript{fLG}}" }.
+          { "\\AgdaFunction{[}#{$2}\\AgdaFunction{]⊢\\textsuperscript{fLG}}" }.
       gsub("\\AgdaFunction{fLG.⊢fLG}"        , "\\AgdaFunction{⊢\\textsuperscript{fLG}}").
       gsub("\\AgdaFunction{fLG.⊢fLG[}"       , "\\AgdaFunction{⊢\\textsuperscript{fLG}[}").
       gsub("\\AgdaModule{fLG\\_}"           , "\\AgdaModule{fLG}").

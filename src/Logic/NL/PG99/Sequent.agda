@@ -9,7 +9,7 @@ open import Data.Product                          using (_×_; _,_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
 
-module Logic.NL.PG99.Judgement {ℓ} (Atom : Set ℓ) where
+module Logic.NL.PG99.Sequent {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.NL.Type         Atom as T
@@ -18,7 +18,7 @@ open import Logic.NL.Type.Context Atom as C; open C.Simple using (_[_]; _<_>; <>
 
 infix 3 _⊢_ ⊢ᴺ_ ⊢ᴾ_
 
-data Judgement : Set ℓ where
-  _⊢_ : Type → Type → Judgement
-  ⊢ᴺ_ : Context → Judgement
-  ⊢ᴾ_ : Context → Judgement
+data Sequent : Set ℓ where
+  _⊢_ : Type → Type → Sequent
+  ⊢ᴺ_ : Context → Sequent
+  ⊢ᴾ_ : Context → Sequent

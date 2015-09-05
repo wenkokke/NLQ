@@ -14,7 +14,7 @@ module Logic.LG.ResMon.ToAgda
 open import Logic.Polarity
 open import Logic.Translation
 open import Logic.LG.Type             Atom
-open import Logic.LG.ResMon.Judgement Atom
+open import Logic.LG.ResMon.Sequent Atom
 open import Logic.LG.ResMon.Base      Atom
 
 
@@ -114,7 +114,7 @@ mutual
   ⌈ d⇚⇐ f    ⌉ᴿ (x , y) k  = k (λ {(z , w) → ⌈ f ⌉ᴿ (x , w) (λ k → k (z , y))})
 
 
-⌈_⌉ʲ : Judgement → Set ℓ
+⌈_⌉ʲ : Sequent → Set ℓ
 ⌈ A ⊢ B ⌉ʲ = ⌈ A ⌉ → ¬ ¬ ⌈ B ⌉
 
 CBV : Translation Type (Set ℓ) LG_ id
@@ -139,7 +139,7 @@ module _ where -- TODO: HACK! ∞
   ⌊_⌋ᴿ : ∀ {A B} → LG A ⊢ B → (⌊ B ⌋ → ¬ ¬ ⌊ A ⌋)
   ⌊_⌋ᴿ = ⌈_⌉ᴿ ∘ _∞ᵗ
 
-  ⌊_⌋ʲ : Judgement → Set ℓ
+  ⌊_⌋ʲ : Sequent → Set ℓ
   ⌊ A ⊢ B ⌋ʲ = ¬ ⌊ A ⌋ → ¬ ⌊ B ⌋
 
   CBN : Translation Type (Set ℓ) LG_ id
@@ -236,7 +236,7 @@ mutual
   ⌈ d⇚⇐ f    ⌉′ᴿ = λ k k′ → k (λ z w → k′ (λ x y → ⌈ f ⌉′ᴿ (w , y) (λ k → k (x , z))))
 
 
-⌈_⌉′ʲ : Judgement → Set ℓ
+⌈_⌉′ʲ : Sequent → Set ℓ
 ⌈ A ⊢ B ⌉′ʲ = ⌈ A ⌉′ → ¬ ¬ ⌈ B ⌉′
 
 

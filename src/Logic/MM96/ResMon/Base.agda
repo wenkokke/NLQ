@@ -16,12 +16,12 @@ module Logic.MM96.ResMon.Base {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.MM96.Type             Atom
-open import Logic.MM96.ResMon.Judgement Atom
+open import Logic.MM96.ResMon.Sequent Atom
 
 
 infix  1  MM96_
 
-data MM96_ : Judgement → Set ℓ where
+data MM96_ : Sequent → Set ℓ where
 
   ax   : ∀ {A}       → MM96 el A ⊢ el A
 

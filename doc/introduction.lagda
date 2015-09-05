@@ -1,20 +1,46 @@
-TODO: make explicit the meanings of the terms "type-logical grammar",
-"categorial grammar" and "extended categorial grammar".
+# Introduction
 
+\begin{center}
+  \begin{minipage}{0.3\textwidth}
+    \centering
+    \framebox{Morphological}\\
+    $\downarrow$\\
+    \framebox{Lexical}\\
+    $\downarrow$\\
+    \framebox{Syntactic}\\
+    $\downarrow$\\
+    \framebox{Semantic}\\
+    $\downarrow$\\
+    \framebox{Pragmatic}\\
+  \end{minipage}
+  \begin{minipage}{0.6\textwidth}
+    \centering
+    ``Mary saw foxes.''\\
+    $\downarrow$\\
+    Mary see.PAST fox.PL\\
+    $\downarrow$\\
+    Mary:NP see:TV.PAST fox:NP.PL\\
+    $\downarrow$\\
+    Mary:NP [see:TV.PAST fox:NP.PL]\\
+    $\downarrow$\\
+    $∃ X. X ⊆ \mathbf{fox} ∧ \mathbf{past}(\mathbf{see}(\text{Mary},X))$\\
+    $\downarrow$\\
+    \ldots\\
+  \end{minipage}
+\end{center}
 
+\begin{center}
+  Mary:NP [see:TV.PAST fox:NP.PL]\\
+  $\downarrow$\\
+  \framebox{Type-Logical Grammar}\\
+  $\downarrow$\\
+  $∃ X. X ⊆ \mathbf{fox} ∧ \mathbf{past}(\mathbf{see}(\text{mary},X))$\\
+\end{center}
 
-
-<!--
-- for the systems we introduce, we will not busy ourselves with
-  rewrite rules, normalisation, etc.
-- we will define translations of various systems into intuitionistic
-  logic (or the simply-typed lambda calculus) either directly or
-  through a continuation-passing style translation;
-- all our logical fragments will remain propositional, and many will
-  be fragments of non-commutative linear logic;
-- we will translate our proofs in intuitionistic logic back into Agda,
-  piggy-backing on the implementation to obtain evaluation;
-- the intermediate translation to IL will guarantee that we do not use
-  any constructions not available in IL in the translation of our
-  systems;
--->
+\begin{center}
+  Mary:NP [saw:TV foxes:NP]\\
+  $\downarrow$\\
+  \framebox{Type-Logical Grammar}\\
+  $\downarrow$\\
+  $∃ X. X ⊆ \mathbf{fox} ∧ \mathbf{saw}(\text{mary},X)$\\
+\end{center}

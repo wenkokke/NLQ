@@ -15,8 +15,8 @@ module Logic.NLCPS.ResMon.Cut {ℓ} (Atom : Set ℓ) where
 open import Logic.Polarity
 open import Logic.NLCPS.Type                               Atom as T
 open import Logic.NLCPS.Type.Context.Polarised             Atom as TCP using ([])
-open import Logic.NLCPS.ResMon.Judgement                   Atom
-open import Logic.NLCPS.ResMon.Judgement.Context.Polarised Atom as JCP
+open import Logic.NLCPS.ResMon.Sequent                   Atom
+open import Logic.NLCPS.ResMon.Sequent.Context.Polarised Atom as JCP
 open import Logic.NLCPS.ResMon.Base                        Atom as NLCPSB
 open import Logic.NLCPS.ResMon.Origin                      Atom as NLCPSO
 

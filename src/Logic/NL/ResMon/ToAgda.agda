@@ -11,7 +11,7 @@ module Logic.NL.ResMon.ToAgda {ℓ ℓ₂} (Atom : Set ℓ) (⟦_⟧ᴬ : Atom �
 
 
 open import Logic.NL.Type             Atom
-open import Logic.NL.ResMon.Judgement Atom
+open import Logic.NL.ResMon.Sequent Atom
 open import Logic.NL.ResMon.Base      Atom
 
 
@@ -22,7 +22,7 @@ open import Logic.NL.ResMon.Base      Atom
 ⟦ B ⇐ A ⟧ᵗ = ⟦ A ⟧ᵗ → ⟦ B ⟧ᵗ
 
 
-⟦_⟧ʲ : Judgement → Set ℓ₂
+⟦_⟧ʲ : Sequent → Set ℓ₂
 ⟦ A ⊢ B ⟧ʲ = ⟦ A ⟧ᵗ → ⟦ B ⟧ᵗ
 
 

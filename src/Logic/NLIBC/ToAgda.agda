@@ -32,7 +32,7 @@ open import Logic.NLIBC Atom
 ⟦ C     ⟧ˢ = Lift ⊤
 
 
-⟦_⟧ʲ : Judgement → Set ℓ₂
+⟦_⟧ʲ : Sequent → Set ℓ₂
 ⟦ Γ ⊢ p ⟧ʲ = ⟦ Γ ⟧ˢ → ⟦ p ⟧ᵗ
 
 private

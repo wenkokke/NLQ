@@ -42,6 +42,7 @@ buildTypeFast = do bt <- getEnv buildType; return (bt == Just "fast")
 toc :: [FilePath]
 toc =
   [ "abstract"
+  , "introduction"
   , "motivation"
   , "type-logical_grammar"
   , "non-associative_lambek_calculus"
@@ -55,7 +56,7 @@ toc =
 
 
 main :: IO ()
-main = do
+main =
   shakeArgs shakeOptions { shakeFiles = "_build" } $ do
 
   -- * top-level tasks
@@ -111,7 +112,7 @@ main = do
 
   toBuild "main.pdf" %> \out -> do
     let src = out -<.> "tex"
-    need [src, out -<.> "bib", toBuild "preamble.tex"]
+    need [src, out -<.> "bib", toBuild "preamble.tex", toBuild "mathpartir.sty"]
     let local = fromBuild src
     command_ [Cwd "_build", EchoStdout False] "pdflatex" ["-draftmode", local]
     command_ [Cwd "_build", EchoStdout False] "bibtex"   [dropExtension local]
@@ -133,7 +134,7 @@ main = do
     writeFile' out yml
 
   -- import files by copying
-  map toBuild ["preamble.tex","main.fmt","main.bib","agda.sty"] |%> \out -> do
+  map toBuild ["preamble.tex","main.fmt","main.bib","agda.sty","mathpartir.sty"] |%> \out -> do
     let src = fromBuild out
     need [src]
     copyFile' src out

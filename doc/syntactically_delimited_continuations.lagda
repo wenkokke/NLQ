@@ -158,7 +158,7 @@ module syntactically_delimited_continuations
     syntax ∈⊢[]-syntax  X B        f  = f ∈ X ⊢[ B ]
     syntax ∈∶⊢[]-syntax X B (λ x → f) = f ∈ x ∶  X ⊢[ B ]
 ```
-```
+``` hidden
     data NL◇_ : Judgement → Set where
 
       -- rules for fNL
@@ -167,6 +167,9 @@ module syntactically_delimited_continuations
            →  f ∈ x ∶    X    ⊢[    B ]
            →  f ∈ x ∶ ⟨  X ⟩  ⊢[ ◇  B ]
 ```
+
+[compute](Example/System/NLCPS.agda "(quote ◇ᴿ) asInferRuleOf (quote fNLCPS_)")
+
 ``` hidden
       ax⁺  : ∀ {A} → x ∈ x ∶ · A · ⊢[ A ]
       ax⁻  : ∀ {B} → x ∈[ B ]⊢ x ∶ · B ·
@@ -192,7 +195,7 @@ module example where
   open import Data.List using (List; _∷_; [])
   open import Data.List.NonEmpty using (List⁺; _∷_)
   open import Data.Product using (_,_)
-  open import Example.System.EXP public renaming (_,_ to _∙_)
+  open import Example.System.NLCPS public renaming (_,_ to _∙_)
 
   data Word : Set where
     mary leave to left wants said everyone
@@ -203,9 +206,9 @@ module example where
   postulate
     MARY    : Entity
     PERSON  : Entity → Bool
-    LEAVES  : Entity → Bool
-    WANTS   : Entity → Bool → Bool
-    SAID    : Entity → Bool → Bool
+    LEAVE   : Entity → Bool
+    WANT    : Entity → Bool → Bool
+    SAY     : Entity → Bool → Bool
 ```
 
 ```
@@ -224,10 +227,10 @@ module example where
   Sem mary      = MARY
   Sem everyone  = (λ{(p₁ , p₂) → FORALL (λ x → p₂ x ⊃ p₁ x)}) , PERSON
   Sem to        = (λ{((x , k) , p) → k (p x)})
-  Sem leave     = LEAVES
-  Sem left      = (λ{(x , k) → k (LEAVES x)})
-  Sem wants     = (λ{((x , k) , y) → k (WANTS x (y id))})
-  Sem said      = (λ{((x , k) , y) → k (SAID x (y id))})
+  Sem leave     = LEAVE
+  Sem left      = (λ{(x , k) → k (LEAVE x)})
+  Sem wants     = (λ{((x , k) , y) → k (WANT x (y id))})
+  Sem said      = (λ{((x , k) , y) → k (SAY x (y id))})
 ```
 
 ```
@@ -242,8 +245,8 @@ module example where
 ```
 ```
     interpret (· mary · ∙ · wants · ∙ · everyone · ∙ · to · ∙ · leave ·)
-      ↦  [ (λ k → FORALL (λ x → PERSON x ⊃ k (WANTS MARY (LEAVES x))))
-         , (λ k → k (WANTS MARY (FORALL (λ x → PERSON x ⊃ LEAVES x))))
+      ↦  [ (λ k → FORALL (λ x → PERSON x ⊃ k (WANT MARY (LEAVE x))))
+         , (λ k → k (WANT MARY (FORALL (λ x → PERSON x ⊃ LEAVE x))))
          ]
 ```
 ``` hidden
@@ -252,7 +255,7 @@ module example where
 ```
 ```
     interpret (· mary · ∙ · said · ∙ ⟨ · everyone · ∙ · left · ⟩)
-      ↦  (λ (k : Bool → Bool) → k (SAID MARY (FORALL (λ x → PERSON x ⊃ LEAVES x))))
+      ↦  (λ (k : Bool → Bool) → k (SAY MARY (FORALL (λ x → PERSON x ⊃ LEAVE x))))
 ```
 ``` hidden
   example₂ = _

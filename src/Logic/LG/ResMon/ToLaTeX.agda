@@ -13,8 +13,8 @@ module Logic.LG.ResMon.ToLaTeX {ℓ} (Atom : Set ℓ) where
 
 open import Logic.LG.Type                     Atom
 open import Logic.LG.Type.ToLaTeX             Atom
-open import Logic.LG.ResMon.Judgement         Atom
-open import Logic.LG.ResMon.Judgement.ToLaTeX Atom
+open import Logic.LG.ResMon.Sequent         Atom
+open import Logic.LG.ResMon.Sequent.ToLaTeX Atom
 open import Logic.LG.ResMon.Base              Atom
 
 
@@ -23,7 +23,7 @@ instance
   aLGToLaTeX = record { toLaTeXPrec = λ _ → B.toLaTeX ∘ bussProof }
     where
       module B = ToLaTeX BussProofToLaTeX
-      module J = ToLaTeX JudgementToLaTeX
+      module J = ToLaTeX SequentToLaTeX
 
       mutual
         bussProof : ∀ {J} (f : LG J) → BussProof

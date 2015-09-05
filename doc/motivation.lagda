@@ -16,8 +16,8 @@ proof assistant, and play around with the grammar systems in an
 interactive session.
 
 In the course of doing research for this thesis, however, something
-happened which changed the mission statement as given above much more
-ambitious.
+happened which changed the mission statement as given above to
+something much more ambitious.
 It may have been because when I started, I had very little training in
 formal logic, but I found that many papers describing type-logical
 grammars, logics or type theories were unnecessarily obtuse. Often the
@@ -34,11 +34,12 @@ the paper; in addition, the code often only verified a small section
 of the paper, and often an outdated version of the theory.
 Lastly, there is the problem of disparate technologies when it comes
 to formatting: while research papers are almost always typeset in
-\LaTeX, people often still write their code in ASCII, and make little
-use of the flexibility their programming language has to offer. This
-often leads to formulas such as `A × B → C` being written in the code
-as something as unsightly as `Formula(IMPLIES, Formula(PRODUCT, "A",
-"B"), "C")`. This is what I mean with 'unreadable'.
+\LaTeX, people often still write their code using only the characters
+in the ASCII character set, and make little use of the flexibility
+their programming language has to offer. This often leads to simple
+formulas as `A × B → C` being written in the code as something as
+unsightly as `Formula(IMPLIES, Formula(PRODUCT, "A", "B"), "C")`. This
+is what I mean with 'unreadable'.
 
 For this thesis, I decided on the following contributions:
 
@@ -54,9 +55,9 @@ For this thesis, I decided on the following contributions:
     with an enlightening formalisation of categorial grammars, I will
     provide a series of verifications of various forms of the
     non-associative Lambek calculus, which forms the basis of all
-    extended categorial grammars, and most type-logical grammars. My
-    aim is to slowly incorporate the various changes which have been
-    made over the past decade, and motivate them in sections
+    extended categorial grammars, and most type-logical grammars.
+    My aim is to slowly incorporate the various changes which have
+    been made over the past decade, and motivate them in sections
     \ref{non-associative-lambek-calculus} and \ref{display-calculus}.
 
  3. In order to give an example of what a short literate paper would

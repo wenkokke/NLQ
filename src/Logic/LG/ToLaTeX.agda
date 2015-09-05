@@ -15,8 +15,8 @@ open import Logic.LG.Type                        Atom
 open import Logic.LG.Type.ToLaTeX                Atom
 open import Logic.LG.Structure.Polarised         Atom
 open import Logic.LG.Structure.Polarised.ToLaTeX Atom
-open import Logic.LG.Judgement                   Atom
-open import Logic.LG.Judgement.ToLaTeX           Atom
+open import Logic.LG.Sequent                   Atom
+open import Logic.LG.Sequent.ToLaTeX           Atom
 open import Logic.LG.Base                        Atom
 
 
@@ -25,7 +25,7 @@ instance
   sLGToLaTeX = record { toLaTeXPrec = λ _ → B.toLaTeX ∘ bussProof }
     where
       module B = ToLaTeX BussProofToLaTeX
-      module J = ToLaTeX JudgementToLaTeX
+      module J = ToLaTeX SequentToLaTeX
 
       mutual
         bussProof : ∀ {J} (f : LG J) → BussProof
