@@ -262,12 +262,12 @@ equivalent:
 
 ```
   to : ∀ {A B} → A R.⊢R B → · A · SC.⊢SC B
-  to    ax         = ax
-  to (  cut  f g)  = cut  {Γ = []} (to f) (to g)
-  to (  r⇒⊗  f)    = ⊗L   {Γ = []} (cut {Γ = _ ∙> []} (to f) (⇒L {Γ = []} ax ax))
-  to (  r⇐⊗  f)    = ⊗L   {Γ = []} (cut {Γ = [] <∙ _} (to f) (⇐L {Γ = []} ax ax))
-  to (  r⊗⇒  f)    = ⇒R (cut {Γ = []} (⊗R ax ax) (to f))
-  to (  r⊗⇐  f)    = ⇐R (cut {Γ = []} (⊗R ax ax) (to f))
+  to    ax           = ax
+  to (  cut  f g  )  = cut  {Γ = []} (to f) (to g)
+  to (  r⇒⊗  f    )  = ⊗L   {Γ = []} (cut {Γ = _ ∙> []} (to f) (⇒L {Γ = []} ax ax))
+  to (  r⇐⊗  f    )  = ⊗L   {Γ = []} (cut {Γ = [] <∙ _} (to f) (⇐L {Γ = []} ax ax))
+  to (  r⊗⇒  f    )  = ⇒R (cut {Γ = []} (⊗R ax ax) (to f))
+  to (  r⊗⇐  f    )  = ⇐R (cut {Γ = []} (⊗R ax ax) (to f))
 ```
 
 However, since the sequent calculus uses structures as its antecedent,
@@ -290,9 +290,9 @@ as follows:
 ```
   cutIn′  : ∀ {Γ Δ Δ′ A}
           → ⌊ Δ ⌋ ⊢R ⌊ Δ′ ⌋ → ⌊ Γ [ Δ′  ] ⌋ ⊢R A → ⌊ Γ [ Δ   ] ⌋ ⊢R A
-  cutIn′ {Γ = []      } f g = cut f g
-  cutIn′ {Γ = _ ∙> Γ  } f g = r⇒⊗ (cutIn′ {Γ = Γ} f (r⊗⇒ g))
-  cutIn′ {Γ = Γ <∙ _  } f g = r⇐⊗ (cutIn′ {Γ = Γ} f (r⊗⇐ g))
+  cutIn′ {  Γ = []      } f g = cut f g
+  cutIn′ {  Γ = _ ∙> Γ  } f g = r⇒⊗ (cutIn′ {Γ = Γ} f (r⊗⇒ g))
+  cutIn′ {  Γ = Γ <∙ _  } f g = r⇐⊗ (cutIn′ {Γ = Γ} f (r⊗⇐ g))
 ```
 
 Last, we need to prove a lemma which states that in translating `⊗L`
@@ -314,14 +314,14 @@ residuation rules with `cut` and `cutIn′`:
 
 ```
   from : ∀ {Γ A} → Γ SC.⊢SC A → ⌊ Γ ⌋ R.⊢R A
-  from    ax                  = ax
-  from (  cut  {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (from f)  (from g)
-  from (  ⊗L   {Γ = Γ}  {A} {B} f)    rewrite lemma-⌊_⌋ Γ {A} {B} = from f
-  from (  ⊗R            f g)  = r⇐⊗ (cut (from f) (r⊗⇐ (r⇒⊗ (cut (from g) (r⊗⇒ ax)))))
-  from (  ⇒L   {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (r⇐⊗ (cut (from g) (r⊗⇐ (r⇒⊗ ax)))) (from f)
-  from (  ⇐L   {Γ = Γ}  f g)  = cutIn′ {Γ = Γ} (r⇒⊗ (cut (from g) (r⊗⇒ (r⇐⊗ ax)))) (from f)
-  from (  ⇒R            f)    = r⊗⇒ (from f)
-  from (  ⇐R            f)    = r⊗⇐ (from f)
+  from    ax                          = ax
+  from (  cut  {Γ = Γ}  f g        )  = cutIn′ {Γ = Γ} (from f)  (from g)
+  from (  ⊗L   {Γ = Γ}  {A} {B} f  )  rewrite lemma-⌊_⌋ Γ {A} {B} = from f
+  from (  ⊗R            f g        )  = r⇐⊗ (cut (from f) (r⊗⇐ (r⇒⊗ (cut (from g) (r⊗⇒ ax)))))
+  from (  ⇒L   {Γ = Γ}  f g        )  = cutIn′ {Γ = Γ} (r⇐⊗ (cut (from g) (r⊗⇐ (r⇒⊗ ax)))) (from f)
+  from (  ⇐L   {Γ = Γ}  f g        )  = cutIn′ {Γ = Γ} (r⇒⊗ (cut (from g) (r⊗⇒ (r⇐⊗ ax)))) (from f)
+  from (  ⇒R            f          )  = r⊗⇒ (from f)
+  from (  ⇐R            f          )  = r⊗⇐ (from f)
 ```
 
 Now that we have eliminated the complexity introduced by contexts from
@@ -382,7 +382,7 @@ module resmon (Atom : Set) where
   infix  2  _⊢RM_
   infixl 2  _⊢>_
   infixl 2  _<⊢_
-  infixl 2  _[_]ᴶ
+  infixl 2  _[_]ʲ
   infixl 10 _[_]
   infixr 20 _⇒>_ _<⇒_
   infixl 20 _⇐>_ _<⇐_
@@ -420,10 +420,10 @@ rule as `ax′` below:
 
 ```
   ax′ : ∀ {A} → A ⊢RM A
-  ax′ {A =  el   A  } = ax
-  ax′ {A =  A ⊗  B  } = m⊗  ax′ ax′
-  ax′ {A =  A ⇐  B  } = m⇐  ax′ ax′
-  ax′ {A =  A ⇒  B  } = m⇒  ax′ ax′
+  ax′ {A =  el    A  } = ax
+  ax′ {A =  A  ⊗  B  } = m⊗  ax′ ax′
+  ax′ {A =  A  ⇐  B  } = m⇐  ax′ ax′
+  ax′ {A =  A  ⇒  B  } = m⇒  ax′ ax′
 ```
 
 Showing that `cut′` is an admissible rule in this system is
@@ -454,59 +454,49 @@ slightly more involved.
 ```
 
 ```
-  data Contextᴶ (p : Polarity) : Set where
-    _<⊢_  : Context p +  → Type         → Contextᴶ p
-    _⊢>_  : Type         → Context p -  → Contextᴶ p
+  data Contextʲ (p : Polarity) : Set where
+    _<⊢_  : Context p +  → Type         → Contextʲ p
+    _⊢>_  : Type         → Context p -  → Contextʲ p
 ```
 
 ```
-  _[_]ᴶ : ∀ {p} → Contextᴶ p → Type → Sequent
-  A <⊢ B [ C ]ᴶ = A [ C ] ⊢ B
-  A ⊢> B [ C ]ᴶ = A ⊢ B [ C ]
+  _[_]ʲ : ∀ {p} → Contextʲ p → Type → Sequent
+  A <⊢ B [ C ]ʲ = A [ C ] ⊢ B
+  A ⊢> B [ C ]ʲ = A ⊢ B [ C ]
 ```
 
 ``` hidden
   module el where
 
-    data Origin {B} ( J : Contextᴶ + ) (f : RM J [ el B ]ᴶ) : Set where
-         origin  : (f′ : ∀ {G} → G ⊢RM el B → RM J [ G ]ᴶ)
+    data Origin {B} ( J : Contextʲ + ) (f : RM J [ el B ]ʲ) : Set where
+         origin  : (f′ : ∀ {G} → G ⊢RM el B → RM J [ G ]ʲ)
                  → (pr : f ≡ f′ ax)
                  → Origin J f
 
     mutual
-      view : ∀ {B} ( J : Contextᴶ + ) (f : RM J [ el B ]ᴶ) → Origin J f
-      view ([] <⊢ ._)        ax         = origin id refl
-      view ([] <⊢ ._)        (r⊗⇒ f)    = wrap {(_ ⊗> []) <⊢ _}               r⊗⇒   f
-      view ([] <⊢ ._)        (r⊗⇐ f)    = wrap {([] <⊗ _) <⊢ _}               r⊗⇐   f
-      view ((A ⊗> B) <⊢ ._)  (m⊗  f g)  = wrap {B <⊢ _}                (      m⊗ f) g
-      view ((A ⊗> B) <⊢ ._)  (r⇒⊗ f)    = wrap {B <⊢ _}                       r⇒⊗   f
-      view ((A ⊗> B) <⊢ ._)  (r⊗⇒ f)    = wrap {(_ ⊗> (A ⊗> B)) <⊢ _}         r⊗⇒   f
-      view ((A ⊗> B) <⊢ ._)  (r⇐⊗ f)    = wrap {_ ⊢> (_ ⇐> B)}                r⇐⊗   f
-      view ((A ⊗> B) <⊢ ._)  (r⊗⇐ f)    = wrap {((A ⊗> B) <⊗ _) <⊢ _}         r⊗⇐   f
-      view ((A <⊗ B) <⊢ ._)  (m⊗  f g)  = wrap {A <⊢ _}                (flip  m⊗ g) f
-      view ((A <⊗ B) <⊢ ._)  (r⇒⊗ f)    = wrap {_ ⊢> (A <⇒ _)}                r⇒⊗   f
-      view ((A <⊗ B) <⊢ ._)  (r⊗⇒ f)    = wrap {(_ ⊗> (A <⊗ B)) <⊢ _}         r⊗⇒   f
-      view ((A <⊗ B) <⊢ ._)  (r⇐⊗ f)    = wrap {A <⊢ _}                       r⇐⊗   f
-      view ((A <⊗ B) <⊢ ._)  (r⊗⇐ f)    = wrap {((A <⊗ B) <⊗ _) <⊢ _}         r⊗⇐   f
-      view (._ ⊢> (A ⇒> B))  (m⇒  f g)  = wrap {_ ⊢> B}                (      m⇒ f) g
-      view (._ ⊢> (A ⇒> B))  (r⇒⊗ f)    = wrap {_ ⊢> (_ ⇒> (A ⇒> B))}         r⇒⊗   f
-      view (._ ⊢> (A ⇒> B))  (r⊗⇒ f)    = wrap {_ ⊢> B}                       r⊗⇒   f
-      view (._ ⊢> (A ⇒> B))  (r⇐⊗ f)    = wrap {_ ⊢> ((A ⇒> B) <⇐ _)}         r⇐⊗   f
-      view (._ ⊢> (A ⇐> B))  (m⇐  f g)  = wrap {B <⊢ _}                (      m⇐ f) g
-      view (._ ⊢> (A ⇐> B))  (r⇒⊗ f)    = wrap {_ ⊢> (_ ⇒> (A ⇐> B))}         r⇒⊗   f
-      view (._ ⊢> (A ⇐> B))  (r⇐⊗ f)    = wrap {_ ⊢> ((A ⇐> B) <⇐ _)}         r⇐⊗   f
-      view (._ ⊢> (A ⇐> B))  (r⊗⇐ f)    = wrap {(_ ⊗> B) <⊢ _}                r⊗⇐   f
-      view (._ ⊢> (A <⇒ B))  (m⇒  f g)  = wrap {A <⊢ _}                (flip  m⇒ g) f
-      view (._ ⊢> (A <⇒ B))  (r⇒⊗ f)    = wrap {_ ⊢> (_ ⇒> (A <⇒ B))}         r⇒⊗   f
-      view (._ ⊢> (A <⇒ B))  (r⊗⇒ f)    = wrap {(A <⊗ _) <⊢ _}                r⊗⇒   f
-      view (._ ⊢> (A <⇒ B))  (r⇐⊗ f)    = wrap {_ ⊢> ((A <⇒ B) <⇐ _)}         r⇐⊗   f
-      view (._ ⊢> (A <⇐ B))  (m⇐  f g)  = wrap {_ ⊢> A}                (flip  m⇐ g) f
-      view (._ ⊢> (A <⇐ B))  (r⇒⊗ f)    = wrap {_ ⊢> (_ ⇒> (A <⇐ B))}         r⇒⊗   f
-      view (._ ⊢> (A <⇐ B))  (r⇐⊗ f)    = wrap {_ ⊢> ((A <⇐ B) <⇐ _)}         r⇐⊗   f
-      view (._ ⊢> (A <⇐ B))  (r⊗⇐ f)    = wrap {_ ⊢> A}                       r⊗⇐   f
+      view : ∀ {B} ( J : Contextʲ + ) (f : RM J [ el B ]ʲ) → Origin J f
+      view ([] <⊢ ._)           ax          = origin id refl
+      view ((A <⊗ _) <⊢ ._)  (  m⊗   f g  ) = wrap { (A <⊢ _)        }  (flip  m⊗ g)  f
+      view ((_ ⊗> B) <⊢ ._)  (  m⊗   f g  ) = wrap { (B <⊢ _)        }  (      m⊗ f)  g
+      view (._ ⊢> (_ ⇒> B))  (  m⇒   f g  ) = wrap { (_ ⊢> B)        }  (      m⇒ f)  g
+      view (._ ⊢> (A <⇒ _))  (  m⇒   f g  ) = wrap { (A <⊢ _)        }  (flip  m⇒ g)  f
+      view (._ ⊢> (_ ⇐> B))  (  m⇐   f g  ) = wrap { (B <⊢ _)        }  (      m⇐ f)  g
+      view (._ ⊢> (A <⇐ _))  (  m⇐   f g  ) = wrap { (_ ⊢> A)        }  (flip  m⇐ g)  f
+      view (A <⊢ ._)         (  r⊗⇒  f    ) = wrap { ((_ ⊗> A) <⊢ _) }         r⊗⇒    f
+      view (._ ⊢> (_ ⇒> B))  (  r⊗⇒  f    ) = wrap { (_ ⊢> B)        }         r⊗⇒    f
+      view (._ ⊢> (A <⇒ _))  (  r⊗⇒  f    ) = wrap { ((A <⊗ _) <⊢ _) }         r⊗⇒    f
+      view ((_ ⊗> B) <⊢ ._)  (  r⇒⊗  f    ) = wrap { (B <⊢ _)        }         r⇒⊗    f
+      view ((A <⊗ _) <⊢ ._)  (  r⇒⊗  f    ) = wrap { (_ ⊢> (A <⇒ _)) }         r⇒⊗    f
+      view (._ ⊢> B)         (  r⇒⊗  f    ) = wrap { (_ ⊢> (_ ⇒> B)) }         r⇒⊗    f
+      view (A <⊢ ._)         (  r⊗⇐  f    ) = wrap { ((A <⊗ _) <⊢ _) }         r⊗⇐    f
+      view (._ ⊢> (_ ⇐> B))  (  r⊗⇐  f    ) = wrap { ((_ ⊗> B) <⊢ _) }         r⊗⇐    f
+      view (._ ⊢> (A <⇐ _))  (  r⊗⇐  f    ) = wrap { (_ ⊢> A)        }         r⊗⇐    f
+      view ((_ ⊗> B) <⊢ ._)  (  r⇐⊗  f    ) = wrap { (_ ⊢> (_ ⇐> B)) }         r⇐⊗    f
+      view ((A <⊗ _) <⊢ ._)  (  r⇐⊗  f    ) = wrap { (A <⊢ _)        }         r⇐⊗    f
+      view (._ ⊢> B)         (  r⇐⊗  f    ) = wrap { (_ ⊢> (B <⇐ _)) }         r⇐⊗    f
 
-      wrap : ∀ { I : Contextᴶ + } { J : Contextᴶ + } {B}
-           →   (g : ∀ {G} → RM I [ G ]ᴶ → RM J [ G ]ᴶ) (f : RM I [ el B ]ᴶ) → Origin J (g f)
+      wrap : ∀ { I : Contextʲ + } { J : Contextʲ + } {B}
+           →   (g : ∀ {G} → RM I [ G ]ʲ → RM J [ G ]ʲ) (f : RM I [ el B ]ʲ) → Origin J (g f)
       wrap {I} {J} g f with view I f
       ... | origin f′ pr = origin (g ∘ f′) (cong g pr)
 ```
@@ -514,11 +504,11 @@ slightly more involved.
   module ⊗ where
 ```
 ```
-    data Origin {B C} ( J : Contextᴶ - ) (f : RM J [ B ⊗ C ]ᴶ) : Set where
+    data Origin {B C} ( J : Contextʲ - ) (f : RM J [ B ⊗ C ]ʲ) : Set where
          origin  : ∀ {E F}
                  →  (h₁  : E ⊢RM B)
                  →  (h₂  : F ⊢RM C)
-                 →  (f′  : ∀ {G} → E ⊗ F ⊢RM G → RM J [ G ]ᴶ)
+                 →  (f′  : ∀ {G} → E ⊗ F ⊢RM G → RM J [ G ]ʲ)
                  →  (pr  : f ≡ f′ (m⊗ h₁ h₂))
                  →  Origin J f
 ```
@@ -526,152 +516,120 @@ slightly more involved.
     mutual
 ```
 ``` partial
-      view : ∀ {B C} ( J : Contextᴶ - ) (f : RM J [ B ⊗ C ]ᴶ) → Origin J f
-      view (._ ⊢> [])        (m⊗   f g)  =  origin f g id refl
-      view (._ ⊢> [])        (r⇒⊗  f)    =  wrap {_ ⊢> (_ ⇒> [])      }         r⇒⊗    f
-      view (._ ⊢> [])        (r⇐⊗  f)    =  wrap {_ ⊢> ([] <⇐ _)      }         r⇐⊗    f
-      view ((_ ⊗> A) <⊢ ._)  (m⊗   f g)  =  wrap {A <⊢ _              }  (      m⊗ f)  g
-      view ((_ ⊗> A) <⊢ ._)  (r⇒⊗  f)    =  wrap {A <⊢ _              }         r⇒⊗    f
-      view ((_ ⊗> A) <⊢ ._)  (r⊗⇒  f)    =  wrap {(_ ⊗> (_ ⊗> A)) <⊢ _}         r⊗⇒    f
-```
-``` hidden
-      view ((_ ⊗> A) <⊢ ._)  (r⇐⊗  f)    =  wrap {_ ⊢> (_ ⇐> A)       }         r⇐⊗    f
-      view ((_ ⊗> A) <⊢ ._)  (r⊗⇐  f)    =  wrap {((_ ⊗> A) <⊗ _) <⊢ _}         r⊗⇐    f
-      view ((A <⊗ _) <⊢ ._)  (m⊗   f g)  =  wrap {A <⊢ _              }  (flip  m⊗ g)  f
-      view ((A <⊗ _) <⊢ ._)  (r⇒⊗  f)    =  wrap {_ ⊢> (A <⇒ _)       }         r⇒⊗    f
-      view ((A <⊗ _) <⊢ ._)  (r⊗⇒  f)    =  wrap {(_ ⊗> (A <⊗ _)) <⊢ _}         r⊗⇒    f
-      view ((A <⊗ _) <⊢ ._)  (r⇐⊗  f)    =  wrap {A <⊢ _              }         r⇐⊗    f
-      view ((A <⊗ _) <⊢ ._)  (r⊗⇐  f)    =  wrap {((A <⊗ _) <⊗ _) <⊢ _}         r⊗⇐    f
-      view (._ ⊢> (_ ⇒> A))  (m⇒   f g)  =  wrap {_ ⊢> A              }  (      m⇒ f)  g
-      view (._ ⊢> (_ ⇒> A))  (r⇒⊗  f)    =  wrap {_ ⊢> (_ ⇒> (_ ⇒> A))}         r⇒⊗    f
-      view (._ ⊢> (_ ⇒> A))  (r⊗⇒  f)    =  wrap {_ ⊢> A              }         r⊗⇒    f
-      view (._ ⊢> (_ ⇒> A))  (r⇐⊗  f)    =  wrap {_ ⊢> ((_ ⇒> A) <⇐ _)}         r⇐⊗    f
-      view (._ ⊢> (_ ⇐> A))  (m⇐   f g)  =  wrap {A <⊢ _              }  (      m⇐ f)  g
-      view (._ ⊢> (_ ⇐> A))  (r⇒⊗  f)    =  wrap {_ ⊢> (_ ⇒> (_ ⇐> A))}         r⇒⊗    f
-      view (._ ⊢> (_ ⇐> A))  (r⇐⊗  f)    =  wrap {_ ⊢> ((_ ⇐> A) <⇐ _)}         r⇐⊗    f
-      view (._ ⊢> (_ ⇐> A))  (r⊗⇐  f)    =  wrap {(_ ⊗> A) <⊢ _       }         r⊗⇐    f
-      view (._ ⊢> (A <⇒ _))  (m⇒   f g)  =  wrap {A <⊢ _              }  (flip  m⇒ g)  f
-      view (._ ⊢> (A <⇒ _))  (r⇒⊗  f)    =  wrap {_ ⊢> (_ ⇒> (A <⇒ _))}         r⇒⊗    f
-      view (._ ⊢> (A <⇒ _))  (r⊗⇒  f)    =  wrap {(A <⊗ _) <⊢ _       }         r⊗⇒    f
-      view (._ ⊢> (A <⇒ _))  (r⇐⊗  f)    =  wrap {_ ⊢> ((A <⇒ _) <⇐ _)}         r⇐⊗    f
-      view (._ ⊢> (A <⇐ _))  (m⇐   f g)  =  wrap {_ ⊢> A              }  (flip  m⇐ g)  f
-      view (._ ⊢> (A <⇐ _))  (r⇒⊗  f)    =  wrap {_ ⊢> (_ ⇒> (A <⇐ _))}         r⇒⊗    f
-      view (._ ⊢> (A <⇐ _))  (r⇐⊗  f)    =  wrap {_ ⊢> ((A <⇐ _) <⇐ _)}         r⇐⊗    f
-      view (._ ⊢> (A <⇐ _))  (r⊗⇐  f)    =  wrap {_ ⊢> A              }         r⊗⇐    f
+      view : ∀ {B C} ( J : Contextʲ - ) (f : RM J [ B ⊗ C ]ʲ) → Origin J f
+      view (._ ⊢> [])        (  m⊗   f g  ) = origin f g id refl
+      view ((A <⊗ B) <⊢ ._)  (  m⊗   f g  ) = wrap { (A <⊢ _)        }  (flip  m⊗ g)  f
+      view ((A ⊗> B) <⊢ ._)  (  m⊗   f g  ) = wrap { (B <⊢ _)        }  (      m⊗ f)  g
+      view (._ ⊢> (A ⇒> B))  (  m⇒   f g  ) = wrap { (_ ⊢> B)        }  (      m⇒ f)  g
+      view (._ ⊢> (A <⇒ B))  (  m⇒   f g  ) = wrap { (A <⊢ _)        }  (flip  m⇒ g)  f
+      view (._ ⊢> (A ⇐> B))  (  m⇐   f g  ) = wrap { (B <⊢ _)        }  (      m⇐ f)  g
+      view (._ ⊢> (A <⇐ B))  (  m⇐   f g  ) = wrap { (_ ⊢> A)        }  (flip  m⇐ g)  f
+      view (A <⊢ ._)         (  r⊗⇒  f    ) = wrap { ((_ ⊗> A) <⊢ _) }         r⊗⇒    f
+      view (._ ⊢> (A ⇒> B))  (  r⊗⇒  f    ) = wrap { (_ ⊢> B)        }         r⊗⇒    f
+      view (._ ⊢> (A <⇒ B))  (  r⊗⇒  f    ) = wrap { ((A <⊗ _) <⊢ _) }         r⊗⇒    f
+      view ((A ⊗> B) <⊢ ._)  (  r⇒⊗  f    ) = wrap { (B <⊢ _)        }         r⇒⊗    f
+      view ((A <⊗ B) <⊢ ._)  (  r⇒⊗  f    ) = wrap { (_ ⊢> (A <⇒ _)) }         r⇒⊗    f
+      view (._ ⊢> B)         (  r⇒⊗  f    ) = wrap { (_ ⊢> (_ ⇒> B)) }         r⇒⊗    f
+      view (A <⊢ ._)         (  r⊗⇐  f    ) = wrap { ((A <⊗ _) <⊢ _) }         r⊗⇐    f
+      view (._ ⊢> (A ⇐> B))  (  r⊗⇐  f    ) = wrap { ((_ ⊗> B) <⊢ _) }         r⊗⇐    f
+      view (._ ⊢> (A <⇐ B))  (  r⊗⇐  f    ) = wrap { (_ ⊢> A)        }         r⊗⇐    f
+      view ((A ⊗> B) <⊢ ._)  (  r⇐⊗  f    ) = wrap { (_ ⊢> (_ ⇐> B)) }         r⇐⊗    f
+      view ((A <⊗ B) <⊢ ._)  (  r⇐⊗  f    ) = wrap { (A <⊢ _)        }         r⇐⊗    f
+      view (._ ⊢> B)         (  r⇐⊗  f    ) = wrap { (_ ⊢> (B <⇐ _)) }         r⇐⊗    f
 ```
 ```
-      wrap : ∀ { I : Contextᴶ - } { J : Contextᴶ - } {B C}
-           →  (g : ∀ {G} → RM I [ G ]ᴶ → RM J [ G ]ᴶ) (f : RM I [ B ⊗ C ]ᴶ) → Origin J (g f)
+      wrap : ∀ { I : Contextʲ - } { J : Contextʲ - } {B C}
+           →  (g : ∀ {G} → RM I [ G ]ʲ → RM J [ G ]ʲ) (f : RM I [ B ⊗ C ]ʲ) → Origin J (g f)
       wrap {I} {J} g f with view I f
       ... | origin h₁ h₂ f′ pr = origin h₁ h₂ (g ∘ f′) (cong g pr)
 ```
 ``` hidden
   module ⇒ where
 
-    data Origin {B C} ( J : Contextᴶ + ) (f : RM J [ B ⇒ C ]ᴶ) : Set where
+    data Origin {B C} ( J : Contextʲ + ) (f : RM J [ B ⇒ C ]ʲ) : Set where
          origin  : ∀ {E F}
                  →  (h₁  : E ⊢RM B)
                  →  (h₂  : C ⊢RM F)
-                 →  (f′  : ∀ {G} → G ⊢RM E ⇒ F → RM J [ G ]ᴶ)
+                 →  (f′  : ∀ {G} → G ⊢RM E ⇒ F → RM J [ G ]ʲ)
                  →  (pr  : f ≡ f′ (m⇒ h₁ h₂))
                  →  Origin J f
 
     mutual
-      view : ∀ {B C} ( J : Contextᴶ + ) (f : RM J [ B ⇒ C ]ᴶ) → Origin J f
-      view ([] <⊢ ._)        (m⇒  f g)  = origin f g id refl
-      view ([] <⊢ ._)        (r⊗⇒ f)    = wrap {(_ ⊗> []) <⊢ _}               r⊗⇒   f
-      view ([] <⊢ ._)        (r⊗⇐ f)    = wrap {([] <⊗ _) <⊢ _}               r⊗⇐   f
-      view ((A ⊗> B) <⊢ ._)  (m⊗  f g)  = wrap {B <⊢ _}                (      m⊗ f) g
-      view ((A ⊗> B) <⊢ ._)  (r⇒⊗ f)    = wrap {B <⊢ _}                       r⇒⊗   f
-      view ((A ⊗> B) <⊢ ._)  (r⊗⇒ f)    = wrap {(_ ⊗> (A ⊗> B)) <⊢ _}         r⊗⇒   f
-      view ((A ⊗> B) <⊢ ._)  (r⇐⊗ f)    = wrap {_ ⊢> (_ ⇐> B)}                r⇐⊗   f
-      view ((A ⊗> B) <⊢ ._)  (r⊗⇐ f)    = wrap {((A ⊗> B) <⊗ _) <⊢ _}         r⊗⇐   f
-      view ((A <⊗ B) <⊢ ._)  (m⊗  f g)  = wrap {A <⊢ _}                (flip  m⊗ g) f
-      view ((A <⊗ B) <⊢ ._)  (r⇒⊗ f)    = wrap {_ ⊢> (A <⇒ _)}                r⇒⊗   f
-      view ((A <⊗ B) <⊢ ._)  (r⊗⇒ f)    = wrap {(_ ⊗> (A <⊗ B)) <⊢ _}         r⊗⇒   f
-      view ((A <⊗ B) <⊢ ._)  (r⇐⊗ f)    = wrap {A <⊢ _}                       r⇐⊗   f
-      view ((A <⊗ B) <⊢ ._)  (r⊗⇐ f)    = wrap {((A <⊗ B) <⊗ _) <⊢ _}         r⊗⇐   f
-      view (._ ⊢> (A ⇒> B))  (m⇒  f g)  = wrap {_ ⊢> B}                (      m⇒ f) g
-      view (._ ⊢> (A ⇒> B))  (r⇒⊗ f)    = wrap {_ ⊢> (_ ⇒> (A ⇒> B))}         r⇒⊗   f
-      view (._ ⊢> (A ⇒> B))  (r⊗⇒ f)    = wrap {_ ⊢> B}                       r⊗⇒   f
-      view (._ ⊢> (A ⇒> B))  (r⇐⊗ f)    = wrap {_ ⊢> ((A ⇒> B) <⇐ _)}         r⇐⊗   f
-      view (._ ⊢> (A ⇐> B))  (m⇐  f g)  = wrap {B <⊢ _}                (      m⇐ f) g
-      view (._ ⊢> (A ⇐> B))  (r⇒⊗ f)    = wrap {_ ⊢> (_ ⇒> (A ⇐> B))}         r⇒⊗   f
-      view (._ ⊢> (A ⇐> B))  (r⇐⊗ f)    = wrap {_ ⊢> ((A ⇐> B) <⇐ _)}         r⇐⊗   f
-      view (._ ⊢> (A ⇐> B))  (r⊗⇐ f)    = wrap {(_ ⊗> B) <⊢ _}                r⊗⇐   f
-      view (._ ⊢> (A <⇒ B))  (m⇒  f g)  = wrap {A <⊢ _}                (flip  m⇒ g) f
-      view (._ ⊢> (A <⇒ B))  (r⇒⊗ f)    = wrap {_ ⊢> (_ ⇒> (A <⇒ B))}         r⇒⊗   f
-      view (._ ⊢> (A <⇒ B))  (r⊗⇒ f)    = wrap {(A <⊗ _) <⊢ _}                r⊗⇒   f
-      view (._ ⊢> (A <⇒ B))  (r⇐⊗ f)    = wrap {_ ⊢> ((A <⇒ B) <⇐ _)}         r⇐⊗   f
-      view (._ ⊢> (A <⇐ B))  (m⇐  f g)  = wrap {_ ⊢> A}                (flip  m⇐ g) f
-      view (._ ⊢> (A <⇐ B))  (r⇒⊗ f)    = wrap {_ ⊢> (_ ⇒> (A <⇐ B))}         r⇒⊗   f
-      view (._ ⊢> (A <⇐ B))  (r⇐⊗ f)    = wrap {_ ⊢> ((A <⇐ B) <⇐ _)}         r⇐⊗   f
-      view (._ ⊢> (A <⇐ B))  (r⊗⇐ f)    = wrap {_ ⊢> A}                       r⊗⇐   f
+      view : ∀ {B C} ( J : Contextʲ + ) (f : RM J [ B ⇒ C ]ʲ) → Origin J f
+      view ([] <⊢ ._)        (  m⇒   f g  ) = origin f g id refl
+      view ((A <⊗ B) <⊢ ._)  (  m⊗   f g  ) = wrap { (A <⊢ _)        }  (flip  m⊗ g)  f
+      view ((A ⊗> B) <⊢ ._)  (  m⊗   f g  ) = wrap { (B <⊢ _)        }  (      m⊗ f)  g
+      view (._ ⊢> (A ⇒> B))  (  m⇒   f g  ) = wrap { (_ ⊢> B)        }  (      m⇒ f)  g
+      view (._ ⊢> (A <⇒ B))  (  m⇒   f g  ) = wrap { (A <⊢ _)        }  (flip  m⇒ g)  f
+      view (._ ⊢> (A ⇐> B))  (  m⇐   f g  ) = wrap { (B <⊢ _)        }  (      m⇐ f)  g
+      view (._ ⊢> (A <⇐ B))  (  m⇐   f g  ) = wrap { (_ ⊢> A)        }  (flip  m⇐ g)  f
+      view (A <⊢ ._)         (  r⊗⇒  f    ) = wrap { ((_ ⊗> A) <⊢ _) }         r⊗⇒    f
+      view (._ ⊢> (A ⇒> B))  (  r⊗⇒  f    ) = wrap { (_ ⊢> B)        }         r⊗⇒    f
+      view (._ ⊢> (A <⇒ B))  (  r⊗⇒  f    ) = wrap { ((A <⊗ _) <⊢ _) }         r⊗⇒    f
+      view ((A ⊗> B) <⊢ ._)  (  r⇒⊗  f    ) = wrap { (B <⊢ _)        }         r⇒⊗    f
+      view ((A <⊗ B) <⊢ ._)  (  r⇒⊗  f    ) = wrap { (_ ⊢> (A <⇒ _)) }         r⇒⊗    f
+      view (._ ⊢> B)         (  r⇒⊗  f    ) = wrap { (_ ⊢> (_ ⇒> B)) }         r⇒⊗    f
+      view (A <⊢ ._)         (  r⊗⇐  f    ) = wrap { ((A <⊗ _) <⊢ _) }         r⊗⇐    f
+      view (._ ⊢> (A ⇐> B))  (  r⊗⇐  f    ) = wrap { ((_ ⊗> B) <⊢ _) }         r⊗⇐    f
+      view (._ ⊢> (A <⇐ B))  (  r⊗⇐  f    ) = wrap { (_ ⊢> A)        }         r⊗⇐    f
+      view ((A ⊗> B) <⊢ ._)  (  r⇐⊗  f    ) = wrap { (_ ⊢> (_ ⇐> B)) }         r⇐⊗    f
+      view ((A <⊗ B) <⊢ ._)  (  r⇐⊗  f    ) = wrap { (A <⊢ _)        }         r⇐⊗    f
+      view (._ ⊢> B)         (  r⇐⊗  f    ) = wrap { (_ ⊢> (B <⇐ _)) }         r⇐⊗    f
 
-      wrap : ∀ { I : Contextᴶ + } { J : Contextᴶ + } {B C}
-           →  (g : ∀ {G} → RM I [ G ]ᴶ → RM J [ G ]ᴶ) (f : RM I [ B ⇒ C ]ᴶ) → Origin J (g f)
+      wrap : ∀ { I : Contextʲ + } { J : Contextʲ + } {B C}
+           →  (g : ∀ {G} → RM I [ G ]ʲ → RM J [ G ]ʲ) (f : RM I [ B ⇒ C ]ʲ) → Origin J (g f)
       wrap {I} {J} g f with view I f
       ... | origin h₁ h₂ f′ pr = origin h₁ h₂ (g ∘ f′) (cong g pr)
 ```
 ``` hidden
   module ⇐ where
 
-    data Origin {B C} ( J : Contextᴶ + ) (f : RM J [ B ⇐ C ]ᴶ) : Set where
+    data Origin {B C} ( J : Contextʲ + ) (f : RM J [ B ⇐ C ]ʲ) : Set where
          origin  : ∀ {E F}
                  →  (h₁  : RM B ⊢ E)
                  →  (h₂  : RM F ⊢ C)
-                 →  (f′  : ∀ {G} → RM G ⊢ E ⇐ F → RM J [ G ]ᴶ)
+                 →  (f′  : ∀ {G} → RM G ⊢ E ⇐ F → RM J [ G ]ʲ)
                  →  (pr  : f ≡ f′ (m⇐ h₁ h₂))
                  →  Origin J f
 
     mutual
-      view : ∀ {B C} ( J : Contextᴶ + ) (f : RM J [ B ⇐ C ]ᴶ) → Origin J f
-      view ([] <⊢ ._)        (m⇐  f g)  = origin f g id refl
-      view ([] <⊢ ._)        (r⊗⇒ f)    = wrap {(_ ⊗> []) <⊢ _}               r⊗⇒   f
-      view ([] <⊢ ._)        (r⊗⇐ f)    = wrap {([] <⊗ _) <⊢ _}               r⊗⇐   f
-      view ((A ⊗> B) <⊢ ._)  (m⊗  f g)  = wrap {B <⊢ _}                (      m⊗ f) g
-      view ((A ⊗> B) <⊢ ._)  (r⇒⊗ f)    = wrap {B <⊢ _}                       r⇒⊗   f
-      view ((A ⊗> B) <⊢ ._)  (r⊗⇒ f)    = wrap {(_ ⊗> (A ⊗> B)) <⊢ _}         r⊗⇒   f
-      view ((A ⊗> B) <⊢ ._)  (r⇐⊗ f)    = wrap {_ ⊢> (_ ⇐> B)}                r⇐⊗   f
-      view ((A ⊗> B) <⊢ ._)  (r⊗⇐ f)    = wrap {((A ⊗> B) <⊗ _) <⊢ _}         r⊗⇐   f
-      view ((A <⊗ B) <⊢ ._)  (m⊗  f g)  = wrap {A <⊢ _}                (flip  m⊗ g) f
-      view ((A <⊗ B) <⊢ ._)  (r⇒⊗ f)    = wrap {_ ⊢> (A <⇒ _)}                r⇒⊗   f
-      view ((A <⊗ B) <⊢ ._)  (r⊗⇒ f)    = wrap {(_ ⊗> (A <⊗ B)) <⊢ _}         r⊗⇒   f
-      view ((A <⊗ B) <⊢ ._)  (r⇐⊗ f)    = wrap {A <⊢ _}                       r⇐⊗   f
-      view ((A <⊗ B) <⊢ ._)  (r⊗⇐ f)    = wrap {((A <⊗ B) <⊗ _) <⊢ _}         r⊗⇐   f
-      view (._ ⊢> (A ⇒> B))  (m⇒  f g)  = wrap {_ ⊢> B}                (      m⇒ f) g
-      view (._ ⊢> (A ⇒> B))  (r⇒⊗ f)    = wrap {_ ⊢> (_ ⇒> (A ⇒> B))}         r⇒⊗   f
-      view (._ ⊢> (A ⇒> B))  (r⊗⇒ f)    = wrap {_ ⊢> B}                       r⊗⇒   f
-      view (._ ⊢> (A ⇒> B))  (r⇐⊗ f)    = wrap {_ ⊢> ((A ⇒> B) <⇐ _)}         r⇐⊗   f
-      view (._ ⊢> (A ⇐> B))  (m⇐  f g)  = wrap {B <⊢ _}                (      m⇐ f) g
-      view (._ ⊢> (A ⇐> B))  (r⇒⊗ f)    = wrap {_ ⊢> (_ ⇒> (A ⇐> B))}         r⇒⊗   f
-      view (._ ⊢> (A ⇐> B))  (r⇐⊗ f)    = wrap {_ ⊢> ((A ⇐> B) <⇐ _)}         r⇐⊗   f
-      view (._ ⊢> (A ⇐> B))  (r⊗⇐ f)    = wrap {(_ ⊗> B) <⊢ _}                r⊗⇐   f
-      view (._ ⊢> (A <⇒ B))  (m⇒  f g)  = wrap {A <⊢ _}                (flip  m⇒ g) f
-      view (._ ⊢> (A <⇒ B))  (r⇒⊗ f)    = wrap {_ ⊢> (_ ⇒> (A <⇒ B))}         r⇒⊗   f
-      view (._ ⊢> (A <⇒ B))  (r⊗⇒ f)    = wrap {(A <⊗ _) <⊢ _}                r⊗⇒   f
-      view (._ ⊢> (A <⇒ B))  (r⇐⊗ f)    = wrap {_ ⊢> ((A <⇒ B) <⇐ _)}         r⇐⊗   f
-      view (._ ⊢> (A <⇐ B))  (m⇐  f g)  = wrap {_ ⊢> A}                (flip  m⇐ g) f
-      view (._ ⊢> (A <⇐ B))  (r⇒⊗ f)    = wrap {_ ⊢> (_ ⇒> (A <⇐ B))}         r⇒⊗   f
-      view (._ ⊢> (A <⇐ B))  (r⇐⊗ f)    = wrap {_ ⊢> ((A <⇐ B) <⇐ _)}         r⇐⊗   f
-      view (._ ⊢> (A <⇐ B))  (r⊗⇐ f)    = wrap {_ ⊢> A}                       r⊗⇐   f
+      view : ∀ {B C} ( J : Contextʲ + ) (f : RM J [ B ⇐ C ]ʲ) → Origin J f
+      view ([] <⊢ ._)        (  m⇐   f g  ) = origin f g id refl
+      view ((A <⊗ B) <⊢ ._)  (  m⊗   f g  ) = wrap { (A <⊢ _)        }  (flip  m⊗ g)  f
+      view ((A ⊗> B) <⊢ ._)  (  m⊗   f g  ) = wrap { (B <⊢ _)        }  (      m⊗ f)  g
+      view (._ ⊢> (A ⇒> B))  (  m⇒   f g  ) = wrap { (_ ⊢> B)        }  (      m⇒ f)  g
+      view (._ ⊢> (A <⇒ B))  (  m⇒   f g  ) = wrap { (A <⊢ _)        }  (flip  m⇒ g)  f
+      view (._ ⊢> (A ⇐> B))  (  m⇐   f g  ) = wrap { (B <⊢ _)        }  (      m⇐ f)  g
+      view (._ ⊢> (A <⇐ B))  (  m⇐   f g  ) = wrap { (_ ⊢> A)        }  (flip  m⇐ g)  f
+      view (A <⊢ ._)         (  r⊗⇒  f    ) = wrap { ((_ ⊗> A) <⊢ _) }         r⊗⇒    f
+      view (._ ⊢> (A ⇒> B))  (  r⊗⇒  f    ) = wrap { (_ ⊢> B)        }         r⊗⇒    f
+      view (._ ⊢> (A <⇒ B))  (  r⊗⇒  f    ) = wrap { ((A <⊗ _) <⊢ _) }         r⊗⇒    f
+      view ((A ⊗> B) <⊢ ._)  (  r⇒⊗  f    ) = wrap { (B <⊢ _)        }         r⇒⊗    f
+      view ((A <⊗ B) <⊢ ._)  (  r⇒⊗  f    ) = wrap { (_ ⊢> (A <⇒ _)) }         r⇒⊗    f
+      view (._ ⊢> B)         (  r⇒⊗  f    ) = wrap { (_ ⊢> (_ ⇒> B)) }         r⇒⊗    f
+      view (A <⊢ ._)         (  r⊗⇐  f    ) = wrap { ((A <⊗ _) <⊢ _) }         r⊗⇐    f
+      view (._ ⊢> (A ⇐> B))  (  r⊗⇐  f    ) = wrap { ((_ ⊗> B) <⊢ _) }         r⊗⇐    f
+      view (._ ⊢> (A <⇐ B))  (  r⊗⇐  f    ) = wrap { (_ ⊢> A)        }         r⊗⇐    f
+      view ((A ⊗> B) <⊢ ._)  (  r⇐⊗  f    ) = wrap { (_ ⊢> (_ ⇐> B)) }         r⇐⊗    f
+      view ((A <⊗ B) <⊢ ._)  (  r⇐⊗  f    ) = wrap { (A <⊢ _)        }         r⇐⊗    f
+      view (._ ⊢> B)         (  r⇐⊗  f    ) = wrap { (_ ⊢> (B <⇐ _)) }         r⇐⊗    f
 
-      wrap : ∀ { I : Contextᴶ + } { J : Contextᴶ + } {B C}
-           →  (g : ∀ {G} → RM I [ G ]ᴶ → RM J [ G ]ᴶ) (f : RM I [ B ⇐ C ]ᴶ) → Origin J (g f)
+      wrap : ∀ { I : Contextʲ + } { J : Contextʲ + } {B C}
+           →  (g : ∀ {G} → RM I [ G ]ʲ → RM J [ G ]ʲ) (f : RM I [ B ⇐ C ]ʲ) → Origin J (g f)
       wrap {I} {J} g f with view I f
       ... | origin h₁ h₂ f′ pr = origin h₁ h₂ (g ∘ f′) (cong g pr)
 ```
 
 ```
   cut′ : ∀ {A B C} → RM A ⊢ B → RM B ⊢ C → RM A ⊢ C
-  cut′ {B = el    B }   f  g   with el.view ([] <⊢ _) g
-  ... | el.origin          g′  _ = g′ f
-  cut′ {B = B₁ ⊗  B₂}   f  g   with ⊗.view (_ ⊢> []) f
-  ... | ⊗.origin h₁ h₂  f′     _ = f′ (r⇐⊗ (cut′ h₁ (r⊗⇐ (r⇒⊗ (cut′ h₂ (r⊗⇒ g))))))
-  cut′ {B = B₁ ⇐  B₂}   f  g   with ⇐.view ([] <⊢ _) g
-  ... | ⇐.origin h₁ h₂     g′  _ = g′ (r⊗⇐ (r⇒⊗ (cut′ h₂ (r⊗⇒ (cut′ (r⇐⊗ f) h₁)))))
-  cut′ {B = B₁ ⇒  B₂}   f  g   with ⇒.view ([] <⊢ _) g
-  ... | ⇒.origin h₁ h₂     g′  _ = g′ (r⊗⇒ (r⇐⊗ (cut′ h₁ (r⊗⇐ (cut′ (r⇒⊗ f) h₂)))))
+  cut′ {B = el     B }   f  g   with el.view ([] <⊢ _) g
+  ... | el.origin           g′  _ = g′ f
+  cut′ {B = B₁  ⊗  B₂}   f  g   with ⊗.view (_ ⊢> []) f
+  ... | ⊗.origin h₁ h₂   f′     _ = f′ (r⇐⊗ (cut′ h₁ (r⊗⇐ (r⇒⊗ (cut′ h₂ (r⊗⇒ g))))))
+  cut′ {B = B₁  ⇐  B₂}   f  g   with ⇐.view ([] <⊢ _) g
+  ... | ⇐.origin h₁ h₂      g′  _ = g′ (r⊗⇐ (r⇒⊗ (cut′ h₂ (r⊗⇒ (cut′ (r⇐⊗ f) h₁)))))
+  cut′ {B = B₁  ⇒  B₂}   f  g   with ⇒.view ([] <⊢ _) g
+  ... | ⇒.origin h₁ h₂      g′  _ = g′ (r⊗⇒ (r⇐⊗ (cut′ h₁ (r⊗⇐ (cut′ (r⇒⊗ f) h₂)))))
 ```
 
 
@@ -689,30 +647,29 @@ module res⇔resmon (Atom : Set) where
 
 ```
   from : ∀ {A B} → A R.⊢R B → A RM.⊢RM B
-  from  ax         = ax′
-  from (cut  f g)  = cut′  (from f) (from g)
-  from (r⇒⊗  f)    = r⇒⊗   (from f)
-  from (r⊗⇒  f)    = r⊗⇒   (from f)
-  from (r⇐⊗  f)    = r⇐⊗   (from f)
-  from (r⊗⇐  f)    = r⊗⇐   (from f)
+  from    ax           = ax′
+  from (  cut  f g  )  = cut′  (from f) (from g)
+  from (  r⇒⊗  f    )  = r⇒⊗   (from f)
+  from (  r⊗⇒  f    )  = r⊗⇒   (from f)
+  from (  r⇐⊗  f    )  = r⇐⊗   (from f)
+  from (  r⊗⇐  f    )  = r⊗⇐   (from f)
 ```
 
 ```
   to : ∀ {A B} → A RM.⊢RM B → A R.⊢R B
-  to  ax         = ax
-  to (m⊗   f g)  = m⊗′  (to f) (to g)
-  to (m⇒   f g)  = m⇒′  (to f) (to g)
-  to (m⇐   f g)  = m⇐′  (to f) (to g)
-  to (r⇒⊗  f)    = r⇒⊗  (to f)
-  to (r⊗⇒  f)    = r⊗⇒  (to f)
-  to (r⇐⊗  f)    = r⇐⊗  (to f)
-  to (r⊗⇐  f)    = r⊗⇐  (to f)
+  to    ax           = ax
+  to (  m⊗   f g  )  = m⊗′  (to f) (to g)
+  to (  m⇒   f g  )  = m⇒′  (to f) (to g)
+  to (  m⇐   f g  )  = m⇐′  (to f) (to g)
+  to (  r⇒⊗  f    )  = r⇒⊗  (to f)
+  to (  r⊗⇒  f    )  = r⊗⇒  (to f)
+  to (  r⇐⊗  f    )  = r⇐⊗  (to f)
+  to (  r⊗⇐  f    )  = r⊗⇐  (to f)
 ```
 
 
 ## Derivational Semantics
 
-### Translation to Agda
 ``` hidden
 module resmon→agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
 
@@ -724,10 +681,10 @@ module resmon→agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
 
 ```
   ⟦_⟧ᵗ : Type → Set
-  ⟦ el   A ⟧ᵗ = ⟦ A ⟧ᴬ
-  ⟦ A ⊗  B ⟧ᵗ = ⟦ A ⟧ᵗ ×  ⟦ B ⟧ᵗ
-  ⟦ A ⇒  B ⟧ᵗ = ⟦ A ⟧ᵗ →  ⟦ B ⟧ᵗ
-  ⟦ B ⇐  A ⟧ᵗ = ⟦ A ⟧ᵗ →  ⟦ B ⟧ᵗ
+  ⟦ el    A ⟧ᵗ = ⟦ A ⟧ᴬ
+  ⟦ A  ⊗  B ⟧ᵗ = ⟦ A ⟧ᵗ  ×  ⟦ B ⟧ᵗ
+  ⟦ A  ⇒  B ⟧ᵗ = ⟦ A ⟧ᵗ  →  ⟦ B ⟧ᵗ
+  ⟦ B  ⇐  A ⟧ᵗ = ⟦ A ⟧ᵗ  →  ⟦ B ⟧ᵗ
 ```
 
 ```
@@ -741,76 +698,6 @@ module resmon→agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
   ⟦ r⊗⇒  f    ⟧ = λ x y → ⟦ f ⟧ (y , x)
   ⟦ r⊗⇐  f    ⟧ = λ x y → ⟦ f ⟧ (x , y)
 
-```
-
-### Typing Agda
-``` hidden
-module resmon_typing_agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
-
-  open import Function     using (id; flip; _∘_)
-  open import Data.Product using (_×_; map; curry; uncurry)
-  open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
-  open resmon Atom using (Sequent; _⊢_)
-  open resmon→agda Atom ⟦_⟧ᴬ using (⟦_⟧ᵗ)
-```
-
-``` hidden
-  ⟦_⟧ᴶ : Sequent → Set
-```
-```
-  ⟦ A ⊢ B ⟧ᴶ = ⟦ A ⟧ᵗ → ⟦ B ⟧ᵗ
-```
-
-``` hidden
-  mutual
-    infix 2 RM-syntax₁
-    infix 2 RM-syntax₂
-
-    RM-syntax₁ = λ A B f → RM_ (A ⊢ B) f
-    RM-syntax₂ = λ A B f → RM_ (A ⊢ B) f
-```
-
-```
-    syntax  RM-syntax₁  A B (λ x →  f)  = f ∈ x ∶  A ⊢ B
-    syntax  RM-syntax₂  A B         f   = f ∈      A ⊢ B
-```
-
-```
-    data RM_ : (J : Sequent) (f : ⟦ J ⟧ᴶ) → Set where
-
-      ax   : ∀ {A}
-           →  x                      ∈ x   ∶  el A ⊢ el A
-
-      m⊗   : ∀ {A B C D f g}
-           →  f                      ∈        A ⊢ B
-           →  g                      ∈        C ⊢ D
-           →  map f g xy             ∈ xy  ∶  A ⊗ C ⊢ B ⊗ D
-
-      m⇒   : ∀ {A B C D f g}
-           →  f                      ∈        A ⊢ B
-           →  g                      ∈        C ⊢ D
-           →  g ∘ h ∘ f              ∈ h   ∶  B ⇒ C ⊢ A ⇒ D
-
-      m⇐   : ∀ {A B C D f g}
-           →  f                      ∈        A ⊢ B
-           →  g                      ∈        C ⊢ D
-           →  f ∘ h ∘ g              ∈ h   ∶  A ⇐ D ⊢ B ⇐ C
-
-      r⇒⊗  : ∀ {A B C f}
-           →  f                      ∈        B ⊢ A ⇒ C
-           →  uncurry (flip  f)  xy  ∈ xy  ∶  A ⊗ B ⊢ C
-
-      r⇐⊗  : ∀ {A B C f}
-           →  f                      ∈        A ⊢ C ⇐ B
-           →  uncurry        f   xy  ∈ xy  ∶  A ⊗ B ⊢ C
-
-      r⊗⇒  : ∀ {A B C f}
-           →  f                      ∈        A ⊗ B ⊢ C
-           →  flip (  curry f)  x    ∈ x   ∶  B ⊢ A ⇒ C
-
-      r⊗⇐  : ∀ {A B C f}
-           →  f                      ∈        A ⊗ B ⊢ C
-           →          curry f   x    ∈ x   ∶  A ⊢ C ⇐ B
 ```
 
 [^short]:  This is a slightly problematic statement: while the proofs

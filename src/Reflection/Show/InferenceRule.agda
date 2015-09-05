@@ -14,7 +14,7 @@ open import Data.Nat           using (ℕ; zero; suc; _⊔_)
 open import Data.String        using (String; toList; fromList; _++_; unlines) renaming (_==_ to _S==_)
 open import Data.Product       using (_×_; _,_)
 open import Reflection
-open import Logic.NLIBC ℕ using (⇨ᴸ)
+open import Logic.NLIBC ℕ using (⇨L)
 
 
 module Reflection.Show.InferenceRule (bannedArg : Name → Bool) where

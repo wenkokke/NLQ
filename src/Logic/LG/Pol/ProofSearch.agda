@@ -44,17 +44,17 @@ search {Mon} monadPlus = search′ []
   search′ seen J | no  J∉seen
     = check-ax⁺ J ∣ check-ax⁻ J
     ∣ check-⇁   J ∣ check-↽   J ∣ check-⇀   J ∣ check-↼   J
-    ∣ check-◇ᴸ  J
-    ∣ check-◇ᴿ  J
-    ∣ check-□ᴸ  J
-    ∣ check-□ᴿ  J
+    ∣ check-◇L  J
+    ∣ check-◇R  J
+    ∣ check-□L  J
+    ∣ check-□R  J
     ∣ check-r□◇ J
     ∣ check-r◇□ J
-    ∣ check-₀ᴸ  J ∣ check-₀ᴿ  J ∣ check-⁰ᴸ  J ∣ check-⁰ᴿ  J ∣ check-r⁰₀ J ∣ check-r₀⁰ J
-    ∣ check-₁ᴸ  J ∣ check-₁ᴿ  J ∣ check-¹ᴸ  J ∣ check-¹ᴿ  J ∣ check-r¹₁ J ∣ check-r₁¹ J
-    ∣ check-⊗ᴸ  J ∣ check-⊗ᴿ  J ∣ check-⇒ᴸ  J ∣ check-⇒ᴿ  J ∣ check-⇐ᴸ  J ∣ check-⇐ᴿ  J
+    ∣ check-₀L  J ∣ check-₀R  J ∣ check-⁰L  J ∣ check-⁰R  J ∣ check-r⁰₀ J ∣ check-r₀⁰ J
+    ∣ check-₁L  J ∣ check-₁R  J ∣ check-¹L  J ∣ check-¹R  J ∣ check-r¹₁ J ∣ check-r₁¹ J
+    ∣ check-⊗L  J ∣ check-⊗R  J ∣ check-⇒L  J ∣ check-⇒R  J ∣ check-⇐L  J ∣ check-⇐R  J
     ∣ check-r⇒⊗ J ∣ check-r⊗⇒ J ∣ check-r⇐⊗ J ∣ check-r⊗⇐ J
-    ∣ check-⊕ᴸ  J ∣ check-⊕ᴿ  J ∣ check-⇚ᴸ  J ∣ check-⇚ᴿ  J ∣ check-⇛ᴸ  J ∣ check-⇛ᴿ  J
+    ∣ check-⊕L  J ∣ check-⊕R  J ∣ check-⇚L  J ∣ check-⇚R  J ∣ check-⇛L  J ∣ check-⇛R  J
     ∣ check-r⇚⊕ J ∣ check-r⊕⇚ J ∣ check-r⇛⊕ J ∣ check-r⊕⇛ J
     ∣ check-d⇛⇐ J ∣ check-d⇛⇒ J ∣ check-d⇚⇒ J ∣ check-d⇚⇐ J
     where
@@ -93,18 +93,18 @@ search {Mon} monadPlus = search′ []
     ... | no  A⁺ = ∅
     check-↼   _  = ∅
 
-    check-◇ᴸ  : (J : Sequent) → Mon (fLG J)
-    check-◇ᴸ  (· ◇ A · ⊢ Y)      = continue (⟨ · A · ⟩ ⊢ Y) >>= λ x → return (◇ᴸ x)
-    check-◇ᴸ  _ = ∅
-    check-◇ᴿ  : (J : Sequent) → Mon (fLG J)
-    check-◇ᴿ  (⟨ X ⟩ ⊢[ ◇ B ])   = continue (X ⊢[ B ]) >>= λ x → return (◇ᴿ x)
-    check-◇ᴿ  _ = ∅
-    check-□ᴸ  : (J : Sequent) → Mon (fLG J)
-    check-□ᴸ  ([ □ A ]⊢ [ Y ])   = continue ([ A ]⊢ Y) >>= λ x → return (□ᴸ x)
-    check-□ᴸ  _ = ∅
-    check-□ᴿ  : (J : Sequent) → Mon (fLG J)
-    check-□ᴿ  (X ⊢ · □ B ·)      = continue (X ⊢ [ · B · ]) >>= λ x → return (□ᴿ x)
-    check-□ᴿ  _ = ∅
+    check-◇L  : (J : Sequent) → Mon (fLG J)
+    check-◇L  (· ◇ A · ⊢ Y)      = continue (⟨ · A · ⟩ ⊢ Y) >>= λ x → return (◇L x)
+    check-◇L  _ = ∅
+    check-◇R  : (J : Sequent) → Mon (fLG J)
+    check-◇R  (⟨ X ⟩ ⊢[ ◇ B ])   = continue (X ⊢[ B ]) >>= λ x → return (◇R x)
+    check-◇R  _ = ∅
+    check-□L  : (J : Sequent) → Mon (fLG J)
+    check-□L  ([ □ A ]⊢ [ Y ])   = continue ([ A ]⊢ Y) >>= λ x → return (□L x)
+    check-□L  _ = ∅
+    check-□R  : (J : Sequent) → Mon (fLG J)
+    check-□R  (X ⊢ · □ B ·)      = continue (X ⊢ [ · B · ]) >>= λ x → return (□R x)
+    check-□R  _ = ∅
     check-r□◇ : (J : Sequent) → Mon (fLG J)
     check-r□◇ (⟨ X ⟩ ⊢ Y)        = continue (X ⊢ [ Y ]) >>= λ x → return (r□◇ x)
     check-r□◇ _ = ∅
@@ -112,18 +112,18 @@ search {Mon} monadPlus = search′ []
     check-r◇□ (X ⊢ [ Y ])        = continue (⟨ X ⟩ ⊢ Y) >>= λ x → return (r◇□ x)
     check-r◇□ _ = ∅
 
-    check-₀ᴸ  : (J : Sequent) → Mon (fLG J)
-    check-₀ᴸ  ([ ₀ A ]⊢ ₀ Y)     = continue (Y ⊢[ A ]) >>= λ x → return (₀ᴸ x)
-    check-₀ᴸ  _ = ∅
-    check-₀ᴿ  : (J : Sequent) → Mon (fLG J)
-    check-₀ᴿ  (X ⊢ · ₀ B ·)      = continue (X ⊢ ₀ · B ·) >>= λ x → return (₀ᴿ x)
-    check-₀ᴿ  _ = ∅
-    check-⁰ᴸ  : (J : Sequent) → Mon (fLG J)
-    check-⁰ᴸ  ([ A ⁰ ]⊢ Y ⁰)     = continue (Y ⊢[ A ]) >>= λ x → return (⁰ᴸ x)
-    check-⁰ᴸ  _ = ∅
-    check-⁰ᴿ  : (J : Sequent) → Mon (fLG J)
-    check-⁰ᴿ  (X ⊢ · B ⁰ ·)      = continue (X ⊢ · B · ⁰) >>= λ x → return (⁰ᴿ x)
-    check-⁰ᴿ  _ = ∅
+    check-₀L  : (J : Sequent) → Mon (fLG J)
+    check-₀L  ([ ₀ A ]⊢ ₀ Y)     = continue (Y ⊢[ A ]) >>= λ x → return (₀L x)
+    check-₀L  _ = ∅
+    check-₀R  : (J : Sequent) → Mon (fLG J)
+    check-₀R  (X ⊢ · ₀ B ·)      = continue (X ⊢ ₀ · B ·) >>= λ x → return (₀R x)
+    check-₀R  _ = ∅
+    check-⁰L  : (J : Sequent) → Mon (fLG J)
+    check-⁰L  ([ A ⁰ ]⊢ Y ⁰)     = continue (Y ⊢[ A ]) >>= λ x → return (⁰L x)
+    check-⁰L  _ = ∅
+    check-⁰R  : (J : Sequent) → Mon (fLG J)
+    check-⁰R  (X ⊢ · B ⁰ ·)      = continue (X ⊢ · B · ⁰) >>= λ x → return (⁰R x)
+    check-⁰R  _ = ∅
     check-r⁰₀ : (J : Sequent) → Mon (fLG J)
     check-r⁰₀ (X ⊢ ₀ Y)          = continue (Y ⊢ X ⁰) >>= λ x → return (r⁰₀ x)
     check-r⁰₀ _ = ∅
@@ -131,18 +131,18 @@ search {Mon} monadPlus = search′ []
     check-r₀⁰ (X ⊢ Y ⁰)          = continue (Y ⊢ ₀ X) >>= λ x → return (r₀⁰ x)
     check-r₀⁰ _ = ∅
 
-    check-₁ᴸ  : (J : Sequent) → Mon (fLG J)
-    check-₁ᴸ  (· ₁ A · ⊢ Y)      = continue (₁ · A · ⊢ Y) >>= λ x → return (₁ᴸ x)
-    check-₁ᴸ  _ = ∅
-    check-₁ᴿ  : (J : Sequent) → Mon (fLG J)
-    check-₁ᴿ  (₁ X ⊢[ ₁ B ])     = continue ([ B ]⊢ X) >>= λ x → return (₁ᴿ x)
-    check-₁ᴿ  _ = ∅
-    check-¹ᴸ  : (J : Sequent) → Mon (fLG J)
-    check-¹ᴸ  (· A ¹ · ⊢ Y)      = continue (· A · ¹ ⊢ Y) >>= λ x → return (¹ᴸ x)
-    check-¹ᴸ  _ = ∅
-    check-¹ᴿ  : (J : Sequent) → Mon (fLG J)
-    check-¹ᴿ  (X ¹ ⊢[ B ¹ ])     = continue ([ B ]⊢ X) >>= λ x → return (¹ᴿ x)
-    check-¹ᴿ  _ = ∅
+    check-₁L  : (J : Sequent) → Mon (fLG J)
+    check-₁L  (· ₁ A · ⊢ Y)      = continue (₁ · A · ⊢ Y) >>= λ x → return (₁L x)
+    check-₁L  _ = ∅
+    check-₁R  : (J : Sequent) → Mon (fLG J)
+    check-₁R  (₁ X ⊢[ ₁ B ])     = continue ([ B ]⊢ X) >>= λ x → return (₁R x)
+    check-₁R  _ = ∅
+    check-¹L  : (J : Sequent) → Mon (fLG J)
+    check-¹L  (· A ¹ · ⊢ Y)      = continue (· A · ¹ ⊢ Y) >>= λ x → return (¹L x)
+    check-¹L  _ = ∅
+    check-¹R  : (J : Sequent) → Mon (fLG J)
+    check-¹R  (X ¹ ⊢[ B ¹ ])     = continue ([ B ]⊢ X) >>= λ x → return (¹R x)
+    check-¹R  _ = ∅
     check-r¹₁ : (J : Sequent) → Mon (fLG J)
     check-r¹₁ (₁ X ⊢ Y)          = continue (Y ¹ ⊢ X) >>= λ x → return (r¹₁ x)
     check-r¹₁ _ = ∅
@@ -150,27 +150,27 @@ search {Mon} monadPlus = search′ []
     check-r₁¹ (X ¹ ⊢ Y)          = continue (₁ Y ⊢ X) >>= λ x → return (r₁¹ x)
     check-r₁¹ _ = ∅
 
-    check-⊗ᴸ  : (J : Sequent) → Mon (fLG J)
-    check-⊗ᴸ  (· A ⊗ B · ⊢ Y)    = continue (· A · ⊗ · B · ⊢ Y) >>= λ x → return (⊗ᴸ x)
-    check-⊗ᴸ  _ = ∅
-    check-⊗ᴿ  : (J : Sequent) → Mon (fLG J)
-    check-⊗ᴿ  (X ⊗ Y ⊢[ A ⊗ B ]) =
-      reset (X ⊢[ A ]) >>= λ x → reset (Y ⊢[ B ]) >>= λ y → return (⊗ᴿ x y)
-    check-⊗ᴿ  _ = ∅
-    check-⇒ᴸ  : (J : Sequent) → Mon (fLG J)
-    check-⇒ᴸ  ([ A ⇒ B ]⊢ X ⇒ Y) =
-      reset (X ⊢[ A ]) >>= λ x → reset ([ B ]⊢ Y) >>= λ y → return (⇒ᴸ x y)
-    check-⇒ᴸ  _ = ∅
-    check-⇒ᴿ  : (J : Sequent) → Mon (fLG J)
-    check-⇒ᴿ  (X ⊢ · A ⇒ B ·)    = continue (X ⊢ · A · ⇒ · B ·) >>= λ x → return (⇒ᴿ x)
-    check-⇒ᴿ  _ = ∅
-    check-⇐ᴸ  : (J : Sequent) → Mon (fLG J)
-    check-⇐ᴸ  ([ B ⇐ A ]⊢ Y ⇐ X) =
-      reset (X ⊢[ A ]) >>= λ x → reset ([ B ]⊢ Y) >>= λ y → return (⇐ᴸ x y)
-    check-⇐ᴸ  _ = ∅
-    check-⇐ᴿ  : (J : Sequent) → Mon (fLG J)
-    check-⇐ᴿ  (X ⊢ · B ⇐ A ·)    = continue (X ⊢ · B · ⇐ · A ·) >>= λ x → return (⇐ᴿ x)
-    check-⇐ᴿ  _ = ∅
+    check-⊗L  : (J : Sequent) → Mon (fLG J)
+    check-⊗L  (· A ⊗ B · ⊢ Y)    = continue (· A · ⊗ · B · ⊢ Y) >>= λ x → return (⊗L x)
+    check-⊗L  _ = ∅
+    check-⊗R  : (J : Sequent) → Mon (fLG J)
+    check-⊗R  (X ⊗ Y ⊢[ A ⊗ B ]) =
+      reset (X ⊢[ A ]) >>= λ x → reset (Y ⊢[ B ]) >>= λ y → return (⊗R x y)
+    check-⊗R  _ = ∅
+    check-⇒L  : (J : Sequent) → Mon (fLG J)
+    check-⇒L  ([ A ⇒ B ]⊢ X ⇒ Y) =
+      reset (X ⊢[ A ]) >>= λ x → reset ([ B ]⊢ Y) >>= λ y → return (⇒L x y)
+    check-⇒L  _ = ∅
+    check-⇒R  : (J : Sequent) → Mon (fLG J)
+    check-⇒R  (X ⊢ · A ⇒ B ·)    = continue (X ⊢ · A · ⇒ · B ·) >>= λ x → return (⇒R x)
+    check-⇒R  _ = ∅
+    check-⇐L  : (J : Sequent) → Mon (fLG J)
+    check-⇐L  ([ B ⇐ A ]⊢ Y ⇐ X) =
+      reset (X ⊢[ A ]) >>= λ x → reset ([ B ]⊢ Y) >>= λ y → return (⇐L x y)
+    check-⇐L  _ = ∅
+    check-⇐R  : (J : Sequent) → Mon (fLG J)
+    check-⇐R  (X ⊢ · B ⇐ A ·)    = continue (X ⊢ · B · ⇐ · A ·) >>= λ x → return (⇐R x)
+    check-⇐R  _ = ∅
 
     check-r⇒⊗ : (J : Sequent) → Mon (fLG J)
     check-r⇒⊗ (X ⊗ Y ⊢ Z)        = continue (Y ⊢ X ⇒ Z) >>= λ x → return (r⇒⊗ x)
@@ -185,27 +185,27 @@ search {Mon} monadPlus = search′ []
     check-r⊗⇐ (X ⊢ Z ⇐ Y)        = continue (X ⊗ Y ⊢ Z) >>= λ x → return (r⊗⇐ x)
     check-r⊗⇐ _ = ∅
 
-    check-⊕ᴸ  : (J : Sequent) → Mon (fLG J)
-    check-⊕ᴸ  ([ B ⊕ A ]⊢ Y ⊕ X) =
-      reset ([ B ]⊢ Y) >>= λ x → reset ([ A ]⊢ X) >>= λ y → return (⊕ᴸ x y)
-    check-⊕ᴸ  _ = ∅
-    check-⊕ᴿ  : (J : Sequent) → Mon (fLG J)
-    check-⊕ᴿ  (X ⊢ · B ⊕ A ·)    = continue (X ⊢ · B · ⊕ · A ·) >>= λ x → return (⊕ᴿ x)
-    check-⊕ᴿ  _ = ∅
-    check-⇚ᴸ  : (J : Sequent) → Mon (fLG J)
-    check-⇚ᴸ  (· A ⇚ B · ⊢ X)    = continue (· A · ⇚ · B · ⊢ X) >>= λ x → return (⇚ᴸ x)
-    check-⇚ᴸ  _ = ∅
-    check-⇚ᴿ  : (J : Sequent) → Mon (fLG J)
-    check-⇚ᴿ  (X ⇚ Y ⊢[ A ⇚ B ]) =
-      reset (X ⊢[ A ]) >>= λ x → reset ([ B ]⊢ Y) >>= λ y → return (⇚ᴿ x y)
-    check-⇚ᴿ  _ = ∅
-    check-⇛ᴸ  : (J : Sequent) → Mon (fLG J)
-    check-⇛ᴸ  (· B ⇛ A · ⊢ X)    = continue (· B · ⇛ · A · ⊢ X) >>= λ x → return (⇛ᴸ x)
-    check-⇛ᴸ  _ = ∅
-    check-⇛ᴿ  : (J : Sequent) → Mon (fLG J)
-    check-⇛ᴿ  (Y ⇛ X ⊢[ B ⇛ A ]) =
-      reset (X ⊢[ A ]) >>= λ x → reset ([ B ]⊢ Y) >>= λ y → return (⇛ᴿ x y)
-    check-⇛ᴿ  _ = ∅
+    check-⊕L  : (J : Sequent) → Mon (fLG J)
+    check-⊕L  ([ B ⊕ A ]⊢ Y ⊕ X) =
+      reset ([ B ]⊢ Y) >>= λ x → reset ([ A ]⊢ X) >>= λ y → return (⊕L x y)
+    check-⊕L  _ = ∅
+    check-⊕R  : (J : Sequent) → Mon (fLG J)
+    check-⊕R  (X ⊢ · B ⊕ A ·)    = continue (X ⊢ · B · ⊕ · A ·) >>= λ x → return (⊕R x)
+    check-⊕R  _ = ∅
+    check-⇚L  : (J : Sequent) → Mon (fLG J)
+    check-⇚L  (· A ⇚ B · ⊢ X)    = continue (· A · ⇚ · B · ⊢ X) >>= λ x → return (⇚L x)
+    check-⇚L  _ = ∅
+    check-⇚R  : (J : Sequent) → Mon (fLG J)
+    check-⇚R  (X ⇚ Y ⊢[ A ⇚ B ]) =
+      reset (X ⊢[ A ]) >>= λ x → reset ([ B ]⊢ Y) >>= λ y → return (⇚R x y)
+    check-⇚R  _ = ∅
+    check-⇛L  : (J : Sequent) → Mon (fLG J)
+    check-⇛L  (· B ⇛ A · ⊢ X)    = continue (· B · ⇛ · A · ⊢ X) >>= λ x → return (⇛L x)
+    check-⇛L  _ = ∅
+    check-⇛R  : (J : Sequent) → Mon (fLG J)
+    check-⇛R  (Y ⇛ X ⊢[ B ⇛ A ]) =
+      reset (X ⊢[ A ]) >>= λ x → reset ([ B ]⊢ Y) >>= λ y → return (⇛R x y)
+    check-⇛R  _ = ∅
 
     check-r⇚⊕ : (J : Sequent) → Mon (fLG J)
     check-r⇚⊕ (Z ⊢ Y ⊕ X)        = continue (Z ⇚ X ⊢ Y) >>= λ x → return (r⇚⊕ x)

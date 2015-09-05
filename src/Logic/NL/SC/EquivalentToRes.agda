@@ -38,18 +38,18 @@ cutIn′ {Γ = Γ <, _  } f g = r⇐⊗ (cutIn′ {Γ = Γ} f (r⊗⇐ g))
 from : ∀ {Γ A} → Γ ⊢SC A → ⌊ Γ ⌋ ⊢R A
 from  ax                = ax
 from (cut {Δ = Γ} f g)  = cutIn′ {Γ = Γ} (from f) (from g)
-from (⇒ᴸ  {Γ = Γ} f g)  = cutIn′ {Γ = Γ} (r⇐⊗ (cut (from g) (r⊗⇐ (r⇒⊗ ax)))) (from f)
-from (⇐ᴸ  {Γ = Γ} f g)  = cutIn′ {Γ = Γ} (r⇒⊗ (cut (from g) (r⊗⇒ (r⇐⊗ ax)))) (from f)
-from (⊗ᴿ          f g)  = m⊗′ (from f) (from g)
-from (⇒ᴿ          f)    = r⊗⇒ (from f)
-from (⇐ᴿ          f)    = r⊗⇐ (from f)
-from (⊗ᴸ  {Γ = Γ} {A} {B} f)    rewrite ⌊⌋-over-[] Γ {A} {B} = from f
+from (⇒L  {Γ = Γ} f g)  = cutIn′ {Γ = Γ} (r⇐⊗ (cut (from g) (r⊗⇐ (r⇒⊗ ax)))) (from f)
+from (⇐L  {Γ = Γ} f g)  = cutIn′ {Γ = Γ} (r⇒⊗ (cut (from g) (r⊗⇒ (r⇐⊗ ax)))) (from f)
+from (⊗R          f g)  = m⊗′ (from f) (from g)
+from (⇒R          f)    = r⊗⇒ (from f)
+from (⇐R          f)    = r⊗⇐ (from f)
+from (⊗L  {Γ = Γ} {A} {B} f)    rewrite ⌊⌋-over-[] Γ {A} {B} = from f
 
 
 to : ∀ {A B} → A ⊢R B → · A · ⊢SC B
 to  ax       = ax
 to (cut f g) = cut {Δ = []} (to f) (to g)
-to (r⇒⊗ f)   = ⊗ᴸ {Γ = []} (cut {Δ = _ ,> []} (to f) (⇒ᴸ {Γ = []} ax ax))
-to (r⊗⇒ f)   = ⇒ᴿ (cut {Δ = []} (⊗ᴿ ax ax) (to f))
-to (r⇐⊗ f)   = ⊗ᴸ {Γ = []} (cut {Δ = [] <, _} (to f) (⇐ᴸ {Γ = []} ax ax))
-to (r⊗⇐ f)   = ⇐ᴿ (cut {Δ = []} (⊗ᴿ ax ax) (to f))
+to (r⇒⊗ f)   = ⊗L {Γ = []} (cut {Δ = _ ,> []} (to f) (⇒L {Γ = []} ax ax))
+to (r⊗⇒ f)   = ⇒R (cut {Δ = []} (⊗R ax ax) (to f))
+to (r⇐⊗ f)   = ⊗L {Γ = []} (cut {Δ = [] <, _} (to f) (⇐L {Γ = []} ax ax))
+to (r⊗⇐ f)   = ⇐R (cut {Δ = []} (⊗R ax ax) (to f))

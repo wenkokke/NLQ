@@ -140,8 +140,8 @@ format = unlines . concatMap fmt
 nl :: Mapping
 nl = let
 
-  rules01 = ["₀ᴸ", "₀ᴿ", "⁰ᴸ", "⁰ᴿ", "r⁰₀", "r₀⁰"
-            ,"₁ᴸ", "₁ᴿ", "¹ᴸ", "¹ᴿ", "r¹₁", "r₁¹"
+  rules01 = ["₀L", "₀R", "⁰L", "⁰R", "r⁰₀", "r₀⁰"
+            ,"₁L", "₁R", "¹L", "¹R", "r¹₁", "r₁¹"
             ,"m₀", "m⁰", "m₁", "m¹"]
   check01 = map ("check-" `T.append`) rules01
 
@@ -181,8 +181,8 @@ nl = let
 nlcps :: Mapping
 nlcps = let
 
-  rules01 = ["₀ᴸ", "₀ᴿ", "⁰ᴸ", "⁰ᴿ", "r⁰₀", "r₀⁰"
-            ,"₁ᴸ", "₁ᴿ", "¹ᴸ", "¹ᴿ", "r¹₁", "r₁¹"
+  rules01 = ["₀L", "₀R", "⁰L", "⁰R", "r⁰₀", "r₀⁰"
+            ,"₁L", "₁R", "¹L", "¹R", "r¹₁", "r₁¹"
             ,"m₀", "m⁰", "m₁", "m¹"]
   check01 = map ("check-" `T.append`) rules01
 

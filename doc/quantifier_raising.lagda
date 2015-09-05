@@ -74,8 +74,8 @@ _<_> : Context → Context → Context
 <>-def (Γ <∘ _) Δ p rewrite <>-def Γ Δ p = refl
 ```
 
-[compute](Example/System/NLIBC.agda "((quote ax) ∷ (quote ⇒ᴸ) ∷ (quote ⇒ᴿ) ∷ (quote ⇐ᴸ) ∷ (quote ⇐ᴿ) ∷ (quote ⇨ᴸ) ∷ (quote ⇨ᴿ) ∷ (quote ⇦ᴸ) ∷ (quote ⇦ᴿ) ∷ (quote Iᵢ) ∷ (quote Iₑ) ∷ (quote Bᵢ) ∷ (quote Bₑ) ∷ (quote Cᵢ) ∷ (quote Cₑ) ∷ []) asMathParOf (quote NL_)")
+[compute](Example/System/NLIBC.agda "((quote ax) ∷ (quote ⇒L) ∷ (quote ⇒R) ∷ (quote ⇐L) ∷ (quote ⇐R) ∷ (quote ⇨L) ∷ (quote ⇨R) ∷ (quote ⇦L) ∷ (quote ⇦R) ∷ (quote Iᵢ) ∷ (quote Iₑ) ∷ (quote Bᵢ) ∷ (quote Bₑ) ∷ (quote Cᵢ) ∷ (quote Cₑ) ∷ []) asMathParOf (quote NL_)")
 
 
 
-[compute](Example/System/NLIBC.agda "((quote ⇨ᴿgᴸ) ∷ (quote ⇨ᴿgᴿ) ∷ []) asMathParOf (quote NL_)")
+[compute](Example/System/NLIBC.agda "((quote ⇨RgL) ∷ (quote ⇨RgR) ∷ []) asMathParOf (quote NL_)")

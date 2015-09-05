@@ -163,12 +163,12 @@ module syntactically_delimited_continuations
 
       -- rules for fNL
 
-      ◇ᴿ   : ∀ {X B f}
+      ◇R   : ∀ {X B f}
            →  f ∈ x ∶    X    ⊢[    B ]
            →  f ∈ x ∶ ⟨  X ⟩  ⊢[ ◇  B ]
 ```
 
-[compute](Example/System/NLCPS.agda "(quote ◇ᴿ) asInferRuleOf (quote fNLCPS_)")
+[compute](Example/System/NLCPS.agda "(quote ◇R) asInferRuleOf (quote fNLCPS_)")
 
 ``` hidden
       ax⁺  : ∀ {A} → x ∈ x ∶ · A · ⊢[ A ]
@@ -177,12 +177,12 @@ module syntactically_delimited_continuations
       ⇀    : ∀ {X B f} {p : True (Positive? B)} →  f ∈ x ∶ X ⊢[ B ]   →  (app₂ {B} f) ∈ x ∶ X ⊢ · B ·
       ↽    : ∀ {A Y f} {p : True (Positive? A)} →  f ∈ · A · ⊢ y ∶ Y  →  (app₃ {A} f) ∈[ A ]⊢ y ∶ Y
       ⇁    : ∀ {X B f} {p : True (Negative? B)} →  f ∈ x ∶ X ⊢ · B ·  →  (app₄ {B} f) ∈ x ∶ X ⊢[ B ]
-      ⊗ᴸ   : ∀ {A B Y f} → f ∈ · A · ⊗ · B · ⊢ Y → f ∈ · A ⊗ B · ⊢ Y
-      ⇒ᴸ   : ∀ {A B X Y f g} → f ∈ X ⊢[ A ] → g ∈[ B ]⊢ Y → (map f g) ∈[ A ⇒ B ]⊢ X ⇒ Y
-      ⇐ᴸ   : ∀ {B A Y X f g} → f ∈ X ⊢[ A ] → g ∈[ B ]⊢ Y → (map g f) ∈[ B ⇐ A ]⊢ Y ⇐ X
-      ⊗ᴿ   : ∀ {X Y A B f g} → f ∈ X ⊢[ A ] → g ∈ Y ⊢[ B ] → (map f g) ∈ X ⊗ Y ⊢[ A ⊗ B ]
-      ⇒ᴿ   : ∀ {X A B f} → f ∈ X ⊢ · A · ⇒ · B · → f ∈ X ⊢ · A ⇒ B ·
-      ⇐ᴿ   : ∀ {X B A f} → f ∈ X ⊢ · B · ⇐ · A · → f ∈ X ⊢ · B ⇐ A ·
+      ⊗L   : ∀ {A B Y f} → f ∈ · A · ⊗ · B · ⊢ Y → f ∈ · A ⊗ B · ⊢ Y
+      ⇒L   : ∀ {A B X Y f g} → f ∈ X ⊢[ A ] → g ∈[ B ]⊢ Y → (map f g) ∈[ A ⇒ B ]⊢ X ⇒ Y
+      ⇐L   : ∀ {B A Y X f g} → f ∈ X ⊢[ A ] → g ∈[ B ]⊢ Y → (map g f) ∈[ B ⇐ A ]⊢ Y ⇐ X
+      ⊗R   : ∀ {X Y A B f g} → f ∈ X ⊢[ A ] → g ∈ Y ⊢[ B ] → (map f g) ∈ X ⊗ Y ⊢[ A ⊗ B ]
+      ⇒R   : ∀ {X A B f} → f ∈ X ⊢ · A · ⇒ · B · → f ∈ X ⊢ · A ⇒ B ·
+      ⇐R   : ∀ {X B A f} → f ∈ X ⊢ · B · ⇐ · A · → f ∈ X ⊢ · B ⇐ A ·
       r⇒⊗  : ∀ {X Y Z f} → f ∈ Y ⊢ X ⇒ Z → (λ {(x , y) z → f y (x , z)}) ∈ X ⊗ Y ⊢ Z
       r⊗⇒  : ∀ {Y X Z f} → f ∈ X ⊗ Y ⊢ Z → (λ {y (x , z) → f (x , y) z}) ∈ Y ⊢ X ⇒ Z
       r⇐⊗  : ∀ {X Y Z f} → f ∈ X ⊢ Z ⇐ Y → (λ {(x , y) z → f x (z , y)}) ∈ X ⊗ Y ⊢ Z

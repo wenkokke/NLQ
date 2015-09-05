@@ -34,42 +34,42 @@ mutual
 
     -- rules for (⇐, ∙, ⇒)
 
-    ⇒ᴸ   : ∀ (Σ : Context) {Γ p q r}
+    ⇒L   : ∀ (Σ : Context) {Γ p q r}
          → Γ                   ⊢NL p
          → Σ [ · q · ]         ⊢NL r
          → Σ [ Γ ∙ · p ⇒ q · ] ⊢NL r
 
-    ⇒ᴿ   : ∀ {Γ p q}
+    ⇒R   : ∀ {Γ p q}
          → · p · ∙ Γ           ⊢NL q
          →         Γ           ⊢NL p ⇒ q
 
-    ⇐ᴸ   : ∀ (Σ : Context) {Γ p q r}
+    ⇐L   : ∀ (Σ : Context) {Γ p q r}
          → Γ                   ⊢NL p
          → Σ [ · q · ]         ⊢NL r
          → Σ [ · q ⇐ p · ∙ Γ ] ⊢NL r
 
-    ⇐ᴿ   : ∀ {Γ p q}
+    ⇐R   : ∀ {Γ p q}
          → Γ ∙ · p ·           ⊢NL q
          → Γ                   ⊢NL q ⇐ p
 
 
     -- rules for (⇦, ∘, ⇨)
 
-    ⇨ᴸ   : ∀ (Σ : Context) {Γ p q r}
+    ⇨L   : ∀ (Σ : Context) {Γ p q r}
          → Γ                   ⊢NL p
          → Σ [ · q · ]         ⊢NL r
          → Σ [ Γ ∘ · p ⇨ q · ] ⊢NL r
 
-    ⇨ᴿ   : ∀ {Γ p q}
+    ⇨R   : ∀ {Γ p q}
          → · p · ∘ Γ           ⊢NL q
          →         Γ           ⊢NL p ⇨ q
 
-    ⇦ᴸ   : ∀ (Σ : Context) {Γ p q r}
+    ⇦L   : ∀ (Σ : Context) {Γ p q r}
          → Γ                   ⊢NL p
          → Σ [ · q · ]         ⊢NL r
          → Σ [ · q ⇦ p · ∘ Γ ] ⊢NL r
 
-    ⇦ᴿ   : ∀ {Γ p q}
+    ⇦R   : ∀ {Γ p q}
          → Γ ∘ · p ·           ⊢NL q
          → Γ                   ⊢NL q ⇦ p
 
@@ -103,11 +103,11 @@ mutual
 
     -- logical rules for gapping
 
-    ⇨ᴿgᴸ : ∀ (Γ : Context) {p q r}
+    ⇨RgL : ∀ (Γ : Context) {p q r}
          → Γ [ · q · ∙ p ] ⊢NL r
          → Γ [ p ] ⊢NL q ⇨ r
 
-    ⇨ᴿgᴿ : ∀ (Γ : Context) {p q r}
+    ⇨RgR : ∀ (Γ : Context) {p q r}
          → Γ [ p ∙ · q · ] ⊢NL r
          → Γ [ p ] ⊢NL q ⇨ r
 
@@ -170,14 +170,14 @@ down Σ (Γ <∙ q) {Δ} f = Cₑ Σ lem₁
 
 -- Derived rules for scope taking
 
-⇦ᴸλ : ∀ (Σ : Context) (Γ : Context₁) {p q r}
+⇦Lλ : ∀ (Σ : Context) (Γ : Context₁) {p q r}
     → λx Γ [x] ⊢NL p → Σ [ · q · ] ⊢NL r → Σ [ Γ [ · q ⇦ p · ] ] ⊢NL r
-⇦ᴸλ Σ Γ f g = up Σ Γ (⇦ᴸ Σ f g)
+⇦Lλ Σ Γ f g = up Σ Γ (⇦L Σ f g)
 
 
-⇨ᴿλ : ∀ (Γ : Context₁) {p q}
+⇨Rλ : ∀ (Γ : Context₁) {p q}
     → Γ [ · p · ] ⊢NL q → λx Γ [x] ⊢NL p ⇨ q
-⇨ᴿλ Γ f = ⇨ᴿ (down [] Γ f)
+⇨Rλ Γ f = ⇨R (down [] Γ f)
 
 
 -- TODO: an attempt at deriving the rule for full parasitic scope

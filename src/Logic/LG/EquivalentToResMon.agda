@@ -72,39 +72,39 @@ infix 5 ↑_
 -- Once we inflate a type to a maximal structure, we can deflate the
 -- structure back down to an elementary structure.
 mutual
-  deflateᴸ : ∀ {A Y} → Str ↑ A ⊢ Y → Str · A · ⊢ Y
-  deflateᴸ {A = el  A} f = f
-  deflateᴸ {A = □   A} f = f
-  deflateᴸ {A = ◇   A} f = ◇ᴸ (r□◇ (deflateᴸ (r◇□ f)))
-  deflateᴸ {A = ₀   A} f = f
-  deflateᴸ {A = A   ⁰} f = f
-  deflateᴸ {A = ₁   A} f = ₁ᴸ (r¹₁ (deflateᴿ (r₁¹ f)))
-  deflateᴸ {A = A   ¹} f = ¹ᴸ (r₁¹ (deflateᴿ (r¹₁ f)))
-  deflateᴸ {A = A ⇒ B} f = f
-  deflateᴸ {A = A ⇐ B} f = f
-  deflateᴸ {A = A ⇚ B} f = ⇚ᴸ (r⊕⇚ (deflateᴸ (r⇛⊕ (deflateᴿ (r⊕⇛ (r⇚⊕ f))))))
-  deflateᴸ {A = A ⇛ B} f = ⇛ᴸ (r⊕⇛ (deflateᴸ (r⇚⊕ (deflateᴿ (r⊕⇚ (r⇛⊕ f))))))
-  deflateᴸ {A = A ⊗ B} f = ⊗ᴸ (r⇐⊗ (deflateᴸ (r⊗⇐ (r⇒⊗ (deflateᴸ (r⊗⇒ f))))))
-  deflateᴸ {A = A ⊕ B} f = f
+  deflateL : ∀ {A Y} → Str ↑ A ⊢ Y → Str · A · ⊢ Y
+  deflateL {A = el  A} f = f
+  deflateL {A = □   A} f = f
+  deflateL {A = ◇   A} f = ◇L (r□◇ (deflateL (r◇□ f)))
+  deflateL {A = ₀   A} f = f
+  deflateL {A = A   ⁰} f = f
+  deflateL {A = ₁   A} f = ₁L (r¹₁ (deflateR (r₁¹ f)))
+  deflateL {A = A   ¹} f = ¹L (r₁¹ (deflateR (r¹₁ f)))
+  deflateL {A = A ⇒ B} f = f
+  deflateL {A = A ⇐ B} f = f
+  deflateL {A = A ⇚ B} f = ⇚L (r⊕⇚ (deflateL (r⇛⊕ (deflateR (r⊕⇛ (r⇚⊕ f))))))
+  deflateL {A = A ⇛ B} f = ⇛L (r⊕⇛ (deflateL (r⇚⊕ (deflateR (r⊕⇚ (r⇛⊕ f))))))
+  deflateL {A = A ⊗ B} f = ⊗L (r⇐⊗ (deflateL (r⊗⇐ (r⇒⊗ (deflateL (r⊗⇒ f))))))
+  deflateL {A = A ⊕ B} f = f
 
-  deflateᴿ : ∀ {X B} → Str X ⊢ ↑ B → Str X ⊢ · B ·
-  deflateᴿ {B = el  B} f = f
-  deflateᴿ {B = □   B} f = □ᴿ (r◇□ (deflateᴿ (r□◇ f)))
-  deflateᴿ {B = ◇   B} f = f
-  deflateᴿ {B = ₀   B} f = ₀ᴿ (r⁰₀ (deflateᴸ (r₀⁰ f)))
-  deflateᴿ {B = B   ⁰} f = ⁰ᴿ (r₀⁰ (deflateᴸ (r⁰₀ f)))
-  deflateᴿ {B = ₁   B} f = f
-  deflateᴿ {B = B   ¹} f = f
-  deflateᴿ {B = B ⇒ C} f = ⇒ᴿ (r⊗⇒ (deflateᴿ (r⇐⊗ (deflateᴸ (r⊗⇐ (r⇒⊗ f))))))
-  deflateᴿ {B = B ⇐ C} f = ⇐ᴿ (r⊗⇐ (deflateᴿ (r⇒⊗ (deflateᴸ (r⊗⇒ (r⇐⊗ f))))))
-  deflateᴿ {B = B ⇚ C} f = f
-  deflateᴿ {B = B ⇛ C} f = f
-  deflateᴿ {B = B ⊗ C} f = f
-  deflateᴿ {B = B ⊕ C} f = ⊕ᴿ (r⇚⊕ (deflateᴿ (r⊕⇚ (r⇛⊕ (deflateᴿ (r⊕⇛ f))))))
+  deflateR : ∀ {X B} → Str X ⊢ ↑ B → Str X ⊢ · B ·
+  deflateR {B = el  B} f = f
+  deflateR {B = □   B} f = □R (r◇□ (deflateR (r□◇ f)))
+  deflateR {B = ◇   B} f = f
+  deflateR {B = ₀   B} f = ₀R (r⁰₀ (deflateL (r₀⁰ f)))
+  deflateR {B = B   ⁰} f = ⁰R (r₀⁰ (deflateL (r⁰₀ f)))
+  deflateR {B = ₁   B} f = f
+  deflateR {B = B   ¹} f = f
+  deflateR {B = B ⇒ C} f = ⇒R (r⊗⇒ (deflateR (r⇐⊗ (deflateL (r⊗⇐ (r⇒⊗ f))))))
+  deflateR {B = B ⇐ C} f = ⇐R (r⊗⇐ (deflateR (r⇒⊗ (deflateL (r⊗⇒ (r⇐⊗ f))))))
+  deflateR {B = B ⇚ C} f = f
+  deflateR {B = B ⇛ C} f = f
+  deflateR {B = B ⊗ C} f = f
+  deflateR {B = B ⊕ C} f = ⊕R (r⇚⊕ (deflateR (r⊕⇚ (r⇛⊕ (deflateR (r⊕⇛ f))))))
 
 
 deflate : ∀ {A B} → Str ↑ A ⊢ ↑ B → Str · A · ⊢ · B ·
-deflate = deflateᴸ ∘ deflateᴿ
+deflate = deflateL ∘ deflateR
 
 
 
@@ -113,18 +113,18 @@ deflate = deflateᴸ ∘ deflateᴿ
 -- into their corresponding maximal structures.
 from↑ : ∀ {A B} → Alg A ⊢ B → Str ↑ A ⊢ ↑ B
 from↑ (ax     ) = ⇀ ax⁺
-from↑ (m□  f  ) = ↼ (□ᴸ (↽ (deflateᴸ (from↑ f))))
-from↑ (m◇  f  ) = ⇀ (◇ᴿ (⇁ (deflateᴿ (from↑ f))))
-from↑ (m₀  f  ) = ↼ (₀ᴸ (⇁ (deflateᴿ (from↑ f))))
-from↑ (m⁰  f  ) = ↼ (⁰ᴸ (⇁ (deflateᴿ (from↑ f))))
-from↑ (m₁  f  ) = ⇀ (₁ᴿ (↽ (deflateᴸ (from↑ f))))
-from↑ (m¹  f  ) = ⇀ (¹ᴿ (↽ (deflateᴸ (from↑ f))))
-from↑ (m⊗  f g) = ⇀ (⊗ᴿ (⇁ (deflateᴿ (from↑ f))) (⇁ (deflateᴿ (from↑ g))))
-from↑ (m⇒  f g) = ↼ (⇒ᴸ (⇁ (deflateᴿ (from↑ f))) (↽ (deflateᴸ (from↑ g))))
-from↑ (m⇐  f g) = ↼ (⇐ᴸ (⇁ (deflateᴿ (from↑ g))) (↽ (deflateᴸ (from↑ f))))
-from↑ (m⊕  f g) = ↼ (⊕ᴸ (↽ (deflateᴸ (from↑ f))) (↽ (deflateᴸ (from↑ g))))
-from↑ (m⇛  f g) = ⇀ (⇛ᴿ (⇁ (deflateᴿ (from↑ g))) (↽ (deflateᴸ (from↑ f))))
-from↑ (m⇚  f g) = ⇀ (⇚ᴿ (⇁ (deflateᴿ (from↑ f))) (↽ (deflateᴸ (from↑ g))))
+from↑ (m□  f  ) = ↼ (□L (↽ (deflateL (from↑ f))))
+from↑ (m◇  f  ) = ⇀ (◇R (⇁ (deflateR (from↑ f))))
+from↑ (m₀  f  ) = ↼ (₀L (⇁ (deflateR (from↑ f))))
+from↑ (m⁰  f  ) = ↼ (⁰L (⇁ (deflateR (from↑ f))))
+from↑ (m₁  f  ) = ⇀ (₁R (↽ (deflateL (from↑ f))))
+from↑ (m¹  f  ) = ⇀ (¹R (↽ (deflateL (from↑ f))))
+from↑ (m⊗  f g) = ⇀ (⊗R (⇁ (deflateR (from↑ f))) (⇁ (deflateR (from↑ g))))
+from↑ (m⇒  f g) = ↼ (⇒L (⇁ (deflateR (from↑ f))) (↽ (deflateL (from↑ g))))
+from↑ (m⇐  f g) = ↼ (⇐L (⇁ (deflateR (from↑ g))) (↽ (deflateL (from↑ f))))
+from↑ (m⊕  f g) = ↼ (⊕L (↽ (deflateL (from↑ f))) (↽ (deflateL (from↑ g))))
+from↑ (m⇛  f g) = ⇀ (⇛R (⇁ (deflateR (from↑ g))) (↽ (deflateL (from↑ f))))
+from↑ (m⇚  f g) = ⇀ (⇚R (⇁ (deflateR (from↑ f))) (↽ (deflateL (from↑ g))))
 from↑ (r□◇ f  ) = r□◇ (from↑ f)
 from↑ (r◇□ f  ) = r◇□ (from↑ f)
 from↑ (r⁰₀ f  ) = r⁰₀ (from↑ f)
@@ -156,27 +156,27 @@ Alg→Str↑ = record { ⟦_⟧ᵗ = id ; ⟦_⟧ʲ = λ {(A ⊢ B) → ↑ A �
 -- structure, we can maximally inflate the structure, and then deflate
 -- it down to the original structure.
 mutual
-  inflateᴸ : ∀ {X Y} → Str ↑ ↓ X ⊢ Y → Str X ⊢ Y
-  inflateᴸ {X = · A ·} f = deflateᴸ f
-  inflateᴸ {X = ⟨ X ⟩} f = r□◇ (inflateᴸ (r◇□ f))
-  inflateᴸ {X = ₁   X} f = r¹₁ (inflateᴿ (r₁¹ f))
-  inflateᴸ {X = X   ¹} f = r₁¹ (inflateᴿ (r¹₁ f))
-  inflateᴸ {X = X ⊗ Y} f = r⇐⊗ (inflateᴸ (r⊗⇐ (r⇒⊗ (inflateᴸ (r⊗⇒ f)))))
-  inflateᴸ {X = X ⇚ Y} f = r⊕⇚ (inflateᴸ (r⇛⊕ (inflateᴿ (r⊕⇛ (r⇚⊕ f)))))
-  inflateᴸ {X = X ⇛ Y} f = r⊕⇛ (inflateᴸ (r⇚⊕ (inflateᴿ (r⊕⇚ (r⇛⊕ f)))))
+  inflateL : ∀ {X Y} → Str ↑ ↓ X ⊢ Y → Str X ⊢ Y
+  inflateL {X = · A ·} f = deflateL f
+  inflateL {X = ⟨ X ⟩} f = r□◇ (inflateL (r◇□ f))
+  inflateL {X = ₁   X} f = r¹₁ (inflateR (r₁¹ f))
+  inflateL {X = X   ¹} f = r₁¹ (inflateR (r¹₁ f))
+  inflateL {X = X ⊗ Y} f = r⇐⊗ (inflateL (r⊗⇐ (r⇒⊗ (inflateL (r⊗⇒ f)))))
+  inflateL {X = X ⇚ Y} f = r⊕⇚ (inflateL (r⇛⊕ (inflateR (r⊕⇛ (r⇚⊕ f)))))
+  inflateL {X = X ⇛ Y} f = r⊕⇛ (inflateL (r⇚⊕ (inflateR (r⊕⇚ (r⇛⊕ f)))))
 
-  inflateᴿ : ∀ {X Y} → Str X ⊢ ↑ ↓ Y → Str X ⊢ Y
-  inflateᴿ {Y = · A ·} f = deflateᴿ f
-  inflateᴿ {Y = [ Y ]} f = r◇□ (inflateᴿ (r□◇ f))
-  inflateᴿ {Y = ₀   Y} f = r⁰₀ (inflateᴸ (r₀⁰ f))
-  inflateᴿ {Y = Y   ⁰} f = r₀⁰ (inflateᴸ (r⁰₀ f))
-  inflateᴿ {Y = X ⊕ Y} f = r⇛⊕ (inflateᴿ (r⊕⇛ (r⇚⊕ (inflateᴿ (r⊕⇚ f)))))
-  inflateᴿ {Y = X ⇒ Y} f = r⊗⇒ (inflateᴿ (r⇐⊗ (inflateᴸ (r⊗⇐ (r⇒⊗ f)))))
-  inflateᴿ {Y = X ⇐ Y} f = r⊗⇐ (inflateᴿ (r⇒⊗ (inflateᴸ (r⊗⇒ (r⇐⊗ f)))))
+  inflateR : ∀ {X Y} → Str X ⊢ ↑ ↓ Y → Str X ⊢ Y
+  inflateR {Y = · A ·} f = deflateR f
+  inflateR {Y = [ Y ]} f = r◇□ (inflateR (r□◇ f))
+  inflateR {Y = ₀   Y} f = r⁰₀ (inflateL (r₀⁰ f))
+  inflateR {Y = Y   ⁰} f = r₀⁰ (inflateL (r⁰₀ f))
+  inflateR {Y = X ⊕ Y} f = r⇛⊕ (inflateR (r⊕⇛ (r⇚⊕ (inflateR (r⊕⇚ f)))))
+  inflateR {Y = X ⇒ Y} f = r⊗⇒ (inflateR (r⇐⊗ (inflateL (r⊗⇐ (r⇒⊗ f)))))
+  inflateR {Y = X ⇐ Y} f = r⊗⇐ (inflateR (r⇒⊗ (inflateL (r⊗⇒ (r⇐⊗ f)))))
 
 
 inflate : ∀ {X Y} → Str ↑ ↓ X ⊢ ↑ ↓ Y → Str X ⊢ Y
-inflate = inflateᴸ ∘ inflateᴿ
+inflate = inflateL ∘ inflateR
 
 
 
@@ -189,99 +189,99 @@ cut′ f g = inflate (from↑ (AT.cut′ (to f) (to g)))
 
 -- Using transitivity, we can define the inverted versions of the
 -- invertable structural rules, which reintroduce structures.
-◇ᴸ′ : ∀ {Y A} → Str · ◇ A · ⊢ Y → Str ⟨ · A · ⟩ ⊢ Y
-◇ᴸ′ f = cut′ (◇ᴿ ax⁺) (↽ f)
+◇L′ : ∀ {Y A} → Str · ◇ A · ⊢ Y → Str ⟨ · A · ⟩ ⊢ Y
+◇L′ f = cut′ (◇R ax⁺) (↽ f)
 
-□ᴿ′ : ∀ {X A} → Str X ⊢ · □ A · → Str X ⊢ [ · A · ]
-□ᴿ′ f = cut′ (⇁ f) (□ᴸ ax⁻)
+□R′ : ∀ {X A} → Str X ⊢ · □ A · → Str X ⊢ [ · A · ]
+□R′ f = cut′ (⇁ f) (□L ax⁻)
 
-₀ᴿ′ : ∀ {X A} → Str X ⊢ · ₀ A · → Str X ⊢ ₀ · A ·
-₀ᴿ′ f = cut′ (⇁ f) (₀ᴸ ax⁺)
+₀R′ : ∀ {X A} → Str X ⊢ · ₀ A · → Str X ⊢ ₀ · A ·
+₀R′ f = cut′ (⇁ f) (₀L ax⁺)
 
-⁰ᴿ′ : ∀ {X A} → Str X ⊢ · A ⁰ · → Str X ⊢ · A · ⁰
-⁰ᴿ′ f = cut′ (⇁ f) (⁰ᴸ ax⁺)
+⁰R′ : ∀ {X A} → Str X ⊢ · A ⁰ · → Str X ⊢ · A · ⁰
+⁰R′ f = cut′ (⇁ f) (⁰L ax⁺)
 
-₁ᴸ′ : ∀ {Y A} → Str · ₁ A · ⊢ Y → Str ₁ · A · ⊢ Y
-₁ᴸ′ f = cut′ (₁ᴿ ax⁻) (↽ f)
+₁L′ : ∀ {Y A} → Str · ₁ A · ⊢ Y → Str ₁ · A · ⊢ Y
+₁L′ f = cut′ (₁R ax⁻) (↽ f)
 
-¹ᴸ′ : ∀ {Y A} → Str · A ¹ · ⊢ Y → Str · A · ¹ ⊢ Y
-¹ᴸ′ f = cut′ (¹ᴿ ax⁻) (↽ f)
+¹L′ : ∀ {Y A} → Str · A ¹ · ⊢ Y → Str · A · ¹ ⊢ Y
+¹L′ f = cut′ (¹R ax⁻) (↽ f)
 
-⊗ᴸ′ : ∀ {Y A B} → Str · A ⊗ B · ⊢ Y → Str · A · ⊗ · B · ⊢ Y
-⊗ᴸ′ f = cut′ (⊗ᴿ ax⁺ ax⁺) (↽ f)
+⊗L′ : ∀ {Y A B} → Str · A ⊗ B · ⊢ Y → Str · A · ⊗ · B · ⊢ Y
+⊗L′ f = cut′ (⊗R ax⁺ ax⁺) (↽ f)
 
-⇒ᴿ′ : ∀ {X A B} → Str X ⊢ · A ⇒ B · → Str X ⊢ · A · ⇒ · B ·
-⇒ᴿ′ f = cut′ (⇁ f) (⇒ᴸ ax⁺ ax⁻)
+⇒R′ : ∀ {X A B} → Str X ⊢ · A ⇒ B · → Str X ⊢ · A · ⇒ · B ·
+⇒R′ f = cut′ (⇁ f) (⇒L ax⁺ ax⁻)
 
-⇐ᴿ′ : ∀ {X A B} → Str X ⊢ · B ⇐ A · → Str X ⊢ · B · ⇐ · A ·
-⇐ᴿ′ f = cut′ (⇁ f) (⇐ᴸ ax⁺ ax⁻)
+⇐R′ : ∀ {X A B} → Str X ⊢ · B ⇐ A · → Str X ⊢ · B · ⇐ · A ·
+⇐R′ f = cut′ (⇁ f) (⇐L ax⁺ ax⁻)
 
-⊕ᴿ′ : ∀ {X A B} → Str X ⊢ · B ⊕ A · → Str X ⊢ · B · ⊕ · A ·
-⊕ᴿ′ f = cut′ (⇁ f) (⊕ᴸ ax⁻ ax⁻)
+⊕R′ : ∀ {X A B} → Str X ⊢ · B ⊕ A · → Str X ⊢ · B · ⊕ · A ·
+⊕R′ f = cut′ (⇁ f) (⊕L ax⁻ ax⁻)
 
-⇚ᴸ′ : ∀ {X A B} → Str · A ⇚ B · ⊢ X → Str · A · ⇚ · B · ⊢ X
-⇚ᴸ′ f = cut′ (⇚ᴿ ax⁺ ax⁻) (↽ f)
+⇚L′ : ∀ {X A B} → Str · A ⇚ B · ⊢ X → Str · A · ⇚ · B · ⊢ X
+⇚L′ f = cut′ (⇚R ax⁺ ax⁻) (↽ f)
 
-⇛ᴸ′ : ∀ {X A B} → Str · B ⇛ A · ⊢ X → Str · B · ⇛ · A · ⊢ X
-⇛ᴸ′ f = cut′ (⇛ᴿ ax⁺ ax⁻) (↽ f)
+⇛L′ : ∀ {X A B} → Str · B ⇛ A · ⊢ X → Str · B · ⇛ · A · ⊢ X
+⇛L′ f = cut′ (⇛R ax⁺ ax⁻) (↽ f)
 
 
 -- In addition, we can use these invertable rules to define the
 -- algebraic versions of the residuation and distribution
 -- rules--i.e. those which work on elementary structures.
 r□◇′ : ∀ {A B} → Str · A · ⊢ · □ B · → Str · ◇ A · ⊢ · B ·
-r□◇′ f = ◇ᴸ (r□◇ (□ᴿ′ f))
+r□◇′ f = ◇L (r□◇ (□R′ f))
 
 r◇□′ : ∀ {A B} → Str · ◇ A · ⊢ · B · → Str · A · ⊢ · □ B ·
-r◇□′ f = □ᴿ (r◇□ (◇ᴸ′ f))
+r◇□′ f = □R (r◇□ (◇L′ f))
 
 r⁰₀′ : ∀ {A B} → Str · A · ⊢ · B ⁰ · → Str · B · ⊢ · ₀ A ·
-r⁰₀′ f = ₀ᴿ (r⁰₀ (⁰ᴿ′ f))
+r⁰₀′ f = ₀R (r⁰₀ (⁰R′ f))
 
 r₀⁰′ : ∀ {A B} → Str · B · ⊢ · ₀ A · → Str · A · ⊢ · B ⁰ ·
-r₀⁰′ f = ⁰ᴿ (r₀⁰ (₀ᴿ′ f))
+r₀⁰′ f = ⁰R (r₀⁰ (₀R′ f))
 
 r¹₁′ : ∀ {A B} → Str · A ¹ · ⊢ · B · → Str · ₁ B · ⊢ · A ·
-r¹₁′ f = ₁ᴸ (r¹₁ (¹ᴸ′ f))
+r¹₁′ f = ₁L (r¹₁ (¹L′ f))
 
 r₁¹′ : ∀ {A B} → Str · ₁ B · ⊢ · A · → Str · A ¹ · ⊢ · B ·
-r₁¹′ f = ¹ᴸ (r₁¹ (₁ᴸ′ f))
+r₁¹′ f = ¹L (r₁¹ (₁L′ f))
 
 r⇒⊗′ : ∀ {A B C} → Str · B · ⊢ · A ⇒ C · → Str · A ⊗ B · ⊢ · C ·
-r⇒⊗′ f = ⊗ᴸ (r⇒⊗ (⇒ᴿ′ f))
+r⇒⊗′ f = ⊗L (r⇒⊗ (⇒R′ f))
 
 r⊗⇒′ : ∀ {A B C} → Str · A ⊗ B · ⊢ · C · → Str · B · ⊢ · A ⇒ C ·
-r⊗⇒′ f = ⇒ᴿ (r⊗⇒ (⊗ᴸ′ f))
+r⊗⇒′ f = ⇒R (r⊗⇒ (⊗L′ f))
 
 r⇐⊗′ : ∀ {A B C} → Str · A · ⊢ · C ⇐ B · → Str · A ⊗ B · ⊢ · C ·
-r⇐⊗′ f = ⊗ᴸ (r⇐⊗ (⇐ᴿ′ f))
+r⇐⊗′ f = ⊗L (r⇐⊗ (⇐R′ f))
 
 r⊗⇐′ : ∀ {A B C} → Str · A ⊗ B · ⊢ · C · → Str · A · ⊢ · C ⇐ B ·
-r⊗⇐′ f = ⇐ᴿ (r⊗⇐ (⊗ᴸ′ f))
+r⊗⇐′ f = ⇐R (r⊗⇐ (⊗L′ f))
 
 r⇚⊕′ : ∀ {A B C} → Str · C ⇚ A · ⊢ · B · → Str · C · ⊢ · B ⊕ A ·
-r⇚⊕′ f = ⊕ᴿ (r⇚⊕ (⇚ᴸ′ f))
+r⇚⊕′ f = ⊕R (r⇚⊕ (⇚L′ f))
 
 r⊕⇚′ : ∀ {A B C} → Str · C · ⊢ · B ⊕ A · → Str · C ⇚ A · ⊢ · B ·
-r⊕⇚′ f = ⇚ᴸ (r⊕⇚ (⊕ᴿ′ f))
+r⊕⇚′ f = ⇚L (r⊕⇚ (⊕R′ f))
 
 r⇛⊕′ : ∀ {A B C} → Str · B ⇛ C · ⊢ · A · → Str · C · ⊢ · B ⊕ A ·
-r⇛⊕′ f = ⊕ᴿ (r⇛⊕ (⇛ᴸ′ f))
+r⇛⊕′ f = ⊕R (r⇛⊕ (⇛L′ f))
 
 r⊕⇛′ : ∀ {A B C} → Str · C · ⊢ · B ⊕ A · → Str · B ⇛ C · ⊢ · A ·
-r⊕⇛′ f = ⇛ᴸ (r⊕⇛ (⊕ᴿ′ f))
+r⊕⇛′ f = ⇛L (r⊕⇛ (⊕R′ f))
 
 d⇛⇐′ : ∀ {A B C D} → Str · A ⊗ B · ⊢ · C ⊕ D · → Str · C ⇛ A · ⊢ · D ⇐ B ·
-d⇛⇐′ f = ⇐ᴿ (⇛ᴸ (d⇛⇐ (⊗ᴸ′ (⊕ᴿ′ f))))
+d⇛⇐′ f = ⇐R (⇛L (d⇛⇐ (⊗L′ (⊕R′ f))))
 
 d⇛⇒′ : ∀ {A B C D} → Str · A ⊗ B · ⊢ · C ⊕ D · → Str · C ⇛ B · ⊢ · A ⇒ D ·
-d⇛⇒′ f = ⇒ᴿ (⇛ᴸ (d⇛⇒ (⊗ᴸ′ (⊕ᴿ′ f))))
+d⇛⇒′ f = ⇒R (⇛L (d⇛⇒ (⊗L′ (⊕R′ f))))
 
 d⇚⇒′ : ∀ {A B C D} → Str · A ⊗ B · ⊢ · C ⊕ D · → Str · B ⇚ D · ⊢ · A ⇒ C ·
-d⇚⇒′ f = ⇒ᴿ (⇚ᴸ (d⇚⇒ (⊗ᴸ′ (⊕ᴿ′ f))))
+d⇚⇒′ f = ⇒R (⇚L (d⇚⇒ (⊗L′ (⊕R′ f))))
 
 d⇚⇐′ : ∀ {A B C D} → Str · A ⊗ B · ⊢ · C ⊕ D · → Str · A ⇚ D · ⊢ · C ⇐ B ·
-d⇚⇐′ f = ⇐ᴿ (⇚ᴸ (d⇚⇐ (⊗ᴸ′ (⊕ᴿ′ f))))
+d⇚⇐′ f = ⇐R (⇚L (d⇚⇐ (⊗L′ (⊕R′ f))))
 
 
 
@@ -293,28 +293,28 @@ d⇚⇐′ f = ⇐ᴿ (⇚ᴸ (d⇚⇐ (⊗ᴸ′ (⊕ᴿ′ f))))
 -- between types and structures.
 from↓ : ∀ {A B} → Alg A ⊢ B → Str · A · ⊢ · B ·
 from↓  ax       = ⇀ ax⁺
-from↓ (m□  f  ) = □ᴿ (↼ (□ᴸ (↽ (from↓ f))))
-from↓ (m◇  f  ) = ◇ᴸ (⇀ (◇ᴿ (⇁ (from↓ f))))
+from↓ (m□  f  ) = □R (↼ (□L (↽ (from↓ f))))
+from↓ (m◇  f  ) = ◇L (⇀ (◇R (⇁ (from↓ f))))
 from↓ (r□◇ f  ) = r□◇′ (from↓ f)
 from↓ (r◇□ f  ) = r◇□′ (from↓ f)
-from↓ (m⁰  f  ) = ⁰ᴿ (↼ (⁰ᴸ (⇁ (from↓ f))))
-from↓ (m₀  f  ) = ₀ᴿ (↼ (₀ᴸ (⇁ (from↓ f))))
+from↓ (m⁰  f  ) = ⁰R (↼ (⁰L (⇁ (from↓ f))))
+from↓ (m₀  f  ) = ₀R (↼ (₀L (⇁ (from↓ f))))
 from↓ (r⁰₀ f  ) = r⁰₀′ (from↓ f)
 from↓ (r₀⁰ f  ) = r₀⁰′ (from↓ f)
-from↓ (m₁  f  ) = ₁ᴸ (⇀ (₁ᴿ (↽ (from↓ f))))
-from↓ (m¹  f  ) = ¹ᴸ (⇀ (¹ᴿ (↽ (from↓ f))))
+from↓ (m₁  f  ) = ₁L (⇀ (₁R (↽ (from↓ f))))
+from↓ (m¹  f  ) = ¹L (⇀ (¹R (↽ (from↓ f))))
 from↓ (r¹₁ f  ) = r¹₁′ (from↓ f)
 from↓ (r₁¹ f  ) = r₁¹′ (from↓ f)
-from↓ (m⊗  f g) = ⊗ᴸ (⇀ (⊗ᴿ (⇁ (from↓ f)) (⇁ (from↓ g))))
-from↓ (m⇒  f g) = ⇒ᴿ (↼ (⇒ᴸ (⇁ (from↓ f)) (↽ (from↓ g))))
-from↓ (m⇐  f g) = ⇐ᴿ (↼ (⇐ᴸ (⇁ (from↓ g)) (↽ (from↓ f))))
+from↓ (m⊗  f g) = ⊗L (⇀ (⊗R (⇁ (from↓ f)) (⇁ (from↓ g))))
+from↓ (m⇒  f g) = ⇒R (↼ (⇒L (⇁ (from↓ f)) (↽ (from↓ g))))
+from↓ (m⇐  f g) = ⇐R (↼ (⇐L (⇁ (from↓ g)) (↽ (from↓ f))))
 from↓ (r⇒⊗ f  ) = r⇒⊗′ (from↓ f)
 from↓ (r⊗⇒ f  ) = r⊗⇒′ (from↓ f)
 from↓ (r⇐⊗ f  ) = r⇐⊗′ (from↓ f)
 from↓ (r⊗⇐ f  ) = r⊗⇐′ (from↓ f)
-from↓ (m⊕  f g) = ⊕ᴿ (↼ (⊕ᴸ (↽ (from↓ f)) (↽ (from↓ g))))
-from↓ (m⇛  f g) = ⇛ᴸ (⇀ (⇛ᴿ (⇁ (from↓ g)) (↽ (from↓ f))))
-from↓ (m⇚  f g) = ⇚ᴸ (⇀ (⇚ᴿ (⇁ (from↓ f)) (↽ (from↓ g))))
+from↓ (m⊕  f g) = ⊕R (↼ (⊕L (↽ (from↓ f)) (↽ (from↓ g))))
+from↓ (m⇛  f g) = ⇛L (⇀ (⇛R (⇁ (from↓ g)) (↽ (from↓ f))))
+from↓ (m⇚  f g) = ⇚L (⇀ (⇚R (⇁ (from↓ f)) (↽ (from↓ g))))
 from↓ (r⇛⊕ f  ) = r⇛⊕′ (from↓ f)
 from↓ (r⊕⇛ f  ) = r⊕⇛′ (from↓ f)
 from↓ (r⊕⇚ f  ) = r⊕⇚′ (from↓ f)
