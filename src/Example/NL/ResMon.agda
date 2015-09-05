@@ -20,8 +20,8 @@ postulate
   JOHN    : Entity
   UNICORN : Entity → Bool
   PERSON  : Entity → Bool
-  FINDS   : Entity → Entity → Bool
-  LIKES   : Entity → Entity → Bool
+  FIND    : Entity → Entity → Bool
+  LIKE    : Entity → Entity → Bool
 
 
 data Word : Set where
@@ -42,7 +42,7 @@ Lex a        = (((s ⇐ (np ⇒ s)) ⇐ n)
              , (λ f g p → EXISTS (λ y → f y ∧ p (λ x → g y x))))
              ∷ []
 Lex unicorn  = (n  , UNICORN) ∷ []
-Lex finds    = (tv , (λ y x → FINDS x y)) ∷ []
+Lex finds    = (tv , (λ y x → FIND x y)) ∷ []
 Lex someone  = ((s ⇐ (np ⇒ s))
              , (λ g → EXISTS (λ x → PERSON x ∧ g x)))
              ∷ ((((np ⇒ s) ⇐ np) ⇒ (np ⇒ s))
@@ -50,7 +50,7 @@ Lex someone  = ((s ⇐ (np ⇒ s))
              ∷ (((np ⇒ s) ⇐ np) ⇒ ((s ⇐ (np ⇒ s)) ⇒ s)
              , (λ g p → EXISTS (λ y → PERSON y ∧ p (λ x → g y x))))
              ∷ []
-Lex likes    = (tv , (λ y x → LIKES x y)) ∷ []
+Lex likes    = (tv , (λ y x → LIKE x y)) ∷ []
 Lex everyone = ((s ⇐ (np ⇒ s))
              , (λ g → FORALL (λ x → PERSON x ⊃ g x)))
              ∷ ((((np ⇒ s) ⇐ np) ⇒ (np ⇒ s))
@@ -64,29 +64,29 @@ open Lexicon (fromLex grammar Lex) public using (✓_; *_; Parse; parse; interpr
 
 
 s₁ : interpret (· mary · , · likes · , · john ·)
-   ↦ LIKES MARY JOHN
+   ↦ LIKE MARY JOHN
 s₁ = _
 
 s₂ : interpret (· john · , · likes · , · everyone ·)
-   ↦ FORALL (λ x → PERSON x ⊃ LIKES JOHN x)
+   ↦ FORALL (λ x → PERSON x ⊃ LIKE JOHN x)
 s₂ = _
 
 s₃ : interpret (· everyone · , · likes · , · john ·)
-   ↦ FORALL (λ x → PERSON x ⊃ LIKES x JOHN)
+   ↦ FORALL (λ x → PERSON x ⊃ LIKE x JOHN)
 s₃ = _
 
 s₄ : interpret (· someone · , · likes · , · everyone ·)
-   ↦ [ EXISTS (λ y → PERSON y ∧ FORALL (λ x → PERSON x ⊃ LIKES y x))
-     , FORALL (λ x → PERSON x ⊃ EXISTS (λ y → PERSON y ∧ LIKES y x))
+   ↦ [ EXISTS (λ y → PERSON y ∧ FORALL (λ x → PERSON x ⊃ LIKE y x))
+     , FORALL (λ x → PERSON x ⊃ EXISTS (λ y → PERSON y ∧ LIKE y x))
      ]
 s₄ = _
 
 s₅ : interpret (· mary · , · finds · , · a · , · unicorn ·)
-   ↦ EXISTS (λ y → UNICORN y ∧ FINDS MARY y)
+   ↦ EXISTS (λ y → UNICORN y ∧ FIND MARY y)
 s₅ = _
 
 s₆ : interpret ((· a · , · unicorn ·) , · finds · , · mary ·)
-   ↦ EXISTS (λ x → UNICORN x ∧ FINDS x MARY)
+   ↦ EXISTS (λ x → UNICORN x ∧ FIND x MARY)
 s₆ = _
 
 s₇ : * · unicorn · , · unicorn · , · unicorn · , · unicorn ·

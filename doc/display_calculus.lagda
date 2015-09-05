@@ -55,10 +55,10 @@ module display_calculus (Atom : Set) where
 ```
 
 ```
-  data Judgement : Set where
-    _⊢_    : Struct +  → Struct -  → Judgement
-    [_]⊢_  : Type      → Struct -  → Judgement
-    _⊢[_]  : Struct +  → Type      → Judgement
+  data Sequent : Set where
+    _⊢_    : Struct +  → Struct -  → Sequent
+    [_]⊢_  : Type      → Struct -  → Sequent
+    _⊢[_]  : Struct +  → Type      → Sequent
 ```
 
 ``` hidden
@@ -70,7 +70,7 @@ module display_calculus (Atom : Set) where
     [_]⊢NL_ : Type → Struct - → Set
     [ A ]⊢NL Y = NL [ A ]⊢ Y
 
-    data NL_ : Judgement → Set where
+    data NL_ : Sequent → Set where
 
       ax⁺  : ∀ {A}       →  · A · ⊢NL[ A ]
       ax⁻  : ∀ {B}       →  [ B ]⊢NL · B ·
@@ -102,7 +102,7 @@ module display_calculus (Atom : Set) where
 module resmon⇔display_calculus (Atom : Set) where
 
   open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
-  module RM = resmon           Atom ; open RM hiding (Judgement; cut′)
+  module RM = resmon           Atom ; open RM hiding (Sequent; cut′)
   module NL = display_calculus Atom ; open NL
 ```
 
@@ -262,8 +262,8 @@ module spurious_ambiguity where
   open import Relation.Binary.PropositionalEquality using (_≡_; refl)
   open import Example.System.Base using (Atom; N; NP; S; INF; _≟-Atom_)
   open import Logic.NL.Type                Atom
-  open import Logic.NL.Judgement           Atom as NL
-  open import Logic.NL.ResMon.Judgement    Atom as RM
+  open import Logic.NL.Sequent           Atom as NL
+  open import Logic.NL.ResMon.Sequent    Atom as RM
   open import Logic.NL.Structure.Polarised Atom
   open import Logic.NL.Base                Atom
   open import Logic.NL.ProofSearch         Atom _≟-Atom_ renaming (findAll to findAllNL)
@@ -319,7 +319,7 @@ module focpol (Atom : Set) (Polarityᴬ? : Atom → Polarity) where
   open import Relation.Nullary.Decidable using (True; toWitness)
   open import Relation.Binary.PropositionalEquality as P
   open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
-  open display_calculus Atom using (Struct; ·_·; _⇐_; _⊗_; _⇒_; Judgement; _⊢_; [_]⊢_; _⊢[_])
+  open display_calculus Atom using (Struct; ·_·; _⇐_; _⊗_; _⇒_; Sequent; _⊢_; [_]⊢_; _⊢[_])
   infix 1 fNL_
   infix 2 _⊢fNL_ [_]⊢fNL_ _⊢fNL[_]
 ```
@@ -376,7 +376,7 @@ system fNL:
     [ A ]⊢fNL Y = fNL [ A ]⊢ Y
 ```
 ``` hidden
-    data fNL_ : Judgement → Set where
+    data fNL_ : Sequent → Set where
 
       ax⁺  : ∀ {A}        →  · A · ⊢fNL[ A ]
       ax⁻  : ∀ {B}        →  [ B ]⊢fNL · B ·

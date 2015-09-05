@@ -136,10 +136,10 @@ module syntactically_delimited_continuations
   ⟦     X ⇒ Y   ⟧ = ⟦ X ⟧ × ⟦ Y ⟧
   ⟦     X ⇐ Y   ⟧ = ⟦ X ⟧ × ⟦ Y ⟧
 
-  data Judgement : Set₁ where
-    _⊢_∋_    : (X : Struct +) (Y : Struct -) (f : ⟦ X ⟧ → ⟦ Y ⟧ → R) → Judgement
-    [_]⊢_∋_  : (A : Type    ) (Y : Struct -) (f : ⟦ Y ⟧ → ⟦ A ⟧⁻) → Judgement
-    _⊢[_]∋_  : (X : Struct +) (B : Type    ) (f : ⟦ X ⟧ → ⟦ B ⟧⁺) → Judgement
+  data Sequent : Set₁ where
+    _⊢_∋_    : (X : Struct +) (Y : Struct -) (f : ⟦ X ⟧ → ⟦ Y ⟧ → R) → Sequent
+    [_]⊢_∋_  : (A : Type    ) (Y : Struct -) (f : ⟦ Y ⟧ → ⟦ A ⟧⁻) → Sequent
+    _⊢[_]∋_  : (X : Struct +) (B : Type    ) (f : ⟦ X ⟧ → ⟦ B ⟧⁺) → Sequent
 
   mutual
     ∈⊢-syntax    = λ X Y f → NL◇ (X ⊢ Y ∋ f)
@@ -159,7 +159,7 @@ module syntactically_delimited_continuations
     syntax ∈∶⊢[]-syntax X B (λ x → f) = f ∈ x ∶  X ⊢[ B ]
 ```
 ``` hidden
-    data NL◇_ : Judgement → Set where
+    data NL◇_ : Sequent → Set where
 
       -- rules for fNL
 

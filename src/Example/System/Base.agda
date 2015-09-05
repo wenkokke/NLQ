@@ -18,6 +18,7 @@ open import Reflection       using (Name)
 module Example.System.Base where
 
 
+open import Data.List public using (_∷_; [])
 open import Data.Bool public using (Bool; true; false; _∧_; _∨_)
 open import Reflection.Assertion public using (_↦_)
 

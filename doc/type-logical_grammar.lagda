@@ -18,7 +18,7 @@ often fragments of non-commutative linear logic, which are designed
 specifically for reasoning about the structure of natural language.
 In these logical, the atomic types correspond to syntactic categories,
 such as *noun*, *noun phrase* or *sentence*.
-Judgements of type-correctness, then, correspond to grammaticality.
+Sequents of type-correctness, then, correspond to grammaticality.
 For instance, the judgement
 $$\text{NP} , \; \text{NP} \to \text{S} \vdash \text{S}$$
 could be taken to mean that from a noun phrase and an intransitive
@@ -338,7 +338,7 @@ almost no implementation effort.
       findAll         : (Γ : Struct Type) (B : Type) → List (Γ ⊢ B)
       s               : Type
       Word            : Set
-      toAgdaType      : Type → Set
+      ⟦_⟧ᵗ            : Type → Set
 
     open RawTraversable rawTraversable using (traverse)
     instance listApplicative = RawMonad.rawIApplicative (N.monad {f = zero})
@@ -354,7 +354,7 @@ by "the type of types" `Set`. Our second function would ideally take
 proofs in our grammar, and return well-typed Agda programs. However,
 as it stands, there are some problems with the above type. First, the
 term `Γ ⊢ B` is not closed, and therefore cannot be translated to an
-Agda program of type `toAgdaType B`. Moreover, the decision to ban
+Agda program of type `⟦ B ⟧ᵗ`. Moreover, the decision to ban
 empty contexts and unit types means that the term cannot possibly be
 closed.
 This means that we somehow have to translate our term `Γ ⊢ B` to a
@@ -374,7 +374,7 @@ provide not only the type of words, but also their denotation, wrapped
 in a sigma type:
 ```
     field
-      Lex : Word → List⁺ (Σ[ A ∈ Type ] (toAgdaType A))
+      Lex : Word → List⁺ (Σ[ A ∈ Type ] ⟦ A ⟧ᵗ)
 ```
 This means that our lexicon function will return a list of pairs for
 each word, where the first element of the pair is its syntactic
@@ -401,18 +401,18 @@ which takes a structure `Γ`, populated by both types and terms, and a
 term which has as its context only the types in `Γ`:
 ```
     field
-      toAgdaTerm  :  (Γ : Struct (Σ[ A ∈ Type ] (toAgdaType A)))
-                  →  (proj₁ ⟨$⟩ Γ) ⊢ s
-                  →  toAgdaType s
+      ⟦_⟧  :  (Γ : Struct (Σ[ A ∈ Type ] ⟦ A ⟧ᵗ))
+           →  (proj₁ ⟨$⟩ Γ) ⊢ s
+           →  ⟦ s ⟧ᵗ
 ```
 And using these functions, we can define the function `interpret`:
 ```
-    interpret : (ws : Struct Word) → List (toAgdaType s)
+    interpret : (ws : Struct Word) → List ⟦ s ⟧ᵗ
     interpret ws  with traverse Lex ws
     interpret ws  | Γ ∷ Γs = all Γ Γs
       where
         one  : (Γ : Struct _) → List _
-        one  Γ = map (toAgdaTerm Γ) (findAll (proj₁ ⟨$⟩ Γ) s)
+        one  Γ = map ⟦ Γ ⟧ (findAll (proj₁ ⟨$⟩ Γ) s)
 
         all  : (Γ : _) (Γs : List _) → List _
         all  Γ        []   = one Γ
@@ -442,7 +442,7 @@ sentences, for instance:
 ```
 ```
     interpret (· mary · ∙ · finds · ∙ · a · ∙ · unicorn ·)
-      ↦ EXISTS (λ y → UNICORN y ∧ FINDS MARY y)
+      ↦ EXISTS (λ y → UNICORN y ∧ FIND MARY y)
 ```
 ``` hidden
   example₄  = _
@@ -454,8 +454,8 @@ second argument, which is where `↦` really starts becoming useful:
 ```
 ```
     interpret (· someone · ∙ · likes · ∙ · everyone ·)
-      ↦  EXISTS  (λ x  → PERSON x  ∧  FORALL  (λ y  →  PERSON y  ⊃  LIKES x y))
-      ∷  FORALL  (λ y  → PERSON y  ⊃  EXISTS  (λ x  →  PERSON x  ∧  LIKES x y))
+      ↦  EXISTS  (λ x  → PERSON x  ∧  FORALL  (λ y  →  PERSON y  ⊃  LIKE x y))
+      ∷  FORALL  (λ y  → PERSON y  ⊃  EXISTS  (λ x  →  PERSON x  ∧  LIKE x y))
       ∷  []
 ```
 ``` hidden

@@ -126,8 +126,8 @@ we are about to implement the judgements consist of a structure in the
 antecedent and a single formula in the succedent:
 
 ```
-  data Judgement : Set where
-    _⊢_ : Struct → Type → Judgement
+  data Sequent : Set where
+    _⊢_ : Struct → Type → Sequent
 ```
 
 With all this syntactic boilerplate out of the way, we will now define
@@ -144,7 +144,7 @@ disambiguate and write e.g. $\Gamma\;\vdash^{\textsc{SC}}\;A$:
     _⊢SC_ : Struct → Type → Set
     Γ ⊢SC B = SC Γ ⊢ B
 
-    data SC_ : Judgement → Set where
+    data SC_ : Sequent → Set where
 
       ax   : ∀ {A}
            →  · A · ⊢SC A
@@ -213,8 +213,8 @@ residuation rules. Because this system does away with 'application
 under a context' there is also no need for structures, and we can make
 the system a direct binary relation on formulas:
 ```
-  data Judgement : Set where
-    _⊢_ : Type → Type → Judgement
+  data Sequent : Set where
+    _⊢_ : Type → Type → Sequent
 ```
 The system itself is as follows:
 ``` hidden
@@ -222,7 +222,7 @@ The system itself is as follows:
     _⊢R_ : Type → Type → Set
     A ⊢R B = R A ⊢ B
 
-    data R_ : Judgement → Set where
+    data R_ : Sequent → Set where
       ax   : ∀ {A}      → A ⊢R A
 
       cut  : ∀ {A B C}  → A ⊢R B → B ⊢R C → A ⊢R C
@@ -247,8 +247,8 @@ residuation.
 ``` hidden
 module sequent_calculus⇔res (Atom : Set) where
 
-  module R = res              Atom ; open R hiding (Judgement)
-  module SC = sequent_calculus Atom ; open SC hiding (Judgement)
+  module R = res              Atom ; open R hiding (Sequent)
+  module SC = sequent_calculus Atom ; open SC hiding (Sequent)
   open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 ```
 
@@ -392,14 +392,14 @@ module resmon (Atom : Set) where
   open import Logic.Polarity                        using (Polarity; +; -)
   open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
   open sequent_calculus Atom                        using (Type; el; _⇐_; _⊗_; _⇒_)
-  open res              Atom public                 using (Judgement; _⊢_)
+  open res              Atom public                 using (Sequent; _⊢_)
 ```
 ``` hidden
   mutual
     _⊢RM_ : Type → Type → Set
     A ⊢RM B = RM A ⊢ B
 
-    data RM_ : Judgement → Set where
+    data RM_ : Sequent → Set where
 
       ax   : ∀ {A}       → el A ⊢RM el A
 
@@ -460,7 +460,7 @@ slightly more involved.
 ```
 
 ```
-  _[_]ᴶ : ∀ {p} → Contextᴶ p → Type → Judgement
+  _[_]ᴶ : ∀ {p} → Contextᴶ p → Type → Sequent
   A <⊢ B [ C ]ᴶ = A [ C ] ⊢ B
   A ⊢> B [ C ]ᴶ = A ⊢ B [ C ]
 ```
@@ -750,12 +750,12 @@ module resmon_typing_agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
   open import Function     using (id; flip; _∘_)
   open import Data.Product using (_×_; map; curry; uncurry)
   open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
-  open resmon Atom using (Judgement; _⊢_)
+  open resmon Atom using (Sequent; _⊢_)
   open resmon→agda Atom ⟦_⟧ᴬ using (⟦_⟧ᵗ)
 ```
 
 ``` hidden
-  ⟦_⟧ᴶ : Judgement → Set
+  ⟦_⟧ᴶ : Sequent → Set
 ```
 ```
   ⟦ A ⊢ B ⟧ᴶ = ⟦ A ⟧ᵗ → ⟦ B ⟧ᵗ
@@ -776,7 +776,7 @@ module resmon_typing_agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
 ```
 
 ```
-    data RM_ : (J : Judgement) (f : ⟦ J ⟧ᴶ) → Set where
+    data RM_ : (J : Sequent) (f : ⟦ J ⟧ᴶ) → Set where
 
       ax   : ∀ {A}
            →  x                      ∈ x   ∶  el A ⊢ el A

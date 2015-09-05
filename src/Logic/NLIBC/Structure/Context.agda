@@ -25,29 +25,21 @@ infixl 5 _<∙_
 infixr 5 _∘>_
 infixl 5 _<∘_
 
-
-
-record Pluggable (C A : Set ℓ) : Set ℓ where
-  infixl 40 _[_]
-  field
-    _[_]       : C → A → A
-
 record Composable (C : Set ℓ) : Set ℓ where
   infixl 50 _<_>
   field
     _<_>   : C → C → C
 
-record IsContext (C A : Set ℓ) : Set ℓ where
+record Pluggable (C A : Set ℓ) : Set ℓ where
+  infixl 40 _[_]
   field
-    pluggable  : Pluggable  C A
+    _[_]       : C → A → A
     composable : Composable C
 
-  open Pluggable  pluggable  using (_[_])
   open Composable composable using (_<_>)
 
   field
     <>-def     : ∀ Γ Δ x → (Γ [ Δ [ x ] ]) ≡ (Γ < Δ > [ x ])
-
 
 
 data Context : Set ℓ where
@@ -59,8 +51,18 @@ data Context : Set ℓ where
 
 
 instance
+  composable : Composable Context
+  composable = record { _<_> = _<_> }
+    where
+      _<_> : Context → Context → Context
+      []       < Δ > = Δ
+      (q ∙> Γ) < Δ > = q ∙> (Γ < Δ >)
+      (Γ <∙ q) < Δ > = (Γ < Δ >) <∙ q
+      (q ∘> Γ) < Δ > = q ∘> (Γ < Δ >)
+      (Γ <∘ q) < Δ > = (Γ < Δ >) <∘ q
+
   pluggable : Pluggable Context Structure
-  pluggable = record { _[_] = _[_] }
+  pluggable = record { _[_] = _[_] ; composable = composable ; <>-def = <>-def }
     where
     _[_] : Context → Structure → Structure
     []        [ Δ ] = Δ
@@ -69,21 +71,6 @@ instance
     (Γ ∘> Γ′) [ Δ ] = Γ ∘ (Γ′ [ Δ ])
     (Γ <∘ Γ′) [ Δ ] = (Γ [ Δ ]) ∘ Γ′
 
-  composable : Composable Context
-  composable = record { _<_> = _<_> }
-    where
-    _<_> : Context → Context → Context
-    []       < Δ > = Δ
-    (q ∙> Γ) < Δ > = q ∙> (Γ < Δ >)
-    (Γ <∙ q) < Δ > = (Γ < Δ >) <∙ q
-    (q ∘> Γ) < Δ > = q ∘> (Γ < Δ >)
-    (Γ <∘ q) < Δ > = (Γ < Δ >) <∘ q
-
-  isContext : IsContext Context Structure
-  isContext = record
-    { pluggable = pluggable ; composable = composable ; <>-def = <>-def }
-    where
-    open Pluggable  pluggable  using (_[_])
     open Composable composable using (_<_>)
 
     <>-def : ∀ Γ Δ p → (Γ [ Δ [ p ] ]) ≡ ((Γ < Δ >) [ p ])
@@ -94,7 +81,6 @@ instance
     <>-def (Γ <∘ _) Δ p rewrite <>-def Γ Δ p = refl
 
 
-
 data Context₁ : Set ℓ where
   []    : Context₁
   _∙>_  : Structure → Context₁  → Context₁
@@ -102,14 +88,6 @@ data Context₁ : Set ℓ where
 
 
 instance
-  pluggable₁ : Pluggable Context₁ Structure
-  pluggable₁ = record { _[_] = _[_] }
-    where
-    _[_] : Context₁ → Structure → Structure
-    []        [ Δ ] = Δ
-    (Γ ∙> Γ′) [ Δ ] = Γ ∙ (Γ′ [ Δ ])
-    (Γ <∙ Γ′) [ Δ ] = (Γ [ Δ ]) ∙ Γ′
-
   composable₁ : Composable Context₁
   composable₁ = record { _<_> = _<_> }
     where
@@ -118,10 +96,14 @@ instance
     (q ∙> Γ) < Δ > = q ∙> (Γ < Δ >)
     (Γ <∙ q) < Δ > = (Γ < Δ >) <∙ q
 
-  isContext₁ : IsContext Context₁ Structure
-  isContext₁ = record { pluggable = pluggable₁ ; composable = composable₁ ; <>-def = <>-def }
+  pluggable₁ : Pluggable Context₁ Structure
+  pluggable₁ = record { _[_] = _[_] ; composable = composable₁ ; <>-def = <>-def}
     where
-    open Pluggable  pluggable₁  using (_[_])
+    _[_] : Context₁ → Structure → Structure
+    []        [ Δ ] = Δ
+    (Γ ∙> Γ′) [ Δ ] = Γ ∙ (Γ′ [ Δ ])
+    (Γ <∙ Γ′) [ Δ ] = (Γ [ Δ ]) ∙ Γ′
+
     open Composable composable₁ using (_<_>)
 
     <>-def : ∀ Γ Δ p → (Γ [ Δ [ p ] ]) ≡ ((Γ < Δ >) [ p ])
@@ -130,10 +112,8 @@ instance
     <>-def (Γ <∙ _) Δ p rewrite <>-def Γ Δ p = refl
 
 
-
-open Pluggable  {{...}} public using (_[_])
 open Composable {{...}} public using (_<_>)
-open IsContext  {{...}} public using (<>-def)
+open Pluggable  {{...}} public using (_[_]; <>-def)
 
 
 λx_[x] : (Γ : Context₁) → Structure
@@ -151,7 +131,7 @@ open IsContext  {{...}} public using (<>-def)
 -- in 'master', but it's my project and only I am working on it.
 --
 -- TODO: move experimental code into separate branch
-
+{-
 
 data Contextᵢ : ℕ → Set ℓ where
   var : Contextᵢ 1
@@ -207,3 +187,9 @@ _[_]ᵢ_ : ∀ {n} → Contextᵢ (suc n) → Structure → Fin (suc n) → Cont
 
 _[_]₂_ : Contextᵢ 2 → Structure → Fin 2 → Context₁
 Γ [ Δ ]₂ i = ⌊ Γ [ Δ ]ᵢ i ⌋₁
+
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}

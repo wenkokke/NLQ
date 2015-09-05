@@ -66,10 +66,10 @@ module SampleMeaningPostulates where
     FORALL     : (Entity → Bool) → Bool
     EXISTS     : (Entity → Bool) → Bool
     MARY       : Entity
-    FINDS      : Entity → Entity → Bool
+    FIND       : Entity → Entity → Bool
     UNICORN    : Entity → Bool
     PERSON     : Entity → Bool
-    LOVES      : Entity → Entity → Bool
+    LOVE       : Entity → Entity → Bool
 \end{code}
 %</SampleMeaningPostulates>
 
