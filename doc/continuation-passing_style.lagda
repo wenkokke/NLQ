@@ -16,7 +16,7 @@ module translation_to_agda (Atom : Set) (Polarityᴬ? : Atom → Polarity) (⟦_
   open import Function                   using (flip)
   open import Relation.Nullary.Decidable using (True; toWitness)
   open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
-  open dspcal Atom using (Struct; ·_·; _⇐_; _⊗_; _⇒_; Judgement; _⊢_; [_]⊢_; _⊢[_])
+  open dspcal Atom using (Struct; ·_·; _⇐_; _⊗_; _⇒_; Sequent; _⊢_; [_]⊢_; _⊢[_])
   open focpol Atom Polarityᴬ?
 
 ```
@@ -90,7 +90,7 @@ R`. Both these types correspond to function application.
 ```
 
 ```
-  ⟦_⟧ᴶ : Judgement → Set
+  ⟦_⟧ᴶ : Sequent → Set
   ⟦   X  ⊢  Y   ⟧ᴶ = ⟦ X ⟧ˢ → ⟦ Y ⟧ˢ → R
   ⟦ [ A ]⊢  Y   ⟧ᴶ = ⟦ Y ⟧ˢ → ⟦ A ⟧⁻
   ⟦   X  ⊢[ B ] ⟧ᴶ = ⟦ X ⟧ˢ → ⟦ B ⟧⁺
@@ -125,7 +125,7 @@ module typing_agda (Atom : Set) (Polarityᴬ? : Atom → Polarity) (⟦_⟧ᴬ :
   open import Function                   using (flip)
   open import Relation.Nullary.Decidable using (True; toWitness)
   open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
-  open display_calculus.display_calculus Atom using (Struct; ·_·; _⇐_; _⊗_; _⇒_; Judgement; _⊢_; [_]⊢_; _⊢[_])
+  open display_calculus.display_calculus Atom using (Struct; ·_·; _⇐_; _⊗_; _⇒_; Sequent; _⊢_; [_]⊢_; _⊢[_])
   open focpol Atom Polarityᴬ? using (Positive?; Negative?)
   open translation_to_agda Atom Polarityᴬ? ⟦_⟧ᴬ R
 
@@ -154,7 +154,7 @@ module typing_agda (Atom : Set) (Polarityᴬ? : Atom → Polarity) (⟦_⟧ᴬ :
 
 
 ```
-    data fNL_ : (J : Judgement) (f : ⟦ J ⟧ᴶ) → Set₁ where
+    data fNL_ : (J : Sequent) (f : ⟦ J ⟧ᴶ) → Set₁ where
 
       ax⁺  : ∀ {A} → x ∈ x ∶ · A · ⊢[ A ]
       ax⁻  : ∀ {B} → x ∈[ B ]⊢ x ∶ · B ·

@@ -36,8 +36,8 @@ module ResMon where
     _⇐_ : Type → Type → Type
 ```
 ``` hidden
-  data Judgement : Set where
-    _⊢_ : Type → Type → Judgement
+  data Sequent : Set where
+    _⊢_ : Type → Type → Sequent
 ```
 ``` hidden
   mutual
@@ -45,7 +45,7 @@ module ResMon where
     A ⊢RM B = RM A ⊢ B
 ```
 ``` hidden
-    data RM_ : Judgement → Set where
+    data RM_ : Sequent → Set where
 
       -- rules for NL
 
@@ -74,7 +74,7 @@ module ResMon where
       r⊗⇐  : ∀ {A B C}   → A ⊗ B ⊢RM C → A ⊢RM C ⇐ B
 ```
 
-[compute](Example/System/LG/ResMon.agda "asMathPar (quote LG_)")
+[compute](Example/System/LG/ResMon.agda "((quote m⊕) ∷ (quote m⇛) ∷ (quote m⇚) ∷ (quote r⇛⊕) ∷ (quote r⊕⇛) ∷ (quote r⊕⇚) ∷ (quote r⇚⊕) ∷ (quote d⇛⇐) ∷ (quote d⇛⇒) ∷ (quote d⇚⇒) ∷ (quote d⇚⇐) ∷ []) asMathParOf (quote LG_)")
 
 
 ### Focusing and Polarity
@@ -109,10 +109,10 @@ module FocPol where
     _⇐_ : (Γ⁻ : Struct -) (Δ⁺ : Struct +) → Struct -
 ```
 ``` hidden
-  data Judgement : Set where
-    _⊢_    : Struct +  → Struct -  → Judgement
-    [_]⊢_  : Type      → Struct -  → Judgement
-    _⊢[_]  : Struct +  → Type      → Judgement
+  data Sequent : Set where
+    _⊢_    : Struct +  → Struct -  → Sequent
+    [_]⊢_  : Type      → Struct -  → Sequent
+    _⊢[_]  : Struct +  → Type      → Sequent
 ```
 ``` hidden
   mutual
@@ -124,7 +124,7 @@ module FocPol where
     [ A ]⊢fLG Y = fLG [ A ]⊢ Y
 ```
 ``` hidden
-    data fLG_ : Judgement → Set where
+    data fLG_ : Sequent → Set where
 
       -- rules for fNL
 
@@ -164,4 +164,4 @@ module FocPol where
 ```
 
 
-[compute](Example/System/LG/Pol.agda "asMathPar (quote fLG_)")
+[compute](Example/System/LG/Pol.agda "((quote ⊕ᴸ) ∷ (quote ⊕ᴿ) ∷ (quote ⇚ᴸ) ∷ (quote ⇚ᴿ) ∷ (quote ⇛ᴸ) ∷ (quote ⇛ᴿ) ∷ (quote r⇚⊕) ∷ (quote r⊕⇚) ∷ (quote r⇛⊕) ∷ (quote r⊕⇛) ∷ (quote d⇛⇐) ∷ (quote d⇛⇒) ∷ (quote d⇚⇒) ∷ (quote d⇚⇐) ∷ []) asMathParOf (quote fLG_)")

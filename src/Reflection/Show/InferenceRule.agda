@@ -7,7 +7,7 @@ open import Function           using (_∘_; _$_)
 open import Category.Monad     using (module RawMonad)
 open import Data.Bool          using (Bool; true; false; not; if_then_else_; _∧_)
 open import Data.Char          using (Char) renaming (_==_ to _C==_)
-open import Data.List          using (List; _∷_; []; filter; drop; break; intersperse; foldr; all)
+open import Data.List          using (List; _∷_; []; filter; drop; break; intersperse; foldr; all; [_])
 open import Data.List.NonEmpty using (List⁺; _∷_; _∷⁺_; _∷ʳ′_; snocView)
 open import Data.Maybe         using (Maybe; just; nothing; is-nothing)
 open import Data.Nat           using (ℕ; zero; suc; _⊔_)
@@ -127,10 +127,44 @@ private
   asString : Name → String
   asString n = fromList (filter (λ x → not (x C== '_')) (toList (unqualifiedName n)))
 
+  joinWith : String → List String → String
+  joinWith x xs = foldr _++_ "" (intersperse x xs)
+
+  -- Layout lists of rules according to the following idea: We put line breaks
+  -- between two rules if their first characters are not the same, unless this
+  -- would create a sequence of rules which all are put on their own line.
+  layout : (Name → String) → List Name → String
+  layout f []       = ""
+  layout f (n ∷ []) = f n
+  layout f (n ∷ ns) =
+    joinWith "\\\\\\\\" (joinWith "\\and" <$> ((f <$>_) <$> merge (groupBy _H==_ n ns)))
+    where
+    _H==_ : Name → Name → Bool
+    _H==_ x y with toList (unqualifiedName x) | toList (unqualifiedName y)
+    _H==_ _ _ |     [] |     [] = true
+    _H==_ _ _ | x ∷ xs | y ∷ ys = x C== y
+    _H==_ _ _ | _      | _      = false
+
+    _∷₁_ : ∀ {a} {A : Set a} → A → List (List A) → List (List A)
+    x ∷₁ [] = [ [ x ] ]
+    x ∷₁ (xs ∷ xss) = (x ∷ xs) ∷ xss
+
+    groupBy : ∀ {a} {A : Set a} (eq : A → A → Bool) → A → List A → List (List A)
+    groupBy eq x []       = [ [ x ] ]
+    groupBy eq x (y ∷ []) = if eq x y then [ x ∷ y ∷ [] ] else [ x ] ∷ [ y ] ∷ []
+    groupBy eq x (y ∷ ys) = if eq x y then x ∷₁ (groupBy eq y ys) else [ x ] ∷ groupBy eq y ys
+
+    merge : ∀ {a} {A : Set a} → List (List A) → List (List A)
+    merge []                          = []
+    merge ((x ∷ []) ∷ (y ∷ []) ∷ xss) = x ∷₁ merge ((y ∷ []) ∷ xss)
+    merge (xs ∷ xss)                  = xs ∷ merge xss
+
 
 _asInferRuleOf_ : Name → Name → String
-n₁ asInferRuleOf n₂ = mathpar (Priv.asInferRule (asString n₂) n₁)
+n asInferRuleOf n′ = mathpar (Priv.asInferRule (asString n′) n)
 
+_asMathParOf_ : List Name → Name → String
+ns asMathParOf n = mathpar (layout (Priv.asInferRule (asString n)) ns)
 
 asMathPar : Name → String
 asMathPar n with definition n
@@ -139,4 +173,4 @@ asMathPar n | record′    _ = "error: " ++ showName n ++ " is a record."
 asMathPar n | axiom        = "error: " ++ showName n ++ " is an axiom."
 asMathPar n | primitive′   = "error: " ++ showName n ++ " is a primitive."
 asMathPar n | constructor′ = mathpar (Priv.asInferRule (asString n) n)
-asMathPar n | data-type  x = mathpar (unlines (intersperse "\\and" (Priv.asInferRule (asString n) <$> constructors x)))
+asMathPar n | data-type  x = constructors x asMathParOf n
