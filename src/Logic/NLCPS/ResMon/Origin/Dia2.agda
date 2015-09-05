@@ -16,8 +16,8 @@ module Logic.NLCPS.ResMon.Origin.Dia2 {ℓ} (Atom : Set ℓ) where
   open import Logic.Polarity
   open import Logic.NLCPS.Type                               Atom as T
   open import Logic.NLCPS.Type.Context.Polarised             Atom as TC
-  open import Logic.NLCPS.ResMon.Judgement                   Atom
-  open import Logic.NLCPS.ResMon.Judgement.Context.Polarised Atom as JC
+  open import Logic.NLCPS.ResMon.Sequent                   Atom
+  open import Logic.NLCPS.ResMon.Sequent.Context.Polarised Atom as JC
   open import Logic.NLCPS.ResMon.Base                        Atom as NLCPSB
 
 

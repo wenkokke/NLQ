@@ -19,7 +19,7 @@ open import Logic.Polarity
 open import Logic.Translation
 open import Logic.NLCPS.Type                Atom
 open import Logic.NLCPS.Structure.Polarised Atom
-open import Logic.NLCPS.Judgement           Atom
+open import Logic.NLCPS.Sequent           Atom
 open import Logic.NLCPS.Base                Atom
 
 
@@ -53,7 +53,7 @@ private
       flatten f _ (X ⇒ Y) = flatten f + X × flatten f - Y
       flatten f _ (X ⇐ Y) = flatten f - X × flatten f + Y
 
-  ⌈_⌉ʲ : Judgement → Set ℓ
+  ⌈_⌉ʲ : Sequent → Set ℓ
   ⌈   X  ⊢  Y   ⌉ʲ = ⌈ X ⌉ˢ + → ⌈ Y ⌉ˢ - → R
   ⌈ [ A ]⊢  Y   ⌉ʲ = ⌈ Y ⌉ˢ - →   ¬ ⌈ A ⌉ᵗ
   ⌈   X  ⊢[ B ] ⌉ʲ = ⌈ X ⌉ˢ + → ¬ ¬ ⌈ B ⌉ᵗ

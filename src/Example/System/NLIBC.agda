@@ -6,6 +6,7 @@
 open import Level            using (zero)
 open import Data.Product     using (Σ; _,_; proj₁; proj₂)
 open import Data.Traversable using (module RawTraversable)
+open import Reflection       using (Name)
 
 
 module Example.System.NLIBC where

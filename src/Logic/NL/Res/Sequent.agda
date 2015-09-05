@@ -3,7 +3,7 @@
 ------------------------------------------------------------------------
 
 
-module Logic.NL.Res.Judgement {ℓ} (Atom : Set ℓ) where
+module Logic.NL.Res.Sequent {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.NL.ResMon.Judgement Atom public
+open import Logic.NL.ResMon.Sequent Atom public

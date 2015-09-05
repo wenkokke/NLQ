@@ -16,22 +16,22 @@ open import Logic.Polarity
 open import Logic.Translation
 
 
-module Logic.LG.Pol {ℓ} (Atom : Set ℓ) where
+module Logic.LG.Pol {ℓ} (Atom : Set ℓ) (Polarityᴬ? : Atom → Polarity)where
 
 
-open import Logic.LG.Type.Polarised (Polarity × Atom) proj₁ public
+open import Logic.LG.Type.Polarised Atom Polarityᴬ? public
      hiding (module Correct; module Polarised; Polarised)
 
-open import Logic.LG.Type (Polarity × Atom) as Type public
+open import Logic.LG.Type Atom as Type public
      hiding ( ₀-injective ; ⁰-injective ; ₁-injective ; ¹-injective
      )
 
-open import Logic.LG.Structure.Polarised (Polarity × Atom) as Structure public
+open import Logic.LG.Structure.Polarised Atom as Structure public
      hiding ( module DecEq
             ; ₀-injective ; ⁰-injective ; ₁-injective ; ¹-injective
      )
 
-open import Logic.LG.Judgement (Polarity × Atom) public
+open import Logic.LG.Sequent Atom public
      hiding (module DecEq)
 
-open import Logic.LG.Pol.Base (Polarity × Atom) proj₁ public
+open import Logic.LG.Pol.Base Atom Polarityᴬ? public

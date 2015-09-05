@@ -8,42 +8,29 @@ open import Data.Product                          using (Σ; _×_; _,_; proj₁;
 open import Data.Traversable                      using (module RawTraversable)
 open import Relation.Nullary                      using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
+open import Reflection                            using (Name)
 
 
 module Example.System.NLCPS where
 
 
 open import Example.System.Base public
-open import Logic.Polarity      public
-open import Logic.NLCPS.Pol  Atom public
-
-
-_≟-PolarisedAtom_ : (A B : Polarity × Atom) → Dec (A ≡ B)
-(p , A) ≟-PolarisedAtom (q , B) with p ≟-Polarity q | A ≟-Atom B
-... | yes p=q | yes A=B rewrite p=q | A=B = yes refl
-... | no  p≠q | _       = no (λ x → p≠q (cong proj₁ x))
-... | _       | no  A≠B = no (λ x → A≠B (cong proj₂ x))
-
-
-⟦_⟧ᴾ : Polarity × Atom → Set
-⟦ p , A ⟧ᴾ = ⟦ A ⟧ᴬ
-
-
+open import Logic.Polarity public
+open import Logic.NLCPS.Pol PolarisedAtom Polarityᴬ? public
 open import Logic.Grammar public
-open import Logic.NLCPS.Pol.ProofSearch (Polarity × Atom) proj₁ _≟-PolarisedAtom_ public
-open import Logic.NLCPS.Pol.ToAgda (Polarity × Atom) ⟦_⟧ᴾ Bool proj₁ public
+open import Logic.NLCPS.Pol.ProofSearch PolarisedAtom Polarityᴬ? _≟-PolarisedAtom_ public
+open import Logic.NLCPS.Pol.ToAgda PolarisedAtom ⟦_⟧ᴾ Bool Polarityᴬ? public
 open ListOf ((Bool → Bool) → Bool) public
 
 open RawTraversable (rawTraversable {zero}) using (_<$>_)
 
 
-s n q np inf pp iv tv : Type
-s   = el (- , S)
-n   = el (+ , N)
-q   = el (+ , Q)
-np  = el (+ , NP)
-inf = el (+ , INF)
-pp  = el (+ , PP)
+s n np inf pp iv tv : Type
+s   = el (S   ⁻)
+n   = el (N   ⁺)
+np  = el (NP  ⁺)
+inf = el (INF ⁺)
+pp  = el (PP  ⁺)
 iv  = np ⇒ s
 tv  = iv ⇐ np
 
@@ -72,10 +59,3 @@ instance
     ; ⟦_⟧ᵗ           = ⟦_⟧⁺
     ; ⟦_⟧            = λ Γ f → ⟦ f ⟧ (combine Γ)
     }
-
-
--- -}
--- -}
--- -}
--- -}
--- -}

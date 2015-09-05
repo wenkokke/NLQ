@@ -17,7 +17,7 @@ module Logic.NL.PG99.Base {ℓ} (Atom : Set ℓ) where
 
 open import Logic.NL.Type           Atom as T
 open import Logic.NL.Type.Context   Atom as C; open C.Simple using (_[_]; _<_>; <>-assoc; <>-def)
-open import Logic.NL.PG99.Judgement Atom as J
+open import Logic.NL.PG99.Sequent Atom as J
 
 
 infix 1 NL_ _⊢NL_ ⊢NLᴺ_ ⊢NLᴾ_
@@ -32,7 +32,7 @@ mutual
   ⊢NLᴾ_ : Context → Set ℓ
   ⊢NLᴾ Δ = NL ⊢ᴾ Δ
 
-  data NL_ : Judgement → Set ℓ where
+  data NL_ : Sequent → Set ℓ where
 
     ax     : ∀ {A}       → el A ⊢NL el A
     m⊗     : ∀ {A B C D} → A ⊢NL B → C ⊢NL D → A ⊗ C ⊢NL B ⊗ D

@@ -9,7 +9,7 @@ module Logic.NL.SC.Base {ℓ} (Atom : Set ℓ) where
 open import Logic.NL.Type                 Atom
 open import Logic.NL.SC.Structure         Atom
 open import Logic.NL.SC.Structure.Context Atom
-open import Logic.NL.SC.Judgement         Atom
+open import Logic.NL.SC.Sequent         Atom
 
 
 infix 1 NL_ _⊢NL_
@@ -20,7 +20,7 @@ mutual
   Γ ⊢NL B = NL Γ ⊢ B
   
 
-  data NL_ : Judgement → Set ℓ where
+  data NL_ : Sequent → Set ℓ where
   
     ax   : ∀ {A}
          →  · A · ⊢NL A

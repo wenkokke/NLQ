@@ -16,5 +16,5 @@ module Logic.MM96.ResMon.ToAgda
 open import Logic.Polarity
 open import Logic.Translation
 open import Logic.MM96.Type             Atom
-open import Logic.MM96.ResMon.Judgement Atom
+open import Logic.MM96.ResMon.Sequent Atom
 open import Logic.MM96.ResMon.Base      Atom

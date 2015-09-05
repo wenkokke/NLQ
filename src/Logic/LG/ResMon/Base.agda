@@ -16,7 +16,7 @@ module Logic.LG.ResMon.Base {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.LG.Type             Atom
-open import Logic.LG.ResMon.Judgement Atom
+open import Logic.LG.ResMon.Sequent Atom
 
 
 infix  1  LG_ _⊢LG_
@@ -26,7 +26,7 @@ mutual
   _⊢LG_ : Type → Type → Set ℓ
   A ⊢LG B = LG A ⊢ B
 
-  data LG_ : Judgement → Set ℓ where
+  data LG_ : Sequent → Set ℓ where
 
     ax  : ∀ {A}       → el A ⊢LG el A
 

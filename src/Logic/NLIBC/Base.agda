@@ -16,7 +16,7 @@ module Logic.NLIBC.Base {ℓ} (Atom : Set ℓ) where
 open import Logic.NLIBC.Type              Atom
 open import Logic.NLIBC.Structure         Atom
 open import Logic.NLIBC.Structure.Context Atom
-open import Logic.NLIBC.Judgement         Atom
+open import Logic.NLIBC.Sequent         Atom
 
 
 infix 1 NL_ _⊢NL_
@@ -27,7 +27,7 @@ mutual
   Γ ⊢NL p = NL Γ ⊢ p
 
 
-  data NL_ : Judgement → Set ℓ where
+  data NL_ : Sequent → Set ℓ where
 
     ax   : ∀ {p}
          → · p · ⊢NL p

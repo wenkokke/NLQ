@@ -13,7 +13,7 @@ open import Logic.NL.Type                 Atom
 open import Logic.NL.Res                  Atom renaming (_⊢NL_ to _⊢R_)
 open import Logic.NL.SC.Structure         Atom
 open import Logic.NL.SC.Structure.Context Atom
-open import Logic.NL.SC.Judgement         Atom
+open import Logic.NL.SC.Sequent         Atom
 open import Logic.NL.SC.Base              Atom renaming (_⊢NL_ to _⊢SC_)
 
 

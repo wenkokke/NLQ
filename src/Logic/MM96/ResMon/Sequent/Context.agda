@@ -1,7 +1,9 @@
-------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
 --
-------------------------------------------------------------------------
+-- This file was generated from:
+--   src/Logic/LG/ResMon/Sequent/Context.agda
+--------------------------------------------------------------------------------
 
 
 open import Algebra                                    using (module Monoid; Monoid)
@@ -13,12 +15,12 @@ open import Relation.Nullary                           using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.LG.ResMon.Judgement.Context {ℓ} (Atom : Set ℓ) where
+module Logic.MM96.ResMon.Sequent.Context {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.LG.Type             Atom as T
-open import Logic.LG.Type.Context     Atom as TC hiding (module Simple; module Context; Context)
-open import Logic.LG.ResMon.Judgement Atom
+open import Logic.MM96.Type             Atom as T
+open import Logic.MM96.Type.Context     Atom as TC hiding (module Simple; module Context; Context)
+open import Logic.MM96.ResMon.Sequent Atom
 
 
 infix 3 _<⊢_ _⊢>_
@@ -46,7 +48,7 @@ module Simple where
   infix 50 _<_>
 
   -- Apply a context to a type by plugging the type into the context.
-  _[_] : Context → Type → Judgement
+  _[_] : Context → Type → Sequent
   (A <⊢ B) [ C ] = A [ C ]′ ⊢ B
   (A ⊢> B) [ C ] = A ⊢ B [ C ]′
 

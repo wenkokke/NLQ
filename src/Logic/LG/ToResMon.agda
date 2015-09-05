@@ -22,9 +22,9 @@ open import Logic.Polarity
 open import Logic.Translation
 open import Logic.LG.Type                Atom
 open import Logic.LG.Structure.Polarised Atom as SS
-open import Logic.LG.Judgement           Atom as SJ
+open import Logic.LG.Sequent           Atom as SJ
 open import Logic.LG.Base                Atom as SB renaming (LG_ to Str_)
-open import Logic.LG.ResMon.Judgement    Atom as AJ
+open import Logic.LG.ResMon.Sequent    Atom as AJ
 open import Logic.LG.ResMon.Base         Atom as AB renaming (LG_ to Alg_)
 
 
@@ -49,8 +49,8 @@ infix 5 ↓_
 
 
 private
-  -- Map Judgement between systems
-  To : SJ.Judgement → AJ.Judgement
+  -- Map Sequent between systems
+  To : SJ.Sequent → AJ.Sequent
   To (  X  ⊢  Y  ) = ↓ X ⊢ ↓ Y
   To ([ A ]⊢  Y  ) =   A ⊢ ↓ Y
   To (  X  ⊢[ B ]) = ↓ X ⊢   B

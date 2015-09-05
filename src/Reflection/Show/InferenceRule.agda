@@ -3,7 +3,7 @@
 ------------------------------------------------------------------------
 
 
-open import Function           using (_∘_)
+open import Function           using (_∘_; _$_)
 open import Category.Monad     using (module RawMonad)
 open import Data.Bool          using (Bool; true; false; not; if_then_else_; _∧_)
 open import Data.Char          using (Char) renaming (_==_ to _C==_)
@@ -11,13 +11,13 @@ open import Data.List          using (List; _∷_; []; filter; drop; break; inte
 open import Data.List.NonEmpty using (List⁺; _∷_; _∷⁺_; _∷ʳ′_; snocView)
 open import Data.Maybe         using (Maybe; just; nothing; is-nothing)
 open import Data.Nat           using (ℕ; zero; suc; _⊔_)
-open import Data.String        using (String; toList; fromList; _++_) renaming (_==_ to _S==_)
+open import Data.String        using (String; toList; fromList; _++_; unlines) renaming (_==_ to _S==_)
 open import Data.Product       using (_×_; _,_)
 open import Reflection
 open import Logic.NLIBC ℕ using (⇨ᴸ)
 
 
-module Reflection.Show.InferenceRule (isBanned : Name → Bool) where
+module Reflection.Show.InferenceRule (bannedArg : Name → Bool) where
 
 
 open RawMonad {{...}} using (_<$>_)
@@ -28,83 +28,115 @@ instance
 
 private
   unqualifiedName : Name → String
-  unqualifiedName n =
+  unqualifiedName n = if bannedArg n then "" else
     fromList (unqualifiedName′ (toList (showName n)))
     where
       lastIndex : ℕ → Char → List Char → ℕ
       lastIndex i x      []  = 0
-      lastIndex i x (y ∷ ys) =
-        if x C== y
-          then i ⊔ lastIndex (suc i) x ys
-          else     lastIndex (suc i) x ys
-
+      lastIndex i x (y ∷ ys) = if x C== y then i ⊔ j else j
+        where
+          j = lastIndex (suc i) x ys
       unqualifiedName′ : List Char → List Char
-      unqualifiedName′ n =  drop (suc (lastIndex 0 '.' n)) n
+      unqualifiedName′ n = drop (suc (lastIndex 0 '.' n)) n
 
 
-  {-# TERMINATING #-}
-  showOp :  (f : String → String) (op : String) (xs : List String) → String
-  showOp f op xs = showOp′ f (toList op) xs
-    where
-    showOp′ : (f : String → String) (op : List Char) (xs : List String) → String
-    showOp′ f        []       xs  = foldr _++_ "" (intersperse " " xs)
-    showOp′ f ('_' ∷ op)      []  = fromList ('_' ∷ op)
-    showOp′ f ('_' ∷ op) (x ∷ xs) = x ++ showOp′ f op xs
-    showOp′ f        op       xs  with break (_C== '_') op
-    showOp′ f        op       xs  | (op₁ , op₂) = f (fromList op₁) ++ showOp′ f op₂ xs
+  module Priv (bannedName : String) where
 
-
-  lookupVar : ℕ → List String → String
-  lookupVar n       []      = ""
-  lookupVar zero    (x ∷ _) = x
-  lookupVar (suc n) (_ ∷ e) = lookupVar n e
-
-
-  agdaVar = λ r → "\\AgdaBound{" ++ r ++ "}\\;"
-  agdaCon = λ r → "\\AgdaInductiveConstructor{" ++ r ++ "}\\;"
-  agdaDef = λ r → "\\AgdaFunction{" ++ r ++ "}\\;"
-
-
-  {-# TERMINATING #-}
-  mutual
-    isAllowed : Arg Term → Bool
-    isAllowed (arg i t) = isVisible i ∧ not (isBanned′ t)
+    {-# TERMINATING #-}
+    showOper :  (f : String → String) (op : String) (xs : List String) → String
+    showOper f op xs = showOper′ f (toList op) xs
       where
-      isBanned′ : Term → Bool
-      isBanned′ (con c _) = isBanned c
-      isBanned′ (def f _) = isBanned f
-      isBanned′        _  = false
-      isVisible : Arg-info → Bool
-      isVisible (arg-info visible _) = true
-      isVisible (arg-info _       _) = false
+      showOper′ : (f : String → String) (op : List Char) (xs : List String) → String
+      showOper′ f        []       xs  = foldr _++_ "" (intersperse " " xs)
+      showOper′ f ('_' ∷ op)      []  = fromList ('_' ∷ op)
+      showOper′ f ('_' ∷ op) (x ∷ xs) = x ++ showOper′ f op xs
+      showOper′ f        op       xs  with break (_C== '_') op
+      showOper′ f        op       xs  | (op₁ , op₂) = f (fromList op₁) ++ (showOper′ f op₂ xs)
 
-    showArg : (e : List String) (t : Arg Term) → String
-    showArg e (arg _ t) = showTerm e t
 
-    showTerm : (e : List String) (t : Term) → String
-    showTerm e (var x args) = showOp agdaVar (lookupVar x e)     (showArg e <$> filter isAllowed args)
-    showTerm e (con c args) = showOp agdaCon (unqualifiedName c) (showArg e <$> filter isAllowed args)
-    showTerm e (def f args) = showOp agdaDef (unqualifiedName f) (showArg e <$> filter isAllowed args)
-    showTerm e t            = "_"
+    lookupVar : ℕ → List String → String
+    lookupVar n       []      = ""
+    lookupVar zero    (x ∷ _) = x
+    lookupVar (suc n) (_ ∷ e) = lookupVar n e
+
+
+    agdaVar agdaCon agdaDef : String → String
+    agdaVar r = "\\AgdaBound{" ++ r ++ "}\\;"
+    agdaCon r = if r S== bannedName then "" else "\\AgdaInductiveConstructor{" ++ r ++ "}\\;"
+    agdaDef r = if r S== bannedName then "" else "\\AgdaFunction{" ++ r ++ "}\\;"
+
+
+    {-# TERMINATING #-}
+    mutual
+      allowed? : Arg Term → Bool
+      allowed? (arg i t) = visible? i ∧ not (banned? t)
+        where
+        banned? : Term → Bool
+        banned? (con c _) = bannedArg c
+        banned? (def f _) = bannedArg f
+        banned?        _  = false
+        visible? : Arg-info → Bool
+        visible? (arg-info visible _) = true
+        visible? (arg-info _       _) = false
+
+
+      showArg : (e : List String) (t : Arg Term) → String
+      showArg e (arg _ t) = showTerm e t
+
+
+      showTerm : (e : List String) (t : Term) → String
+      showTerm e (var x args) =
+        showOper agdaVar (lookupVar x e) (showArg e <$> filter allowed? args)
+      showTerm e (con c args) =
+        showOper agdaCon (unqualifiedName c) (showArg e <$> filter allowed? args)
+      showTerm e (def f args) =
+        showOper agdaDef (unqualifiedName f) (showArg e <$> filter allowed? args)
+      showTerm e t = "_"
+
 
     showType : (e : List String) → Type → String
     showType e (el _ t) = showTerm e t
 
-  asRule′ : Type → List String → List⁺ String
-  asRule′ (el _ (pi (arg i t₁) (abs "_" t₂))) acc = showType acc t₁ ∷⁺ asRule′ t₂ ("_" ∷ acc)
-  asRule′ (el _ (pi (arg i t₁) (abs  x  t₂))) acc = asRule′ t₂ (x ∷ acc)
-  asRule′                               t     acc = showType acc t ∷ []
 
-  initLast′ : List⁺ String → (List String × String)
-  initLast′ xs with snocView xs
-  initLast′ ._ | ts ∷ʳ′ t = (ts , t)
+    splitType : Type → List String → List⁺ String
+    splitType (el _ (pi (arg i t₁) (abs "_" t₂))) acc = showType acc t₁ ∷⁺ splitType t₂ ("_" ∷ acc)
+    splitType (el _ (pi (arg i t₁) (abs  x  t₂))) acc = splitType t₂ (x ∷ acc)
+    splitType                               t     acc = showType acc t ∷ []
 
 
-asRule : Name → String
-asRule n = forProofSty (initLast′ (asRule′ (type n) []))
-  where
-  forProofSty : List String × String → String
-  forProofSty (ps , c) = "\\infer[" ++ n′ ++ "]{" ++ c ++ "}{" ++ ps′ ++ "}"
-    where
-      n′  = unqualifiedName n
-      ps′ = foldr _++_ "" (intersperse " & " ps)
+    premsAndConc : List⁺ String → (List String × String)
+    premsAndConc xs with snocView xs
+    premsAndConc ._ | ts ∷ʳ′ t = (ts , t)
+
+
+    asInferRule : Name → String
+    asInferRule n = go (premsAndConc (splitType (type n) []))
+      where
+        n′ = unqualifiedName n
+        go : List String × String → String
+        go ([] , c) = "\\inferrule*[left=" ++ n′ ++ "]{ }{" ++ c ++ "}"
+        go (ps , c) = "\\inferrule*[left=" ++ n′ ++ "]{" ++ ps′ ++ "}{" ++ c ++ "}"
+          where
+            ps′ = unlines (intersperse "\\\\" ps)
+
+
+private
+  mathpar : String → String
+  mathpar str = unlines ("\\begin{mathpar}" ∷ str ∷ "\\end{mathpar}" ∷ [])
+
+  asString : Name → String
+  asString n = fromList (filter (λ x → not (x C== '_')) (toList (unqualifiedName n)))
+
+
+_asInferRuleOf_ : Name → Name → String
+n₁ asInferRuleOf n₂ = mathpar (Priv.asInferRule (asString n₂) n₁)
+
+
+asMathPar : Name → String
+asMathPar n with definition n
+asMathPar n | function   _ = "error: " ++ showName n ++ " is a function."
+asMathPar n | record′    _ = "error: " ++ showName n ++ " is a record."
+asMathPar n | axiom        = "error: " ++ showName n ++ " is an axiom."
+asMathPar n | primitive′   = "error: " ++ showName n ++ " is a primitive."
+asMathPar n | constructor′ = mathpar (Priv.asInferRule (asString n) n)
+asMathPar n | data-type  x = mathpar (unlines (intersperse "\\and" (Priv.asInferRule (asString n) <$> constructors x)))

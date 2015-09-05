@@ -21,7 +21,7 @@ module Logic.LG.Pol.Base {ℓ} (Atom : Set ℓ) (Polarityᴬ? : Atom → Polarit
 open import Logic.LG.Type.Polarised      Atom Polarityᴬ?
 open import Logic.LG.Type                Atom
 open import Logic.LG.Structure.Polarised Atom
-open import Logic.LG.Judgement           Atom
+open import Logic.LG.Sequent           Atom
 
 
 infix 1 fLG_
@@ -38,7 +38,7 @@ mutual
   [_]⊢fLG_ : Type → Structure - → Set ℓ
   [ A ]⊢fLG Y = fLG [ A ]⊢ Y
 
-  data fLG_ : Judgement → Set ℓ where
+  data fLG_ : Sequent → Set ℓ where
 
     ax⁺ : ∀ {A} → · A · ⊢fLG[ A ]
     ax⁻ : ∀ {A} → [ A ]⊢fLG · A ·

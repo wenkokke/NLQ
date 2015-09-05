@@ -143,8 +143,7 @@ disambiguate and write e.g. $\Gamma\;\vdash^{\textsc{SC}}\;A$:
   mutual
     _⊢SC_ : Struct → Type → Set
     Γ ⊢SC B = SC Γ ⊢ B
-```
-```
+
     data SC_ : Judgement → Set where
 
       ax   : ∀ {A}
@@ -167,6 +166,8 @@ disambiguate and write e.g. $\Gamma\;\vdash^{\textsc{SC}}\;A$:
       ⇐R   : ∀ {Γ A B}
            →  Γ ∙ · A ·  ⊢SC B  →  Γ  ⊢SC B ⇐ A
 ```
+
+[compute](Example/System/NL/SC.agda "asMathPar (quote NL_)")
 
 There are reasons in favour of and against the use of contexts. One
 reason *for* the use of contexts is that it makes your proofs much
@@ -220,8 +221,7 @@ The system itself is as follows:
   mutual
     _⊢R_ : Type → Type → Set
     A ⊢R B = R A ⊢ B
-```
-```
+
     data R_ : Judgement → Set where
       ax   : ∀ {A}      → A ⊢R A
 
@@ -232,6 +232,8 @@ The system itself is as follows:
       r⇐⊗  : ∀ {A B C}  → A ⊢R C ⇐ B  → A ⊗ B ⊢R C
       r⊗⇐  : ∀ {A B C}  → A ⊗ B ⊢R C  → A ⊢R C ⇐ B
 ```
+
+[compute](Example/System/NL/Res.agda "asMathPar (quote NL_)")
 
 The idea behind the residuation rules is that, where we used to apply
 a rule under a context, they will allow us to take the formulas apart.
@@ -396,8 +398,7 @@ module resmon (Atom : Set) where
   mutual
     _⊢RM_ : Type → Type → Set
     A ⊢RM B = RM A ⊢ B
-```
-```
+
     data RM_ : Judgement → Set where
 
       ax   : ∀ {A}       → el A ⊢RM el A
@@ -411,6 +412,8 @@ module resmon (Atom : Set) where
       r⇐⊗  : ∀ {A B C}   → A ⊢RM C ⇐ B  → A ⊗ B ⊢RM C
       r⊗⇐  : ∀ {A B C}   → A ⊗ B ⊢RM C  → A ⊢RM C ⇐ B
 ```
+
+[compute](Example/System/NL/ResMon.agda "asMathPar (quote NL_)")
 
 Using these monotonicity rules we can easily recover the full axiom
 rule as `ax′` below:
@@ -720,15 +723,15 @@ module resmon→agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
 ```
 
 ```
-  ⟦_⟧ᵀ : Type → Set
-  ⟦ el   A ⟧ᵀ = ⟦ A ⟧ᴬ
-  ⟦ A ⊗  B ⟧ᵀ = ⟦ A ⟧ᵀ ×  ⟦ B ⟧ᵀ
-  ⟦ A ⇒  B ⟧ᵀ = ⟦ A ⟧ᵀ →  ⟦ B ⟧ᵀ
-  ⟦ B ⇐  A ⟧ᵀ = ⟦ A ⟧ᵀ →  ⟦ B ⟧ᵀ
+  ⟦_⟧ᵗ : Type → Set
+  ⟦ el   A ⟧ᵗ = ⟦ A ⟧ᴬ
+  ⟦ A ⊗  B ⟧ᵗ = ⟦ A ⟧ᵗ ×  ⟦ B ⟧ᵗ
+  ⟦ A ⇒  B ⟧ᵗ = ⟦ A ⟧ᵗ →  ⟦ B ⟧ᵗ
+  ⟦ B ⇐  A ⟧ᵗ = ⟦ A ⟧ᵗ →  ⟦ B ⟧ᵗ
 ```
 
 ```
-  ⟦_⟧ : ∀ {A B} → A ⊢RM B → ⟦ A ⟧ᵀ → ⟦ B ⟧ᵀ
+  ⟦_⟧ : ∀ {A B} → A ⊢RM B → ⟦ A ⟧ᵗ → ⟦ B ⟧ᵗ
   ⟦ ax        ⟧ = λ x → x
   ⟦ m⊗   f g  ⟧ = λ{(x , y) → (⟦ f ⟧ x , ⟦ g ⟧ y)}
   ⟦ m⇒   f g  ⟧ = λ h x → ⟦ g ⟧ (h (⟦ f ⟧ x))
@@ -748,14 +751,14 @@ module resmon_typing_agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
   open import Data.Product using (_×_; map; curry; uncurry)
   open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
   open resmon Atom using (Judgement; _⊢_)
-  open resmon→agda Atom ⟦_⟧ᴬ using (⟦_⟧ᵀ)
+  open resmon→agda Atom ⟦_⟧ᴬ using (⟦_⟧ᵗ)
 ```
 
 ``` hidden
   ⟦_⟧ᴶ : Judgement → Set
 ```
 ```
-  ⟦ A ⊢ B ⟧ᴶ = ⟦ A ⟧ᵀ → ⟦ B ⟧ᵀ
+  ⟦ A ⊢ B ⟧ᴶ = ⟦ A ⟧ᵗ → ⟦ B ⟧ᵗ
 ```
 
 ``` hidden
@@ -809,16 +812,6 @@ module resmon_typing_agda (Atom : Set) (⟦_⟧ᴬ : Atom → Set) where
            →  f                      ∈        A ⊗ B ⊢ C
            →          curry f   x    ∈ x   ∶  A ⊢ C ⇐ B
 ```
-
-[eval](../src/Example/System/NL/ResMon.agda "asRule (quote ax )")
-[eval](../src/Example/System/NL/ResMon.agda "asRule (quote m⊗ )")
-[eval](../src/Example/System/NL/ResMon.agda "asRule (quote m⇒ )")
-[eval](../src/Example/System/NL/ResMon.agda "asRule (quote m⇐ )")
-[eval](../src/Example/System/NL/ResMon.agda "asRule (quote r⇒⊗)")
-[eval](../src/Example/System/NL/ResMon.agda "asRule (quote r⇐⊗)")
-[eval](../src/Example/System/NL/ResMon.agda "asRule (quote r⊗⇒)")
-[eval](../src/Example/System/NL/ResMon.agda "asRule (quote r⊗⇐)")
-
 
 [^short]:  This is a slightly problematic statement: while the proofs
            *do* become shorter, in terms of the number of rules, every

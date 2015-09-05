@@ -12,9 +12,9 @@ module Logic.NL.PG99.EquivalentToResMon {ℓ} (Atom : Set ℓ) where
 
 open import Logic.NL.Type             Atom
 open import Logic.NL.Type.Context     Atom as C; open C.Simple using (_[_]; _<_>; <>-def)
-open import Logic.NL.ResMon.Judgement Atom as RM
+open import Logic.NL.ResMon.Sequent Atom as RM
 open import Logic.NL.ResMon           Atom renaming (_⊢NL_ to _⊢RM_)
-open import Logic.NL.PG99.Judgement   Atom as PG99
+open import Logic.NL.PG99.Sequent   Atom as PG99
 open import Logic.NL.PG99.Base        Atom
      renaming (_⊢NL_ to _⊢PG_; ⊢NLᴺ_ to ⊢PGᴺ; ⊢NLᴾ_ to ⊢PGᴾ_) hiding (contᴺ′; contᴾ′)
 

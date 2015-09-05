@@ -12,8 +12,8 @@ module Logic.LG.ResMon.Cut {ℓ} (Atom : Set ℓ) where
 open import Logic.Polarity
 open import Logic.LG.Type                               Atom as T
 open import Logic.LG.Type.Context.Polarised             Atom as TCP using ([])
-open import Logic.LG.ResMon.Judgement                   Atom
-open import Logic.LG.ResMon.Judgement.Context.Polarised Atom as JCP
+open import Logic.LG.ResMon.Sequent                   Atom
+open import Logic.LG.ResMon.Sequent.Context.Polarised Atom as JCP
 open import Logic.LG.ResMon.Base                        Atom as LGB
 open import Logic.LG.ResMon.Origin                      Atom as LGO
 

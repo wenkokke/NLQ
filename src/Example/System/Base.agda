@@ -3,10 +3,12 @@
 ------------------------------------------------------------------------
 
 
+open import Function             using (_∘_)
 open import Category.Applicative using (module RawApplicative; RawApplicative)
 open import Data.List            using (List; _∷_; [])
 open import Data.String          using (String)
 open import Data.Traversable     using (module RawTraversable; RawTraversable)
+open import Logic.Polarity       using (Polarity; +; -)
 open import Logic.ToLaTeX        using (module ToLaTeX; ToLaTeX)
 open import Relation.Nullary     using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality
@@ -121,6 +123,49 @@ instance
       toLaTeX PP  = "pp"
 
 
+-- * Polarised atoms
+
+data PolarisedAtom : Set where
+  _⁺ : Atom → PolarisedAtom
+  _⁻ : Atom → PolarisedAtom
+
+
+⁺-injective : ∀ {A B} (pr : (A ⁺) ≡ (B ⁺)) → A ≡ B
+⁺-injective refl = refl
+
+⁻-injective : ∀ {A B} (pr : (A ⁻) ≡ (B ⁻)) → A ≡ B
+⁻-injective refl = refl
+
+
+_≟-PolarisedAtom_ : (A B : PolarisedAtom) → Dec (A ≡ B)
+(A ⁺) ≟-PolarisedAtom (B ⁺) with A ≟-Atom B
+(A ⁺) ≟-PolarisedAtom (B ⁺) | yes A=B = yes (cong _⁺ A=B)
+(A ⁺) ≟-PolarisedAtom (B ⁺) | no  A≠B = no (A≠B ∘ ⁺-injective)
+(A ⁺) ≟-PolarisedAtom (B ⁻) = no (λ ())
+(A ⁻) ≟-PolarisedAtom (B ⁺) = no (λ ())
+(A ⁻) ≟-PolarisedAtom (B ⁻) with A ≟-Atom B
+(A ⁻) ≟-PolarisedAtom (B ⁻) | yes A=B = yes (cong _⁻ A=B)
+(A ⁻) ≟-PolarisedAtom (B ⁻) | no  A≠B = no (A≠B ∘ ⁻-injective)
+
+
+⟦_⟧ᴾ : PolarisedAtom → Set
+⟦ A ⁺ ⟧ᴾ = ⟦ A ⟧ᴬ
+⟦ A ⁻ ⟧ᴾ = ⟦ A ⟧ᴬ
+
+
+Polarityᴬ? : PolarisedAtom → Polarity
+Polarityᴬ? (_ ⁺) = +
+Polarityᴬ? (_ ⁻) = -
+
+instance
+  PolarisedAtomToLaTeX : ToLaTeX PolarisedAtom
+  PolarisedAtomToLaTeX = record { toLaTeXPrec = λ _ → toLaTeX }
+    where
+      toLaTeX : PolarisedAtom → String
+      toLaTeX (A ⁺) = ToLaTeX.toLaTeX AtomToLaTeX A
+      toLaTeX (A ⁻) = ToLaTeX.toLaTeX AtomToLaTeX A
+
+
 -- * Utility for constructing lists of Boolean values
 
 module ListOf (A : Set) where
@@ -163,7 +208,9 @@ module Default where
 -- * Open up "print constructor as LaTeX inference rule""
 
 isBanned : Name → Bool
-isBanned (quote Atom) = true
-isBanned _            = false
+isBanned (quote Atom)          = true
+isBanned (quote PolarisedAtom) = true
+isBanned (quote Polarityᴬ?)    = true
+isBanned _                     = false
 
 open import Reflection.Show.InferenceRule isBanned public

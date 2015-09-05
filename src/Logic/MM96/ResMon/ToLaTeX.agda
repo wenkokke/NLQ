@@ -16,8 +16,8 @@ module Logic.MM96.ResMon.ToLaTeX {ℓ} (Atom : Set ℓ) where
 
 open import Logic.MM96.Type                     Atom
 open import Logic.MM96.Type.ToLaTeX             Atom
-open import Logic.MM96.ResMon.Judgement         Atom
-open import Logic.MM96.ResMon.Judgement.ToLaTeX Atom
+open import Logic.MM96.ResMon.Sequent         Atom
+open import Logic.MM96.ResMon.Sequent.ToLaTeX Atom
 open import Logic.MM96.ResMon.Base              Atom
 
 
@@ -26,7 +26,7 @@ instance
   aMM96ToLaTeX = record { toLaTeXPrec = λ _ → B.toLaTeX ∘ bussProof }
     where
       module B = ToLaTeX BussProofToLaTeX
-      module J = ToLaTeX JudgementToLaTeX
+      module J = ToLaTeX SequentToLaTeX
 
       mutual
         bussProof : ∀ {J} (f : MM96 J) → BussProof

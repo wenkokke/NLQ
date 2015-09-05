@@ -11,7 +11,7 @@ module Logic.LG.Base {ℓ} (Atom : Set ℓ) where
 
 open import Logic.LG.Type                Atom
 open import Logic.LG.Structure.Polarised Atom
-open import Logic.LG.Judgement           Atom
+open import Logic.LG.Sequent           Atom
 
 
 -- Why are `⇀` and `↼` included?
@@ -27,7 +27,7 @@ open import Logic.LG.Judgement           Atom
 
 infix 1  LG_
 
-data LG_ : Judgement → Set ℓ where
+data LG_ : Sequent → Set ℓ where
 
   -- axioms
   ax⁺ : ∀ {A}       → LG · A · ⊢[ A ]

@@ -12,5 +12,11 @@ cabal-version:       >=1.10
 executable buildfile
   main-is:             buildfile.hs
   other-extensions:    PatternGuards, OverloadedStrings, RecordWildCards
-  build-depends:       attoparsec, base, shake, split, text
+  build-depends:       attoparsec
+                     , base
+                     , filepath
+                     , process
+                     , shake
+                     , split
+                     , text
   default-language:    Haskell2010

@@ -11,7 +11,7 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 open import Relation.Binary.HeterogeneousEquality as H using (_≅_; refl; ≅-to-≡)
 
 
-module Logic.LG.Judgement {ℓ} (Atom : Set ℓ) where
+module Logic.LG.Sequent {ℓ} (Atom : Set ℓ) where
 
 
 open import Logic.Polarity hiding (decSetoid)
@@ -25,22 +25,22 @@ infixl 50 _∞ʲ
 
 
 
-data Judgement : Set ℓ where
-  _⊢_   : Structure + → Structure - → Judgement
-  [_]⊢_ : Type        → Structure - → Judgement
-  _⊢[_] : Structure + → Type        → Judgement
+data Sequent : Set ℓ where
+  _⊢_   : Structure + → Structure - → Sequent
+  [_]⊢_ : Type        → Structure - → Sequent
+  _⊢[_] : Structure + → Type        → Sequent
 
 
 
-open import Algebra.FunctionProperties {A = Judgement} _≡_
+open import Algebra.FunctionProperties {A = Sequent} _≡_
 
 
-_⋈ʲ : Judgement → Judgement
+_⋈ʲ : Sequent → Sequent
 (  X  ⊢  Y  ) ⋈ʲ = X ⋈ˢ ⊢ Y ⋈ˢ
 ([ A ]⊢  Y  ) ⋈ʲ = [ A ⋈ ]⊢ Y ⋈ˢ
 (  X  ⊢[ B ]) ⋈ʲ = X ⋈ˢ ⊢[ B ⋈ ]
 
-_∞ʲ : Judgement → Judgement
+_∞ʲ : Sequent → Sequent
 (  X  ⊢  Y  ) ∞ʲ = Y ∞ˢ ⊢ X ∞ˢ
 ([ A ]⊢  Y  ) ∞ʲ = Y ∞ˢ ⊢[ A ∞ ]
 (  X  ⊢[ B ]) ∞ʲ = [ B ∞ ]⊢ X ∞ˢ
@@ -77,25 +77,25 @@ module DecEq (_≟-Atom_ : (A B : Atom) → Dec (A ≡ B)) where
   open module SEQ = S.DecEq _≟-Atom_ using (_≟-Structure_)
 
 
-  _≟-Judgement_ : (I J : Judgement) → Dec (I ≡ J)
-  (  X  ⊢  Y  ) ≟-Judgement (  Z  ⊢  W  ) with X ≟-Structure Z | Y ≟-Structure W
+  _≟-Sequent_ : (I J : Sequent) → Dec (I ≡ J)
+  (  X  ⊢  Y  ) ≟-Sequent (  Z  ⊢  W  ) with X ≟-Structure Z | Y ≟-Structure W
   ...| yes X=Z | yes Y=W = yes (P.cong₂ _⊢_ X=Z Y=W)
   ...| no  X≠Z | _       = no (X≠Z ∘ proj₁ ∘ ⊢-injective)
   ...| _       | no  Y≠W = no (Y≠W ∘ proj₂ ∘ ⊢-injective)
-  (  X  ⊢  Y  ) ≟-Judgement ([ C ]⊢  W  ) = no (λ ())
-  (  X  ⊢  Y  ) ≟-Judgement (  Z  ⊢[ D ]) = no (λ ())
-  ([ A ]⊢  Y  ) ≟-Judgement (  Z  ⊢  W  ) = no (λ ())
-  ([ A ]⊢  Y  ) ≟-Judgement ([ C ]⊢  W  ) with A ≟-Type C | Y ≟-Structure W
+  (  X  ⊢  Y  ) ≟-Sequent ([ C ]⊢  W  ) = no (λ ())
+  (  X  ⊢  Y  ) ≟-Sequent (  Z  ⊢[ D ]) = no (λ ())
+  ([ A ]⊢  Y  ) ≟-Sequent (  Z  ⊢  W  ) = no (λ ())
+  ([ A ]⊢  Y  ) ≟-Sequent ([ C ]⊢  W  ) with A ≟-Type C | Y ≟-Structure W
   ...| yes A=C | yes Y=W = yes (P.cong₂ [_]⊢_ A=C Y=W)
   ...| no  A≠C | _       = no (A≠C ∘ proj₁ ∘ []⊢-injective)
   ...| _       | no  Y≠W = no (Y≠W ∘ proj₂ ∘ []⊢-injective)
-  ([ A ]⊢  Y  ) ≟-Judgement (  Z  ⊢[ D ]) = no (λ ())
-  (  X  ⊢[ B ]) ≟-Judgement (  Z  ⊢  W  ) = no (λ ())
-  (  X  ⊢[ B ]) ≟-Judgement ([ C ]⊢  W  ) = no (λ ())
-  (  X  ⊢[ B ]) ≟-Judgement (  Z  ⊢[ D ]) with X ≟-Structure Z | B ≟-Type D
+  ([ A ]⊢  Y  ) ≟-Sequent (  Z  ⊢[ D ]) = no (λ ())
+  (  X  ⊢[ B ]) ≟-Sequent (  Z  ⊢  W  ) = no (λ ())
+  (  X  ⊢[ B ]) ≟-Sequent ([ C ]⊢  W  ) = no (λ ())
+  (  X  ⊢[ B ]) ≟-Sequent (  Z  ⊢[ D ]) with X ≟-Structure Z | B ≟-Type D
   ...| yes X=Z | yes B=D = yes (P.cong₂ _⊢[_] X=Z B=D)
   ...| no  X≠Z | _       = no (X≠Z ∘ proj₁ ∘ ⊢[]-injective)
   ...| _       | no  B≠D = no (B≠D ∘ proj₂ ∘ ⊢[]-injective)
 
   decSetoid : DecSetoid _ _
-  decSetoid = P.decSetoid _≟-Judgement_
+  decSetoid = P.decSetoid _≟-Sequent_

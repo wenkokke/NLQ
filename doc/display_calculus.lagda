@@ -69,8 +69,7 @@ module display_calculus (Atom : Set) where
     X ⊢NL[ B ] = NL X ⊢[ B ]
     [_]⊢NL_ : Type → Struct - → Set
     [ A ]⊢NL Y = NL [ A ]⊢ Y
-```
-```
+
     data NL_ : Judgement → Set where
 
       ax⁺  : ∀ {A}       →  · A · ⊢NL[ A ]
@@ -94,6 +93,8 @@ module display_calculus (Atom : Set) where
       r⇐⊗  : ∀ {X Y Z}   →  X ⊢NL Z ⇐ Y → X ⊗ Y ⊢NL Z
       r⊗⇐  : ∀ {X Z Y}   →  X ⊗ Y ⊢NL Z → X ⊢NL Z ⇐ Y
 ```
+
+[compute](Example/System/NL.agda "asMathPar (quote NL_)")
 
 
 ## Equivalence between RM and display calculus
