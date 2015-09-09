@@ -246,10 +246,8 @@ nlp = let
                      ,"Logic/LG//*.agda"
                      ]
   , exclude        = ["//ToAgda.agda"
-                     ,"//LG/ResMon/Origin/Sub*.agda"
-                     ,"//LG/ResMon/Origin/Sup0.agda"
-                     ,"//LG/ResMon/Origin/Sup1.agda"
-                     ,"//LG/ResMon/Origin/Sum.agda"
+                     ,"//LG/ResMon/Base.agda"
+                     ,"//LG/ResMon/Origin/*.agda"
                      ]
   }
 
