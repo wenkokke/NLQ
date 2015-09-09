@@ -171,12 +171,15 @@ down Σ (Γ <∙ q) {Δ} f = Cₑ Σ lem₁
 -- Derived rules for scope taking
 
 ⇦Lλ : ∀ (Σ : Context) (Γ : Context₁) {p q r}
-    → λx Γ [x] ⊢NL p → Σ [ · q · ] ⊢NL r → Σ [ Γ [ · q ⇦ p · ] ] ⊢NL r
+    → λx Γ [x] ⊢NL p
+    → Σ [ · q · ] ⊢NL r
+    → Σ [ Γ [ · q ⇦ p · ] ] ⊢NL r
 ⇦Lλ Σ Γ f g = up Σ Γ (⇦L Σ f g)
 
 
 ⇨Rλ : ∀ (Γ : Context₁) {p q}
-    → Γ [ · p · ] ⊢NL q → λx Γ [x] ⊢NL p ⇨ q
+    → Γ [ · p · ] ⊢NL q
+    → λx Γ [x] ⊢NL p ⇨ q
 ⇨Rλ Γ f = ⇨R (down [] Γ f)
 
 

@@ -12,5 +12,8 @@ cabal-version:       >=1.10
 executable buildfile
   main-is:             buildfile.hs
   other-extensions:    OverloadedStrings
-  build-depends:       base, shake, text
+  build-depends:       base
+                     , process
+                     , shake
+                     , text
   default-language:    Haskell2010

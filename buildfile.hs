@@ -58,7 +58,7 @@ mkMapping name = Mapping
 --------------------------------------------------------------------------------
 
 mappings :: [Mapping]
-mappings = [nl,nlcps]
+mappings = [nl,nlcps,nlp]
 
 
 main :: IO ()
@@ -209,6 +209,43 @@ nlcps = let
                      ,"//LG/ResMon/Cut.agda"
                      ,"//LG/ResMon/Origin.agda"
                      ,"//LG/ResMon/Origin/Box.agda"
+                     ,"//LG/ResMon/Origin/Sub*.agda"
+                     ,"//LG/ResMon/Origin/Sup0.agda"
+                     ,"//LG/ResMon/Origin/Sup1.agda"
+                     ,"//LG/ResMon/Origin/Sum.agda"
+                     ]
+  }
+
+
+---------------------------------------------------------------------------------
+-- Make: Non-associative Lambek Calculus
+---------------------------------------------------------------------------------
+
+nlp :: Mapping
+nlp = let
+
+  rules01 = ["₀L", "₀R", "⁰L", "⁰R", "r⁰₀", "r₀⁰"
+            ,"₁L", "₁R", "¹L", "¹R", "r¹₁", "r₁¹"
+            ,"m₀", "m⁰", "m₁", "m¹"]
+  check01 = map ("check-" `T.append`) rules01
+
+  in
+  (mkMapping "Lambek Calculus with Extraction/Infixation")
+  { blacklistChar  = ["⊕" , "⇛" , "⇚" , "∞"
+                     ]
+  , blacklistToken = ["₀", "₀_", "₀>", "₀>_" , "₀-injective"
+                     ,"⁰", "_⁰", "<⁰", "_<⁰" , "⁰-injective"
+                     ,"₁", "₁_", "₁>", "₁>_" , "₁-injective"
+                     ,"¹", "_¹", "<¹", "_<¹" , "¹-injective"
+                     ]
+                     ++ rules01
+                     ++ check01
+  , textMapping    = ["LG" ==> "NLP"
+                     ]
+  , include        = ["Logic/LG.agda"
+                     ,"Logic/LG//*.agda"
+                     ]
+  , exclude        = ["//ToAgda.agda"
                      ,"//LG/ResMon/Origin/Sub*.agda"
                      ,"//LG/ResMon/Origin/Sup0.agda"
                      ,"//LG/ResMon/Origin/Sup1.agda"
