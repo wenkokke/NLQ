@@ -48,8 +48,8 @@ module OldTypeLogicalGrammar where
 %<*OldTypeLogicalGrammar>
 \begin{code}
     field
-      toAgdaType : Type → Set
-      toAgdaTerm : ∀ {Γ B} → Γ ⊢ B → toAgdaType B
+      ⟦_⟧ᵗ  : Type → Set
+      ⟦_⟧   : ∀ {Γ B} → Γ ⊢ B → ⟦ B ⟧ᵗ
 \end{code}
 %</OldTypeLogicalGrammar>
 

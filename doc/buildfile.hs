@@ -4,6 +4,7 @@
 import           Control.Arrow ((***))
 import           Development.Shake
 import           Development.Shake.FilePath
+import           Data.Maybe (fromJust)
 import           Data.String (IsString(..))
 import           Data.Text (Text)
 import qualified Data.Text    as T
@@ -194,21 +195,13 @@ main =
     removeFilesAfter "_build" ["//*"]
 
 
--- * Agda path
+-- * Agda for LaTeX
 
 agdaExec :: FilePath
 agdaExec = "/usr/local/Cellar/agda/agda-latex/bin/agda"
 
 agdaPath :: Action [FilePath]
-agdaPath = do path <- getEnv "AGDA_PATH"
-              return . ("_build" :) $
-                maybe [] (splitBy searchPathSeparator) path
-  where
-    splitBy :: Char -> String -> [String]
-    splitBy c str = case break (==c) str of
-      (pr,[]) -> pr : []
-      (pr,sf) -> pr : splitBy c (tail sf)
-
+agdaPath = splitSearchPath . fromJust <$> getEnv "AGDA_PATH"
 
 -- * Path management
 
@@ -225,7 +218,7 @@ fromBuild out = joinPath (filter (/="_build/") (splitPath out))
 -- * Formatting of specific sequences
 
 formatHTML :: FilePath -> Text -> Text
-formatHTML file = formatWith
+formatHTML _ = formatWith
   [ "|" ==> ""
   , "⇐" ==> "&#47;"
   , "⇒" ==> "&#92;"

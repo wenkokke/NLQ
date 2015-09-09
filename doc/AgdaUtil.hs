@@ -1,10 +1,12 @@
-module AgdaUtil (agda_path,compute_toplevel) where
+module AgdaUtil (agdaPath,resolvePath,computeTopLevel) where
 
 import Data.List (isPrefixOf)
+import Control.Monad (filterM)
+import System.Directory (doesFileExist)
 import System.Environment (getEnv)
-import System.FilePath (splitSearchPath)
-import System.IO
-import System.Process
+import System.FilePath ((</>),isRelative,splitSearchPath)
+import System.IO (BufferMode(..),hSetBinaryMode,hSetBuffering,hPutStrLn,hGetContents)
+import System.Process (runInteractiveCommand)
 import Text.Printf (printf)
 
 
@@ -16,28 +18,29 @@ nfs = map nf . filter (nf_prefix `isPrefixOf`)
     nf_prefix = "(agda2-info-action \"*Normal Form*\" "
     nf_suffix = " nil)"
 
+
 -- | Look up the Agda search path.
-agda_path :: IO [FilePath]
-agda_path = splitSearchPath <$> getEnv "AGDA_PATH"
+agdaPath :: IO [FilePath]
+agdaPath = splitSearchPath <$> getEnv "AGDA_PATH"
 
 
 -- | Compute the command string for loading an Agda file.
-cmd_load :: FilePath -> [String] -> String
-cmd_load file path
+cmdLoad :: FilePath -> [String] -> String
+cmdLoad file path
   = printf "IOTCM %s NonInteractive Indirect ( Cmd_load %s %s )"
     (show file) (show file) (show path)
 
 
 -- | Compute the command string for computing a normal form.
-cmd_compute_toplevel :: FilePath -> String -> String
-cmd_compute_toplevel file expr
+cmdComputeTopLevel :: FilePath -> String -> String
+cmdComputeTopLevel file expr
   =  printf "IOTCM %s None Indirect ( Cmd_compute_toplevel False %s )"
      (show file) (show expr)
 
 
 -- | Load a file into Agda interaction and request a series of normal forms.
-compute_toplevel :: FilePath -> [String] -> IO [String]
-compute_toplevel file exprs = do
+computeTopLevel :: FilePath -> [String] -> IO [String]
+computeTopLevel file exprs = do
   (hin,hout,herr,_) <- runInteractiveCommand "agda --interaction"
 
   hSetBinaryMode hin  False
@@ -47,10 +50,42 @@ compute_toplevel file exprs = do
   hSetBuffering  hout NoBuffering
   hSetBuffering  herr NoBuffering
 
-  agda_path' <- agda_path
+  agdaPath' <- agdaPath
 
-  hPutStrLn hin (cmd_load file agda_path')
-  sequence_ (hPutStrLn hin . cmd_compute_toplevel file <$> exprs)
+  hPutStrLn hin (cmdLoad file agdaPath')
+  sequence_ (hPutStrLn hin . cmdComputeTopLevel file <$> exprs)
   resp <- hGetContents hout
 
-  return (nfs (lines resp))
+  let result = nfs (lines resp)
+
+  if null result
+    then error resp
+    else return result
+
+
+-- | Disambiguate a filepath.
+resolvePath :: FilePath -> IO FilePath
+resolvePath file =
+  if isRelative file
+    then do
+    candidateDirs  <- agdaPath
+    candidateFiles <- filterM doesFileExist (map (</> file) candidateDirs)
+    if length candidateFiles == 1
+      then return (head candidateFiles)
+      else error ("resolvePath: ambiguous filepath "++show file
+                  ++", could refer to any of "++show candidateFiles)
+    else
+    return file
+
+
+{-
+main :: IO ()
+main = do
+  args <- getArgs
+  if length args < 2
+    then error "Usage: AgdaUtil FILE EXPR [EXPR...]"
+    else do
+    path  <- resolvePath (head args)
+    exprs <- computeTopLevel path (tail args)
+    forM_ exprs putStrLn
+-}

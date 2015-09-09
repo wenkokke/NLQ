@@ -79,3 +79,6 @@ _<_> : Context → Context → Context
 
 
 [compute](Example/System/NLIBC.agda "((quote ⇨RgL) ∷ (quote ⇨RgR) ∷ []) asMathParOf (quote NL_)")
+
+
+[compute](Example/System/NLIBC.agda "((quote ⇦Lλ) ∷ (quote ⇨Rλ) ∷ []) asMathParOf (quote NL_)")
