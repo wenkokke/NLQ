@@ -16,7 +16,7 @@ module Example.System.NLCPS where
 
 open import Example.System.Base public
 open import Logic.Polarity public
-open import Logic.NLCPS.Pol PolarisedAtom Polarityᴬ? public
+open import Logic.NLCPS.Pol PolarisedAtom Polarityᴬ? as NLCPS public
 open import Logic.Grammar public
 open import Logic.NLCPS.Pol.ProofSearch PolarisedAtom Polarityᴬ? _≟-PolarisedAtom_ public
 open import Logic.NLCPS.Pol.ToAgda PolarisedAtom ⟦_⟧ᴾ Bool Polarityᴬ? public

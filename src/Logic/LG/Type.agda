@@ -30,23 +30,19 @@ infixl 40 _¹
 
 data Type : Set ℓ where
 
-  el  : Atom → Type
-
-  □_  : Type → Type
-  ◇_  : Type → Type
-
-  ₀_  : Type → Type
-  _⁰  : Type → Type
-  ₁_  : Type → Type
-  _¹  : Type → Type
-
-  _⊗_ : Type → Type → Type
-  _⇒_ : Type → Type → Type
-  _⇐_ : Type → Type → Type
-
-  _⊕_ : Type → Type → Type
-  _⇚_ : Type → Type → Type
-  _⇛_ : Type → Type → Type
+  el  : (A   : Atom) → Type
+  □_  : (A   : Type) → Type
+  ◇_  : (A   : Type) → Type
+  ₀_  : (A   : Type) → Type
+  _⁰  : (A   : Type) → Type
+  ₁_  : (A   : Type) → Type
+  _¹  : (A   : Type) → Type
+  _⊗_ : (A B : Type) → Type
+  _⇒_ : (A B : Type) → Type
+  _⇐_ : (B A : Type) → Type
+  _⊕_ : (B A : Type) → Type
+  _⇚_ : (A A : Type) → Type
+  _⇛_ : (B A : Type) → Type
 
 
 

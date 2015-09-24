@@ -44,10 +44,10 @@ record Pluggable (C A : Set ℓ) : Set ℓ where
 
 data Context : Set ℓ where
   []    : Context
-  _∙>_  : Structure → Context   → Context
-  _<∙_  : Context   → Structure → Context
-  _∘>_  : Structure → Context   → Context
-  _<∘_  : Context   → Structure → Context
+  _<∙_  : (Γ : Context)   (Δ : Structure) → Context
+  _∙>_  : (Γ : Structure) (Δ : Context)   → Context
+  _<∘_  : (Γ : Context)   (Δ : Structure) → Context
+  _∘>_  : (Γ : Structure) (Δ : Context)   → Context
 
 
 instance
@@ -83,8 +83,8 @@ instance
 
 data Context₁ : Set ℓ where
   []    : Context₁
-  _∙>_  : Structure → Context₁  → Context₁
-  _<∙_  : Context₁  → Structure → Context₁
+  _<∙_  : (Γ : Context₁)  (Δ : Structure) → Context₁
+  _∙>_  : (Γ : Structure) (Δ : Context₁)  → Context₁
 
 
 instance

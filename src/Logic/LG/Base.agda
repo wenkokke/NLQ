@@ -9,9 +9,10 @@ open import Function using (_∘_)
 module Logic.LG.Base {ℓ} (Atom : Set ℓ) where
 
 
+open import Logic.Polarity
 open import Logic.LG.Type                Atom
 open import Logic.LG.Structure.Polarised Atom
-open import Logic.LG.Sequent           Atom
+open import Logic.LG.Sequent             Atom
 
 
 -- Why are `⇀` and `↼` included?
@@ -25,71 +26,75 @@ open import Logic.LG.Sequent           Atom
 --   in reality is the same axiomatisation, but more cumbersome.
 
 
-infix 1  LG_
+infix 2 LG_ _⊢LG_ [_]⊢LG_ _⊢LG[_]
 
-data LG_ : Sequent → Set ℓ where
 
-  -- axioms
-  ax⁺ : ∀ {A}       → LG · A · ⊢[ A ]
-  ax⁻ : ∀ {B}       → LG [ B ]⊢ · B ·
+mutual
+  _⊢LG_ : Structure + → Structure - → Set ℓ
+  X ⊢LG Y = LG X ⊢ Y
 
-  -- (de)focus right and left
-  ⇁   : ∀ {X B}     → LG X ⊢ · B · → LG X ⊢[ B ]
-  ↽   : ∀ {A Y}     → LG · A · ⊢ Y → LG [ A ]⊢ Y
-  ⇀   : ∀ {X B}     → LG X ⊢[ B ] → LG X ⊢ · B ·
-  ↼   : ∀ {A Y}     → LG [ A ]⊢ Y → LG · A · ⊢ Y
+  _⊢LG[_] : Structure + → Type → Set ℓ
+  X ⊢LG[ B ] = LG X ⊢[ B ]
 
-  -- rules for (□ , ◇)
-  ◇L  : ∀ {A Y}     → LG ⟨ · A · ⟩ ⊢ Y → LG · ◇ A · ⊢ Y
-  ◇R  : ∀ {X B}     → LG X ⊢[ B ] → LG ⟨ X ⟩ ⊢[ ◇ B ]
-  □L  : ∀ {A Y}     → LG [ A ]⊢ Y → LG [ □ A ]⊢ [ Y ]
-  □R  : ∀ {X B}     → LG X ⊢ [ · B · ] → LG X ⊢ · □ B ·
-  r□◇ : ∀ {X Y}     → LG X ⊢ [ Y ] → LG ⟨ X ⟩ ⊢ Y
-  r◇□ : ∀ {X Y}     → LG ⟨ X ⟩ ⊢ Y → LG X ⊢ [ Y ]
+  [_]⊢LG_ : Type → Structure - → Set ℓ
+  [ A ]⊢LG Y = LG [ A ]⊢ Y
 
-  --  rules for (₀ , ⁰ , ₁ , ¹)
-  ₀L  : ∀ {A Y}     → LG Y ⊢[ A ] → LG [ ₀ A ]⊢ ₀ Y
-  ₀R  : ∀ {X B}     → LG X ⊢ ₀ · B · → LG X ⊢ · ₀ B ·
-  ⁰L  : ∀ {A Y}     → LG Y ⊢[ A ] → LG [ A ⁰ ]⊢ Y ⁰
-  ⁰R  : ∀ {X B}     → LG X ⊢ · B · ⁰ → LG X ⊢ · B ⁰ ·
-  ₁L  : ∀ {A Y}     → LG ₁ · A · ⊢ Y → LG · ₁ A · ⊢ Y
-  ₁R  : ∀ {X B}     → LG [ B ]⊢ X → LG ₁ X ⊢[ ₁ B ]
-  ¹L  : ∀ {A Y}     → LG · A · ¹ ⊢ Y → LG · A ¹ · ⊢ Y
-  ¹R  : ∀ {X B}     → LG [ B ]⊢ X → LG X ¹ ⊢[ B ¹ ]
-  r⁰₀ : ∀ {X Y}     → LG Y ⊢ X ⁰ → LG X ⊢ ₀ Y
-  r₀⁰ : ∀ {X Y}     → LG Y ⊢ ₀ X → LG X ⊢ Y ⁰
-  r¹₁ : ∀ {X Y}     → LG Y ¹ ⊢ X → LG ₁ X ⊢ Y
-  r₁¹ : ∀ {X Y}     → LG ₁ Y ⊢ X → LG X ¹ ⊢ Y
+  data LG_ : Sequent → Set ℓ where
 
-  -- rules for (⇐ , ⊗ , ⇒)
-  ⊗L  : ∀ {A B Y}   → LG · A · ⊗ · B · ⊢ Y → LG · A ⊗ B · ⊢ Y
-  ⊗R  : ∀ {X Y A B} → LG X ⊢[ A ] → LG Y ⊢[ B ] → LG X ⊗ Y ⊢[ A ⊗ B ]
-  ⇒L  : ∀ {A B X Y} → LG X ⊢[ A ] → LG [ B ]⊢ Y → LG [ A ⇒ B ]⊢ X ⇒ Y
-  ⇒R  : ∀ {X A B}   → LG X ⊢ · A · ⇒ · B · → LG X ⊢ · A ⇒ B ·
-  ⇐L  : ∀ {B A Y X} → LG X ⊢[ A ] → LG [ B ]⊢ Y → LG [ B ⇐ A ]⊢ Y ⇐ X
-  ⇐R  : ∀ {X B A}   → LG X ⊢ · B · ⇐ · A · → LG X ⊢ · B ⇐ A ·
-  r⇒⊗ : ∀ {X Y Z}   → LG Y ⊢ X ⇒ Z → LG X ⊗ Y ⊢ Z
-  r⊗⇒ : ∀ {Y X Z}   → LG X ⊗ Y ⊢ Z → LG Y ⊢ X ⇒ Z
-  r⇐⊗ : ∀ {X Y Z}   → LG X ⊢ Z ⇐ Y → LG X ⊗ Y ⊢ Z
-  r⊗⇐ : ∀ {X Z Y}   → LG X ⊗ Y ⊢ Z → LG X ⊢ Z ⇐ Y
+    ax⁺ : ∀ {A} → · A · ⊢LG[ A ]
+    ax⁻ : ∀ {A} → [ A ]⊢LG · A ·
 
-  -- rules for (⇚ , ⊕ , ⇛)
-  ⊕L  : ∀ {B A Y X} → LG [ B ]⊢ Y → LG [ A ]⊢ X → LG [ B ⊕ A ]⊢ Y ⊕ X
-  ⊕R  : ∀ {X B A}   → LG X ⊢ · B · ⊕ · A · → LG X ⊢ · B ⊕ A ·
-  ⇚L  : ∀ {A B X}   → LG · A · ⇚ · B · ⊢ X → LG · A ⇚ B · ⊢ X
-  ⇚R  : ∀ {X Y A B} → LG X ⊢[ A ] → LG [ B ]⊢ Y → LG X ⇚ Y ⊢[ A ⇚ B ]
-  ⇛L  : ∀ {B A X}   → LG · B · ⇛ · A · ⊢ X → LG · B ⇛ A · ⊢ X
-  ⇛R  : ∀ {Y X B A} → LG X ⊢[ A ] → LG [ B ]⊢ Y → LG Y ⇛ X ⊢[ B ⇛ A ]
-  r⇚⊕ : ∀ {Z Y X}   → LG Z ⇚ X ⊢ Y → LG Z ⊢ Y ⊕ X
-  r⊕⇚ : ∀ {Z X Y}   → LG Z ⊢ Y ⊕ X → LG Z ⇚ X ⊢ Y
-  r⇛⊕ : ∀ {Z Y X}   → LG Y ⇛ Z ⊢ X → LG Z ⊢ Y ⊕ X
-  r⊕⇛ : ∀ {Y Z X}   → LG Z ⊢ Y ⊕ X → LG Y ⇛ Z ⊢ X
+    ⇁   : ∀ {A X} → X ⊢LG · A · → X ⊢LG[  A  ]
+    ↽   : ∀ {A X} →  · A · ⊢LG X → [  A  ]⊢LG X
+    ⇀   : ∀ {A X} → X ⊢LG[  A  ] → X ⊢LG · A ·
+    ↼   : ∀ {A X} → [  A  ]⊢LG X →  · A · ⊢LG X
 
-  -- grishin interaction principes
-  d⇛⇐ : ∀ {Z X W Y} → LG X ⊗ Y ⊢ Z ⊕ W → LG Z ⇛ X ⊢ W ⇐ Y
-  d⇛⇒ : ∀ {Z Y X W} → LG X ⊗ Y ⊢ Z ⊕ W → LG Z ⇛ Y ⊢ X ⇒ W
-  d⇚⇒ : ∀ {Y W X Z} → LG X ⊗ Y ⊢ Z ⊕ W → LG Y ⇚ W ⊢ X ⇒ Z
-  d⇚⇐ : ∀ {X W Z Y} → LG X ⊗ Y ⊢ Z ⊕ W → LG X ⇚ W ⊢ Z ⇐ Y
+    ◇L  : ∀ {Y A}     →  ⟨ · A · ⟩ ⊢LG Y → · ◇ A · ⊢LG Y
+    ◇R  : ∀ {X B}     →  X ⊢LG[ B ] → ⟨ X ⟩ ⊢LG[ ◇ B ]
+    □L  : ∀ {A Y}     →  [ A ]⊢LG Y → [ □ A ]⊢LG [ Y ]
+    □R  : ∀ {X A}     →  X ⊢LG [ · A · ] → X ⊢LG · □ A ·
+    r□◇ : ∀ {X Y}     →  X ⊢LG [ Y ] → ⟨ X ⟩ ⊢LG Y
+    r◇□ : ∀ {X Y}     →  ⟨ X ⟩ ⊢LG Y → X ⊢LG [ Y ]
+
+    ₀L  : ∀ {X A}     →  X ⊢LG[ A ] → [ ₀ A ]⊢LG ₀ X
+    ₀R  : ∀ {X A}     →  X ⊢LG ₀ · A · → X ⊢LG · ₀ A ·
+    ⁰L  : ∀ {X A}     →  X ⊢LG[ A ] → [ A ⁰ ]⊢LG X ⁰
+    ⁰R  : ∀ {X A}     →  X ⊢LG · A · ⁰ → X ⊢LG · A ⁰ ·
+    ₁L  : ∀ {Y A}     →  ₁ · A · ⊢LG Y → · ₁ A · ⊢LG Y
+    ₁R  : ∀ {Y A}     →  [ A ]⊢LG Y → ₁ Y ⊢LG[ ₁ A ]
+    ¹L  : ∀ {Y A}     →  · A · ¹ ⊢LG Y → · A ¹ · ⊢LG Y
+    ¹R  : ∀ {Y A}     →  [ A ]⊢LG Y → Y ¹ ⊢LG[ A ¹ ]
+    r⁰₀ : ∀ {X Y}     →  X ⊢LG Y ⁰ → Y ⊢LG ₀ X
+    r₀⁰ : ∀ {X Y}     →  Y ⊢LG ₀ X → X ⊢LG Y ⁰
+    r¹₁ : ∀ {X Y}     →  X ¹ ⊢LG Y → ₁ Y ⊢LG X
+    r₁¹ : ∀ {X Y}     →  ₁ Y ⊢LG X → X ¹ ⊢LG Y
+
+    ⊗L  : ∀ {Y A B}   →  · A · ⊗ · B · ⊢LG Y → · A ⊗ B · ⊢LG Y
+    ⊗R  : ∀ {X Y A B} →  X ⊢LG[ A ] → Y ⊢LG[ B ] → X ⊗ Y ⊢LG[ A ⊗ B ]
+    ⇒L  : ∀ {X Y A B} →  X ⊢LG[ A ] → [ B ]⊢LG Y → [ A ⇒ B ]⊢LG X ⇒ Y
+    ⇒R  : ∀ {X A B}   →  X ⊢LG · A · ⇒ · B · → X ⊢LG · A ⇒ B ·
+    ⇐L  : ∀ {X Y A B} →  X ⊢LG[ A ] → [ B ]⊢LG Y → [ B ⇐ A ]⊢LG Y ⇐ X
+    ⇐R  : ∀ {X A B}   →  X ⊢LG · B · ⇐ · A · → X ⊢LG · B ⇐ A ·
+    r⇒⊗ : ∀ {X Y Z}   →  Y ⊢LG X ⇒ Z → X ⊗ Y ⊢LG Z
+    r⊗⇒ : ∀ {X Y Z}   →  X ⊗ Y ⊢LG Z → Y ⊢LG X ⇒ Z
+    r⇐⊗ : ∀ {X Y Z}   →  X ⊢LG Z ⇐ Y → X ⊗ Y ⊢LG Z
+    r⊗⇐ : ∀ {X Y Z}   →  X ⊗ Y ⊢LG Z → X ⊢LG Z ⇐ Y
+
+    ⊕L   : ∀ {X Y A B} →  [ B ]⊢LG Y →  [ A ]⊢LG X →  [ B ⊕ A ]⊢LG Y ⊕ X
+    ⊕R   : ∀ {X A B}   →  X ⊢LG · B · ⊕ · A · →  X ⊢LG · B ⊕ A ·
+    ⇚L   : ∀ {X A B}   →  · A · ⇚ · B · ⊢LG X →  · A ⇚ B · ⊢LG X
+    ⇚R   : ∀ {X Y A B} →  X ⊢LG[ A ] →  [ B ]⊢LG Y →  X ⇚ Y ⊢LG[ A ⇚ B ]
+    ⇛L   : ∀ {X A B}   →  · B · ⇛ · A · ⊢LG X →  · B ⇛ A · ⊢LG X
+    ⇛R   : ∀ {X Y A B} →  X ⊢LG[ A ] →  [ B ]⊢LG Y →  Y ⇛ X ⊢LG[ B ⇛ A ]
+    r⇚⊕  : ∀ {X Y Z}   →  Z ⇚ X ⊢LG Y →  Z ⊢LG Y ⊕ X
+    r⊕⇚  : ∀ {X Y Z}   →  Z ⊢LG Y ⊕ X →  Z ⇚ X ⊢LG Y
+    r⇛⊕  : ∀ {X Y Z}   →  Y ⇛ Z ⊢LG X →  Z ⊢LG Y ⊕ X
+    r⊕⇛  : ∀ {X Y Z}   →  Z ⊢LG Y ⊕ X →  Y ⇛ Z ⊢LG X
+
+    d⇛⇐  : ∀ {X Y Z W} →  X ⊗ Y ⊢LG Z ⊕ W →  Z ⇛ X ⊢LG W ⇐ Y
+    d⇛⇒  : ∀ {X Y Z W} →  X ⊗ Y ⊢LG Z ⊕ W →  Z ⇛ Y ⊢LG X ⇒ W
+    d⇚⇒  : ∀ {X Y Z W} →  X ⊗ Y ⊢LG Z ⊕ W →  Y ⇚ W ⊢LG X ⇒ Z
+    d⇚⇐  : ∀ {X Y Z W} →  X ⊗ Y ⊢LG Z ⊕ W →  X ⇚ W ⊢LG Z ⇐ Y
 
 
 

@@ -114,13 +114,17 @@ module syntactically_delimited_continuations
     app (A ⇒ B)  f x           = f x
     app (A ⇐ B)  f x           = f x
 ```
-```
+
+``` hidden
   data Struct : Polarity → Set where
 
     -- structures for fNL
 
-    ⟨_⟩  : (Γ⁺ : Struct +)                  → Struct +
+    ⟨_⟩  : (Γ⁺ : Struct +) → Struct +
 ```
+[compute](Example/System/NLCPS.agda "asConstructorOf ((quote NLCPS.⟨_⟩)) [] (quote Type)")
+
+
 ``` hidden
     ·_·  : {p  : Polarity}
          → (A  : Type)                      → Struct p
@@ -167,7 +171,6 @@ module syntactically_delimited_continuations
            →  f ∈ x ∶    X    ⊢[    B ]
            →  f ∈ x ∶ ⟨  X ⟩  ⊢[ ◇  B ]
 ```
-
 [compute](Example/System/NLCPS.agda "(quote ◇R) asInferRuleOf (quote fNLCPS_)")
 
 ``` hidden

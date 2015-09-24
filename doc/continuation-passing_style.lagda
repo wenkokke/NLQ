@@ -3,8 +3,6 @@
 module continuation-passing_style where
 
   open import Logic.Polarity
-  open import non-associative_lambek_calculus
-  open import display_calculus renaming (module display_calculus to dspcal)
 ```
 
 ## CPS Semantics

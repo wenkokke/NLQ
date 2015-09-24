@@ -1,6 +1,9 @@
-------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- The Lambek Calculus in Agda
-------------------------------------------------------------------------
+--
+-- This file was generated from:
+--   src/Logic/LG/ResMon/Sequent.agda
+--------------------------------------------------------------------------------
 
 
 open import Function                                   using (_∘_)
@@ -10,44 +13,35 @@ open import Relation.Binary                            using (module DecSetoid; 
 open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
 
 
-module Logic.LG.ResMon.Sequent {ℓ} (Atom : Set ℓ) where
+module Logic.NLP.ResMon.Sequent {ℓ} (Atom : Set ℓ) where
 
 
-open import Logic.LG.Type Atom as T hiding (module DecEq)
+open import Logic.NLP.ResMon.Type Atom
 
 
 infix  3  _⊢_
 infixl 50 _⋈ʲ
-infixl 50 _∞ʲ
-
-
 data Sequent : Set ℓ where
-  _⊢_ : (A B : Type) → Sequent
+  _⊢_ : Type → Type → Sequent
 
 
 _⋈ʲ : Sequent → Sequent
-(A ⊢ B) ⋈ʲ = A ⋈ ⊢ B ⋈
-
-
-_∞ʲ : Sequent → Sequent
-(A ⊢ B) ∞ʲ = B ∞ ⊢ A ∞
+(A ⊢ B) ⋈ʲ = A ⋈ᵗ ⊢ B ⋈ᵗ
 
 
 open import Algebra.FunctionProperties {A = Sequent} _≡_
 
 
 ⋈ʲ-inv : Involutive _⋈ʲ
-⋈ʲ-inv (A ⊢ B) rewrite ⋈-inv A | ⋈-inv B = refl
+⋈ʲ-inv (A ⊢ B) rewrite ⋈ᵗ-inv A | ⋈ᵗ-inv B = refl
 
-
-∞ʲ-inv : Involutive _∞ʲ
-∞ʲ-inv (A ⊢ B) rewrite ∞-inv A | ∞-inv B = refl
 
 
 ⊢-injective : ∀ {A B C D} → (A ⊢ B) ≡ (C ⊢ D) → A ≡ C × B ≡ D
 ⊢-injective refl = refl , refl
 
 
+{-
 module DecEq (_≟-Atom_ : (A B : Atom) → Dec (A ≡ B)) where
 
 
@@ -64,3 +58,4 @@ module DecEq (_≟-Atom_ : (A B : Atom) → Dec (A ≡ B)) where
 
   decSetoid : DecSetoid _ _
   decSetoid = P.decSetoid _≟-Sequent_
+-}

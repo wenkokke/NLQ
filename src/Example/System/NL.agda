@@ -24,3 +24,7 @@ open import Logic.NL.Structure.Polarised Atom public
 open import Logic.NL.Base Atom public
 open import Logic.NL.ProofSearch Atom _≟-Atom_  public
 open import Logic.NL.ToAgda Atom Bool ⟦_⟧ᴬ public
+
+
+Structure⁺ = Structure +
+Structure⁻ = Structure -

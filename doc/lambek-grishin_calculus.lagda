@@ -19,7 +19,7 @@ module ResMon where
   infixr 30 _⊗_
   infixr 30 _⊕_
 ```
-```
+``` hidden
   data Type : Set where
 
     -- types for NL
@@ -35,6 +35,8 @@ module ResMon where
     _⇒_ : Type → Type → Type
     _⇐_ : Type → Type → Type
 ```
+[compute](Example/System/LG/ResMon.agda "asSyntaxDeclOf (quote _⊕_ ∷ quote _⇚_ ∷ quote _⇛_ ∷ []) [] (quote Type)")
+
 ``` hidden
   data Sequent : Set where
     _⊢_ : Type → Type → Sequent
@@ -92,7 +94,7 @@ module FocPol where
   infix 2 _⊢_ [_]⊢_ _⊢[_]
 ```
 
-```
+``` hidden
   data Struct : Polarity → Set where
 
     -- structures for NL
@@ -101,6 +103,8 @@ module FocPol where
     _⇚_ : (Γ⁺ : Struct +) (Δ⁻ : Struct -) → Struct +
     _⇛_ : (Γ⁻ : Struct -) (Δ⁺ : Struct +) → Struct +
 ```
+[compute](Example/System/LG/Pol.agda "asSyntaxDeclOf (quote Structure._⊕_ ∷ quote Structure._⇚_ ∷ quote Structure._⇛_ ∷ []) [] (quote Structure)")
+
 ``` hidden
     ·_· : {p  : Polarity}
           (A  : Type)                     → Struct p
