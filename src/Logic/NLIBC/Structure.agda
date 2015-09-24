@@ -20,9 +20,9 @@ infixr 20 _∘_
 
 
 data Structure : Set ℓ where
-  ·_·  : Type      → Structure
-  _∙_  : Structure → Structure → Structure
-  _∘_  : Structure → Structure → Structure
+  ·_·  : (p : Type)        → Structure
+  _∙_  : (Γ Δ : Structure) → Structure
+  _∘_  : (Γ Δ : Structure) → Structure
   I    : Structure
   B    : Structure
   C    : Structure

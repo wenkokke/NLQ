@@ -3,7 +3,6 @@
 module display_calculus where
 
   open import Logic.Polarity
-  open import non-associative_lambek_calculus
 ```
 
 In this section, we will discuss the system of structural NL,
@@ -32,82 +31,22 @@ scope of this thesis, we will only present the system that is the
 cut-elimination procedure for this system from the proof of
 equivalence with RM.
 
-``` hidden
-module display_calculus (Atom : Set) where
+[compute](Example/System/NL.agda "asSyntaxDecl ('Γ' ∷ 'Δ' ∷ []) (quote Structure)")
 
-  open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
-  infix  1  NL_
-  infix  10 ·_·
-  infixr 20 _⇒_ _⇐_
-  infixr 30 _⊗_
-  infix  2  _⊢_ _⊢NL_
-  infix  2  [_]⊢_ [_]⊢NL_
-  infix  2  _⊢[_] _⊢NL[_]
-```
-
-```
-  data Struct : Polarity → Set where
-    ·_·  : {p  : Polarity}
-         → (A  : Type)                      → Struct p
-    _⊗_  : (Γ⁺ : Struct +) (Δ⁺ : Struct +)  → Struct +
-    _⇒_  : (Γ⁺ : Struct +) (Δ⁻ : Struct -)  → Struct -
-    _⇐_  : (Γ⁻ : Struct -) (Δ⁺ : Struct +)  → Struct -
-```
-
-```
-  data Sequent : Set where
-    _⊢_    : Struct +  → Struct -  → Sequent
-    [_]⊢_  : Type      → Struct -  → Sequent
-    _⊢[_]  : Struct +  → Type      → Sequent
-```
-
-``` hidden
-  mutual
-    _⊢NL_ : Struct + → Struct - → Set
-    X ⊢NL Y = NL X ⊢ Y
-    _⊢NL[_] : Struct + → Type → Set
-    X ⊢NL[ B ] = NL X ⊢[ B ]
-    [_]⊢NL_ : Type → Struct - → Set
-    [ A ]⊢NL Y = NL [ A ]⊢ Y
-
-    data NL_ : Sequent → Set where
-
-      ax⁺  : ∀ {A}       →  · A · ⊢NL[ A ]
-      ax⁻  : ∀ {B}       →  [ B ]⊢NL · B ·
-
-      ⇁    : ∀ {X B}     →  X ⊢NL · B · → X ⊢NL[ B ]
-      ↽    : ∀ {A Y}     →  · A · ⊢NL Y → [ A ]⊢NL Y
-      ⇀    : ∀ {X B}     →  X ⊢NL[ B ] → X ⊢NL · B ·
-      ↼    : ∀ {A Y}     →  [ A ]⊢NL Y → · A · ⊢NL Y
-
-      ⊗L   : ∀ {A B Y}   →  · A · ⊗ · B · ⊢NL Y → · A ⊗ B · ⊢NL Y
-      ⇒L   : ∀ {A B X Y} →  X ⊢NL[ A ] → [ B ]⊢NL Y → [ A ⇒ B ]⊢NL X ⇒ Y
-      ⇐L   : ∀ {B A Y X} →  X ⊢NL[ A ] → [ B ]⊢NL Y → [ B ⇐ A ]⊢NL Y ⇐ X
-
-      ⊗R   : ∀ {X Y A B} →  X ⊢NL[ A ] → Y ⊢NL[ B ] → X ⊗ Y ⊢NL[ A ⊗ B ]
-      ⇒R   : ∀ {X A B}   →  X ⊢NL · A · ⇒ · B · → X ⊢NL · A ⇒ B ·
-      ⇐R   : ∀ {X B A}   →  X ⊢NL · B · ⇐ · A · → X ⊢NL · B ⇐ A ·
-
-      r⇒⊗  : ∀ {X Y Z}   →  Y ⊢NL X ⇒ Z → X ⊗ Y ⊢NL Z
-      r⊗⇒  : ∀ {Y X Z}   →  X ⊗ Y ⊢NL Z → Y ⊢NL X ⇒ Z
-      r⇐⊗  : ∀ {X Y Z}   →  X ⊢NL Z ⇐ Y → X ⊗ Y ⊢NL Z
-      r⊗⇐  : ∀ {X Z Y}   →  X ⊗ Y ⊢NL Z → X ⊢NL Z ⇐ Y
-```
+[compute](Example/System/NL.agda "asSyntaxDecl ('I' ∷ 'J' ∷ []) (quote Sequent)")
 
 [compute](Example/System/NL.agda "asMathPar (quote NL_)")
 
 
 ## Equivalence between RM and display calculus
 ``` hidden
-module resmon⇔display_calculus (Atom : Set) where
-
-  open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
-  module RM = resmon           Atom ; open RM hiding (Sequent; cut′)
-  module NL = display_calculus Atom ; open NL
+module ResMon⇔DispCalc (Atom : Set) where
+  open import Logic.NL.ResMon Atom as RM hiding (Type; el; _⊗_; _⇒_; _⇐_; cut′)
+  open import Logic.NL        Atom as DC
 ```
 
 ```
-  ⌊_⌋ : ∀ {p} → Struct p → Type
+  ⌊_⌋ : ∀ {p} → Structure p → Type
   ⌊  ·  A  ·  ⌋ = A
   ⌊  X  ⊗  Y  ⌋ = ⌊  X  ⌋ ⊗  ⌊  Y  ⌋
   ⌊  X  ⇒  Y  ⌋ = ⌊  X  ⌋ ⇒  ⌊  Y  ⌋
@@ -118,9 +57,9 @@ module resmon⇔display_calculus (Atom : Set) where
   mutual
 ```
 ```
-    to   : ∀ {X Y} →       X  NL.⊢NL   Y    → ⌊  X ⌋  RM.⊢RM ⌊  Y ⌋
-    toL  : ∀ {A Y} → NL.[  A  ]⊢NL     Y    →    A    RM.⊢RM ⌊  Y ⌋
-    toR  : ∀ {X B} →       X  NL.⊢NL[  B ]  → ⌊  X ⌋  RM.⊢RM    B
+    to   : ∀ {X Y} →       X  DC.⊢NL   Y    → ⌊  X ⌋  RM.⊢NL ⌊  Y ⌋
+    toL  : ∀ {A Y} → DC.[  A  ]⊢NL     Y    →    A    RM.⊢NL ⌊  Y ⌋
+    toR  : ∀ {X B} →       X  DC.⊢NL[  B ]  → ⌊  X ⌋  RM.⊢NL    B
 
     to   (  ⇀    f  )  = toR f
     to   (  ↼    f  )  = toL f
@@ -143,7 +82,7 @@ module resmon⇔display_calculus (Atom : Set) where
 ```
 
 ```
-  ⌈_⌉ : ∀ {p} → Type → Struct p
+  ⌈_⌉ : ∀ {p} → Type → Structure p
   ⌈_⌉ { p = +  }  (A  ⊗  B  )  = ⌈  A  ⌉ ⊗  ⌈  B  ⌉
   ⌈_⌉ { p = -  }  (A  ⇒  B  )  = ⌈  A  ⌉ ⇒  ⌈  B  ⌉
   ⌈_⌉ { p = -  }  (B  ⇐  A  )  = ⌈  B  ⌉ ⇐  ⌈  A  ⌉
@@ -154,13 +93,13 @@ module resmon⇔display_calculus (Atom : Set) where
   mutual
 ```
 ```
-    deflateL : ∀ {A Y} → ⌈ A ⌉ ⊢NL Y → · A · ⊢NL Y
+    deflateL : ∀ {A Y} → ⌈ A ⌉ DC.⊢NL Y → · A · DC.⊢NL Y
     deflateL {A = el   A} f = f
     deflateL {A = A ⇒  B} f = f
     deflateL {A = A ⇐  B} f = f
     deflateL {A = A ⊗  B} f = ⊗L (r⇐⊗ (deflateL (r⊗⇐ (r⇒⊗ (deflateL (r⊗⇒ f))))))
 
-    deflateR : ∀ {X B} → X ⊢NL ⌈ B ⌉ → X ⊢NL · B ·
+    deflateR : ∀ {X B} → X DC.⊢NL ⌈ B ⌉ → X DC.⊢NL · B ·
     deflateR {B = el   B} f = f
     deflateR {B = B ⇒  C} f = ⇒R (r⊗⇒ (deflateR (r⇐⊗ (deflateL (r⊗⇐ (r⇒⊗ f))))))
     deflateR {B = B ⇐  C} f = ⇐R (r⊗⇐ (deflateR (r⇒⊗ (deflateL (r⊗⇒ (r⇐⊗ f))))))
@@ -168,7 +107,7 @@ module resmon⇔display_calculus (Atom : Set) where
 ```
 
 ```
-    from : ∀ {A B} → A RM.⊢RM B → ⌈ A ⌉ NL.⊢NL ⌈ B ⌉
+    from : ∀ {A B} → A RM.⊢NL B → ⌈ A ⌉ DC.⊢NL ⌈ B ⌉
     from (ax      )  = ⇀ ax⁺
     from (m⊗   f g)  = ⇀  (⊗R  (⇁ (deflateR (from f  ))) (⇁ (deflateR (from g  ))))
     from (m⇒   f g)  = ↼  (⇒L  (⇁ (deflateR (from f  ))) (↽ (deflateL (from g  ))))
@@ -183,11 +122,11 @@ module resmon⇔display_calculus (Atom : Set) where
   mutual
 ```
 ```
-    inflateL : ∀ {X Y} → ⌈ ⌊ X ⌋ ⌉ ⊢NL Y → X ⊢NL Y
+    inflateL : ∀ {X Y} → ⌈ ⌊ X ⌋ ⌉ DC.⊢NL Y → X DC.⊢NL Y
     inflateL {X =  ·  A  ·  }  f = deflateL f
     inflateL {X =  X  ⊗  Y  }  f = r⇐⊗ (inflateL (r⊗⇐ (r⇒⊗ (inflateL (r⊗⇒ f)))))
 
-    inflateR : ∀ {X Y} → X ⊢NL ⌈ ⌊ Y ⌋ ⌉ → X ⊢NL Y
+    inflateR : ∀ {X Y} → X DC.⊢NL ⌈ ⌊ Y ⌋ ⌉ → X DC.⊢NL Y
     inflateR {Y =  ·  A  ·  }  f = deflateR f
     inflateR {Y =  X  ⇒  Y  }  f = r⊗⇒ (inflateR (r⇐⊗ (inflateL (r⊗⇐ (r⇒⊗ f)))))
     inflateR {Y =  X  ⇐  Y  }  f = r⊗⇐ (inflateR (r⇒⊗ (inflateL (r⊗⇒ (r⇐⊗ f)))))
@@ -197,7 +136,7 @@ Using the deflate/inflate approach, we can import theorems from the
 algebraic axiomatisation---for instance, the cut rule:
 
 ```
-  cut′ : ∀ {X A Y} → X ⊢NL[ A ] → [ A ]⊢NL Y → X ⊢NL Y
+  cut′ : ∀ {X A Y} → X DC.⊢NL[ A ] → DC.[ A ]⊢NL Y → X DC.⊢NL Y
   cut′ f g = inflateL (inflateR (from (RM.cut′ (toR f) (toL g))))
 ```
 
@@ -205,13 +144,13 @@ And once cut becomes available, we can derive the inverses of the left
 and right rules, which convert logical formulas back to structures:
 
 ```
-  ⊗L′  : ∀ {Y A B} → · A ⊗ B · ⊢NL Y  → · A · ⊗ · B · ⊢NL Y
+  ⊗L′  : ∀ {Y A B} → · A ⊗ B · DC.⊢NL Y  → · A · ⊗ · B · DC.⊢NL Y
   ⊗L′  f = cut′ (⊗R ax⁺ ax⁺) (↽ f)
 
-  ⇒R′  : ∀ {X A B} → X ⊢NL · A ⇒ B · → X ⊢NL · A · ⇒ · B ·
+  ⇒R′  : ∀ {X A B} → X DC.⊢NL · A ⇒ B · → X DC.⊢NL · A · ⇒ · B ·
   ⇒R′  f = cut′ (⇁ f) (⇒L ax⁺ ax⁻)
 
-  ⇐R′  : ∀ {X A B} → X ⊢NL · B ⇐ A · → X ⊢NL · B · ⇐ · A ·
+  ⇐R′  : ∀ {X A B} → X DC.⊢NL · B ⇐ A · → X DC.⊢NL · B · ⇐ · A ·
   ⇐R′  f = cut′ (⇁ f) (⇐L ax⁺ ax⁻)
 ```
 
@@ -219,16 +158,16 @@ And these inverses can be used to derive the logical equivalents of
 the residuation rules:
 
 ```
-  r⇒⊗′  : ∀ {A B C} → · B · ⊢NL · A ⇒ C ·  → · A ⊗ B · ⊢NL · C ·
+  r⇒⊗′  : ∀ {A B C} → · B · DC.⊢NL · A ⇒ C ·  → · A ⊗ B · DC.⊢NL · C ·
   r⇒⊗′  f = ⊗L (r⇒⊗ (⇒R′ f))
 
-  r⊗⇒′  : ∀ {A B C} → · A ⊗ B · ⊢NL · C ·  → · B · ⊢NL · A ⇒ C ·
+  r⊗⇒′  : ∀ {A B C} → · A ⊗ B · DC.⊢NL · C ·  → · B · DC.⊢NL · A ⇒ C ·
   r⊗⇒′  f = ⇒R (r⊗⇒ (⊗L′ f))
 
-  r⇐⊗′  : ∀ {A B C} → · A · ⊢NL · C ⇐ B ·  → · A ⊗ B · ⊢NL · C ·
+  r⇐⊗′  : ∀ {A B C} → · A · DC.⊢NL · C ⇐ B ·  → · A ⊗ B · DC.⊢NL · C ·
   r⇐⊗′  f = ⊗L (r⇐⊗ (⇐R′ f))
 
-  r⊗⇐′  : ∀ {A B C} → · A ⊗ B · ⊢NL · C ·  → · A · ⊢NL · C ⇐ B ·
+  r⊗⇐′  : ∀ {A B C} → · A ⊗ B · DC.⊢NL · C ·  → · A · DC.⊢NL · C ⇐ B ·
   r⊗⇐′  f = ⇐R (r⊗⇐ (⊗L′ f))
 ```
 
@@ -241,7 +180,7 @@ This equivalence is preferred, since there is no need to convert
 between types and structures.
 
 ```
-  from′ : ∀ {A B} → A RM.⊢RM B → · A · NL.⊢NL · B ·
+  from′ : ∀ {A B} → A RM.⊢NL B → · A · DC.⊢NL · B ·
   from′    ax         = ⇀ ax⁺
   from′ (  m⊗   f g)  = ⊗L (⇀ (⊗R (⇁ (from′ f)) (⇁ (from′ g))))
   from′ (  m⇒   f g)  = ⇒R (↼ (⇒L (⇁ (from′ f)) (↽ (from′ g))))
@@ -262,8 +201,8 @@ module spurious_ambiguity where
   open import Relation.Binary.PropositionalEquality using (_≡_; refl)
   open import Example.System.Base using (Atom; N; NP; S; INF; _≟-Atom_)
   open import Logic.NL.Type                Atom
-  open import Logic.NL.Sequent           Atom as NL
-  open import Logic.NL.ResMon.Sequent    Atom as RM
+  open import Logic.NL.Sequent             Atom as NL
+  open import Logic.NL.ResMon.Sequent      Atom as RM
   open import Logic.NL.Structure.Polarised Atom
   open import Logic.NL.Base                Atom
   open import Logic.NL.ProofSearch         Atom _≟-Atom_ renaming (findAll to findAllNL)
@@ -313,15 +252,12 @@ module spurious_ambiguity where
 
 ## Focusing and Polarity
 ``` hidden
-module focpol (Atom : Set) (Polarityᴬ? : Atom → Polarity) where
+module Pol (Atom : Set) (Polarityᴬ? : Atom → Polarity) where
 
   open import Relation.Nullary           using (Dec; yes; no)
   open import Relation.Nullary.Decidable using (True; toWitness)
   open import Relation.Binary.PropositionalEquality as P
-  open sequent_calculus Atom using (Type; el; _⇐_; _⊗_; _⇒_)
-  open display_calculus Atom using (Struct; ·_·; _⇐_; _⊗_; _⇒_; Sequent; _⊢_; [_]⊢_; _⊢[_])
-  infix 1 fNL_
-  infix 2 _⊢fNL_ [_]⊢fNL_ _⊢fNL[_]
+  open import Logic.NL.Type Atom using (Type; el; _⇐_; _⊗_; _⇒_)
 ```
 
 
@@ -335,15 +271,6 @@ module focpol (Atom : Set) (Polarityᴬ? : Atom → Polarity) where
     el   : (A    : Atom)  → Polarityᴬ? A ≡ + → Positive (el A)
     _⊗_  : (A B  : Type)  → Positive (A ⊗ B)
 ```
-``` hidden
-  Positive? : (A : Type) → Dec (Positive A)
-  Positive? (el  A) with Polarityᴬ? A | inspect Polarityᴬ? A
-  ...| + | P.[ A⁺ ] = yes (el A A⁺)
-  ...| - | P.[ A⁻ ] = no (λ { (el .A A⁺) → +≠- (trans (sym A⁺) A⁻) })
-  Positive? (A ⇒ B) = no (λ ())
-  Positive? (A ⇐ B) = no (λ ())
-  Positive? (A ⊗ B) = yes (A ⊗ B)
-```
 
 ```
   data Negative : Type → Set where
@@ -352,56 +279,16 @@ module focpol (Atom : Set) (Polarityᴬ? : Atom → Polarity) where
     _⇒_  : (A B  : Type)  → Negative (A ⇒ B)
     _⇐_  : (A B  : Type)  → Negative (A ⇐ B)
 ```
-``` hidden
-  Negative? : (A : Type) → Dec (Negative A)
-  Negative? (el  A) with Polarityᴬ? A | inspect Polarityᴬ? A
-  ...| + | P.[ A⁺ ] = no (λ { (el .A A⁻) → +≠- (trans (sym A⁺) A⁻) })
-  ...| - | P.[ A⁻ ] = yes (el A A⁻)
-  Negative? (A ⇒ B) = yes (A ⇒ B)
-  Negative? (A ⇐ B) = yes (A ⇐ B)
-  Negative? (A ⊗ B) = no (λ ())
-```
 
 We update the axiom and focusing rules from the system sNL with polarity
 restrictions in the form of implicit polarity checks, thereby obtaining the
 system fNL:
 
-``` hidden
-  mutual
-    _⊢fNL_ : Struct + → Struct - → Set
-    X ⊢fNL Y = fNL X ⊢ Y
-    _⊢fNL[_] : Struct + → Type → Set
-    X ⊢fNL[ B ] = fNL X ⊢[ B ]
-    [_]⊢fNL_ : Type → Struct - → Set
-    [ A ]⊢fNL Y = fNL [ A ]⊢ Y
-```
-``` hidden
-    data fNL_ : Sequent → Set where
 
-      ax⁺  : ∀ {A}        →  · A · ⊢fNL[ A ]
-      ax⁻  : ∀ {B}        →  [ B ]⊢fNL · B ·
-```
-```
       ⇁    : ∀ {A X} {p : True (Negative?  A)} →  X ⊢fNL · A ·  → X ⊢fNL[ A ]
       ↽    : ∀ {A X} {p : True (Positive?  A)} →  · A · ⊢fNL X  → [ A ]⊢fNL X
       ⇀    : ∀ {A X} {p : True (Positive?  A)} →  X ⊢fNL[ A ]   → X ⊢fNL · A ·
       ↼    : ∀ {A X} {p : True (Negative?  A)} →  [ A ]⊢fNL X   → · A · ⊢fNL X
-```
-``` hidden
-      ⊗L   : ∀ {A B Y}    →  · A · ⊗ · B · ⊢fNL Y → · A ⊗ B · ⊢fNL Y
-      ⇒L   : ∀ {A B X Y}  →  X ⊢fNL[ A ]  → [ B ]⊢fNL Y  → [ A ⇒ B ]⊢fNL X ⇒ Y
-      ⇐L   : ∀ {B A Y X}  →  X ⊢fNL[ A ]  → [ B ]⊢fNL Y  → [ B ⇐ A ]⊢fNL Y ⇐ X
-
-      ⊗R   : ∀ {X Y A B}  →  X ⊢fNL[ A ] → Y ⊢fNL[ B ] → X ⊗ Y ⊢fNL[ A ⊗ B ]
-      ⇒R   : ∀ {X A B}    →  X ⊢fNL · A · ⇒ · B ·  → X ⊢fNL · A ⇒ B ·
-      ⇐R   : ∀ {X B A}    →  X ⊢fNL · B · ⇐ · A ·  → X ⊢fNL · B ⇐ A ·
-
-
-      r⇒⊗  : ∀ {X Y Z}    →  Y ⊢fNL X ⇒ Z   → X ⊗ Y ⊢fNL Z
-      r⊗⇒  : ∀ {Y X Z}    →  X ⊗ Y ⊢fNL Z   → Y ⊢fNL X ⇒ Z
-      r⇐⊗  : ∀ {X Y Z}    →  X ⊢fNL Z ⇐ Y   → X ⊗ Y ⊢fNL Z
-      r⊗⇐  : ∀ {X Z Y}    →  X ⊗ Y ⊢fNL Z   → X ⊢fNL Z ⇐ Y
-```
 
 
 ``` hidden

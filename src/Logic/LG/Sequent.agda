@@ -26,9 +26,9 @@ infixl 50 _∞ʲ
 
 
 data Sequent : Set ℓ where
-  _⊢_   : Structure + → Structure - → Sequent
-  [_]⊢_ : Type        → Structure - → Sequent
-  _⊢[_] : Structure + → Type        → Sequent
+  _⊢_   : (Γ⁺ : Structure +) → (Δ⁻ : Structure -) → Sequent
+  [_]⊢_ : (A  : Type)        → (Δ⁻ : Structure -) → Sequent
+  _⊢[_] : (Γ⁺ : Structure +) → (B  : Type)        → Sequent
 
 
 

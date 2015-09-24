@@ -24,7 +24,6 @@ infixr 30 _⊕_
 
 
 data Structure : Set ℓ where
-
   ·_· : Type      → Structure
   [_] : Structure → Structure
   ⟨_⟩ : Structure → Structure

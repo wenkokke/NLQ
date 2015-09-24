@@ -214,4 +214,5 @@ isBanned (quote PolarisedAtom) = true
 isBanned (quote Polarityᴬ?)    = true
 isBanned _                     = false
 
-open import Reflection.Show.InferenceRule isBanned public
+open import Export.LaTeX.MathPar isBanned public
+open import Export.LaTeX.SyntaxDecl       public

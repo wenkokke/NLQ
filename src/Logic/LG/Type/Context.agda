@@ -46,27 +46,27 @@ data Context : Set ℓ where
 
   []   : Context
 
-  □>_  : Context → Context
-  ◇>_  : Context → Context
+  □>_  : (Context) → Context
+  ◇>_  : (Context) → Context
 
-  ₀>_  : Context → Context
-  _<⁰  : Context → Context
-  ₁>_  : Context → Context
-  _<¹  : Context → Context
+  ₀>_  : (A : Context) → Context
+  _<⁰  : (A : Context) → Context
+  ₁>_  : (A : Context) → Context
+  _<¹  : (A : Context) → Context
 
-  _⊗>_ : Type → Context → Context
-  _⇛>_ : Type → Context → Context
-  _⇚>_ : Type → Context → Context
-  _⊕>_ : Type → Context → Context
-  _⇒>_ : Type → Context → Context
-  _⇐>_ : Type → Context → Context
+  _⊗>_ : (A : Type) (B : Context) → Context
+  _⇛>_ : (B : Type) (A : Context) → Context
+  _⇚>_ : (A : Type) (B : Context) → Context
+  _⊕>_ : (B : Type) (A : Context) → Context
+  _⇒>_ : (A : Type) (B : Context) → Context
+  _⇐>_ : (B : Type) (A : Context) → Context
 
-  _<⊗_ : Context → Type → Context
-  _<⇛_ : Context → Type → Context
-  _<⇚_ : Context → Type → Context
-  _<⊕_ : Context → Type → Context
-  _<⇒_ : Context → Type → Context
-  _<⇐_ : Context → Type → Context
+  _<⊗_ : (A : Context) (B : Type) → Context
+  _<⇛_ : (B : Context) (A : Type) → Context
+  _<⇚_ : (A : Context) (B : Type) → Context
+  _<⊕_ : (B : Context) (A : Type) → Context
+  _<⇒_ : (A : Context) (B : Type) → Context
+  _<⇐_ : (B : Context) (A : Type) → Context
 
 
 -- Proofs which show that constructors of contexts (as all Agda

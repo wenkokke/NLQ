@@ -19,12 +19,14 @@ infix  10 ·_·
 infixr 20 _⇒_
 infixl 20 _⇐_
 infixr 30 _⊗_
-data Structure : Set ℓ where
 
+
+data Structure : Set ℓ where
   ·_· : Type      → Structure
   _⇒_ : Structure → Structure → Structure
   _⇐_ : Structure → Structure → Structure
   _⊗_ : Structure → Structure → Structure
+
 open import Algebra.FunctionProperties {A = Structure} _≡_
 
 

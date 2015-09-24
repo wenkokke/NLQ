@@ -33,7 +33,7 @@ data Structure : Polarity → Set ℓ where
   ·_· : {p  : Polarity}    (A  : Type)        → Structure p
   _⊗_ : (Γ⁺ : Structure +) (Δ⁺ : Structure +) → Structure +
   _⇒_ : (Γ⁺ : Structure +) (Δ⁻ : Structure -) → Structure -
-  _⇐_ : (Γ⁻ : Structure -) (Δ⁺ : Structure +) → Structure -
+  _⇐_ : (Δ⁻ : Structure -) (Γ⁺ : Structure +) → Structure -
 
 
 _⋈ˢ : ∀ {p} → Structure p → Structure p

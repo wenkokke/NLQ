@@ -18,13 +18,11 @@ infixl 30 _⇐_ _⇦_
 
 data Type : Set ℓ where
 
-  el  : Atom → Type
-
-  _⇒_ : Type → Type → Type
-  _⇐_ : Type → Type → Type
-
-  _⇨_ : Type → Type → Type
-  _⇦_ : Type → Type → Type
+  el  : (p   : Atom) → Type
+  _⇒_ : (p q : Type) → Type
+  _⇐_ : (q p : Type) → Type
+  _⇨_ : (p q : Type) → Type
+  _⇦_ : (q p : Type) → Type
 
 
 -- Proofs which show that constructors of types (as all Agda

@@ -45,14 +45,12 @@ toc =
   [ "abstract"
   , "introduction"
   , "motivation"
-  , "type-logical_grammar"
+--, "type-logical_grammar"
   , "non-associative_lambek_calculus"
-  , "display_calculus"
-  , "continuation-passing_style"
   , "extended_categorial_grammar"
-  , "lambek-grishin_calculus"
-  , "quantifier_raising"
-  , "syntactically_delimited_continuations"
+--, "lambek-grishin_calculus"
+--, "quantifier_raising"
+--, "syntactically_delimited_continuations"
   , "other"
   ]
 

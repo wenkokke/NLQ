@@ -16,8 +16,8 @@ infixl 4 _[_]
 
 data Context : Set ℓ where
   []    : Context
-  _,>_  : Structure → Context   → Context
-  _<,_  : Context   → Structure → Context
+  _<,_  : (Γ : Context)   (Δ : Structure) → Context
+  _,>_  : (Γ : Structure) (Δ : Context)   → Context
 
 
 _[_] : Context → Structure → Structure

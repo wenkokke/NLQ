@@ -20,7 +20,7 @@ infix 3 _⊢_
 
 
 data Sequent : Set ℓ where
-  _⊢_ : Structure → Type → Sequent
+  _⊢_ : (Γ : Structure) (p : Type) → Sequent
 
 
 -- Proofs which show that constructors of types (as all Agda

@@ -21,11 +21,10 @@ module Logic.LG.Pol.Base {ℓ} (Atom : Set ℓ) (Polarityᴬ? : Atom → Polarit
 open import Logic.LG.Type.Polarised      Atom Polarityᴬ?
 open import Logic.LG.Type                Atom
 open import Logic.LG.Structure.Polarised Atom
-open import Logic.LG.Sequent           Atom
+open import Logic.LG.Sequent             Atom
 
 
-infix 1 fLG_
-infix 2 _⊢fLG_ [_]⊢fLG_ _⊢fLG[_]
+infix 2 fLG_ _⊢fLG_ [_]⊢fLG_ _⊢fLG[_]
 
 
 mutual
