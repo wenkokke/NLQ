@@ -1,0 +1,71 @@
+\usepackage{cmap}%
+\usepackage[LGR,T1]{fontenc}%
+\usepackage[utf8]{inputenc}%
+\usepackage{alphabeta}%
+\usepackage[greek,english]{babel}%
+\languageattribute{greek}{polutoniko}%
+
+\usepackage{amsmath,amssymb,wasysym}%
+\let\oldemptyset\emptyset%
+\let\emptyset\varnothing%
+
+\usepackage{mathtools}%
+\usepackage{mdframed}%
+
+\usepackage{bussproofs}%
+\EnableBpAbbreviations%
+\def\fCenter{\mathbin{\vdash}}%
+\def\ra{\rightarrow}%
+\def\impl{\mathbin{\slash}}%
+\def\impr{\mathbin{\backslash}}%
+\def\prod{\bullet}%
+\def\prodl{\bullet}%
+\def\prodr{\bullet}%
+\def\himpl{\fatslash\ }%
+\def\himpr{\fatbslash}%
+\def\hprod{\mathbin{\circ}}%
+\def\hprodl{\mathbin{\circ}}%
+\def\hprodr{\mathbin{\circ}}%
+\def\vsep{\ \vert\ }%
+
+\newenvironment{pfbox}
+  {\leavevmode\hbox\bgroup}
+  {\DisplayProof\egroup}
+
+
+\usepackage{stmaryrd}%
+\usepackage{comment}%
+\usepackage{pict2e}%
+\usepackage{picture}%
+
+\makeatletter
+\def\ignorespacesandallpars{%
+  \@ifnextchar\par
+    {\expandafter\ignorespacesandallpars\@gobble}%
+    {}%
+}
+\makeatother
+
+\makeatletter
+\newcommand{\pictslash}[2]{%
+  \vcenter{%
+    \sbox0{$\m@th#1\varobslash$}\dimen0=.55\wd0
+    \hbox to\wd 0{%
+      \hfil\pictslash@aux#2\hfil
+    }%
+  }%
+}
+\newcommand{\pictslash@aux}[2]{%
+    \begin{picture}(\dimen0,\dimen0)
+    \roundcap
+    \linethickness{.15ex}
+    \put(0,#1\dimen0){\line(1,#2){\dimen0}}
+    \end{picture}%
+}
+\makeatother
+\newcommand{\varslash}{%
+  \mathpalette\pictslash{{0}{1}}%
+}
+\newcommand{\varbslash}{%
+  \mathpalette\pictslash{{1}{-1}}%
+}

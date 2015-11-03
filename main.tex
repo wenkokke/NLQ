@@ -1,0 +1,308 @@
+\documentclass[a4paper]{article}
+
+\input{preamble}
+
+% 1. simple semantic calculus;
+% 2. simple syntactic calculus;
+% 3. compositionality principle;
+% 4. problems with compositionality;
+% 5. extended semantic calculus;
+% 6. quantifier raising and scope ambiguity;
+% 7. continuation monad;
+% 8. delimited continuations and indexed monads;
+% 9. extended syntactic calculus;
+
+\begin{document}
+
+\begin{figure}
+  \centering
+  \begin{minipage}{0.35\linewidth}%
+    \centering
+    \framebox{Morphological}\\
+    $\downarrow$\\
+    \framebox{Lexical}\\
+    $\downarrow$\\
+    \framebox{Syntactic}\\
+    $\downarrow$\\
+    \framebox{Semantic}\\
+    $\downarrow$\\
+    \framebox{Pragmatic}\\
+  \end{minipage}
+  \begin{minipage}{0.55\linewidth}%
+    \centering
+    ``Mary saw foxes.''\\
+    $\downarrow$\\
+    Mary see.PAST fox.PL\\
+    $\downarrow$\\
+    Mary:NP see:TV.PAST fox:NP.PL\\
+    $\downarrow$\\
+    Mary:NP [see:TV.PAST fox:NP.PL]\\
+    $\downarrow$\\
+    $\exists X. X \subseteq\mathbf{fox}\land\mathbf{past}(\mathbf{see}(\text{Mary},X))$\\
+    $\downarrow$\\
+    \ldots\\
+  \end{minipage}
+  \label{fig:nlu-pipeline}
+  \caption{An abstract pipeline for natural language understanding.}
+\end{figure}
+
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \begin{alignat*}{4}
+      \text{Type}    \;&A,B&&\coloneqq \mathbf{e}\vsep\mathbf{t}\vsep A\ra B\\
+      \text{Term}    \;&M,N&&\coloneqq x\vsep C\vsep\lambda x.M\vsep(M\;N)\\
+      \text{Constant}\;&C &&\coloneqq
+      {\forall}\vsep{\exists}\vsep{\neg}\vsep{\supset}\vsep{\land}\vsep{\lor}\vsep\ldots\footnotemark
+    \end{alignat*}
+
+    \begin{pfbox}
+      \AXC{$(x : A)\in Γ$} \RightLabel{{Ax}} \UIC{$Γ\fCenter x : A$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Γ,x : A\fCenter M : B$} \RightLabel{$\ra${I}}
+      \UIC{$Γ\fCenter \lambda x.M : A\ra B$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter M : A\ra B$} \AXC{$Γ\fCenter N : A$}
+      \RightLabel{$\ra${E}} \BIC{$Γ\fCenter (M\;N) : B$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+  \end{mdframed}
+  \label{fig:semantic-calculus}
+  \caption{A simple semantic calculus.}
+\end{figure}
+
+\footnotetext{%
+  We will assume any logical operator we need is defined as a
+  constant in our calculus, with the expected type. We will write
+  these in their usual form -- e.g. $M\land N$ or $\forall x.M$ -- but
+  this should be taken as syntactic sugar for the logical constants,
+  abstractions and applications.
+}
+
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \begin{minipage}{0.6\linewidth}
+      \begin{alignat*}{4}
+        \text{Type}     \;&A,B  &&\coloneqq \mathbf{e}\vsep\mathbf{t}\vsep A\ra B\\
+        \text{Structure}\;&Γ,Δ,Π&&\coloneqq A\vsep\emptyset\vsep Γ\prod Δ\\
+        \text{Context}  \;&Σ    &&\coloneqq \Box\vsep Σ\prodl Δ\vsep Γ\prodr Σ\\
+        \text{Sequent} \;&S &&\coloneqq Γ\fCenter B
+      \end{alignat*}
+    \end{minipage}%
+    \begin{minipage}{0.4\linewidth}
+      \begin{align*}
+        \Box [Γ]&\mapsto Γ\\
+        (Σ\prodl Δ)[Γ]&\mapsto (Σ[Γ]\prod Δ)\\
+        (Δ\prodr Σ)[Γ]&\mapsto (Δ\prod Σ[Γ])
+      \end{align*}
+    \end{minipage}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{} \RightLabel{{Ax}} \UIC{$A\fCenter A$}
+    \end{pfbox}
+
+    \subsubsection*{Logical rules}
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Γ\prod A\fCenter B$} \RightLabel{$\ra${I}}
+      \UIC{$Γ\fCenter A\ra B$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter A\ra B$} \AXC{$Δ\fCenter A$} \RightLabel{$\ra${E}}
+      \BIC{$Γ\prod Δ\fCenter B$}
+    \end{pfbox}
+
+    \subsubsection*{Structural rules}
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Σ[Γ\prod \emptyset]\fCenter B$} \RightLabel{$\emptyset${E}}
+      \UIC{$Σ[Γ]\fCenter B$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Σ[A\prod A]\fCenter B$} \RightLabel{Contraction}
+      \UIC{$Σ[A]\fCenter B$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Σ[Γ]\fCenter B$} \RightLabel{Weakening}
+      \UIC{$Σ[Γ\prod Δ]\fCenter B$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Σ[Δ\prod Γ]\fCenter B$} \RightLabel{Commutativity}
+      \UIC{$Σ[Γ\prod Δ]\fCenter B$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Σ[(Γ\prod Δ)\prod Π]\fCenter B$} \doubleLine
+      \RightLabel{Associativity} \UIC{$Σ[Γ\prod (Δ\prod Π)]\fCenter B$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+  \end{mdframed}
+  \label{fig:explicit-semantic-calculus}
+  \caption{A semantic calculus with explicit structural rules.}
+\end{figure}
+
+
+
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \begin{alignat*}{4}
+      \text{Type}     \;&A,B&&\coloneqq \text{S}\vsep\text{N}\vsep\text{NP}\vsep\text{PP}\vsep A\impr B\vsep B\impl A\\
+      \text{Structure}\;&Γ,Δ&&\coloneqq A\vsep Γ\prodΔ\\
+      \text{Sequent}  \;&S &&\coloneqq Γ\fCenter B
+    \end{alignat*}
+
+    \begin{pfbox}
+      \AXC{} \RightLabel{{Ax}} \UIC{$A\fCenter A$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$A\prodΓ\fCenter B$} \RightLabel{$\impr${I}}
+      \UIC{$Γ\fCenter A\impr B$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter A$} \AXC{$Δ\fCenter A\impr B$} \RightLabel{$\impr${E}}
+      \BIC{$Γ\prodΔ\fCenter B$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Γ\prod A\fCenter B$} \RightLabel{$\impl${I}}
+      \UIC{$Γ\fCenter B\impl A$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter B\impl A$} \AXC{$Δ\fCenter A$} \RightLabel{$\impl${E}}
+      \BIC{$Γ\prod Δ\fCenter B$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+  \end{mdframed}
+  \label{fig:syntactic-calculus}
+  \caption{A simple syntactic calculus.}
+\end{figure}
+
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \begin{alignat*}{4}
+      \text{Type}&\;        &A,B &\coloneqq \text{S}\vsep\text{N}\vsep\text{NP}\vsep\text{PP}\vsep A\impr B\vsep B\impl A\\
+      \text{Structure}&^+\; &Γ   &\coloneqq \cdot A\cdot\vsep Γ_1\prod Γ_2\\
+      \text{Structure}&^-\; &Δ   &\coloneqq \cdot A\cdot\vsep Γ\imprΔ\vsep Δ\implΓ\\
+      \text{Sequent}&\;     &S   &\coloneqq Γ\fCenter Δ\vsep Γ\fCenter[B]\vsep [A]\fCenter Δ
+    \end{alignat*}
+
+    \begin{pfbox}
+      \AXC{} \RightLabel{Ax$^L$} \UIC{$[A]\fCenter A$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{} \RightLabel{Ax$^R$} \UIC{$A\fCenter [A]$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$[A]\fCenter Δ$}
+      \doubleLine\RightLabel{Foc$^L$}
+      \UIC{$\cdot A\cdot\fCenter Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter[B]$}
+      \doubleLine\RightLabel{Foc$^R$}
+      \UIC{$Γ\fCenter\cdot B\cdot$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$ Γ \fCenter[A]$}
+      \AXC{$[B]\fCenter Δ $}
+      \RightLabel{L$\impr$}
+      \BIC{$[A\impr B]\fCenter Γ\impr Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\cdot A\cdot\impr\cdot B\cdot$}
+      \RightLabel{R$\impr$}
+      \UIC{$Γ\fCenter\cdot A\impr B\cdot$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$ Γ \fCenter[A]$}
+      \AXC{$[B]\fCenter Δ $}
+      \RightLabel{L$\impl$}
+      \BIC{$[B\impl A]\fCenter Δ\impl Γ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\cdot B\cdot\impl\cdot A\cdot$}
+      \RightLabel{R$\impl$}
+      \UIC{$Γ\fCenter\cdot B\impl A\cdot$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Γ_2\fCenter Γ_1\impr Δ$}
+      \doubleLine\RightLabel{Res$\impr\prod$}
+      \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
+      \doubleLine\RightLabel{Res$\impl\prod$}
+      \UIC{$Γ_1\fCenter Δ\impl Γ_2$}
+    \end{pfbox}
+    \vspace*{\baselineskip}
+  \end{mdframed}
+  \label{fig:syntactic-calculus}
+  \caption{The syntactic calculus as a display calculus.}
+\end{figure}
+
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \begin{alignat*}{4}
+      \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\mathbf{Q}\;A\\
+      \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\mathbf{I}\vsep\mathbf{B}\vsep\mathbf{C}\\
+    \end{alignat*}
+
+    \begin{pfbox}
+      \AXC{$Γ\fCenter[B]$}
+      \RightLabel{L\textbf{I}}
+      \UIC{$Γ\hprod\mathbf{I}\fCenter[\mathbf{Q}\;B]$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$\cdot A\cdot\hprod\;\mathbf{I}\fCenter Δ$}
+      \RightLabel{R\textbf{I}}
+      \UIC{$\cdot\mathbf{Q}\;A\cdot\fCenter Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter Δ$}
+      \RightLabel{\textbf{I}$^-$}
+      \UIC{$Γ\hprod\mathbf{I}\fCenter Δ$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Γ_1\prod(Γ_2\hprod Γ_3)\fCenter Δ$}
+      \doubleLine\RightLabel{\textbf{B}}
+      \UIC{$Γ_2\hprod((\mathbf{B}\prod Γ_1)\prod Γ_3)\fCenter Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$(Γ_1\hprod Γ_2)\prod Γ_3\fCenter Δ$}
+      \doubleLine\RightLabel{\textbf{C}}
+      \UIC{$Γ_1\hprod((\mathbf{C}\prod Γ_2)\prod Γ_3)\fCenter Δ$}
+    \end{pfbox}
+    \vspace*{\baselineskip}
+  \end{mdframed}
+  \caption{Extension of calculus in
+    figure~\ref{fig:syntactic-calculus} which supports quantifier
+    raising.}
+  \label{fig:quantifier-raising}
+\end{figure}
+
+\end{document}
