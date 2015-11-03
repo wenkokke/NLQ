@@ -15,26 +15,32 @@ import           NLIBC.Semantics.Show1
 import           NLIBC.Semantics.Show2
 
 
-john     = Con "john"                                :: Repr ts (H JOHN)
-mary     = Con "mary"                                :: Repr ts (H MARY)
-bill     = Con "bill"                                :: Repr ts (H BILL)
-run      = Con "run"                                 :: Repr ts (H RUN)   ; runs   = run
-leave    = Con "leave"                               :: Repr ts (H LEAVE) ; leaves = leave
-like     = Abs (Abs (Con "like"  `App` v0 `App` v1)) :: Repr ts (H LIKE)  ; likes  = like
-serve    = Abs (Abs (Con "serve" `App` v0 `App` v1)) :: Repr ts (H SERVE) ; serves = serve
-say      = Abs (Abs (Con "say"   `App` v0 `App` v1)) :: Repr ts (H SAY)   ; says   = say
-want     = Pair want1 want2                          :: Repr ts (H WANT)
-  where
-  want1  = (Abs (Abs (     Con "want" `App` v0 `App` (v1 `App` v0) )))
-  want2  = (Abs (Abs (Abs (Con "want" `App` v0 `App` (v1 `App` v2)))))
-wants    = want
-the      = Con "the"                                 :: Repr ts (H THE)
-to       = Abs v0                                    :: Repr ts (H TO)
-same     = Con "same"                                :: Repr ts (H SAME)
-waiter   = Con "waiter"                              :: Repr ts (H WAITER)
-person   = Con "person"                              :: Repr ts (H PERSON)
-someone  = Pair (Abs (Exists ((App person v0) :∧ (App v1 v0)))) Top
-everyone = Pair (Abs (Forall ((App person v0) :⊃ (App v1 v0)))) Top
+-- This file contains example sentences treated with my extension of
+-- NLIBC, which is capable of expressing quantifiers, scope islands,
+-- infixation and extraction.
+--
+-- The `findAll` statements will search for proofs in the grammar
+-- logic for the given sequent, which can then be interpreted
+-- semantically using the `eta` function.
+--
+-- For purposes of presentation, the `show2` function is applied,
+-- which -- when given some lambda term representations for the words
+-- in the sentence -- will compute the sentence representation. This
+-- means that the sentence meaning is converted to normal-form, the
+-- word meanings are inserted in the appropriate places, and
+-- quantifiers and such are resolved. Keep in mind, though, that this
+-- step is only there to get a string representation of the term, and
+-- that the sentence meaning can be anything that forms a simply-typed
+-- lambda calculus with products and units.
+--
+-- Note: the notation used for lambda terms is based on the one used
+-- in formal semantics. The most confusing feature is the fact that
+-- the application of a postulate -- e.g. person -- is written in the
+-- traditional mathematical style -- i.e. person(x) -- whereas the
+-- application of a composite function is written in functional
+-- style. Additionally, the calculus has some syntactic sugar for the
+-- quantifiers -- ∀x.u abbreviates ∀(λx.u) and likewise for ∃ -- and
+-- is extended with postulates for the logical connectives.
 
 
 eng0  = show2 (Pair john runs)
@@ -73,12 +79,12 @@ eng5  = show2 (Pair (Pair the waiter) (Pair serves everyone))
 eng6  = show2 (Pair (Pair the (Pair same waiter)) (Pair serves everyone))
         <$> findAll ((DET ∙ Q A NP'S NP'S ∙ N) ∙ TV ∙ Q NP S S ⊢ S)
         -- 6
-        -- ∀x118.person(x118) ⊃ π₁(same) (λx57.(λx88.serve(the(x57 waiter),x88))) x118
-        -- ∀x115.person(x115) ⊃ π₁(same) (λx57.(λx91.serve(the(x57 waiter),x91))) x115
-        -- ∀x112.person(x112) ⊃ π₁(same) (λx57.(λx76.serve(the(x57 waiter),x76))) x112
-        -- ∀x115.person(x115) ⊃ π₁(same) (λx54.(λx85.serve(the(x54 waiter),x85))) x115
-        -- ∀x112.person(x112) ⊃ π₁(same) (λx54.(λx88.serve(the(x54 waiter),x88))) x112
-        -- ∀x109.person(x109) ⊃ π₁(same) (λx54.(λx73.serve(the(x54 waiter),x73))) x109
+        -- ∀x118.person(x118) ⊃ same(λx57.(λx88.serve(the(x57 waiter),x88)),x118)
+        -- ∀x115.person(x115) ⊃ same(λx57.(λx91.serve(the(x57 waiter),x91)),x115)
+        -- ∀x112.person(x112) ⊃ same(λx57.(λx76.serve(the(x57 waiter),x76)),x112)
+        -- ∀x115.person(x115) ⊃ same(λx54.(λx85.serve(the(x54 waiter),x85)),x115)
+        -- ∀x112.person(x112) ⊃ same(λx54.(λx88.serve(the(x54 waiter),x88)),x112)
+        -- ∀x109.person(x109) ⊃ same(λx54.(λx73.serve(the(x54 waiter),x73)),x109)
 
 eng7  = show2 (Pair mary (Pair wants (Pair to leave)))
         <$> findAll (MARY ∙ WANTS ∙ (TO ∙ LEAVE) ⊢ S)
@@ -162,6 +168,36 @@ eng17 = show2 (Pair mary (Pair says (Pair everyone (Pair likes bill))))
         <$> findAll (MARY ∙ SAYS ∙ (SDIA SReset (EVERYONE ∙ LIKES ∙ BILL)) ⊢ S)
         -- 1
         -- say(mary,∀x40.person(x40) ⊃ like(x40,bill))
+
+
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}
+
+
+john     = Con "john"                                :: Repr ts (H JOHN)
+mary     = Con "mary"                                :: Repr ts (H MARY)
+bill     = Con "bill"                                :: Repr ts (H BILL)
+run      = Con "run"                                 :: Repr ts (H RUN)   ; runs   = run
+leave    = Con "leave"                               :: Repr ts (H LEAVE) ; leaves = leave
+like     = Abs (Abs (Con "like"  `App` v0 `App` v1)) :: Repr ts (H LIKE)  ; likes  = like
+serve    = Abs (Abs (Con "serve" `App` v0 `App` v1)) :: Repr ts (H SERVE) ; serves = serve
+say      = Abs (Abs (Con "say"   `App` v0 `App` v1)) :: Repr ts (H SAY)   ; says   = say
+want     = Pair want1 want2                          :: Repr ts (H WANT)
+  where
+  want1  = (Abs (Abs (     Con "want" `App` v0 `App` (v1 `App` v0) )))
+  want2  = (Abs (Abs (Abs (Con "want" `App` v0 `App` (v1 `App` v2)))))
+wants    = want
+the      = Con "the"                                 :: Repr ts (H THE)
+to       = Abs v0                                    :: Repr ts (H TO)
+same     = Pair (Con "same") Top                    :: Repr ts (H SAME)
+waiter   = Con "waiter"                              :: Repr ts (H WAITER)
+person   = Con "person"                              :: Repr ts (H PERSON)
+someone  = Pair (Abs (Exists ((App person v0) :∧ (App v1 v0)))) Top
+everyone = Pair (Abs (Forall ((App person v0) :⊃ (App v1 v0)))) Top
+
 
 -- -}
 -- -}
