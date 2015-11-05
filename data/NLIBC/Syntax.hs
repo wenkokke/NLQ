@@ -275,10 +275,10 @@ data Prf :: Sequent -> * where
   UnitRR :: Prf (x :⊢> b) -> Prf (PROD k x (UNIT k) :⊢> UnitR k b)
   UnitRI :: Prf (x :⊢ y) -> Prf (PROD k x (UNIT k) :⊢ y)
 
-  UpB    :: Prf (x :∙ (y :∘ z) :⊢ w) -> Prf (y :∘ ((B :∙ x) :∙ z) :⊢ w)
-  DnB    :: Prf (y :∘ ((B :∙ x) :∙ z) :⊢ w) -> Prf (x :∙ (y :∘ z) :⊢ w)
-  UpC    :: Prf ((x :∘ y) :∙ z :⊢ w) -> Prf (x :∘ ((C :∙ y) :∙ z) :⊢ w)
-  DnC    :: Prf (x :∘ ((C :∙ y) :∙ z) :⊢ w) -> Prf ((x :∘ y) :∙ z :⊢ w)
+  DnB    :: Prf (x :∙ (y :∘ z) :⊢ w) -> Prf (y :∘ ((B :∙ x) :∙ z) :⊢ w)
+  UpB    :: Prf (y :∘ ((B :∙ x) :∙ z) :⊢ w) -> Prf (x :∙ (y :∘ z) :⊢ w)
+  DnC    :: Prf ((x :∘ y) :∙ z :⊢ w) -> Prf (x :∘ ((C :∙ y) :∙ z) :⊢ w)
+  UpC    :: Prf (x :∘ ((C :∙ y) :∙ z) :⊢ w) -> Prf ((x :∘ y) :∙ z :⊢ w)
 
 
 instance Show (SSequent s) where
@@ -311,8 +311,8 @@ qrL x f g = unsafeCoerce . init x
          -> Prf (y :∘ Trace x :⊢ z)
          -> Prf (Plug x (y :∘ T) :⊢ z)
     move SHOLE      f = f
-    move (x :%<∙ y) f = Res13 (unsafeCoerce (move x (Res14 (DnC (unsafeCoerce f)))))
-    move (x :%∙> y) f = Res11 (unsafeCoerce (move y (Res12 (DnB (unsafeCoerce f)))))
+    move (x :%<∙ y) f = Res13 (unsafeCoerce (move x (Res14 (UpC (unsafeCoerce f)))))
+    move (x :%∙> y) f = Res11 (unsafeCoerce (move y (Res12 (UpB (unsafeCoerce f)))))
 
 
 qrR :: SContext x
@@ -324,8 +324,8 @@ qrR x f = ImpRR (Res12 (move x f))
          -> Prf (Plug x y :⊢ z)
          -> Prf (y :∘ Trace x :⊢ z)
     move SHOLE      f = UnitRI f
-    move (x :%<∙ y) f = UpC (Res13 (unsafeCoerce (move x (Res14 (unsafeCoerce f)))))
-    move (x :%∙> y) f = UpB (Res11 (unsafeCoerce (move y (Res12 (unsafeCoerce f)))))
+    move (x :%<∙ y) f = DnC (Res13 (unsafeCoerce (move x (Res14 (unsafeCoerce f)))))
+    move (x :%∙> y) f = DnB (Res11 (unsafeCoerce (move y (Res12 (unsafeCoerce f)))))
 
 
 -- * Proof search
@@ -350,7 +350,7 @@ search ss = do
           , [impRL,impRR,impLL,impLR,res11,res12,res13,res14]
           , [diaL,diaR,boxL,boxR,res21,res22]
           , [unitL,unitR,unitI]
-          , [dn,up]
+          , [up,dn]
           ]
 
     loop :: SSequent s -> Search m (Prf s)
@@ -443,25 +443,25 @@ search ss = do
     unitI _                                        = empty
 
 
-    upB, upC, dnB, dnC :: SSequent s -> Search m (Prf s)
-    dnB (x :%∙ (y :%∘ z) :%⊢ w)          = DnB <$> loop (y :%∘ ((SB :%∙ x) :%∙ z) :%⊢ w)
-    dnB _                                = empty
-    upB (y :%∘ ((SB :%∙ x) :%∙ z) :%⊢ w) = UpB <$> loop (x :%∙ (y :%∘ z) :%⊢ w)
+    dnB, dnC, upB, upC :: SSequent s -> Search m (Prf s)
+    upB (x :%∙ (y :%∘ z) :%⊢ w)          = UpB <$> loop (y :%∘ ((SB :%∙ x) :%∙ z) :%⊢ w)
     upB _                                = empty
-    dnC ((x :%∘ y) :%∙ z :%⊢ w)          = DnC <$> loop (x :%∘ ((SC :%∙ y) :%∙ z) :%⊢ w)
-    dnC _                                = empty
-    upC (x :%∘ ((SC :%∙ y) :%∙ z) :%⊢ w) = UpC <$> loop ((x :%∘ y) :%∙ z :%⊢ w)
+    dnB (y :%∘ ((SB :%∙ x) :%∙ z) :%⊢ w) = DnB <$> loop (x :%∙ (y :%∘ z) :%⊢ w)
+    dnB _                                = empty
+    upC ((x :%∘ y) :%∙ z :%⊢ w)          = UpC <$> loop (x :%∘ ((SC :%∙ y) :%∙ z) :%⊢ w)
     upC _                                = empty
+    dnC (x :%∘ ((SC :%∙ y) :%∙ z) :%⊢ w) = DnC <$> loop ((x :%∘ y) :%∙ z :%⊢ w)
+    dnC _                                = empty
 
 
-    dn,up :: SSequent s -> Search m (Prf s)
-    dn (x :%⊢ y)              = msum (app <$> sFocus x)
+    up,dn :: SSequent s -> Search m (Prf s)
+    up (x :%⊢ y)              = msum (app <$> sFocus x)
       where
         app (Focus x (SStI (SQR (c :%⇦ b))) Refl)
                               = qrL x <$> prog (sTrace x :%⊢> b) <*> prog (c :%<⊢ y)
         app _                 = empty
-    dn _                      = empty
-    up (x :%⊢ SStO (a :%⇨ b)) = msum (maybeToList (app <$> sFollow x))
+    up _                      = empty
+    dn (x :%⊢ SStO (a :%⇨ b)) = msum (maybeToList (app <$> sFollow x))
       where
         app (Trail x Refl)    = qrR x <$> prog (sPlug x (SStI a) :%⊢ SStO b)
-    up _                      = empty
+    dn _                      = empty

@@ -1,0 +1,42 @@
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \begin{alignat*}{4}
+      \text{Type}    \;&A,B&&\coloneqq \mathbf{e}\vsep\mathbf{t}\vsep A\ra B\\
+      \text{Term}    \;&M,N&&\coloneqq x\vsep C\vsep\lambda x.M\vsep(M\;N)\\
+      \text{Constant}\;&C &&\coloneqq
+      {\forall}\vsep{\exists}\vsep{\neg}\vsep{\supset}\vsep{\land}\vsep{\lor}\vsep\ldots\footnotemark
+    \end{alignat*}
+
+    \begin{pfbox}
+      \AXC{$(x : A)\in Γ$} \RightLabel{{Ax}} \UIC{$Γ\fCenter x : A$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Γ,x : A\fCenter M : B$} \RightLabel{$\ra${I}}
+      \UIC{$Γ\fCenter \lambda x.M : A\ra B$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter M : A\ra B$} \AXC{$Γ\fCenter N : A$}
+      \RightLabel{$\ra${E}} \BIC{$Γ\fCenter (M\;N) : B$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+  \end{mdframed}
+  \caption{A simple semantic calculus.}%
+  \label{fig:implicit-semantic-calculus}
+\end{figure}
+
+\footnotetext{%
+  We will assume any logical operator we need is defined as a
+  constant in our calculus, with the expected type. We will write
+  these in their usual form -- e.g. $M\land N$ or $\forall x.M$ -- but
+  this should be taken as syntactic sugar for the logical constants,
+  abstractions and applications.
+}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

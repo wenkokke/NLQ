@@ -1,0 +1,75 @@
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \begin{alignat*}{4}
+      \text{Type}&\;        &A,B &\coloneqq \text{S}\vsep\text{N}\vsep\text{NP}\vsep\text{PP}\vsep A\impr B\vsep B\impl A\\
+      \text{Structure}&^+\; &Γ   &\coloneqq \cdot A\cdot\vsep Γ_1\prod Γ_2\\
+      \text{Structure}&^-\; &Δ   &\coloneqq \cdot A\cdot\vsep Γ\imprΔ\vsep Δ\implΓ\\
+      \text{Sequent}&\;     &S   &\coloneqq Γ\fCenter Δ\vsep Γ\fCenter[B]\vsep [A]\fCenter Δ
+    \end{alignat*}
+
+    \begin{pfbox}
+      \AXC{} \RightLabel{Ax$^L$} \UIC{$[A]\fCenter A$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{} \RightLabel{Ax$^R$} \UIC{$A\fCenter [A]$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$[A]\fCenter Δ$}
+      \doubleLine\RightLabel{Foc$^L$}
+      \UIC{$\cdot A\cdot\fCenter Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter[B]$}
+      \doubleLine\RightLabel{Foc$^R$}
+      \UIC{$Γ\fCenter\cdot B\cdot$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$ Γ \fCenter[A]$}
+      \AXC{$[B]\fCenter Δ $}
+      \RightLabel{L$\impr$}
+      \BIC{$[A\impr B]\fCenter Γ\impr Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\cdot A\cdot\impr\cdot B\cdot$}
+      \RightLabel{R$\impr$}
+      \UIC{$Γ\fCenter\cdot A\impr B\cdot$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$ Γ \fCenter[A]$}
+      \AXC{$[B]\fCenter Δ $}
+      \RightLabel{L$\impl$}
+      \BIC{$[B\impl A]\fCenter Δ\impl Γ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\cdot B\cdot\impl\cdot A\cdot$}
+      \RightLabel{R$\impl$}
+      \UIC{$Γ\fCenter\cdot B\impl A\cdot$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Γ_2\fCenter Γ_1\impr Δ$}
+      \doubleLine\RightLabel{Res$\impr\prod$}
+      \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
+      \doubleLine\RightLabel{Res$\impl\prod$}
+      \UIC{$Γ_1\fCenter Δ\impl Γ_2$}
+    \end{pfbox}
+    \vspace*{\baselineskip}
+  \end{mdframed}
+  \caption{
+    The syntactic calculus from~\autoref{fig:syntactic-calculus} as a
+    display calculus.}%
+  \label{fig:display-calculus}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -1,6 +1,7 @@
 \documentclass[a4paper]{article}
 
 \input{preamble}
+\newtheorem{lemma}{Lemma}
 
 % 1. simple semantic calculus;
 % 2. simple syntactic calculus;
@@ -14,295 +15,145 @@
 
 \begin{document}
 
-\begin{figure}
-  \centering
-  \begin{minipage}{0.35\linewidth}%
-    \centering
-    \framebox{Morphological}\\
-    $\downarrow$\\
-    \framebox{Lexical}\\
-    $\downarrow$\\
-    \framebox{Syntactic}\\
-    $\downarrow$\\
-    \framebox{Semantic}\\
-    $\downarrow$\\
-    \framebox{Pragmatic}\\
-  \end{minipage}
-  \begin{minipage}{0.55\linewidth}%
-    \centering
-    ``Mary saw foxes.''\\
-    $\downarrow$\\
-    Mary see.PAST fox.PL\\
-    $\downarrow$\\
-    Mary:NP see:TV.PAST fox:NP.PL\\
-    $\downarrow$\\
-    Mary:NP [see:TV.PAST fox:NP.PL]\\
-    $\downarrow$\\
-    $\exists X. X \subseteq\mathbf{fox}\land\mathbf{past}(\mathbf{see}(\text{Mary},X))$\\
-    $\downarrow$\\
-    \ldots\\
-  \end{minipage}
-  \label{fig:nlu-pipeline}
-  \caption{An abstract pipeline for natural language understanding.}
-\end{figure}
+%\input{fig-nlu-pipeline}
+%\input{fig-implicit-semantic-calculus}
+%\input{fig-explicit-semantic-calculus}
+%\input{fig-syntactic-calculus}
+\input{fig-display-calculus}
+%\input{fig-extension-lexical-ambiguity}
+\input{fig-extension-quantifier-raising}
+%\input{fig-extension-scope-islands}
 
-\begin{figure}
-  \begin{mdframed}
-    \centering
-    \begin{alignat*}{4}
-      \text{Type}    \;&A,B&&\coloneqq \mathbf{e}\vsep\mathbf{t}\vsep A\ra B\\
-      \text{Term}    \;&M,N&&\coloneqq x\vsep C\vsep\lambda x.M\vsep(M\;N)\\
-      \text{Constant}\;&C &&\coloneqq
-      {\forall}\vsep{\exists}\vsep{\neg}\vsep{\supset}\vsep{\land}\vsep{\lor}\vsep\ldots\footnotemark
+
+\subsubsection*{Completeness of  $\uparrow$ and $\downarrow$ w.r.t.\ \textbf{B} and \textbf{C}}%
+We will assume the following definitions for contexts, the plugging
+operator $\cdot\:[\:\cdot\:]$, and the trace function:
+\begin{center}
+  $\text{Context}\;Σ\coloneqq\Box\vsep Σ\prodl Γ\vsep Γ\prodr Σ$\\
+  \begin{minipage}{0.45\linewidth}
+    \begin{alignat*}{2}
+      &\Box       \;&&[Γ']\mapsto Γ'\\
+      &(Σ\prodl Γ)\;&&[Γ']\mapsto (Σ[Γ']\prod Γ)\\
+      &(Γ\prodr Σ)\;&&[Γ']\mapsto (Γ\prod Σ[Γ'])
     \end{alignat*}
-
-    \begin{pfbox}
-      \AXC{$(x : A)\in Γ$} \RightLabel{{Ax}} \UIC{$Γ\fCenter x : A$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$Γ,x : A\fCenter M : B$} \RightLabel{$\ra${I}}
-      \UIC{$Γ\fCenter \lambda x.M : A\ra B$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$Γ\fCenter M : A\ra B$} \AXC{$Γ\fCenter N : A$}
-      \RightLabel{$\ra${E}} \BIC{$Γ\fCenter (M\;N) : B$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-  \end{mdframed}
-  \label{fig:semantic-calculus}
-  \caption{A simple semantic calculus.}
-\end{figure}
-
-\footnotetext{%
-  We will assume any logical operator we need is defined as a
-  constant in our calculus, with the expected type. We will write
-  these in their usual form -- e.g. $M\land N$ or $\forall x.M$ -- but
-  this should be taken as syntactic sugar for the logical constants,
-  abstractions and applications.
+  \end{minipage}
+  \begin{minipage}{0.45\linewidth}
+    \begin{alignat*}{2}
+      &\text{trace}(\Box)     \;&&\mapsto \mathbf{I}\\
+      &\text{trace}(Σ\prodl Γ)\;&&\mapsto ((\mathbf{C}\prod \text{trace}(Σ))\prod Γ)\\
+      &\text{trace}(Γ\prodr Σ)\;&&\mapsto ((\mathbf{B}\prod Γ)\prod \text{trace}(Σ))
+    \end{alignat*}
+  \end{minipage}
+\end{center}
+Given these definitions, we can show that the following rules for
+quantifier raising are derivable:
+\begin{center}
+  \vspace*{0.5\baselineskip}
+  \begin{pfbox}
+    \AXC{$\text{trace}(Σ)\fCenter[A\himpr B]$} \AXC{$[C]\fCenter Δ$}
+    \RightLabel{$\uparrow$}
+    \BIC{$Σ[\cdot\mathbf{Q}(C\himpl(A\himpr B))\cdot]\fCenter Δ$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$Σ[\cdot A\cdot]\fCenter\cdot B\cdot$}
+    \RightLabel{$\downarrow$}
+    \UIC{$\text{trace}(Σ)\fCenter\cdot A\himpr B\cdot$}
+  \end{pfbox}
+  \vspace*{0.5\baselineskip}
+\end{center}
+And these rules can be combined to form one full quantifier movement,
+reducing the type $\mathbf{Q}(C\himpl(A\himpr B))$ to $A$, while
+changing the top-level type from $C$ to $B$:
+\begin{center}
+  \vspace*{0.5\baselineskip}
+  \begin{pfbox}
+    \AXC{$\vdots$}\noLine\UIC{$Σ[\cdot A\cdot]\fCenter\cdot B\cdot$}
+    \RightLabel{$\downarrow$}
+    \UIC{$\text{trace}(Σ)\fCenter\cdot A\himpr B\cdot$}
+    \RightLabel{Foc$^R$} \UIC{$\text{trace}(Σ)\fCenter[A\himpr B]$}
+    \AXC{$\vdots$}\noLine\UIC{$[C]\fCenter Δ$} \RightLabel{$\uparrow$}
+    \BIC{$Σ[\cdot\mathbf{Q}(C\himpl(A\himpr B))\cdot]\fCenter Δ$}
+  \end{pfbox}
+  \vspace*{0.5\baselineskip}
+\end{center}
+We would like to show that, in fragment of the logic which is used for
+natural language, the derived rules $\uparrow$ and $\downarrow$ are
+complete w.r.t.\ the structural rules \textbf{B} and \textbf{C}. For
+this purpose, we assume that:
+\begin{itemize}
+\item%
+  there will be no occurrences of hollow structural connectives
+  ($\!\!\himpl$,$\hp rod$,$\himpr$), \textbf{B} or \textbf{C} in
+  the final sequent---the presence of these indicates unresolved
+  movement, which means the sentence is not pronounceable;
+\item%
+  all occurrences of the quantifying licence \textbf{Q} will be of
+  the form $\mathbf{Q}(C\himpl(A\himpr B))$.
+\end{itemize}
+Under these assumptions, we can derive that the only interesting
+proofs which involve quantifiers will be of the form:
+$$
+L\mathbf{I}
+    \ra\text{move up}
+    \ra L\!\!{\himpl}
+    \ra\text{auxiliary rules}
+    \ra R{\himpr}
+    \ra\text{move down}
+    \ra\mathbf{I}^-
+$$
+There are three important facts to note here:
+\begin{enumerate}
+\item\label{no-axiom-BC}%
+  \textbf{B}'s and \textbf{C}'s are structures, and therefore cannot
+  be eliminated by axioms;
+\item\label{cannot-overtake-Q}%
+  during upwards or downwards movement, the quantifier is always
+  attached to a hollow product, and the \textbf{B} and \textbf{C}
+  rules only allow a quantifier to move past a \textit{solid} product;
+  therefore, no quantifier can ever move past another quantifier;
+\item%
+  from \ref{no-axiom-BC} and \ref{cannot-overtake-Q}, we can derive
+  that \textbf{B}'s and \textbf{C}'s introduced by upwards movement
+  of a quantifier can only be eliminated by downwards movement
+  \textit{of that same quantifier}.
+\end{enumerate}
+\note{%
+  One move important fact to take note of is that the \textbf{B} and
+  \textbf{C} are set up in such a way that every quantifier is forced
+  to return to its original location. If the quantifier stops halfway
+  through it's movement, there will be \textbf{B}'s and \textbf{C}'s
+  left over in the sequent---and since \textbf{B}'s and \textbf{C}'s
+  are always introduced in a positive context, and polarity is
+  maintained, they can never be eliminated by an axiom.\\
+  During upwards (or downwards) movement, the main connective on the
+  left-hand side is always the hollow product. At every step, there
+  are three possibilities:
+  \begin{enumerate}
+  \item Move further up (or down) using \textbf{B} and \textbf{C};
+  \item Use residuation to focus on the left-hand side of the hollow
+    product.\\
+    During upwards movement, the left-hand side is necessarily a
+    quantifier, and therefore the only applicable rule is
+    $L\!\!\himpl$, which will eliminate the $\himpl$, and therefore
+    stop the upwards movement.\\
+    During downwards movement, the left-hand side is always a
+    formula. Due to the fact that right-hand side will contain
+    \textbf{B} and \textbf{C}, which can only be eliminated by
+    downwards movement, there will be no way to finish the proof but
+    through reversing the residuation, thereby forming a loop.
+  \item Use residuation to focus on the right-hand side of the hollow
+    product.\\
+    However, any proof steps that work on the right-hand side of the
+    hollow product will commute with upwards and downwards movement,
+    and can therefore take place before upwards movement, or after
+    downwards movement.
+  \end{enumerate}%
+  As for the interaction of multiple quantifiers, this is where the
+  second modality (hollow) starts to play a role, as it ensures that
+  no quantifier can ever move past a quantifier which is still
+  moving, as the rules \textbf{B} and \textbf{C} only allow
+  quantifiers to move past \textit{solid} products. This also entails
+  that quantifiers can never switch places, as this would require one
+  to move past the other.
 }
-
-\begin{figure}
-  \begin{mdframed}
-    \centering
-    \begin{minipage}{0.6\linewidth}
-      \begin{alignat*}{4}
-        \text{Type}     \;&A,B  &&\coloneqq \mathbf{e}\vsep\mathbf{t}\vsep A\ra B\\
-        \text{Structure}\;&Γ,Δ,Π&&\coloneqq A\vsep\emptyset\vsep Γ\prod Δ\\
-        \text{Context}  \;&Σ    &&\coloneqq \Box\vsep Σ\prodl Δ\vsep Γ\prodr Σ\\
-        \text{Sequent} \;&S &&\coloneqq Γ\fCenter B
-      \end{alignat*}
-    \end{minipage}%
-    \begin{minipage}{0.4\linewidth}
-      \begin{align*}
-        \Box [Γ]&\mapsto Γ\\
-        (Σ\prodl Δ)[Γ]&\mapsto (Σ[Γ]\prod Δ)\\
-        (Δ\prodr Σ)[Γ]&\mapsto (Δ\prod Σ[Γ])
-      \end{align*}
-    \end{minipage}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{} \RightLabel{{Ax}} \UIC{$A\fCenter A$}
-    \end{pfbox}
-
-    \subsubsection*{Logical rules}
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$Γ\prod A\fCenter B$} \RightLabel{$\ra${I}}
-      \UIC{$Γ\fCenter A\ra B$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$Γ\fCenter A\ra B$} \AXC{$Δ\fCenter A$} \RightLabel{$\ra${E}}
-      \BIC{$Γ\prod Δ\fCenter B$}
-    \end{pfbox}
-
-    \subsubsection*{Structural rules}
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$Σ[Γ\prod \emptyset]\fCenter B$} \RightLabel{$\emptyset${E}}
-      \UIC{$Σ[Γ]\fCenter B$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$Σ[A\prod A]\fCenter B$} \RightLabel{Contraction}
-      \UIC{$Σ[A]\fCenter B$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$Σ[Γ]\fCenter B$} \RightLabel{Weakening}
-      \UIC{$Σ[Γ\prod Δ]\fCenter B$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$Σ[Δ\prod Γ]\fCenter B$} \RightLabel{Commutativity}
-      \UIC{$Σ[Γ\prod Δ]\fCenter B$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$Σ[(Γ\prod Δ)\prod Π]\fCenter B$} \doubleLine
-      \RightLabel{Associativity} \UIC{$Σ[Γ\prod (Δ\prod Π)]\fCenter B$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-  \end{mdframed}
-  \label{fig:explicit-semantic-calculus}
-  \caption{A semantic calculus with explicit structural rules.}
-\end{figure}
-
-
-
-\begin{figure}
-  \begin{mdframed}
-    \centering
-    \begin{alignat*}{4}
-      \text{Type}     \;&A,B&&\coloneqq \text{S}\vsep\text{N}\vsep\text{NP}\vsep\text{PP}\vsep A\impr B\vsep B\impl A\\
-      \text{Structure}\;&Γ,Δ&&\coloneqq A\vsep Γ\prodΔ\\
-      \text{Sequent}  \;&S &&\coloneqq Γ\fCenter B
-    \end{alignat*}
-
-    \begin{pfbox}
-      \AXC{} \RightLabel{{Ax}} \UIC{$A\fCenter A$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$A\prodΓ\fCenter B$} \RightLabel{$\impr${I}}
-      \UIC{$Γ\fCenter A\impr B$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$Γ\fCenter A$} \AXC{$Δ\fCenter A\impr B$} \RightLabel{$\impr${E}}
-      \BIC{$Γ\prodΔ\fCenter B$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$Γ\prod A\fCenter B$} \RightLabel{$\impl${I}}
-      \UIC{$Γ\fCenter B\impl A$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$Γ\fCenter B\impl A$} \AXC{$Δ\fCenter A$} \RightLabel{$\impl${E}}
-      \BIC{$Γ\prod Δ\fCenter B$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-  \end{mdframed}
-  \label{fig:syntactic-calculus}
-  \caption{A simple syntactic calculus.}
-\end{figure}
-
-\begin{figure}
-  \begin{mdframed}
-    \centering
-    \begin{alignat*}{4}
-      \text{Type}&\;        &A,B &\coloneqq \text{S}\vsep\text{N}\vsep\text{NP}\vsep\text{PP}\vsep A\impr B\vsep B\impl A\\
-      \text{Structure}&^+\; &Γ   &\coloneqq \cdot A\cdot\vsep Γ_1\prod Γ_2\\
-      \text{Structure}&^-\; &Δ   &\coloneqq \cdot A\cdot\vsep Γ\imprΔ\vsep Δ\implΓ\\
-      \text{Sequent}&\;     &S   &\coloneqq Γ\fCenter Δ\vsep Γ\fCenter[B]\vsep [A]\fCenter Δ
-    \end{alignat*}
-
-    \begin{pfbox}
-      \AXC{} \RightLabel{Ax$^L$} \UIC{$[A]\fCenter A$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{} \RightLabel{Ax$^R$} \UIC{$A\fCenter [A]$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$[A]\fCenter Δ$}
-      \doubleLine\RightLabel{Foc$^L$}
-      \UIC{$\cdot A\cdot\fCenter Δ$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$Γ\fCenter[B]$}
-      \doubleLine\RightLabel{Foc$^R$}
-      \UIC{$Γ\fCenter\cdot B\cdot$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$ Γ \fCenter[A]$}
-      \AXC{$[B]\fCenter Δ $}
-      \RightLabel{L$\impr$}
-      \BIC{$[A\impr B]\fCenter Γ\impr Δ$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$Γ\fCenter\cdot A\cdot\impr\cdot B\cdot$}
-      \RightLabel{R$\impr$}
-      \UIC{$Γ\fCenter\cdot A\impr B\cdot$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$ Γ \fCenter[A]$}
-      \AXC{$[B]\fCenter Δ $}
-      \RightLabel{L$\impl$}
-      \BIC{$[B\impl A]\fCenter Δ\impl Γ$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$Γ\fCenter\cdot B\cdot\impl\cdot A\cdot$}
-      \RightLabel{R$\impl$}
-      \UIC{$Γ\fCenter\cdot B\impl A\cdot$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$Γ_2\fCenter Γ_1\impr Δ$}
-      \doubleLine\RightLabel{Res$\impr\prod$}
-      \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
-      \doubleLine\RightLabel{Res$\impl\prod$}
-      \UIC{$Γ_1\fCenter Δ\impl Γ_2$}
-    \end{pfbox}
-    \vspace*{\baselineskip}
-  \end{mdframed}
-  \label{fig:syntactic-calculus}
-  \caption{The syntactic calculus as a display calculus.}
-\end{figure}
-
-\begin{figure}
-  \begin{mdframed}
-    \centering
-    \begin{alignat*}{4}
-      \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\mathbf{Q}\;A\\
-      \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\mathbf{I}\vsep\mathbf{B}\vsep\mathbf{C}\\
-    \end{alignat*}
-
-    \begin{pfbox}
-      \AXC{$Γ\fCenter[B]$}
-      \RightLabel{L\textbf{I}}
-      \UIC{$Γ\hprod\mathbf{I}\fCenter[\mathbf{Q}\;B]$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$\cdot A\cdot\hprod\;\mathbf{I}\fCenter Δ$}
-      \RightLabel{R\textbf{I}}
-      \UIC{$\cdot\mathbf{Q}\;A\cdot\fCenter Δ$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$Γ\fCenter Δ$}
-      \RightLabel{\textbf{I}$^-$}
-      \UIC{$Γ\hprod\mathbf{I}\fCenter Δ$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$Γ_1\prod(Γ_2\hprod Γ_3)\fCenter Δ$}
-      \doubleLine\RightLabel{\textbf{B}}
-      \UIC{$Γ_2\hprod((\mathbf{B}\prod Γ_1)\prod Γ_3)\fCenter Δ$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$(Γ_1\hprod Γ_2)\prod Γ_3\fCenter Δ$}
-      \doubleLine\RightLabel{\textbf{C}}
-      \UIC{$Γ_1\hprod((\mathbf{C}\prod Γ_2)\prod Γ_3)\fCenter Δ$}
-    \end{pfbox}
-    \vspace*{\baselineskip}
-  \end{mdframed}
-  \caption{Extension of calculus in
-    figure~\ref{fig:syntactic-calculus} which supports quantifier
-    raising.}
-  \label{fig:quantifier-raising}
-\end{figure}
-
 \end{document}

@@ -1,0 +1,50 @@
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \begin{alignat*}{4}
+      \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\Diamond A\vsep\Box A\\
+      \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\Diamond Γ\\
+      \text{Structure}&^-\;&Δ  &\coloneqq \ldots\vsep\Box     Δ
+    \end{alignat*}
+
+    \begin{pfbox}
+      \AXC{$\Diamond\cdot A\cdot\fCenter Δ$}
+      \RightLabel{L$\Diamond$}
+      \UIC{$\cdot\;\Diamond\;A\cdot\fCenter Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter[B]$}
+      \RightLabel{R$\Diamond$}
+      \UIC{$\Diamond Γ\fCenter[\Diamond B]$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$[A]\fCenter Δ$}
+      \RightLabel{L$\Diamond$}
+      \UIC{$[\Box A]\fCenter\Box Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\Box\cdot B\cdot$}
+      \RightLabel{R$\Box$}
+      \UIC{$Γ\fCenter\cdot\;\Box\;B\cdot$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\Box Δ$}
+      \doubleLine\RightLabel{Res$\Box\Diamond$}
+      \UIC{$\Diamond Γ\fCenter Δ$}
+    \end{pfbox}
+    \vspace*{\baselineskip}
+  \end{mdframed}
+  \caption{
+    Extension of calculus in \autoref{fig:extension-quantifier-raising}
+    which supports scope islands.}%
+  \label{fig:extension-scope-islands}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

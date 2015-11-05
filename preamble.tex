@@ -4,6 +4,7 @@
 \usepackage{alphabeta}%
 \usepackage[greek,english]{babel}%
 \languageattribute{greek}{polutoniko}%
+\usepackage{hyperref}%
 
 \usepackage{amsmath,amssymb,wasysym}%
 \let\oldemptyset\emptyset%
@@ -27,6 +28,14 @@
 \def\hprodl{\mathbin{\circ}}%
 \def\hprodr{\mathbin{\circ}}%
 \def\vsep{\ \vert\ }%
+\renewcommand*{\&}{%
+  \relax
+  \ifmmode
+    \mathbin{\char`\&}%
+  \else
+    \char`\&\relax
+  \fi
+}
 
 \newenvironment{pfbox}
   {\leavevmode\hbox\bgroup}
@@ -69,3 +78,19 @@
 \newcommand{\varbslash}{%
   \mathpalette\pictslash{{1}{-1}}%
 }
+
+
+% include notes
+\usepackage{ifthen}%
+\newboolean{notes}%
+\setboolean{notes}{false}%
+\newcommand{\todo}[1]{%
+\ifthenelse%
+  {\boolean{notes}}%
+  {{\color{red}\textbf{TODO:~}#1}}%
+  {}}
+\newcommand{\note}[1]{%
+\ifthenelse%
+  {\boolean{notes}}%
+  {{\color{green}\textbf{NOTE:~}#1}}%
+  {}}
