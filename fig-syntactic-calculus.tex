@@ -1,0 +1,43 @@
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \begin{alignat*}{4}
+      \text{Type}     \;&A,B&&\coloneqq \text{S}\vsep\text{N}\vsep\text{NP}\vsep\text{PP}\vsep A\impr B\vsep B\impl A\\
+      \text{Structure}\;&Γ,Δ&&\coloneqq A\vsep Γ\prodΔ\\
+      \text{Sequent}  \;&S &&\coloneqq Γ\fCenter B
+    \end{alignat*}
+
+    \begin{pfbox}
+      \AXC{} \RightLabel{{Ax}} \UIC{$A\fCenter A$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$A\prodΓ\fCenter B$} \RightLabel{$\impr${I}}
+      \UIC{$Γ\fCenter A\impr B$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter A$} \AXC{$Δ\fCenter A\impr B$} \RightLabel{$\impr${E}}
+      \BIC{$Γ\prodΔ\fCenter B$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Γ\prod A\fCenter B$} \RightLabel{$\impl${I}}
+      \UIC{$Γ\fCenter B\impl A$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter B\impl A$} \AXC{$Δ\fCenter A$} \RightLabel{$\impl${E}}
+      \BIC{$Γ\prod Δ\fCenter B$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+  \end{mdframed}
+  \caption{A simple syntactic calculus.}%
+  \label{fig:syntactic-calculus}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

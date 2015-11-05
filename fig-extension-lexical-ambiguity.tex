@@ -1,0 +1,35 @@
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \begin{alignat*}{4}
+      \text{Type}&\;&A, B&\coloneqq \ldots\vsep A\& B
+    \end{alignat*}
+
+    \begin{pfbox}
+      \AXC{$[A]\fCenter Δ$}
+      \RightLabel{L\&$_1$}
+      \UIC{$[A\& B]\fCenter Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$[A]\fCenter Δ$}
+      \RightLabel{L\&$_2$}
+      \UIC{$[A\& B]\fCenter Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter[A]$}
+      \AXC{$Γ\fCenter[B]$}
+      \RightLabel{R\&}
+      \BIC{$Γ\fCenter[A\& B]$}
+    \end{pfbox}
+    \vspace*{\baselineskip}
+  \end{mdframed}
+  \caption{
+    Extension of calculus in \autoref{fig:display-calculus} which
+    supports ambiguity.}%
+  \label{fig:extension-lexical-ambiguity}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

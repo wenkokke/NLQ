@@ -24,21 +24,20 @@ main =
         src  = out -<.> "tex"
         lcl  = fromBuild src
 
-      need . map toBuild $
-        [ "main.tex"
-        , "preamble.tex"
-        ]
+      figs <- getDirectoryFiles "" ["fig-*.tex"]
+      need (toBuild <$> ["main.tex" , "main.bib", "preamble.tex"] ++ figs)
 
-      --command_ [Cwd "_build"] "pdflatex" ["-draftmode", lcl]
-      --command_ [Cwd "_build"] "bibtex"   [dropExtension lcl]
-      --command_ [Cwd "_build", EchoStdout False] "pdflatex" ["-draftmode", lcl]
-      command_ [Cwd "_build", EchoStdout True] "pdflatex" [lcl]
-
+      command_ [Cwd "_build", EchoStdout True ] "pdflatex" ["-draftmode", lcl]
+      --command_ [Cwd "_build", EchoStdout False] "bibtex"   [dropExtension lcl]
+      command_ [Cwd "_build", EchoStdout False] "pdflatex" ["-draftmode", lcl]
+      command_ [Cwd "_build", EchoStdout False] "pdflatex" [lcl]
 
     -- copy files into the _build directory
     let static = map toBuild $
           [ "main.tex"
+          , "main.bib"
           , "preamble.tex"
+          , "fig-*.tex"
           ]
     static |%> \out -> do
       copyFile' (fromBuild out) out
@@ -49,3 +48,8 @@ main =
           ]
     result |%> \out -> do
       copyFile' (toBuild out) out
+
+    -- clean files by removing the _build directory
+    phony "clean" $ do
+      putNormal "Cleaning files in _build"
+      removeFilesAfter "_build" ["//*"]
