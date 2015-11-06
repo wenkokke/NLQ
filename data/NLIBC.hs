@@ -9,7 +9,7 @@ import           Prelude         hiding (pred,read,reads)
 import           Data.List       (nub)
 import           NLIBC.Syntax    hiding (Q,T,S,N,NP,PP,INF)
 import qualified NLIBC.Syntax    as Syn
-import           NLIBC.Semantics (HI,H,E,T,v0,v1,v2,v3,Sem(..))
+import           NLIBC.Semantics (HI,H,E,T,v0,v1,v2,v3,v4,Sem(..))
 import qualified NLIBC.Semantics as Sem
 import           NLIBC.Semantics.Show1
 import           NLIBC.Semantics.Show2
@@ -41,7 +41,6 @@ import           NLIBC.Semantics.Show2
 -- style. Additionally, the calculus has some syntactic sugar for the
 -- quantifiers -- ∀x.u abbreviates ∀(λx.u) and likewise for ∃ -- and
 -- is extended with postulates for the logical connectives.
-
 
 eng0  = show2 (Pair john runs)
         <$> findAll (JOHN ∙ RUNS ⊢ S)
@@ -77,14 +76,14 @@ eng5  = show2 (Pair (Pair the waiter) (Pair serves everyone))
         -- ∀x50.person(x50) ⊃ serve(the(waiter),x50)
 
 eng6  = show2 (Pair (Pair the (Pair same waiter)) (Pair serves everyone))
-        <$> findAll ((THE ∙ SAME ∙ WAITER) ∙ SERVES ∙ EVERYONE ⊢ S)
+       <$> findAll ((THE ∙ SAME ∙ WAITER) ∙ SERVES ∙ EVERYONE ⊢ S)
         -- 6
-        -- ∀x118.person(x118) ⊃ same(λx57.(λx88.serve(the(x57 waiter),x88)),x118)
-        -- ∀x115.person(x115) ⊃ same(λx57.(λx91.serve(the(x57 waiter),x91)),x115)
-        -- ∀x112.person(x112) ⊃ same(λx57.(λx76.serve(the(x57 waiter),x76)),x112)
-        -- ∀x115.person(x115) ⊃ same(λx54.(λx85.serve(the(x54 waiter),x85)),x115)
-        -- ∀x112.person(x112) ⊃ same(λx54.(λx88.serve(the(x54 waiter),x88)),x112)
-        -- ∀x109.person(x109) ⊃ same(λx54.(λx73.serve(the(x54 waiter),x73)),x109)
+        -- ∃x157.(∀x166.person(x166) ⊃ serve(the(λx161.waiter(x161) ∧ x161 ≡ x157),x166))
+        -- ∃x154.(∀x163.person(x163) ⊃ serve(the(λx158.waiter(x158) ∧ x158 ≡ x154),x163))
+        -- ∃x151.(∀x160.person(x160) ⊃ serve(the(λx155.waiter(x155) ∧ x155 ≡ x151),x160))
+        -- ∃x154.(∀x163.person(x163) ⊃ serve(the(λx158.waiter(x158) ∧ x158 ≡ x154),x163))
+        -- ∃x151.(∀x160.person(x160) ⊃ serve(the(λx155.waiter(x155) ∧ x155 ≡ x151),x160))
+        -- ∃x148.(∀x157.person(x157) ⊃ serve(the(λx152.waiter(x152) ∧ x152 ≡ x148),x157))
 
 eng7  = show2 (Pair mary (Pair wants (Pair to leave)))
         <$> findAll (MARY ∙ WANTS ∙ (TO ∙ LEAVE) ⊢ S)
@@ -169,10 +168,13 @@ eng17 = show2 (Pair mary (Pair says (Pair everyone (Pair likes bill))))
         -- 1
         -- say(mary,∀x40.person(x40) ⊃ like(x40,bill))
 
-eng18 = show2 (Pair mary (Pair reads (Pair some (Pair book (Pair (Pair the (Pair author (Pair of' which))) (Pair john likes))))))
-        <$> findAll (MARY ∙ READ ∙ SOME ∙ BOOK ∙ (THE ∙ AUTHOR ∙ OF ∙ WHICH) ∙ (JOHN ∙ LIKES) ⊢ S)
+eng18 = show2 (Pair mary (Pair reads (Pair some (Pair book (Pair
+              (Pair the (Pair author (Pair of' which))) (Pair john likes))))))
+        <$> findAll (MARY ∙ READ ∙ SOME ∙ BOOK ∙
+                    (THE ∙ AUTHOR ∙ OF ∙ WHICH) ∙ (JOHN ∙ LIKES) ⊢ S)
         -- 1
         -- ∃x148.book(x148) ∧ like(john,the(of(x148,author))) ∧ read(mary,x148)
+
 
 -- -}
 -- -}
@@ -197,7 +199,11 @@ want     = Pair want1 want2                          :: Repr ts (H WANT)
 wants    = want
 the      = Con "the"                                 :: Repr ts (H THE)
 to       = Abs v0                                    :: Repr ts (H TO)
-same     = Pair (Con "same") Top                     :: Repr ts (H SAME)
+same     = Pair same1 Top                            :: Repr ts (H SAME)
+  where
+  same1  :: Repr ts ((((((E -> T) -> E -> T) -> E -> T) -> E -> T, ()) -> T) -> T)
+  same1  = Abs (Exists (App v1 (Pair (Abs (Abs (App (App v1 (
+           Abs (Abs (App v1 v0 :∧ (v0 :≡ v4))))) v0))) Top)))
 waiter   = Con "waiter"                              :: Repr ts (H WAITER)
 person   = Con "person"                              :: Repr ts (H PERSON)
 book     = Con "book"                                :: Repr ts (H WAITER)
@@ -205,14 +211,11 @@ author   = Con "author"                              :: Repr ts (H PERSON)
 someone  = App some  person                          :: Repr ts (H SOMEONE)
 everyone = App every person                          :: Repr ts (H EVERYONE)
 of'      = Con "of"                                  :: Repr ts (H OF)
-which    = Pair (Pair which' Top) (Pair which' Top)  :: Repr ts (H WHICH)
+which    = Pair (Pair which1 Top) (Pair which1 Top)  :: Repr ts (H WHICH)
   where
-    which' :: Repr ts ((E -> E) -> (E -> T) -> (E -> T) -> E -> T)
-    which' = Abs (Abs (Abs (Abs (App v1 v0 :∧ App v2 (App v3 v0)))))
-
-some     :: Repr ts (H SOME)
+    which1 :: Repr ts ((E -> E) -> (E -> T) -> (E -> T) -> E -> T)
+    which1 = Abs (Abs (Abs (Abs (App v1 v0 :∧ App v2 (App v3 v0)))))
 some     = Abs (Pair (Abs (Exists ((App v2 v0) :∧ (App v1 v0)))) Top)
-every    :: Repr ts (H EVERY)
 every    = Abs (Pair (Abs (Forall ((App v2 v0) :⊃ (App v1 v0)))) Top)
 
 
@@ -258,7 +261,7 @@ type    LEAVE    = IV                                     ; type    LEAVES = LEA
 type    SAY      = IV :← Dia Reset S                      ; type    SAYS   = SAY
 type    THE      = DET
 type    TO       = INF :← IV
-type    SAME     = Q A NP'S NP'S
+type    SAME     = Q (Q A NP'S NP'S) S S
 type    WAITER   = N
 type    PERSON   = N
 type    BOOK     = N
@@ -281,7 +284,7 @@ pattern LEAVE    = IV                                     ; pattern LEAVES = LEA
 pattern SAY      = IV :%← SDia SReset S                   ; pattern SAYS   = SAY
 pattern THE      = DET
 pattern TO       = INF :%← IV
-pattern SAME     = Q A NP'S NP'S
+pattern SAME     = Q (Q A NP'S NP'S) S S
 pattern WAITER   = N
 pattern PERSON   = N
 pattern BOOK     = N
@@ -298,3 +301,4 @@ pattern Forall u = App (Con "∀") (Abs u)
 pattern Exists u = App (Con "∃") (Abs u)
 pattern x :∧ y = App (App (Con "∧") x) y
 pattern x :⊃ y = App (App (Con "⊃") x) y
+pattern x :≡ y = App (App (Con "≡") x) y

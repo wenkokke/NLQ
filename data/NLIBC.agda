@@ -8,12 +8,17 @@ infix  2 _⊢_ _⊢[_] [_]⊢_
 infixr 5 _∙_ _∘_
 
 
-data Atom : Set where
-  S   : Atom
-  N   : Atom
-  NP  : Atom
-  PP  : Atom
-  INF : Atom
+private
+  module Atom where
+
+    data Atom : Set where
+      S   : Atom
+      N   : Atom
+      NP  : Atom
+      PP  : Atom
+      INF : Atom
+
+  open Atom using (Atom)
 
 data Kind : Set where
   Solid    : Kind
@@ -48,7 +53,11 @@ data Sequent : Set where
   [_]⊢_ : Type    -> StructO -> Sequent
   _⊢[_] : StructI -> Type    -> Sequent
 
-
+S   = El Atom.S
+N   = El Atom.N
+NP  = El Atom.NP
+PP  = El Atom.PP
+INF = El Atom.INF
 T   = UNIT  Hollow
 QR  = UnitR Hollow
 Ifx = \ A -> Dia Infixate (Box Infixate A)
@@ -64,30 +73,30 @@ _⇦_ = ImpL  Hollow
 
 
 data Pos : Type -> Set where
-  Pos_N      : Pos (El N)
-  Pos_NP     : Pos (El NP)
-  Pos_PP     : Pos (El PP)
-  Pos_INF    : Pos (El INF)
+  Pos_N      : Pos N
+  Pos_NP     : Pos NP
+  Pos_PP     : Pos PP
+  Pos_INF    : Pos INF
   Pos_Dia    : ∀ {k a} -> Pos (Dia k a)
   Pos_UnitR  : ∀ {k a} -> Pos (UnitR k a)
 
 data Neg : Type -> Set where
-  Neg_S      : Neg (El S)
+  Neg_S      : Neg S
   Neg_Box    : ∀ {k a} -> Neg (Box k a)
   Neg_ImpR   : ∀ {k a b} -> Neg (ImpR k a b)
   Neg_ImpL   : ∀ {k a b} -> Neg (ImpL k b a)
 
 pol : (a : Type) -> Either (Pos a) (Neg a)
-pol (El S)       = Right Neg_S
-pol (El N)       = Left  Pos_N
-pol (El NP)      = Left  Pos_NP
-pol (El PP)      = Left  Pos_PP
-pol (El INF)     = Left  Pos_INF
-pol (Dia _ _)    = Left  Pos_Dia
-pol (Box _ _)    = Right Neg_Box
-pol (UnitR _ _)  = Left  Pos_UnitR
-pol (ImpR _ _ _) = Right Neg_ImpR
-pol (ImpL _ _ _) = Right Neg_ImpL
+pol (El Atom.S)   = Right Neg_S
+pol (El Atom.N)   = Left  Pos_N
+pol (El Atom.NP)  = Left  Pos_NP
+pol (El Atom.PP)  = Left  Pos_PP
+pol (El Atom.INF) = Left  Pos_INF
+pol (Dia _ _)     = Left  Pos_Dia
+pol (Box _ _)     = Right Neg_Box
+pol (UnitR _ _)   = Left  Pos_UnitR
+pol (ImpR _ _ _)  = Right Neg_ImpR
+pol (ImpL _ _ _)  = Right Neg_ImpL
 
 
 infixr 5 _<∙_ _∙>_
@@ -188,26 +197,17 @@ Dn' x f = ImpRR (Res12 (move x f))
     move (x ∙> y) f = UpB (Res11 (move y (Res12 f)))
 
 
-BOOK   = El N
-THE    = El NP ⇐ El N
-AUTHOR = El N
-OF     = (El N ⇒ El N) ⇐ El N
-WHICH  = QR(((El N ⇒ El N) ⇐ (El S ⇐ Ext (El NP))) ⇦ (El N ⇨ El NP))
-JOHN   = El NP
-LIKES  = (El NP ⇒ El S) ⇐ El NP
+A  = N ⇐ N
+IV = NP ⇒ S
+TV = IV ⇐ NP
+Q  = \ a b c -> QR (c ⇦ (a ⇨ b))
+
+THE      = NP ⇐ N
+SAME     = Q (Q A (NP ⇨ S) (NP ⇨ S)) S S
+WAITER   = N
+SERVES   = TV
+EVERYONE = Q NP S S
 
 
-prf1 : Prf · THE · ∙ · AUTHOR · ∙ · OF · ∙ · El N · ⊢ · El NP ·
-prf1 = Res11 (Res11 (Res13 (FocL Neg_ImpL (ImpLL (AxR Pos_N) (ImpRL (AxR Pos_N)
-       (UnfL Pos_N (Res12 (Res13 (FocL Neg_ImpL (ImpLL (AxR Pos_N) (UnfL Pos_NP
-       (FocR Pos_NP (AxR Pos_NP)))))))))))))
-
-prf2 : Prf · JOHN · ∙ · LIKES · ⊢[ El S ⇐ Ext (El NP) ]
-prf2 = UnfR Neg_ImpL (ImpLR (Res14 (Res11 (DiaL (Res12 (ExtRR (Res11 (Res11
-       (Res21 (FocL Neg_Box (BoxL (UnfL Pos_NP (Res12 (Res13 (FocL Neg_ImpL
-       (ImpLL (AxR Pos_NP) (ImpRL (AxR Pos_NP) (AxL Neg_S))))))))))))))))))
-
-prf3 : Prf · BOOK · ∙ (· THE · ∙ · AUTHOR · ∙ · OF · ∙ · WHICH ·) ∙ (· JOHN · ∙ · LIKES ·) ⊢ · El N ·
-prf3 = Res11 (Res13 (Up' (_ ∙> (_ ∙> (_ ∙> HOLE))) (UnfR Neg_ImpR
-       (Dn' (_ ∙> (_ ∙> (_ ∙> HOLE))) prf1)) (ImpLL prf2 (ImpRL (AxR Pos_N)
-       (UnfL Pos_N (FocR Pos_N (AxR Pos_N)))))))
+prf : Prf (· THE · ∙ · SAME · ∙ · WAITER ·) ∙ · SERVES · ∙ · EVERYONE · ⊢ · S ·
+prf = Up' ((_ ∙> (HOLE <∙ _)) <∙ _) (UnfR Neg_ImpR {!!}) (AxL Neg_S)

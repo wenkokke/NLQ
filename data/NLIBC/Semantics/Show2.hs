@@ -112,6 +112,7 @@ pattern ForallU x u = App1U "∀" (AbsU x u)
 pattern ExistsU x u = App1U "∃" (AbsU x u)
 pattern a :∧ b      = App2U "∧" a b
 pattern a :⊃ b      = App2U "⊃" a b
+pattern a :≡ b      = App2U "≡" a b
 
 showArgs :: Show a => [a] -> ShowS
 showArgs []     s = "()" ++ s
@@ -132,6 +133,8 @@ instance Show ReprU where
     showParen (d > 2) $ showsPrec 2 u . showString " ∧ " . showsPrec 3 v
   showsPrec d (u :⊃ v)      =
     showParen (d > 4) $ showsPrec 4 u . showString " ⊃ " . showsPrec 5 v
+  showsPrec d (u :≡ v)      =
+    showParen (d > 4) $ showsPrec 4 u . showString " ≡ " . showsPrec 5 v
 
   showsPrec d (App1U f x1)                = showString f . showArgs [x1]
   showsPrec d (App2U f x1 x2)             = showString f . showArgs [x1,x2]
