@@ -5,11 +5,11 @@
 module NLIBC where
 
 
-import           Prelude         hiding (pred)
+import           Prelude         hiding (pred,read,reads)
 import           Data.List       (nub)
 import           NLIBC.Syntax    hiding (Q,T,S,N,NP,PP,INF)
 import qualified NLIBC.Syntax    as Syn
-import           NLIBC.Semantics (HI,H,E,T,v0,v1,v2,Sem(..))
+import           NLIBC.Semantics (HI,H,E,T,v0,v1,v2,v3,Sem(..))
 import qualified NLIBC.Semantics as Sem
 import           NLIBC.Semantics.Show1
 import           NLIBC.Semantics.Show2
@@ -169,6 +169,10 @@ eng17 = show2 (Pair mary (Pair says (Pair everyone (Pair likes bill))))
         -- 1
         -- say(mary,∀x40.person(x40) ⊃ like(x40,bill))
 
+eng18 = show2 (Pair mary (Pair reads (Pair some (Pair book (Pair (Pair the (Pair author (Pair of' which))) (Pair john likes))))))
+        <$> findAll (MARY ∙ READ ∙ SOME ∙ BOOK ∙ (THE ∙ AUTHOR ∙ OF ∙ WHICH) ∙ (JOHN ∙ LIKES) ⊢ S)
+        -- 1
+        -- ∃x148.book(x148) ∧ like(john,the(of(x148,author))) ∧ read(mary,x148)
 
 -- -}
 -- -}
@@ -182,6 +186,7 @@ mary     = Con "mary"                                :: Repr ts (H MARY)
 bill     = Con "bill"                                :: Repr ts (H BILL)
 run      = Con "run"                                 :: Repr ts (H RUN)   ; runs   = run
 leave    = Con "leave"                               :: Repr ts (H LEAVE) ; leaves = leave
+read     = Abs (Abs (Con "read"  `App` v0 `App` v1)) :: Repr ts (H LIKE)  ; reads  = read
 like     = Abs (Abs (Con "like"  `App` v0 `App` v1)) :: Repr ts (H LIKE)  ; likes  = like
 serve    = Abs (Abs (Con "serve" `App` v0 `App` v1)) :: Repr ts (H SERVE) ; serves = serve
 say      = Abs (Abs (Con "say"   `App` v0 `App` v1)) :: Repr ts (H SAY)   ; says   = say
@@ -192,11 +197,23 @@ want     = Pair want1 want2                          :: Repr ts (H WANT)
 wants    = want
 the      = Con "the"                                 :: Repr ts (H THE)
 to       = Abs v0                                    :: Repr ts (H TO)
-same     = Pair (Con "same") Top                    :: Repr ts (H SAME)
+same     = Pair (Con "same") Top                     :: Repr ts (H SAME)
 waiter   = Con "waiter"                              :: Repr ts (H WAITER)
 person   = Con "person"                              :: Repr ts (H PERSON)
-someone  = Pair (Abs (Exists ((App person v0) :∧ (App v1 v0)))) Top
-everyone = Pair (Abs (Forall ((App person v0) :⊃ (App v1 v0)))) Top
+book     = Con "book"                                :: Repr ts (H WAITER)
+author   = Con "author"                              :: Repr ts (H PERSON)
+someone  = App some  person                          :: Repr ts (H SOMEONE)
+everyone = App every person                          :: Repr ts (H EVERYONE)
+of'      = Con "of"                                  :: Repr ts (H OF)
+which    = Pair (Pair which' Top) (Pair which' Top)  :: Repr ts (H WHICH)
+  where
+    which' :: Repr ts ((E -> E) -> (E -> T) -> (E -> T) -> E -> T)
+    which' = Abs (Abs (Abs (Abs (App v1 v0 :∧ App v2 (App v3 v0)))))
+
+some     :: Repr ts (H SOME)
+some     = Abs (Pair (Abs (Exists ((App v2 v0) :∧ (App v1 v0)))) Top)
+every    :: Repr ts (H EVERY)
+every    = Abs (Pair (Abs (Forall ((App v2 v0) :⊃ (App v1 v0)))) Top)
 
 
 -- -}
@@ -244,11 +261,18 @@ type    TO       = INF :← IV
 type    SAME     = Q A NP'S NP'S
 type    WAITER   = N
 type    PERSON   = N
+type    BOOK     = N
+type    AUTHOR   = N
+type    SOME     = Q NP S S :← N
+type    EVERY    = Q NP S S :← N
 type    SOMEONE  = Q NP S S
 type    EVERYONE = Q NP S S
+type    OF       = (N :→ N) :← NP
+type    WHICH    = (Q NP NP ((N :→ N) :← (S :⇂ NP))) :& (Q NP NP ((N :→ N) :← (NP :→ S)))
 pattern JOHN     = NP
 pattern MARY     = NP
 pattern BILL     = NP
+pattern READ     = TV                                     ; pattern READS  = READ
 pattern RUN      = IV                                     ; pattern RUNS   = RUN
 pattern LIKE     = TV                                     ; pattern LIKES  = LIKE
 pattern SERVE    = TV                                     ; pattern SERVES = SERVE
@@ -260,8 +284,14 @@ pattern TO       = INF :%← IV
 pattern SAME     = Q A NP'S NP'S
 pattern WAITER   = N
 pattern PERSON   = N
+pattern BOOK     = N
+pattern AUTHOR   = N
+pattern SOME     = Q NP S S :%← N
+pattern EVERY    = Q NP S S :%← N
 pattern SOMEONE  = Q NP S S
 pattern EVERYONE = Q NP S S
+pattern OF       = (N :%→ N) :%← NP
+pattern WHICH    = (Q NP NP ((N :%→ N) :%← (S :%⇂ NP))) :%& (Q NP NP ((N :%→ N) :%← (NP :%→ S)))
 
 
 pattern Forall u = App (Con "∀") (Abs u)

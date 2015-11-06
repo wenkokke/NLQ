@@ -3,9 +3,47 @@
     \centering
     \begin{alignat*}{4}
       \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\mathbf{Q}\;A\\
-      \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\mathbf{I}\vsep\mathbf{B}\vsep\mathbf{C}
+      \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep Γ_1\hprod
+      Γ_2\vsep\mathbf{I}\vsep\mathbf{B}\vsep\mathbf{C}\\
+      \text{Structure}&^-\;&Δ   &\coloneqq \ldots\vsep Δ\himpl Γ\vsep
+      Γ\himpr Δ
     \end{alignat*}
 
+    \begin{pfbox}
+      \AXC{$ Γ \fCenter[A]$}
+      \AXC{$[B]\fCenter Δ $}
+      \RightLabel{L$\himpr$}
+      \BIC{$[A\himpr B]\fCenter Γ\himpr Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\cdot A\cdot\himpr\cdot B\cdot$}
+      \RightLabel{R$\himpr$}
+      \UIC{$Γ\fCenter\cdot A\himpr B\cdot$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$ Γ \fCenter[A]$}
+      \AXC{$[B]\fCenter Δ $}
+      \RightLabel{L$\himpl$}
+      \BIC{$[B\himpl A]\fCenter Δ\himpl Γ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\cdot B\cdot\himpl\cdot A\cdot$}
+      \RightLabel{R$\himpl$}
+      \UIC{$Γ\fCenter\cdot B\himpl A\cdot$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Γ_2\fCenter Γ_1\himpr Δ$}
+      \doubleLine\RightLabel{Res$\himpr\hprod$}
+      \UIC{$Γ_1\hprod Γ_2\fCenter Δ$}
+      \doubleLine\RightLabel{Res$\himpl\hprod$}
+      \UIC{$Γ_1\fCenter Δ\himpl Γ_2$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
     \begin{pfbox}
       \AXC{$\cdot A\cdot\hprod\;\mathbf{I}\fCenter Δ$}
       \RightLabel{L\textbf{I}}
