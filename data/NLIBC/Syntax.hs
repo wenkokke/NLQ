@@ -30,9 +30,11 @@ singletons [d|
     deriving (Eq,Show)
 
   data Kind :: * where
-    Solid  :: Kind -- (←, ∙, →)
-    Hollow :: Kind -- (⇦, ∘, ⇨)
-    Reset  :: Kind -- (◇, □)
+    Solid    :: Kind -- (←, ∙, →)
+    Hollow   :: Kind -- (⇦, ∘, ⇨)
+    Reset    :: Kind -- (◇ , □ )
+    Infixate :: Kind -- (◇↑, □↑)
+    Extract  :: Kind -- (◇↓, □↓)
     deriving (Eq,Show)
 
   data Type :: * where
@@ -209,6 +211,35 @@ type     RES x =  DIA  Reset x
 pattern  RES x =  DIA  Reset x
 pattern SRES x = SDIA SReset x
 
+type     Ifx a =  Dia  Infixate ( Box  Infixate a)
+pattern  Ifx a =  Dia  Infixate ( Box  Infixate a)
+pattern SIfx a = SDia SInfixate (SBox SInfixate a)
+type     IFX x =  DIA  Infixate x
+pattern  IFX x =  DIA  Infixate x
+pattern SIFX x = SDIA SInfixate x
+
+type     Ext a =  Dia  Extract ( Box  Extract a)
+pattern  Ext a =  Dia  Extract ( Box  Extract a)
+pattern SExt a = SDia SExtract (SBox SExtract a)
+type     EXT x =  DIA  Extract x
+pattern  EXT x =  DIA  Extract x
+pattern SEXT x = SDIA SExtract x
+
+type    a  :⇃ b = ( Ext a)  :→ b
+pattern a  :⇃ b = ( Ext a)  :→ b
+pattern a :%⇃ b = (SExt a) :%→ b
+type    b  :⇂ a = b  :←  Ext a
+pattern b  :⇂ a = b  :←  Ext a
+pattern b :%⇂ a = b :%← SExt a
+
+type    a  :↿ b =  Ifx (a  :→ b)
+pattern a  :↿ b =  Ifx (a  :→ b)
+pattern a :%↿ b = SIfx (a :%→ b)
+type    b  :↾ a =  Ifx (b  :← a)
+pattern b  :↾ a =  Ifx (b  :← a)
+pattern b :%↾ a = SIfx (b :%← a)
+
+
 
 -- * Positive and Negative Types
 
@@ -270,6 +301,16 @@ data Prf :: Sequent -> * where
   BoxR   :: Prf (x :⊢ BOX k (StO b)) -> Prf (x :⊢ StO (Box k b))
   Res21  :: Prf (x :⊢ BOX k y) -> Prf (DIA k x :⊢ y)
   Res22  :: Prf (DIA k x :⊢ y) -> Prf (x :⊢ BOX k y)
+
+  IfxRR   :: Prf ((x :∙ y) :∙ IFX z :⊢ w) -> Prf (x :∙ (y :∙ IFX z) :⊢ w)
+  IfxLR   :: Prf ((x :∙ y) :∙ IFX z :⊢ w) -> Prf ((x :∙ IFX z) :∙ y :⊢ w)
+  IfxLL   :: Prf (IFX z :∙ (y :∙ x) :⊢ w) -> Prf ((IFX z :∙ y) :∙ x :⊢ w)
+  IfxRL   :: Prf (IFX z :∙ (y :∙ x) :⊢ w) -> Prf (y :∙ (IFX z :∙ x) :⊢ w)
+
+  ExtRR   :: Prf (x :∙ (y :∙ EXT z) :⊢ w) -> Prf ((x :∙ y) :∙ EXT z :⊢ w)
+  ExtLR   :: Prf ((x :∙ EXT z) :∙ y :⊢ w) -> Prf ((x :∙ y) :∙ EXT z :⊢ w)
+  ExtLL   :: Prf ((EXT z :∙ y) :∙ x :⊢ w) -> Prf (EXT z :∙ (y :∙ x) :⊢ w)
+  ExtRL   :: Prf (y :∙ (EXT z :∙ x) :⊢ w) -> Prf (EXT z :∙ (y :∙ x) :⊢ w)
 
   UnitRL :: Prf (PROD k (StI a) (UNIT k) :⊢ y) -> Prf (StI (UnitR k a) :⊢ y)
   UnitRR :: Prf (x :⊢> b) -> Prf (PROD k x (UNIT k) :⊢> UnitR k b)
@@ -349,6 +390,8 @@ search ss = do
           , [withL1,withL2,withR]
           , [impRL,impRR,impLL,impLR,res11,res12,res13,res14]
           , [diaL,diaR,boxL,boxR,res21,res22]
+          , [extLL,extLR,extRL,extRR]
+          , [ifxLL,ifxLR,ifxRL,ifxRR]
           , [unitL,unitR,unitI]
           , [up,dn]
           ]
@@ -428,6 +471,28 @@ search ss = do
     res21 _                          = empty
     res22 (x :%⊢ SBOX k y)           = Res22 <$> loop (SDIA k x :%⊢ y)
     res22 _                          = empty
+
+
+    ifxRR,ifxLR,ifxLL,ifxRL :: SSequent s -> Search m (Prf s)
+    ifxRR (x :%∙ (y :%∙ SIFX z) :%⊢ w) = IfxRR <$> loop ((x :%∙ y) :%∙ SIFX z :%⊢ w)
+    ifxRR _                            = empty
+    ifxLR ((x :%∙ SIFX z) :%∙ y :%⊢ w) = IfxLR <$> loop ((x :%∙ y) :%∙ SIFX z :%⊢ w)
+    ifxLR _                            = empty
+    ifxLL ((SIFX z :%∙ y) :%∙ x :%⊢ w) = IfxLL <$> loop (SIFX z :%∙ (y :%∙ x) :%⊢ w)
+    ifxLL _                            = empty
+    ifxRL (y :%∙ (SIFX z :%∙ x) :%⊢ w) = IfxRL <$> loop (SIFX z :%∙ (y :%∙ x) :%⊢ w)
+    ifxRL _                            = empty
+
+
+    extRR,extLR,extLL,extRL :: SSequent s -> Search m (Prf s)
+    extRR ((x :%∙ y) :%∙ SEXT z :%⊢ w) = ExtRR <$> loop (x :%∙ (y :%∙ SEXT z) :%⊢ w)
+    extRR _                            = empty
+    extLR ((x :%∙ y) :%∙ SEXT z :%⊢ w) = ExtLR <$> loop ((x :%∙ SEXT z) :%∙ y :%⊢ w)
+    extLR _                            = empty
+    extLL (SEXT z :%∙ (y :%∙ x) :%⊢ w) = ExtLL <$> loop ((SEXT z :%∙ y) :%∙ x :%⊢ w)
+    extLL _                            = empty
+    extRL (SEXT z :%∙ (y :%∙ x) :%⊢ w) = ExtRL <$> loop (y :%∙ (SEXT z :%∙ x) :%⊢ w)
+    extRL _                            = empty
 
 
     unitL,unitR,unitI :: SSequent s -> Search m (Prf s)

@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell, QuasiQuotes, FlexibleInstances, FlexibleContexts,
     TypeFamilies, GADTs, TypeOperators, DataKinds, PolyKinds, RankNTypes,
     KindSignatures, UndecidableInstances, StandaloneDeriving, PatternSynonyms,
-    AllowAmbiguousTypes, ScopedTypeVariables,InstanceSigs #-}
+    AllowAmbiguousTypes, ScopedTypeVariables, InstanceSigs #-}
 module NLIBC.Semantics where
 
 
@@ -128,10 +128,18 @@ eta (Res22   f) = eta f
 eta (UnitRL  f) = abs (eta f `app` v0)
 eta (UnitRR  f) = abs (pair (eta f `app` p1 v0) top)
 eta (UnitRI  f) = abs (eta f `app` p1 v0)
-eta (UpB     f) = abs (eta f `app` pair (p2 (p1 (p2 v0))) (pair (p1 v0) (p2 (p2 v0))))
-eta (DnB     f) = abs (eta f `app` pair (p1 (p2 v0)) (pair (pair top (p1 v0)) (p2 (p2 v0))))
-eta (UpC     f) = abs (eta f `app` pair (pair (p1 v0) (p2 (p1 (p2 v0)))) (p2 (p2 v0)))
-eta (DnC     f) = abs (eta f `app` pair (p1 (p1 v0)) (pair (pair top (p2 (p1 v0))) (p2 v0)))
+eta (ExtLL   f) = abs (eta f `app` pair (pair (p1 v0) (p1 (p2 v0))) (p2 (p2 v0)))
+eta (ExtLR   f) = abs (eta f `app` pair (pair (p1 (p1 v0)) (p2 v0)) (p2 (p1 v0)))
+eta (ExtRL   f) = abs (eta f `app` pair (p1 (p2 v0)) (pair (p1 v0) (p2 (p2 v0))))
+eta (ExtRR   f) = abs (eta f `app` pair (p1 (p1 v0)) (pair (p2 (p1 v0)) (p2 v0)))
+eta (IfxLL   f) = abs (eta f `app` pair (p1 (p1 v0)) (pair (p2 (p1 v0)) (p2 v0)))
+eta (IfxLR   f) = abs (eta f `app` pair (pair (p1 (p1 v0)) (p2 v0)) (p2 (p1 v0)))
+eta (IfxRL   f) = abs (eta f `app` pair (p1 (p2 v0)) (pair (p1 v0) (p2 (p2 v0))))
+eta (IfxRR   f) = abs (eta f `app` pair (pair (p1 v0) (p1 (p2 v0))) (p2 (p2 v0)))
+eta (DnB     f) = abs (eta f `app` pair (p2 (p1 (p2 v0))) (pair (p1 v0) (p2 (p2 v0))))
+eta (UpB     f) = abs (eta f `app` pair (p1 (p2 v0)) (pair (pair top (p1 v0)) (p2 (p2 v0))))
+eta (DnC     f) = abs (eta f `app` pair (pair (p1 v0) (p2 (p1 (p2 v0)))) (p2 (p2 v0)))
+eta (UpC     f) = abs (eta f `app` pair (p1 (p1 v0)) (pair (pair top (p2 (p1 v0))) (p2 v0)))
 
 
 -- * Translate to Haskell
