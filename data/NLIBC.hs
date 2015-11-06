@@ -44,40 +44,40 @@ import           NLIBC.Semantics.Show2
 
 
 eng0  = show2 (Pair john runs)
-        <$> findAll (NP ∙ IV ⊢ S)
+        <$> findAll (JOHN ∙ RUNS ⊢ S)
         -- 1
         -- run(john)
 
 eng1  = show2 (Pair john (Pair likes mary))
-        <$> findAll (NP ∙ TV ∙ NP ⊢ S)
+        <$> findAll (JOHN ∙ LIKES ∙ MARY ⊢ S)
         -- 1
         -- like(john,mary)
 
 eng2  = show2 (Pair someone (Pair likes mary))
-        <$> findAll (Q NP S S ∙ TV ∙ NP ⊢ S)
+        <$> findAll (SOMEONE ∙ LIKES ∙ MARY ⊢ S)
         -- 1
         -- ∃x30.person(x30) ∧ like(x30,mary)
 
 eng3  = show2 (Pair john (Pair likes everyone))
-        <$> findAll (NP ∙ TV ∙ Q NP S S ⊢ S)
+        <$> findAll (JOHN ∙ LIKES ∙ EVERYONE ⊢ S)
         -- 1
         -- ∀x43.person(x43) ⊃ like(john,x43)
 
 eng4  = show2 (Pair someone (Pair likes everyone))
-        <$> findAll (Q NP S S ∙ TV ∙ Q NP S S ⊢ S)
+        <$> findAll (SOMEONE ∙ LIKES ∙ EVERYONE ⊢ S)
         -- 2
         -- ∃x60.person(x60) ∧ (∀x64.person(x64) ⊃ like(x60,x64))
         -- ∀x64.person(x64) ⊃ (∃x60.person(x60) ∧ like(x60,x64))
 
 eng5  = show2 (Pair (Pair the waiter) (Pair serves everyone))
-        <$> findAll ((DET ∙ N) ∙ TV ∙ Q NP S S ⊢ S)
+        <$> findAll ((THE ∙ WAITER) ∙ SERVES ∙ EVERYONE ⊢ S)
         -- 3
         -- ∀x50.person(x50) ⊃ serve(the(waiter),x50)
         -- ∀x53.person(x53) ⊃ serve(the(waiter),x53)
         -- ∀x50.person(x50) ⊃ serve(the(waiter),x50)
 
 eng6  = show2 (Pair (Pair the (Pair same waiter)) (Pair serves everyone))
-        <$> findAll ((DET ∙ Q A NP'S NP'S ∙ N) ∙ TV ∙ Q NP S S ⊢ S)
+        <$> findAll ((THE ∙ SAME ∙ WAITER) ∙ SERVES ∙ EVERYONE ⊢ S)
         -- 6
         -- ∀x118.person(x118) ⊃ same(λx57.(λx88.serve(the(x57 waiter),x88)),x118)
         -- ∀x115.person(x115) ⊃ same(λx57.(λx91.serve(the(x57 waiter),x91)),x115)
