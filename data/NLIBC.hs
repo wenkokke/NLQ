@@ -85,19 +85,29 @@ eng6  = show2 (Pair (Pair the (Pair same waiter)) (Pair serves everyone))
         -- ∃x151.(∀x160.person(x160) ⊃ serve(the(λx155.waiter(x155) ∧ x155 ≡ x151),x160))
         -- ∃x148.(∀x157.person(x157) ⊃ serve(the(λx152.waiter(x152) ∧ x152 ≡ x148),x157))
 
-eng7  = show2 (Pair mary (Pair wants (Pair to leave)))
+eng7  = show2 (Pair (Pair some (Pair different waiter)) (Pair serves everyone))
+       <$> findAll ((SOME ∙ DIFFERENT ∙ WAITER) ∙ SERVES ∙ EVERYONE ⊢ S)
+        -- 6
+        -- ∃x1.(∀x2.(∀x3.¬(∃x4.x1(x2,x4) ∧ x1(x3,x4)))) ∧ (∀x5.person(x5) ⊃ (∃x6.waiter(x6) ∧ x1(x6,x5) ∧ serve(x6,x5)))
+        -- ∃x1.(∀x2.(∀x3.¬(∃x4.x1(x2,x4) ∧ x1(x3,x4)))) ∧ (∀x5.person(x5) ⊃ (∃x6.waiter(x6) ∧ x1(x6,x5) ∧ serve(x6,x5)))
+        -- ∃x1.(∀x2.(∀x3.¬(∃x4.x1(x2,x4) ∧ x1(x3,x4)))) ∧ (∀x5.person(x5) ⊃ (∃x6.waiter(x6) ∧ x1(x6,x5) ∧ serve(x6,x5)))
+        -- ∃x1.(∀x2.(∀x3.¬(∃x4.x1(x2,x4) ∧ x1(x3,x4)))) ∧ (∀x5.person(x5) ⊃ (∃x6.waiter(x6) ∧ x1(x6,x5) ∧ serve(x6,x5)))
+        -- ∃x1.(∀x2.(∀x3.¬(∃x4.x1(x2,x4) ∧ x1(x3,x4)))) ∧ (∀x5.person(x5) ⊃ (∃x6.waiter(x6) ∧ x1(x6,x5) ∧ serve(x6,x5)))
+        -- ∃x1.(∀x2.(∀x3.¬(∃x4.x1(x2,x4) ∧ x1(x3,x4)))) ∧ (∀x5.person(x5) ⊃ (∃x6.waiter(x6) ∧ x1(x6,x5) ∧ serve(x6,x5)))
+
+eng8  = show2 (Pair mary (Pair wants (Pair to leave)))
         <$> findAll (MARY ∙ WANTS ∙ (TO ∙ LEAVE) ⊢ S)
         -- 2
         -- want(mary,leave(mary))
         -- want(mary,leave(mary))
 
-eng8  = show2 (Pair mary (Pair (Pair wants john) (Pair to leave)))
+eng9  = show2 (Pair mary (Pair (Pair wants john) (Pair to leave)))
         <$> findAll (MARY ∙ (WANTS ∙ JOHN) ∙ (TO ∙ LEAVE) ⊢ S)
         -- 2
         -- want(mary,leave(john))
         -- want(mary,leave(john))
 
-eng9  = show2 (Pair mary (Pair (Pair wants everyone) (Pair to leave)))
+eng10 = show2 (Pair mary (Pair (Pair wants everyone) (Pair to leave)))
         <$> findAll (MARY ∙ (WANTS ∙ EVERYONE) ∙ (TO ∙ LEAVE) ⊢ S)
         -- 6
         -- ∀x72.person(x72) ⊃ want(mary,leave(x72))
@@ -107,19 +117,19 @@ eng9  = show2 (Pair mary (Pair (Pair wants everyone) (Pair to leave)))
         -- ∀x69.person(x69) ⊃ want(mary,leave(x69))
         -- ∀x72.person(x72) ⊃ want(mary,leave(x72))
 
-eng10 = show2 (Pair mary (Pair wants (Pair to (Pair like bill))))
+eng11 = show2 (Pair mary (Pair wants (Pair to (Pair like bill))))
         <$> findAll (MARY ∙ WANTS ∙ TO ∙ LIKE ∙ BILL ⊢ S)
         -- 2
         -- want(mary,like(mary,bill))
         -- want(mary,like(mary,bill))
 
-eng11 = show2 (Pair mary (Pair (Pair wants john) (Pair to (Pair like bill))))
+eng12 = show2 (Pair mary (Pair (Pair wants john) (Pair to (Pair like bill))))
         <$> findAll (MARY ∙ (WANTS ∙ JOHN) ∙ TO ∙ LIKE ∙ BILL ⊢ S)
         -- 2
         -- want(mary,like(john,bill))
         -- want(mary,like(john,bill))
 
-eng12 = show2 (Pair mary (Pair (Pair wants everyone) (Pair to (Pair like bill))))
+eng13 = show2 (Pair mary (Pair (Pair wants everyone) (Pair to (Pair like bill))))
         <$> findAll (MARY ∙ (WANTS ∙ EVERYONE) ∙ TO ∙ LIKE ∙ BILL ⊢ S)
         -- 6
         -- ∀x79.person(x79) ⊃ want(mary,like(x79,bill))
@@ -129,21 +139,21 @@ eng12 = show2 (Pair mary (Pair (Pair wants everyone) (Pair to (Pair like bill)))
         -- ∀x76.person(x76) ⊃ want(mary,like(x76,bill))
         -- ∀x73.person(x73) ⊃ want(mary,like(x73,bill))
 
-eng13 = show2 (Pair mary (Pair wants (Pair to (Pair like someone))))
+eng14 = show2 (Pair mary (Pair wants (Pair to (Pair like someone))))
         <$> findAll (MARY ∙ WANTS ∙ TO ∙ LIKE ∙ SOMEONE ⊢ S)
         -- 3
         -- want(mary,∃x67.person(x67) ∧ like(mary,x67))
         -- ∃x86.person(x86) ∧ want(mary,like(mary,x86))
         -- ∃x83.person(x83) ∧ want(mary,like(mary,x83))
 
-eng14 = show2 (Pair mary (Pair (Pair wants john) (Pair to (Pair like someone))))
+eng15 = show2 (Pair mary (Pair (Pair wants john) (Pair to (Pair like someone))))
         <$> findAll (MARY ∙ (WANTS ∙ JOHN) ∙ TO ∙ LIKE ∙ SOMEONE ⊢ S)
         -- 3
         -- want(mary,∃x71.person(x71) ∧ like(john,x71))
         -- ∃x90.person(x90) ∧ want(mary,like(john,x90))
         -- ∃x87.person(x87) ∧ want(mary,like(john,x87))
 
-eng15 = show2 (Pair mary (Pair (Pair wants everyone) (Pair to (Pair like someone))))
+eng16 = show2 (Pair mary (Pair (Pair wants everyone) (Pair to (Pair like someone))))
         <$> findAll (MARY ∙ (WANTS ∙ EVERYONE) ∙ TO ∙ LIKE ∙ SOMEONE ⊢ S)
         -- 11
         -- ∀x112.person(x112) ⊃ want(mary,∃x117.person(x117) ∧ like(x112,x117))
@@ -158,23 +168,32 @@ eng15 = show2 (Pair mary (Pair (Pair wants everyone) (Pair to (Pair like someone
         -- ∃x133.person(x133) ∧ (∀x128.person(x128) ⊃ want(mary,like(x128,x133)))
         -- ∃x130.person(x130) ∧ (∀x125.person(x125) ⊃ want(mary,like(x125,x130)))
 
-eng16 = show2 (Pair mary (Pair says (Pair john (Pair likes bill))))
+eng17 = show2 (Pair mary (Pair says (Pair john (Pair likes bill))))
         <$> findAll (MARY ∙ SAYS ∙ (SDIA SReset (JOHN ∙ LIKES ∙ BILL)) ⊢ S)
         -- 1
         -- say(mary,like(john,bill))
 
-eng17 = show2 (Pair mary (Pair says (Pair everyone (Pair likes bill))))
+eng18 = show2 (Pair mary (Pair says (Pair everyone (Pair likes bill))))
         <$> findAll (MARY ∙ SAYS ∙ (SDIA SReset (EVERYONE ∙ LIKES ∙ BILL)) ⊢ S)
         -- 1
         -- say(mary,∀x40.person(x40) ⊃ like(x40,bill))
 
-eng18 = show2 (Pair mary (Pair reads (Pair some (Pair book (Pair
+eng19 = show2 (Pair mary (Pair reads (Pair some (Pair book (Pair
               (Pair the (Pair author (Pair of' which))) (Pair john likes))))))
-        <$> findAll (MARY ∙ READ ∙ SOME ∙ BOOK ∙
-                    (THE ∙ AUTHOR ∙ OF ∙ WHICH) ∙ (JOHN ∙ LIKES) ⊢ S)
+        <$> findAll (MARY ∙ READ ∙ SOME ∙ BOOK ∙ (THE ∙ AUTHOR ∙ OF ∙ WHICH) ∙ (JOHN ∙ LIKES) ⊢ S)
         -- 1
         -- ∃x148.book(x148) ∧ like(john,the(of(x148,author))) ∧ read(mary,x148)
 
+eng20 = show2 (Pair mary (Pair sees (Pair some fox)))
+        <$> findAll (MARY ∙ SEES ∙ SOME ∙ FOX ⊢ S)
+        -- 1
+        -- ∃x1.fox(x1) ∧ see(mary,x1)
+
+eng21 = show2 (Pair mary (Pair sees foxes))
+        <$> findAll (MARY ∙ SEES ∙ FOXES ⊢ S)
+        -- 1
+        -- ∃x1.(∃x2.(∃x3.x1(x2) ∧ x1(x3) ∧ ¬(x2 ≡ x3))) ∧ (∀x4.x1(x4) ⊃ (fox(x4) ∧ see(mary,x4)))
+
 
 -- -}
 -- -}
@@ -182,41 +201,60 @@ eng18 = show2 (Pair mary (Pair reads (Pair some (Pair book (Pair
 -- -}
 -- -}
 
+not_empty :: Repr ts ((E -> T) -> T)
+not_empty = Abs (Exists (App v1 v0))
 
-john     = Con "john"                                :: Repr ts (H JOHN)
-mary     = Con "mary"                                :: Repr ts (H MARY)
-bill     = Con "bill"                                :: Repr ts (H BILL)
-run      = Con "run"                                 :: Repr ts (H RUN)   ; runs   = run
-leave    = Con "leave"                               :: Repr ts (H LEAVE) ; leaves = leave
-read     = Abs (Abs (Con "read"  `App` v0 `App` v1)) :: Repr ts (H LIKE)  ; reads  = read
-like     = Abs (Abs (Con "like"  `App` v0 `App` v1)) :: Repr ts (H LIKE)  ; likes  = like
-serve    = Abs (Abs (Con "serve" `App` v0 `App` v1)) :: Repr ts (H SERVE) ; serves = serve
-say      = Abs (Abs (Con "say"   `App` v0 `App` v1)) :: Repr ts (H SAY)   ; says   = say
-want     = Pair want1 want2                          :: Repr ts (H WANT)
+more_than_one :: Repr ts ((E -> T) -> T)
+more_than_one = Abs (Exists (Exists ((App v2 v1 :∧ App v2 v0) :∧ (v1 :≢ v0))))
+
+john       = Con "john"                               :: Repr ts (H JOHN)
+mary       = Con "mary"                               :: Repr ts (H MARY)
+bill       = Con "bill"                               :: Repr ts (H BILL)
+run        = Con "run"                                :: Repr ts (H RUN)   ; runs   = run
+leave      = Con "leave"                              :: Repr ts (H LEAVE) ; leaves = leave
+read       = transitiveVerb "read"                    :: Repr ts (H LIKE)  ; reads  = read
+see        = transitiveVerb "see"                     :: Repr ts (H LIKE)  ; sees   = see
+like       = transitiveVerb "like"                    :: Repr ts (H LIKE)  ; likes  = like
+serve      = transitiveVerb "serve"                   :: Repr ts (H SERVE) ; serves = serve
+say        = transitiveVerb "say"                     :: Repr ts (H SAY)   ; says   = say
+want       = Pair want1 want2                         :: Repr ts (H WANT)
   where
-  want1  = (Abs (Abs (     Con "want" `App` v0 `App` (v1 `App` v0) )))
-  want2  = (Abs (Abs (Abs (Con "want" `App` v0 `App` (v1 `App` v2)))))
-wants    = want
-the      = Con "the"                                 :: Repr ts (H THE)
-to       = Abs v0                                    :: Repr ts (H TO)
-same     = Pair same1 Top                            :: Repr ts (H SAME)
+  want1    = (Abs (Abs (     Con "want" `App` v0 `App` (v1 `App` v0) )))
+  want2    = (Abs (Abs (Abs (Con "want" `App` v0 `App` (v1 `App` v2)))))
+wants      = want
+the        = Con "the"                                :: Repr ts (H THE)
+to         = Abs v0                                   :: Repr ts (H TO)
+same       = Pair same1 Top                           :: Repr ts (H SAME)
   where
-  same1  :: Repr ts ((((((E -> T) -> E -> T) -> E -> T) -> E -> T, ()) -> T) -> T)
-  same1  = Abs (Exists (App v1 (Pair (Abs (Abs (App (App v1 (
-           Abs (Abs (App v1 v0 :∧ (v0 :≡ v4))))) v0))) Top)))
-waiter   = Con "waiter"                              :: Repr ts (H WAITER)
-person   = Con "person"                              :: Repr ts (H PERSON)
-book     = Con "book"                                :: Repr ts (H WAITER)
-author   = Con "author"                              :: Repr ts (H PERSON)
-someone  = App some  person                          :: Repr ts (H SOMEONE)
-everyone = App every person                          :: Repr ts (H EVERYONE)
-of'      = Con "of"                                  :: Repr ts (H OF)
-which    = Pair (Pair which1 Top) (Pair which1 Top)  :: Repr ts (H WHICH)
+  same1    = Abs (Exists (App v1 (Pair (Abs (Abs (App (App v1 (
+             Abs (Abs (App v1 v0 :∧ (v0 :≡ v4))))) v0))) Top)))
+different  = Pair diff1 Top                           :: Repr ts (H SAME)
+  where
+  cond1    = Forall (Forall (Not (Exists (App (App v3 v2) v0 :∧ App (App v3 v1) v0))))
+  diff1    = Abs (Exists (cond1 :∧ (App v1 (Pair (Abs (Abs (App (App v1 (
+             Abs (Abs (App v1 v0 :∧ (App (App v4 v0) v2))))) v0))) Top))))
+waiter     = Con "waiter"                             :: Repr ts (H WAITER)
+fox        = Con "fox"                                :: Repr ts (H FOX)
+foxes      = Pair foxes1 Top                          :: Repr ts (H FOXES)
+  where
+    foxes1 :: Repr ts ((E -> T) -> T)
+    foxes1 = Abs (Exists (App more_than_one v0 :∧
+             Forall (App v1 v0 :⊃ (App fox v0 :∧ App v2 v0))))
+person     = Con "person"                             :: Repr ts (H PERSON)
+book       = Con "book"                               :: Repr ts (H WAITER)
+author     = Con "author"                             :: Repr ts (H PERSON)
+someone    = App some  person                         :: Repr ts (H SOMEONE)
+everyone   = App every person                         :: Repr ts (H EVERYONE)
+of'        = Con "of"                                 :: Repr ts (H OF)
+which      = Pair (Pair which1 Top) (Pair which1 Top) :: Repr ts (H WHICH)
   where
     which1 :: Repr ts ((E -> E) -> (E -> T) -> (E -> T) -> E -> T)
     which1 = Abs (Abs (Abs (Abs (App v1 v0 :∧ App v2 (App v3 v0)))))
-some     = Abs (Pair (Abs (Exists ((App v2 v0) :∧ (App v1 v0)))) Top)
-every    = Abs (Pair (Abs (Forall ((App v2 v0) :⊃ (App v1 v0)))) Top)
+some       = Abs (Pair (Abs (Exists ((App v2 v0) :∧ (App v1 v0)))) Top)
+every      = Abs (Pair (Abs (Forall ((App v2 v0) :⊃ (App v1 v0)))) Top)
+
+
+transitiveVerb n = Abs (Abs (App (App (Con n) v0) v1))
 
 
 -- -}
@@ -250,55 +288,65 @@ pattern DET     = SEl SNP :%← SEl SN
 pattern Q a b c = SUnitR SHollow (c :%⇦ (a :%⇨ b))
 
 
-type    JOHN     = NP
-type    MARY     = NP
-type    BILL     = NP
-type    RUN      = IV                                     ; type    RUNS   = RUN
-type    LIKE     = TV                                     ; type    LIKES  = LIKE
-type    SERVE    = TV                                     ; type    SERVES = SERVE
-type    WANT     = (IV :← INF) :& ((IV :← INF) :← NP)     ; type    WANTS  = WANT
-type    LEAVE    = IV                                     ; type    LEAVES = LEAVE
-type    SAY      = IV :← Dia Reset S                      ; type    SAYS   = SAY
-type    THE      = DET
-type    TO       = INF :← IV
-type    SAME     = Q (Q A NP'S NP'S) S S
-type    WAITER   = N
-type    PERSON   = N
-type    BOOK     = N
-type    AUTHOR   = N
-type    SOME     = Q NP S S :← N
-type    EVERY    = Q NP S S :← N
-type    SOMEONE  = Q NP S S
-type    EVERYONE = Q NP S S
-type    OF       = (N :→ N) :← NP
-type    WHICH    = (Q NP NP ((N :→ N) :← (S :⇂ NP))) :& (Q NP NP ((N :→ N) :← (NP :→ S)))
-pattern JOHN     = NP
-pattern MARY     = NP
-pattern BILL     = NP
-pattern READ     = TV                                     ; pattern READS  = READ
-pattern RUN      = IV                                     ; pattern RUNS   = RUN
-pattern LIKE     = TV                                     ; pattern LIKES  = LIKE
-pattern SERVE    = TV                                     ; pattern SERVES = SERVE
-pattern WANT     = (IV :%← INF) :%& ((IV :%← INF) :%← NP) ; pattern WANTS  = WANT
-pattern LEAVE    = IV                                     ; pattern LEAVES = LEAVE
-pattern SAY      = IV :%← SDia SReset S                   ; pattern SAYS   = SAY
-pattern THE      = DET
-pattern TO       = INF :%← IV
-pattern SAME     = Q (Q A NP'S NP'S) S S
-pattern WAITER   = N
-pattern PERSON   = N
-pattern BOOK     = N
-pattern AUTHOR   = N
-pattern SOME     = Q NP S S :%← N
-pattern EVERY    = Q NP S S :%← N
-pattern SOMEONE  = Q NP S S
-pattern EVERYONE = Q NP S S
-pattern OF       = (N :%→ N) :%← NP
-pattern WHICH    = (Q NP NP ((N :%→ N) :%← (S :%⇂ NP))) :%& (Q NP NP ((N :%→ N) :%← (NP :%→ S)))
+type    JOHN      = NP
+type    MARY      = NP
+type    BILL      = NP
+type    RUN       = IV                                     ; type    RUNS   = RUN
+type    LIKE      = TV                                     ; type    LIKES  = LIKE
+type    SEE       = TV                                     ; type    SEES  = SEE
+type    SERVE     = TV                                     ; type    SERVES = SERVE
+type    WANT      = (IV :← INF) :& ((IV :← INF) :← NP)     ; type    WANTS  = WANT
+type    LEAVE     = IV                                     ; type    LEAVES = LEAVE
+type    SAY       = IV :← Dia Reset S                      ; type    SAYS   = SAY
+type    THE       = DET
+type    TO        = INF :← IV
+type    SAME      = Q (Q A NP'S NP'S) S S
+type    DIFFERENT = Q (Q A NP'S NP'S) S S
+type    WAITER    = N
+type    FOX       = N
+type    FOXES     = Q NP S S
+type    PERSON    = N
+type    BOOK      = N
+type    AUTHOR    = N
+type    SOME      = Q NP S S :← N
+type    EVERY     = Q NP S S :← N
+type    SOMEONE   = Q NP S S
+type    EVERYONE  = Q NP S S
+type    OF        = (N :→ N) :← NP
+type    WHICH     = (Q NP NP ((N :→ N) :← (S :⇂ NP))) :& (Q NP NP ((N :→ N) :← (NP :→ S)))
+pattern JOHN      = NP
+pattern MARY      = NP
+pattern BILL      = NP
+pattern READ      = TV                                     ; pattern READS  = READ
+pattern RUN       = IV                                     ; pattern RUNS   = RUN
+pattern LIKE      = TV                                     ; pattern LIKES  = LIKE
+pattern SEE       = TV                                     ; pattern SEES  = SEE
+pattern SERVE     = TV                                     ; pattern SERVES = SERVE
+pattern WANT      = (IV :%← INF) :%& ((IV :%← INF) :%← NP) ; pattern WANTS  = WANT
+pattern LEAVE     = IV                                     ; pattern LEAVES = LEAVE
+pattern SAY       = IV :%← SDia SReset S                   ; pattern SAYS   = SAY
+pattern THE       = DET
+pattern TO        = INF :%← IV
+pattern SAME      = Q (Q A NP'S NP'S) S S
+pattern DIFFERENT = Q (Q A NP'S NP'S) S S
+pattern WAITER    = N
+pattern FOX       = N
+pattern FOXES     = Q NP S S
+pattern PERSON    = N
+pattern BOOK      = N
+pattern AUTHOR    = N
+pattern SOME      = Q NP S S :%← N
+pattern EVERY     = Q NP S S :%← N
+pattern SOMEONE   = Q NP S S
+pattern EVERYONE  = Q NP S S
+pattern OF        = (N :%→ N) :%← NP
+pattern WHICH     = (Q NP NP ((N :%→ N) :%← (S :%⇂ NP))) :%& (Q NP NP ((N :%→ N) :%← (NP :%→ S)))
 
 
 pattern Forall u = App (Con "∀") (Abs u)
 pattern Exists u = App (Con "∃") (Abs u)
+pattern Not  x = App (Con "¬") x
 pattern x :∧ y = App (App (Con "∧") x) y
 pattern x :⊃ y = App (App (Con "⊃") x) y
 pattern x :≡ y = App (App (Con "≡") x) y
+pattern x :≢ y = Not (App (App (Con "≡") x) y)
