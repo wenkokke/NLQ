@@ -5,6 +5,8 @@ module NLIBC.Semantics.Show2 (Repr(..),show2) where
 
 import Prelude hiding ((!!))
 import Control.Monad.State
+import Data.Map (Map)
+import qualified Data.Map as M
 import Data.Singletons (fromSing)
 import NLIBC.Syntax (Prf(..),Sequent(..))
 import NLIBC.Semantics (Nat(..),SNat(..),(:!!),(!!),Sem(..),HI,eta)
@@ -69,8 +71,27 @@ forget x = evalState (go x) ([],freshNames)
 
 
 show2 :: Repr '[] (HI x) -> Prf (x :⊢ y) -> String
-show2 x f = show (normalise (forget (eta f `App` x)))
+show2 x f = show (evalState (relabel (normalise (forget (eta f `App` x)))) (M.empty,freshNames))
   where
+    relabel :: ReprU -> State (Map Name Name,[Name]) ReprU
+    relabel (VarU  y)   = do (env,x:xs) <- get
+                             case M.lookup y env of
+                               Just  z -> return (VarU z)
+                               Nothing -> do put (M.insert y x env,xs)
+                                             return (VarU x)
+    relabel (AbsU  y u) = do (env,x:xs) <- get
+                             let z = M.lookup y env
+                             put (M.insert y x env,xs)
+                             u' <- relabel u
+                             (env,xs) <- get
+                             put (M.alter (const z) y env,xs)
+                             return (AbsU x u')
+    relabel (AppU  u v) = AppU  <$> relabel u <*> relabel v
+    relabel (PairU u v) = PairU <$> relabel u <*> relabel v
+    relabel (P1U   u)   = P1U   <$> relabel u
+    relabel (P2U   u)   = P2U   <$> relabel u
+    relabel u           = return u
+
     subst :: Name -> ReprU -> ReprU -> ReprU
     subst x t (VarU  y)   | x == y = t
     subst x t (AbsU  y u) | x /= y = AbsU  y             (subst x t u)
@@ -101,18 +122,25 @@ instance Show (Repr ts t) where
   show r = show (forget r)
 
 
-pattern App1U f x1                = AppU (ConU f) x1
-pattern App2U f x1 x2             = AppU (App1U f x1) x2
-pattern App3U f x1 x2 x3          = AppU (App2U f x1 x2) x3
-pattern App4U f x1 x2 x3 x4       = AppU (App3U f x1 x2 x3) x4
-pattern App5U f x1 x2 x3 x4 x5    = AppU (App4U f x1 x2 x3 x4) x5
-pattern App6U f x1 x2 x3 x4 x5 x6 = AppU (App5U f x1 x2 x3 x4 x5) x6
+pattern Con1U f x1                = AppU (ConU f) x1
+pattern Con2U f x1 x2             = AppU (Con1U f x1) x2
+pattern Con3U f x1 x2 x3          = AppU (Con2U f x1 x2) x3
+pattern Con4U f x1 x2 x3 x4       = AppU (Con3U f x1 x2 x3) x4
+pattern Con5U f x1 x2 x3 x4 x5    = AppU (Con4U f x1 x2 x3 x4) x5
+pattern Con6U f x1 x2 x3 x4 x5 x6 = AppU (Con5U f x1 x2 x3 x4 x5) x6
 
-pattern ForallU x u = App1U "∀" (AbsU x u)
-pattern ExistsU x u = App1U "∃" (AbsU x u)
-pattern a :∧ b      = App2U "∧" a b
-pattern a :⊃ b      = App2U "⊃" a b
-pattern a :≡ b      = App2U "≡" a b
+pattern Var1U f x1                = AppU (VarU  f) x1
+pattern Var2U f x1 x2             = AppU (Var1U f x1) x2
+pattern Var3U f x1 x2 x3          = AppU (Var2U f x1 x2) x3
+pattern Var4U f x1 x2 x3 x4       = AppU (Var3U f x1 x2 x3) x4
+pattern Var5U f x1 x2 x3 x4 x5    = AppU (Var4U f x1 x2 x3 x4) x5
+pattern Var6U f x1 x2 x3 x4 x5 x6 = AppU (Var5U f x1 x2 x3 x4 x5) x6
+
+pattern ForallU x u = Con1U "∀" (AbsU x u)
+pattern ExistsU x u = Con1U "∃" (AbsU x u)
+pattern a :∧ b      = Con2U "∧" a b
+pattern a :⊃ b      = Con2U "⊃" a b
+pattern a :≡ b      = Con2U "≡" a b
 
 showArgs :: Show a => [a] -> ShowS
 showArgs []     s = "()" ++ s
@@ -136,12 +164,19 @@ instance Show ReprU where
   showsPrec d (u :≡ v)      =
     showParen (d > 4) $ showsPrec 4 u . showString " ≡ " . showsPrec 5 v
 
-  showsPrec d (App1U f x1)                = showString f . showArgs [x1]
-  showsPrec d (App2U f x1 x2)             = showString f . showArgs [x1,x2]
-  showsPrec d (App3U f x1 x2 x3)          = showString f . showArgs [x1,x2,x3]
-  showsPrec d (App4U f x1 x2 x3 x4)       = showString f . showArgs [x1,x2,x3,x4]
-  showsPrec d (App5U f x1 x2 x3 x4 x5)    = showString f . showArgs [x1,x2,x3,x4,x5]
-  showsPrec d (App6U f x1 x2 x3 x4 x5 x6) = showString f . showArgs [x1,x2,x3,x4,x5,x6]
+  showsPrec d (Con1U f x1)                = showString f . showArgs [x1]
+  showsPrec d (Con2U f x1 x2)             = showString f . showArgs [x1,x2]
+  showsPrec d (Con3U f x1 x2 x3)          = showString f . showArgs [x1,x2,x3]
+  showsPrec d (Con4U f x1 x2 x3 x4)       = showString f . showArgs [x1,x2,x3,x4]
+  showsPrec d (Con5U f x1 x2 x3 x4 x5)    = showString f . showArgs [x1,x2,x3,x4,x5]
+  showsPrec d (Con6U f x1 x2 x3 x4 x5 x6) = showString f . showArgs [x1,x2,x3,x4,x5,x6]
+
+  showsPrec d (Var1U f x1)                = showString f . showArgs [x1]
+  showsPrec d (Var2U f x1 x2)             = showString f . showArgs [x1,x2]
+  showsPrec d (Var3U f x1 x2 x3)          = showString f . showArgs [x1,x2,x3]
+  showsPrec d (Var4U f x1 x2 x3 x4)       = showString f . showArgs [x1,x2,x3,x4]
+  showsPrec d (Var5U f x1 x2 x3 x4 x5)    = showString f . showArgs [x1,x2,x3,x4,x5]
+  showsPrec d (Var6U f x1 x2 x3 x4 x5 x6) = showString f . showArgs [x1,x2,x3,x4,x5,x6]
 
   showsPrec d (AppU  u v)   =
     showParen (d > 10) $ showsPrec 10 u . showChar ' ' . showsPrec 11 v
