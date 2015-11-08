@@ -1,158 +1,129 @@
 \documentclass[a4paper]{article}
 
 \input{preamble}
-\newtheorem{lemma}{Lemma}
-
-% 1. simple semantic calculus;
-% 2. simple syntactic calculus;
-% 3. compositionality principle;
-% 4. problems with compositionality;
-% 5. extended semantic calculus;
-% 6. quantifier raising and scope ambiguity;
-% 7. continuation monad;
-% 8. delimited continuations and indexed monads;
-% 9. extended syntactic calculus;
 
 \begin{document}
 
-%\input{fig-nlu-pipeline}
-%\input{fig-implicit-semantic-calculus}
-%\input{fig-explicit-semantic-calculus}
-%\input{fig-syntactic-calculus}
-\input{fig-display-calculus}
-\input{fig-extension-lexical-ambiguity}
-\input{fig-extension-quantifier-raising}
-\input{fig-extension-scope-islands}
+\section{Introduction}
 
-\begin{comment}
-  \subsubsection*{Completeness of $\uparrow$ and $\downarrow$ w.r.t.\
-    \textbf{B} and \textbf{C}}%
-  We will assume the following definitions for contexts, the plugging
-  operator $\cdot\:[\:\cdot\:]$, and the trace function:
-  \begin{center}
-    $\text{Context}\;Σ\coloneqq\Box\vsep Σ\prodl Γ\vsep Γ\prodr Σ$\\
-    \begin{minipage}{0.45\linewidth}
-      \begin{alignat*}{2}
-        &\Box       \;&&[Γ']\mapsto Γ'\\
-        &(Σ\prodl Γ)\;&&[Γ']\mapsto (Σ[Γ']\prod Γ)\\
-        &(Γ\prodr Σ)\;&&[Γ']\mapsto (Γ\prod Σ[Γ'])
-      \end{alignat*}
-    \end{minipage}
-    \begin{minipage}{0.45\linewidth}
-      \begin{alignat*}{2}
-        &\text{trace}(\Box)     \;&&\mapsto \mathbf{I}\\
-        &\text{trace}(Σ\prodl Γ)\;&&\mapsto ((\mathbf{C}\prod \text{trace}(Σ))\prod Γ)\\
-        &\text{trace}(Γ\prodr Σ)\;&&\mapsto ((\mathbf{B}\prod Γ)\prod
-        \text{trace}(Σ))
-      \end{alignat*}
-    \end{minipage}
-  \end{center}
-  Given these definitions, we can show that the following rules for
-  quantifier raising are derivable:
-  \begin{center}
-    \vspace*{0.5\baselineskip}
-    \begin{pfbox}
-      \AXC{$\text{trace}(Σ)\fCenter[A\himpr B]$} \AXC{$[C]\fCenter Δ$}
-      \RightLabel{$\uparrow$}
-      \BIC{$Σ[\cdot\mathbf{Q}(C\himpl(A\himpr B))\cdot]\fCenter Δ$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$Σ[\cdot A\cdot]\fCenter\cdot B\cdot$}
-      \RightLabel{$\downarrow$}
-      \UIC{$\text{trace}(Σ)\fCenter\cdot A\himpr B\cdot$}
-    \end{pfbox}
-    \vspace*{0.5\baselineskip}
-  \end{center}
-  And these rules can be combined to form one full quantifier
-  movement, reducing the type $\mathbf{Q}(C\himpl(A\himpr B))$ to $A$,
-  while changing the top-level type from $C$ to $B$:
-  \begin{center}
-    \vspace*{0.5\baselineskip}
-    \begin{pfbox}
-      \AXC{$\vdots$}\noLine\UIC{$Σ[\cdot A\cdot]\fCenter\cdot B\cdot$}
-      \RightLabel{$\downarrow$}
-      \UIC{$\text{trace}(Σ)\fCenter\cdot A\himpr B\cdot$}
-      \RightLabel{Foc$^R$} \UIC{$\text{trace}(Σ)\fCenter[A\himpr B]$}
-      \AXC{$\vdots$}\noLine\UIC{$[C]\fCenter Δ$}
-      \RightLabel{$\uparrow$}
-      \BIC{$Σ[\cdot\mathbf{Q}(C\himpl(A\himpr B))\cdot]\fCenter Δ$}
-    \end{pfbox}
-    \vspace*{0.5\baselineskip}
-  \end{center}
-  We would like to show that, in fragment of the logic which is used
-  for natural language, the derived rules $\uparrow$ and $\downarrow$
-  are complete w.r.t.\ the structural rules \textbf{B} and
-  \textbf{C}. For this purpose, we assume that:
-  \begin{itemize}
-  \item%
-    there will be no occurrences of hollow structural connectives
-    ($\!\!\himpl$,$\hp rod$,$\himpr$), \textbf{B} or \textbf{C} in the
-    final sequent---the presence of these indicates unresolved
-    movement, which means the sentence is not pronounceable;
-  \item%
-    all occurrences of the quantifying licence \textbf{Q} will be of
-    the form $\mathbf{Q}(C\himpl(A\himpr B))$.
-  \end{itemize}
-  Under these assumptions, we can derive that the only interesting
-  proofs which involve quantifiers will be of the form:
-$$
-L\mathbf{I} \ra\text{move up} \ra L\!\!{\himpl} \ra\text{auxiliary
-  rules} \ra R{\himpr} \ra\text{move down} \ra\mathbf{I}^-
-$$
-There are three important facts to note here:
-\begin{enumerate}
-\item\label{no-axiom-BC}%
-  \textbf{B}'s and \textbf{C}'s are structures, and therefore cannot
-  be eliminated by axioms;
-\item\label{cannot-overtake-Q}%
-  during upwards or downwards movement, the quantifier is always
-  attached to a hollow product, and the \textbf{B} and \textbf{C}
-  rules only allow a quantifier to move past a \textit{solid} product;
-  therefore, no quantifier can ever move past another quantifier;
-\item%
-  from \ref{no-axiom-BC} and \ref{cannot-overtake-Q}, we can derive
-  that \textbf{B}'s and \textbf{C}'s introduced by upwards movement of
-  a quantifier can only be eliminated by downwards movement \textit{of
-    that same quantifier}.
-\end{enumerate}
-\note{%
-  One move important fact to take note of is that the \textbf{B} and
-  \textbf{C} are set up in such a way that every quantifier is forced
-  to return to its original location. If the quantifier stops halfway
-  through it's movement, there will be \textbf{B}'s and \textbf{C}'s
-  left over in the sequent---and since \textbf{B}'s and \textbf{C}'s
-  are always introduced in a positive context, and polarity is
-  maintained, they can never be eliminated by an axiom.\\
-  During upwards (or downwards) movement, the main connective on the
-  left-hand side is always the hollow product. At every step, there
-  are three possibilities:
-  \begin{enumerate}
-  \item Move further up (or down) using \textbf{B} and \textbf{C};
-  \item Use residuation to focus on the left-hand side of the hollow
-    product.\\
-    During upwards movement, the left-hand side is necessarily a
-    quantifier, and therefore the only applicable rule is
-    $L\!\!\himpl$, which will eliminate the $\himpl$, and therefore
-    stop the upwards movement.\\
-    During downwards movement, the left-hand side is always a
-    formula. Due to the fact that right-hand side will contain
-    \textbf{B} and \textbf{C}, which can only be eliminated by
-    downwards movement, there will be no way to finish the proof but
-    through reversing the residuation, thereby forming a loop.
-  \item Use residuation to focus on the right-hand side of the hollow
-    product.\\
-    However, any proof steps that work on the right-hand side of the
-    hollow product will commute with upwards and downwards movement,
-    and can therefore take place before upwards movement, or after
-    downwards movement.
-  \end{enumerate}%
-  As for the interaction of multiple quantifiers, this is where the
-  second modality (hollow) starts to play a role, as it ensures that
-  no quantifier can ever move past a quantifier which is still moving,
-  as the rules \textbf{B} and \textbf{C} only allow quantifiers to
-  move past \textit{solid} products. This also entails that
-  quantifiers can never switch places, as this would require one to
-  move past the other.  }
-\end{comment}
+\subsection{What is type-logical grammar?}
+Before we address the question of what type-logical grammar is, let us
+look at the abstract pipeline for natural language understanding
+in~\autoref{fig:abstract-nlu-pipeline}.
+%
+\input{fig-abstract-nlu-pipeline}%
+%
+To the left of the figure, you see the various phases or functions
+commonly associated with an NLU-pipeline. To the right, you see the
+inputs and outputs of these functions.
+For instance, the morphological function will take an unanalysed
+sentence, and return a sentence which is lemmatised and has all
+morphemes made explicit (in the case of the example
+in~\autoref{fig:abstract-nlu-pipeline}, \texttt{PAST} and
+\texttt{PLURAL}).
+
+There is some disagreement on the exact role of type-logical grammars in
+this pipeline. Ideally, type-logical grammars would play the role of
+both the syntactic and the semantic function. However, the current
+state of affairs in research is that often only the semantic function
+is truly considered\footnote{%
+  This statement is not true for \emph{associative} type-logical
+  grammars, which fundamentally treat the syntactic and semantic
+  functions as the same function by rejecting the tree structure of
+  sentences.
+}. That is the approach I will also take in this thesis -- therefore,
+we consider type-logical grammars to be the following function:
+%
+\begin{center}
+  Mary:NP [see:TV.PAST fox:NP.PL]\\
+  $\downarrow$\\
+  \framebox{Type-Logical Grammar}\\
+  $\downarrow$\\
+  $\exists X.X\subseteq\mathbf{fox}\land\mathbf{past}(\mathbf{see}(\text{mary},X))$
+\end{center}
+%
+The problem that the semantic function is trying to address is the
+following:
+%
+\begin{center}\itshape
+  Given a tree of words, compute the meaning of the overall tree.
+\end{center}
+%
+The approach that type-logical grammar offers -- drawing heavily from
+categorial grammar and Montague semantics -- is two-fold:
+\begin{enumerate*}[label=(\arabic*)]
+\item we use a simply-typed lambda calculus to represent lexical
+  meaning, and compute the meanings sentences by compositionality,
+  counting on decades of work on functional programming to aid us in
+  the task of keeping seemingly non-compositional meanings
+  compositional;
+\item because this approach over-generates, we will use a second, more
+  restricted type-theory which types only those utterances that are
+  grammatical.
+\end{enumerate*}
+
+The process of meaning computation then becomes:
+\begin{enumerate*}[label=(\arabic*)]
+\item search for a proof of grammaticality in our syntactic calculus;
+\item translate the found proof term to a lambda term in our semantic
+  calculus.
+\end{enumerate*}
+
+
+\subsection{A simple type-logical grammar}
+The simplest type-logical grammar that comes to mind is composed of
+the simply-typed lambda calculus with atomic types \e\ and \t\ (\et1) as
+a semantic calculus, and the non-associative Lambek calculus (NL) as a
+syntactic calculus.
+
+\subsubsection{A simple semantic calculus (\et1)}
+The usual natural deduction formulation of \et1\ can to be seen
+in~\autoref{fig:implicit-semantic-calculus}.
+%
+\input{fig-implicit-semantic-calculus}%
+%
+This formulation, however, uses a set of type assignments (of the form
+$A : Γ$) as the antecedent, and therefore lacks a purely syntactic
+definition.
+%
+If we \emph{do} want a purely syntactic definition, we will have to
+give an equivalent formulation in which the structure that is implicit
+in the set is made explicit. One such formulation can be seen
+in~\autoref{fig:explicit-semantic-calculus}. We have replaced the
+usual structural comma with a structural product ($\prod$), and added
+five structural rules stating that we can freely change the order of
+formulas (commutativity and associativity); copy formulas
+(contraction); drop formulas (weakening); and always add the empty
+structure (E$\emptyset$).
+
+\subsubsection{A simple syntactic calculus (NL)}
+\citet[p. 33, 105-106]{moot2012}
+
+\input{fig-explicit-semantic-calculus}
+\input{fig-syntactic-calculus}
+
+
+%\input{fig-display-calculus}
+%\input{fig-extension-lexical-ambiguity}
+%\input{fig-extension-quantifier-raising}
+%\input{fig-extension-scope-islands}
+
+% - implicit semantic calculus;
+% - explicit semantic calculus;
+% - syntactic calculus;
+% - display calculus;
+% - compositionality principle;
+% - problems with compositionality;
+% - quantifier raising and scope ambiguity;
+% - continuation monad & delimited continuations;
+% - extension: lexical ambiguity;
+% - extension: quantifier raising
+%   * treatment of some & every;
+%   * treatment of same & different;
+%   * treatment of plurals;
+% - extension: scope islands;
+
+\bibliographystyle{apalike}%
+\bibliography{main}%
 
 \end{document}

@@ -201,29 +201,42 @@ eng21 = show2 (Pair mary (Pair sees foxes))
 -- -}
 -- -}
 
-not_empty :: Repr ts ((E -> T) -> T)
-not_empty = Abs (Exists (App v1 v0))
 
-more_than_one :: Repr ts ((E -> T) -> T)
-more_than_one = Abs (Exists (Exists ((App v2 v1 :∧ App v2 v0) :∧ (v1 :≢ v0))))
+john       = Con "john" :: Repr ts (H NP)
+mary       = Con "mary" :: Repr ts (H NP)
+bill       = Con "bill" :: Repr ts (H NP)
 
-john       = Con "john"                               :: Repr ts (H JOHN)
-mary       = Con "mary"                               :: Repr ts (H MARY)
-bill       = Con "bill"                               :: Repr ts (H BILL)
-run        = Con "run"                                :: Repr ts (H RUN)   ; runs   = run
-leave      = Con "leave"                              :: Repr ts (H LEAVE) ; leaves = leave
-read       = transitiveVerb "read"                    :: Repr ts (H LIKE)  ; reads  = read
-see        = transitiveVerb "see"                     :: Repr ts (H LIKE)  ; sees   = see
-like       = transitiveVerb "like"                    :: Repr ts (H LIKE)  ; likes  = like
-serve      = transitiveVerb "serve"                   :: Repr ts (H SERVE) ; serves = serve
-say        = transitiveVerb "say"                     :: Repr ts (H SAY)   ; says   = say
-want       = Pair want1 want2                         :: Repr ts (H WANT)
+waiter     = Con "waiter"      :: Repr ts (H N)
+waiters    = App plural waiter :: Repr ts (H NS)
+fox        = Con "fox"         :: Repr ts (H N)
+foxes      = App plural fox    :: Repr ts (H NS)
+person     = Con "person"      :: Repr ts (H N)
+people     = App plural person :: Repr ts (H NS)
+book       = Con "book"        :: Repr ts (H N)
+books      = App plural book   :: Repr ts (H NS)
+author     = Con "author"      :: Repr ts (H N)
+authors    = App plural author :: Repr ts (H NS)
+
+run        = mkIV "run"        :: Repr ts (H RUN)   ; runs   = run
+leave      = mkIV "leave"      :: Repr ts (H LEAVE) ; leaves = leave
+read       = mkTV "read"       :: Repr ts (H LIKE)  ; reads  = read
+see        = mkTV "see"        :: Repr ts (H LIKE)  ; sees   = see
+like       = mkTV "like"       :: Repr ts (H LIKE)  ; likes  = like
+serve      = mkTV "serve"      :: Repr ts (H SERVE) ; serves = serve
+say        = mkTV "say"        :: Repr ts (H SAY)   ; says   = say
+
+want       = Pair want1 want2  :: Repr ts (H WANT)
   where
   want1    = (Abs (Abs (     Con "want" `App` v0 `App` (v1 `App` v0) )))
   want2    = (Abs (Abs (Abs (Con "want" `App` v0 `App` (v1 `App` v2)))))
 wants      = want
-the        = Con "the"                                :: Repr ts (H THE)
-to         = Abs v0                                   :: Repr ts (H TO)
+
+the        = Con "the"        :: Repr ts (H THE)
+some       = Abs (Pair (Abs (Exists ((App v2 v0) :∧ (App v1 v0)))) Top)
+every      = Abs (Pair (Abs (Forall ((App v2 v0) :⊃ (App v1 v0)))) Top)
+someone    = App some  person :: Repr ts (H SOMEONE)
+everyone   = App every person :: Repr ts (H EVERYONE)
+
 same       = Pair same1 Top                           :: Repr ts (H SAME)
   where
   same1    = Abs (Exists (App v1 (Pair (Abs (Abs (App (App v1 (
@@ -233,28 +246,34 @@ different  = Pair diff1 Top                           :: Repr ts (H SAME)
   cond1    = Forall (Forall (Not (Exists (App (App v3 v2) v0 :∧ App (App v3 v1) v0))))
   diff1    = Abs (Exists (cond1 :∧ (App v1 (Pair (Abs (Abs (App (App v1 (
              Abs (Abs (App v1 v0 :∧ (App (App v4 v0) v2))))) v0))) Top))))
-waiter     = Con "waiter"                             :: Repr ts (H WAITER)
-fox        = Con "fox"                                :: Repr ts (H FOX)
-foxes      = Pair foxes1 Top                          :: Repr ts (H FOXES)
-  where
-    foxes1 :: Repr ts ((E -> T) -> T)
-    foxes1 = Abs (Exists (App more_than_one v0 :∧
-             Forall (App v1 v0 :⊃ (App fox v0 :∧ App v2 v0))))
-person     = Con "person"                             :: Repr ts (H PERSON)
-book       = Con "book"                               :: Repr ts (H WAITER)
-author     = Con "author"                             :: Repr ts (H PERSON)
-someone    = App some  person                         :: Repr ts (H SOMEONE)
-everyone   = App every person                         :: Repr ts (H EVERYONE)
+
+-- * Function words
+
+to         = Abs v0                                   :: Repr ts (H TO)
 of'        = Con "of"                                 :: Repr ts (H OF)
 which      = Pair (Pair which1 Top) (Pair which1 Top) :: Repr ts (H WHICH)
   where
-    which1 :: Repr ts ((E -> E) -> (E -> T) -> (E -> T) -> E -> T)
-    which1 = Abs (Abs (Abs (Abs (App v1 v0 :∧ App v2 (App v3 v0)))))
-some       = Abs (Pair (Abs (Exists ((App v2 v0) :∧ (App v1 v0)))) Top)
-every      = Abs (Pair (Abs (Forall ((App v2 v0) :⊃ (App v1 v0)))) Top)
+  which1   = Abs (Abs (Abs (Abs (App v1 v0 :∧ App v2 (App v3 v0)))))
 
 
-transitiveVerb n = Abs (Abs (App (App (Con n) v0) v1))
+-- * Utility functions
+
+notEmpty :: Repr ts ((E -> T) -> T)
+notEmpty = Abs (Exists (App v1 v0))
+
+moreThanOne :: Repr ts ((E -> T) -> T)
+moreThanOne = Abs (Exists (Exists ((App v2 v1 :∧ App v2 v0) :∧ (v1 :≢ v0))))
+
+plural :: Repr ts ((E -> T) -> ((E -> T) -> T, ()))
+plural =
+  Abs (Pair (Abs (Exists (App moreThanOne v0
+                    :∧ Forall (App v1 v0 :⊃ (App v3 v0 :∧ App v2 v0))))) Top)
+
+-- * Smart constructors
+
+mkN  n  = Con n
+mkIV iv = Con iv
+mkTV tv = Abs (Abs (App (App (Con tv) v0) v1))
 
 
 -- -}
@@ -270,6 +289,7 @@ type    NP      = El 'Syn.NP
 type    PP      = El 'Syn.PP
 type    INF     = El 'Syn.INF
 type    NP'S    = NP :⇨ S
+type    NS      = Q NP S S
 type    A       = N :← N
 type    IV      = NP :→ S
 type    TV      = (NP :→ S) :← NP

@@ -28,7 +28,7 @@ main =
       need (toBuild <$> ["main.tex" , "main.bib", "preamble.tex"] ++ figs)
 
       command_ [Cwd "_build", EchoStdout True ] "pdflatex" ["-draftmode", lcl]
-      --command_ [Cwd "_build", EchoStdout False] "bibtex"   [dropExtension lcl]
+      command_ [Cwd "_build", EchoStdout False] "bibtex"   [dropExtension lcl]
       command_ [Cwd "_build", EchoStdout False] "pdflatex" ["-draftmode", lcl]
       command_ [Cwd "_build", EchoStdout False] "pdflatex" [lcl]
 
