@@ -4,7 +4,11 @@
 \usepackage{alphabeta}%
 \usepackage[greek,english]{babel}%
 \languageattribute{greek}{polutoniko}%
+
 \usepackage{hyperref}%
+\addto\extrasenglish{%
+  \renewcommand*{\figureautorefname}{figure}%
+}
 
 \usepackage{amsmath,amssymb,wasysym}%
 \let\oldemptyset\emptyset%
@@ -12,6 +16,8 @@
 
 \usepackage{mathtools}%
 \usepackage{mdframed}%
+\usepackage[inline]{enumitem}%
+\usepackage{natbib}%
 
 \usepackage{bussproofs}%
 \EnableBpAbbreviations%
@@ -36,6 +42,9 @@
     \char`\&\relax
   \fi
 }
+\def\e{\ensuremath{\mathbf{e}}}%
+\def\t{\ensuremath{\mathbf{t}}}%
+\def\et1{\ensuremath{\lambda^{\ra}_{\{\e,\t\}}}}%
 
 \newenvironment{pfbox}
   {\leavevmode\hbox\bgroup}

@@ -1,0 +1,43 @@
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \begin{minipage}{0.35\linewidth}%
+      \centering
+      \framebox{Morphological}\\
+      $\downarrow$\\
+      \framebox{Lexical}\\
+      $\downarrow$\\
+      \framebox{Syntactic}\\
+      $\downarrow$\\
+      \framebox{Semantic}\\
+      $\downarrow$\\
+      \framebox{Pragmatic}\\
+    \end{minipage}
+    \begin{minipage}{0.55\linewidth}%
+      \centering
+      ``Mary saw foxes.''\\
+      $\downarrow$\\
+      Mary see.PAST fox.PL\\
+      $\downarrow$\\
+      Mary:NP see:TV.PAST fox:NP.PL\\
+      $\downarrow$\\
+      Mary:NP [see:TV.PAST fox:NP.PL]\\
+      $\downarrow$\\
+      $\exists X. X \subseteq\mathbf{fox}\land\mathbf{past}(\mathbf{see}(\text{Mary},X))$\\
+      $\downarrow$\\
+      \ldots\footnotemark\\
+    \end{minipage}
+  \end{mdframed}
+  \caption{An abstract pipeline for natural language
+    understanding.}%
+  \label{fig:abstract-nlu-pipeline}
+\end{figure}
+\footnotetext{%
+  As the pragmatic function is all about integrating context (be it
+  textual or environmental) into the meaning, it would not make sense
+  to list something here.
+}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

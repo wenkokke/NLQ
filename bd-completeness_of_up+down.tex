@@ -1,0 +1,135 @@
+\begin{comment}
+  \subsubsection*{Completeness of $\uparrow$ and $\downarrow$ w.r.t.\
+    \textbf{B} and \textbf{C}}%
+  We will assume the following definitions for contexts, the plugging
+  operator $\cdot\:[\:\cdot\:]$, and the trace function:
+  \begin{center}
+    $\text{Context}\;Σ\coloneqq\Box\vsep Σ\prodl Γ\vsep Γ\prodr Σ$\\
+    \begin{minipage}{0.45\linewidth}
+      \begin{alignat*}{2}
+        &\Box       \;&&[Γ']\mapsto Γ'\\
+        &(Σ\prodl Γ)\;&&[Γ']\mapsto (Σ[Γ']\prod Γ)\\
+        &(Γ\prodr Σ)\;&&[Γ']\mapsto (Γ\prod Σ[Γ'])
+      \end{alignat*}
+    \end{minipage}
+    \begin{minipage}{0.45\linewidth}
+      \begin{alignat*}{2}
+        &\text{trace}(\Box)     \;&&\mapsto \mathbf{I}\\
+        &\text{trace}(Σ\prodl Γ)\;&&\mapsto ((\mathbf{C}\prod \text{trace}(Σ))\prod Γ)\\
+        &\text{trace}(Γ\prodr Σ)\;&&\mapsto ((\mathbf{B}\prod Γ)\prod
+        \text{trace}(Σ))
+      \end{alignat*}
+    \end{minipage}
+  \end{center}
+  Given these definitions, we can show that the following rules for
+  quantifier raising are derivable:
+  \begin{center}
+    \vspace*{0.5\baselineskip}
+    \begin{pfbox}
+      \AXC{$\text{trace}(Σ)\fCenter[A\himpr B]$} \AXC{$[C]\fCenter Δ$}
+      \RightLabel{$\uparrow$}
+      \BIC{$Σ[\cdot\mathbf{Q}(C\himpl(A\himpr B))\cdot]\fCenter Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Σ[\cdot A\cdot]\fCenter\cdot B\cdot$}
+      \RightLabel{$\downarrow$}
+      \UIC{$\text{trace}(Σ)\fCenter\cdot A\himpr B\cdot$}
+    \end{pfbox}
+    \vspace*{0.5\baselineskip}
+  \end{center}
+  And these rules can be combined to form one full quantifier
+  movement, reducing the type $\mathbf{Q}(C\himpl(A\himpr B))$ to $A$,
+  while changing the top-level type from $C$ to $B$:
+  \begin{center}
+    \vspace*{0.5\baselineskip}
+    \begin{pfbox}
+      \AXC{$\vdots$}\noLine\UIC{$Σ[\cdot A\cdot]\fCenter\cdot B\cdot$}
+      \RightLabel{$\downarrow$}
+      \UIC{$\text{trace}(Σ)\fCenter\cdot A\himpr B\cdot$}
+      \RightLabel{Foc$^R$} \UIC{$\text{trace}(Σ)\fCenter[A\himpr B]$}
+      \AXC{$\vdots$}\noLine\UIC{$[C]\fCenter Δ$}
+      \RightLabel{$\uparrow$}
+      \BIC{$Σ[\cdot\mathbf{Q}(C\himpl(A\himpr B))\cdot]\fCenter Δ$}
+    \end{pfbox}
+    \vspace*{0.5\baselineskip}
+  \end{center}
+  We would like to show that, in fragment of the logic which is used
+  for natural language, the derived rules $\uparrow$ and $\downarrow$
+  are complete w.r.t.\ the structural rules \textbf{B} and
+  \textbf{C}. For this purpose, we assume that:
+  \begin{itemize}
+  \item%
+    there will be no occurrences of hollow structural connectives
+    ($\!\!\himpl$,$\hp rod$,$\himpr$), \textbf{B} or \textbf{C} in the
+    final sequent---the presence of these indicates unresolved
+    movement, which means the sentence is not pronounceable;
+  \item%
+    all occurrences of the quantifying licence \textbf{Q} will be of
+    the form $\mathbf{Q}(C\himpl(A\himpr B))$.
+  \end{itemize}
+  Under these assumptions, we can derive that the only interesting
+  proofs which involve quantifiers will be of the form:
+$$
+L\mathbf{I} \ra\text{move up} \ra L\!\!{\himpl} \ra\text{auxiliary
+  rules} \ra R{\himpr} \ra\text{move down} \ra\mathbf{I}^-
+$$
+There are three important facts to note here:
+\begin{enumerate}
+\item\label{no-axiom-BC}%
+  \textbf{B}'s and \textbf{C}'s are structures, and therefore cannot
+  be eliminated by axioms;
+\item\label{cannot-overtake-Q}%
+  during upwards or downwards movement, the quantifier is always
+  attached to a hollow product, and the \textbf{B} and \textbf{C}
+  rules only allow a quantifier to move past a \textit{solid} product;
+  therefore, no quantifier can ever move past another quantifier;
+\item%
+  from \ref{no-axiom-BC} and \ref{cannot-overtake-Q}, we can derive
+  that \textbf{B}'s and \textbf{C}'s introduced by upwards movement of
+  a quantifier can only be eliminated by downwards movement \textit{of
+    that same quantifier}.
+\end{enumerate}
+\note{%
+  One move important fact to take note of is that the \textbf{B} and
+  \textbf{C} are set up in such a way that every quantifier is forced
+  to return to its original location. If the quantifier stops halfway
+  through it's movement, there will be \textbf{B}'s and \textbf{C}'s
+  left over in the sequent---and since \textbf{B}'s and \textbf{C}'s
+  are always introduced in a positive context, and polarity is
+  maintained, they can never be eliminated by an axiom.\\
+  During upwards (or downwards) movement, the main connective on the
+  left-hand side is always the hollow product. At every step, there
+  are three possibilities:
+  \begin{enumerate}
+  \item Move further up (or down) using \textbf{B} and \textbf{C};
+  \item Use residuation to focus on the left-hand side of the hollow
+    product.\\
+    During upwards movement, the left-hand side is necessarily a
+    quantifier, and therefore the only applicable rule is
+    $L\!\!\himpl$, which will eliminate the $\himpl$, and therefore
+    stop the upwards movement.\\
+    During downwards movement, the left-hand side is always a
+    formula. Due to the fact that right-hand side will contain
+    \textbf{B} and \textbf{C}, which can only be eliminated by
+    downwards movement, there will be no way to finish the proof but
+    through reversing the residuation, thereby forming a loop.
+  \item Use residuation to focus on the right-hand side of the hollow
+    product.\\
+    However, any proof steps that work on the right-hand side of the
+    hollow product will commute with upwards and downwards movement,
+    and can therefore take place before upwards movement, or after
+    downwards movement.
+  \end{enumerate}%
+  As for the interaction of multiple quantifiers, this is where the
+  second modality (hollow) starts to play a role, as it ensures that
+  no quantifier can ever move past a quantifier which is still moving,
+  as the rules \textbf{B} and \textbf{C} only allow quantifiers to
+  move past \textit{solid} products. This also entails that
+  quantifiers can never switch places, as this would require one to
+  move past the other.  }
+\end{comment}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
