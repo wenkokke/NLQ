@@ -22,6 +22,7 @@
 \usepackage{bussproofs}%
 \EnableBpAbbreviations%
 \def\fCenter{\mathbin{\vdash}}%
+\def\la{\leftarrow}%
 \def\ra{\rightarrow}%
 \def\impl{\mathbin{\slash}}%
 \def\impr{\mathbin{\backslash}}%
@@ -45,11 +46,20 @@
 \def\e{\ensuremath{\mathbf{e}}}%
 \def\t{\ensuremath{\mathbf{t}}}%
 \def\et1{\ensuremath{\lambda^{\ra}_{\{\e,\t\}}}}%
+\def\john{\ensuremath{\mathbf{john}}}%
+\def\mary{\ensuremath{\mathbf{mary}}}%
+\def\walks{\ensuremath{\mathbf{walks}}}%
+\def\likes{\ensuremath{\mathbf{likes}}}%
+\def\plug{\ensuremath{\:\cdot\:[\:\cdot\:]}}%
+\def\S{\text{S}}%
+\def\N{\text{N}}%
+\def\NP{\text{NP}}%
+\def\PP{\text{PP}}%
+\def\INF{\text{INF}}%
 
-\newenvironment{pfbox}
-  {\leavevmode\hbox\bgroup}
-  {\DisplayProof\egroup}
-
+\newenvironment{pfbox}[1][1.0]%
+  {\gdef\scalefactor{#1} \leavevmode\hbox\bgroup}
+  {\scalebox{\scalefactor}{\DisplayProof} \egroup}
 
 \usepackage{stmaryrd}%
 \usepackage{comment}%
@@ -92,7 +102,7 @@
 % include notes
 \usepackage{ifthen}%
 \newboolean{notes}%
-\setboolean{notes}{false}%
+\setboolean{notes}{true}%
 \newcommand{\todo}[1]{%
 \ifthenelse%
   {\boolean{notes}}%

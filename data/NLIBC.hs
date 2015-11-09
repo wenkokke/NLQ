@@ -11,7 +11,7 @@ import           NLIBC.Syntax    hiding (Q,T,S,N,NP,PP,INF)
 import qualified NLIBC.Syntax    as Syn
 import           NLIBC.Semantics (HI,H,E,T,v0,v1,v2,v3,v4,Sem(..))
 import qualified NLIBC.Semantics as Sem
-import           NLIBC.Semantics.Show1
+import           NLIBC.Semantics.Show1 (show1)
 import           NLIBC.Semantics.Show2
 
 
@@ -41,6 +41,7 @@ import           NLIBC.Semantics.Show2
 -- style. Additionally, the calculus has some syntactic sugar for the
 -- quantifiers -- ∀x.u abbreviates ∀(λx.u) and likewise for ∃ -- and
 -- is extended with postulates for the logical connectives.
+
 
 eng0  = show2 (Pair john runs)
         <$> findAll (JOHN ∙ RUNS ⊢ S)

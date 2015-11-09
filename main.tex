@@ -6,7 +6,7 @@
 
 \section{Introduction}
 
-\subsection{What is type-logical grammar?}
+\subsection{What is type-logical grammar?}\label{sec:what-is-type-logical-grammar}
 Before we address the question of what type-logical grammar is, let us
 look at the abstract pipeline for natural language understanding
 in~\autoref{fig:abstract-nlu-pipeline}.
@@ -31,8 +31,8 @@ is truly considered\footnote{%
   grammars, which fundamentally treat the syntactic and semantic
   functions as the same function by rejecting the tree structure of
   sentences.
-}. That is the approach I will also take in this thesis -- therefore,
-we consider type-logical grammars to be the following function:
+}. That is the approach we will also take in this thesis -- that is,
+we consider type-logical grammars to be the function:
 %
 \begin{center}
   Mary:NP [see:TV.PAST fox:NP.PL]\\
@@ -49,64 +49,168 @@ following:
   Given a tree of words, compute the meaning of the overall tree.
 \end{center}
 %
-The approach that type-logical grammar offers -- drawing heavily from
+The approach that type-logical grammar takes -- drawing heavily from
 categorial grammar and Montague semantics -- is two-fold:
 \begin{enumerate*}[label=(\arabic*)]
-\item we use a simply-typed lambda calculus to represent lexical
-  meaning, and compute the meanings sentences by compositionality,
-  counting on decades of work on functional programming to aid us in
-  the task of keeping seemingly non-compositional meanings
-  compositional;
-\item because this approach over-generates, we will use a second, more
-  restricted type-theory which types only those utterances that are
-  grammatical.
+\item%
+  we use a simply-typed lambda calculus to represent the meanings of the
+  words, and compute the meanings of the sentences by composing the
+  meanings of the words;
+\item%
+  and because this approach over-generates -- from the set
+  $\{\john,\likes,\mary\}$ we can build both
+  $\likes(\john,\mary)$ and
+  $\likes(\mary,\john)$ -- we will use a second,
+  more restricted type-theory, in which only those utterances that are
+  grammatical can be typed.
 \end{enumerate*}
+We will interpret the part-of-speech tags (\texttt{NP}, \texttt{TV},
+etc.) as types in the syntactic calculus, and the morphemes
+(e.g. lemmas, \texttt{PAST} and \texttt{PLURAL}) as terms in the
+semantic calculus. We can then find the meaning of a sentence by
+searching for a term of the appropriate type (as dictated by the
+part-of-speech tags) in our syntactic calculus, and then translating
+this term into our semantic calculus.
 
-The process of meaning computation then becomes:
-\begin{enumerate*}[label=(\arabic*)]
-\item search for a proof of grammaticality in our syntactic calculus;
-\item translate the found proof term to a lambda term in our semantic
-  calculus.
-\end{enumerate*}
+In \autoref{sec:simple-type-logical-grammar}, we will have a look at
+a simple type-logical grammar, and give some examples of the process
+of computing sentence meanings.
 
-
-\subsection{A simple type-logical grammar}
+\subsection{A simple type-logical grammar}\label{sec:simple-type-logical-grammar}
 The simplest type-logical grammar that comes to mind is composed of
 the simply-typed lambda calculus with atomic types \e\ and \t\ (\et1) as
 a semantic calculus, and the non-associative Lambek calculus (NL) as a
 syntactic calculus.
 
-\subsubsection{A simple semantic calculus (\et1)}
 The usual natural deduction formulation of \et1\ can to be seen
-in~\autoref{fig:implicit-semantic-calculus}.
-%
-\input{fig-implicit-semantic-calculus}%
-%
-This formulation, however, uses a set of type assignments (of the form
-$A : Γ$) as the antecedent, and therefore lacks a purely syntactic
-definition.
-%
-If we \emph{do} want a purely syntactic definition, we will have to
-give an equivalent formulation in which the structure that is implicit
-in the set is made explicit. One such formulation can be seen
-in~\autoref{fig:explicit-semantic-calculus}. We have replaced the
-usual structural comma with a structural product ($\prod$), and added
-five structural rules stating that we can freely change the order of
-formulas (commutativity and associativity); copy formulas
-(contraction); drop formulas (weakening); and always add the empty
-structure (E$\emptyset$).
+in~\autoref{fig:implicit-semantic-calculus}. It is a simple lambda
+calculus, with atomic types \e\ (`entity') and \t\ (`truth-value'). In
+addition, all logical operators and word-meanings we need are assumed
+to be defined as constants, with their expected type. For instance,
+$\forall$ is a constant of type $(\e\ra\t)\ra\t$, and \john\ is a
+constant of type \e. Note that we will often write logical operators
+in their usual notation, e.g.\ $M\land N$ or $\forall x.M$, but this
+should be take as syntactic sugar for constants, abstractions and
+applications.
 
-\subsubsection{A simple syntactic calculus (NL)}
-\citet[p. 33, 105-106]{moot2012}
+\input{fig-implicit-semantic-calculus}%
+
+As was mentioned in the previous section, using this calculus as a
+semantics function directly would over-generate as, for instance, the
+below proofs are both valid for the environment
+$\{\john,\likes,\mary\}$:
+\begin{center}
+  \begin{pfbox}[0.75]
+    \AXC{$\john:\e$}
+    \AXC{$\likes:\e\ra\e\ra\t$}
+    \BIC{$(\likes\;\john):\e\ra\t$}
+    \AXC{$\mary:\e$}
+    \BIC{$((\likes\;\john)\;\mary):\t$}
+  \end{pfbox}
+  \begin{pfbox}[0.75]
+    \AXC{$\mary:\e$}
+    \AXC{$\likes:\e\ra\e\ra\t$}
+    \BIC{$(\likes\;\mary):\e\ra\t$}
+    \AXC{$\john:\e$}
+    \BIC{$((\likes\;\mary)\;\john):\t$}
+  \end{pfbox}
+\end{center}
+The reason for this is, of course, that the set structure used in this
+formulation is much too expressive for natural language grammar.
+%
+If we want more control over the structure of our terms, a good first
+step is to move to a purely syntactic formulation, where all the
+structural properties are made explicit; this has been done in
+\autoref{fig:explicit-semantic-calculus}. We have replaced the set by
+a (possibly empty) binary tree, spanned by the structural product
+`$\prod$', and have included a number of new structural rules which
+implement the structure of a multiset\footnote{%
+  In \autoref{fig:implicit-semantic-calculus}, we can use the
+  structure of a set because it is populated by \textit{typing
+  assumptions} of the form $x : A$ -- as such, the environment can
+  contain both $x : A$ and $y : A$. When we dropped the terms from the
+  formulation in \autoref{fig:explicit-semantic-calculus}, we had to
+  make the switch to multisets.
+}.
 
 \input{fig-explicit-semantic-calculus}
+
+Note that, in order to define these structural rules, we had to define
+the notion of a `context' --  which is a structure with \emph{exactly
+one} hole in it -- and a plugging function `\plug' -- which inserts a
+structure into that hole. The reason for this is that we have to be
+able to apply commutativity and associativity \emph{anywhere} in the
+structure to be able to freely change the order (and bracketing) of
+the formulas in it.\footnote{%
+  The contexts are not strictly necessary for $\emptyset E$,
+  contraction and weakening, since we can already move any formula
+  anywhere we want, but they make the proof system much more usable
+  and greatly decrease the length of proofs that need to use any of
+  these structural rules.
+}
+
+Now that we have a semantic calculus where all structure has been made
+explicit, we can construct our syntactic calculus in three simple
+steps:
+\begin{enumerate}
+\item%
+  we drop \emph{all} structural rules;
+\item%
+  since the implication `$\ra$' can now only take arguments directly
+  from the left, we add a second implication `$\la$' which can only
+  take arguments from the right -- by convention, implications in this
+  system are written as division lines, with the argument \emph{under}
+  the line (so, as `$\impr$' and `$\impl$', respectively);
+\item%
+  we replace the atomic semantic types \e\ and \t\ by atomic syntactic
+  types, reminiscent of part-of-speech tags -- in this case, these
+  are S (`sentence'), NP (`noun phrase'), N (`noun'), PP
+  (`prepositional phrase') and INF (`infinitive').
+\end{enumerate}
+The resulting system can be seen in \autoref{fig:syntactic-calculus}.
+
 \input{fig-syntactic-calculus}
 
+Dropping \emph{all} structural rules may seem unnecessary, but there
+is a good motivation for each rule.  For example, in the presence of
+commutativity, there is no way to distinguish between ``Mary walks.''
+and ``walks Mary.''; under weakening, we can add any word anywhere in a
+grammatical sentence, and the sentence will remain grammatical --
+e.g. ``Mary banana walks.''; and with contraction, we can remove
+consecutive words with the same type -- this means that ``John gave
+Bill a book.'' would be just as grammatical as ``John gave Bill.'',
+and the two could be taken to mean the same!
 
-%\input{fig-display-calculus}
-%\input{fig-extension-lexical-ambiguity}
-%\input{fig-extension-quantifier-raising}
-%\input{fig-extension-scope-islands}
+The motivations to drop associativity and the empty structure are a
+little bit harder to understand, but the interested reader can refer
+to \citet[p. 33, 105-106]{moot2012}, who show some ungrammatical
+sentences that would be accepted in the presence of these rules.
+
+\todo{Describe the translation from NL to \et1.}
+
+\subsection{An example}\label{sec:an-example}
+
+As an example sentence, let's give an analysis of the sentence ``Mary
+likes `Slaughterhouse-Five'''.
+First, we `run' the morphological, lexical and syntactic phases. This
+turns our input sequent into $\NP\prod(\NP\impr\S)\impl\NP\prod\NP
+\fCenter\S$.
+\begin{center}
+  \begin{pfbox}[0.8]
+    \AXC{}\RightLabel{Ax}\UIC{$\NP\fCenter\NP$}
+    \AXC{}\RightLabel{Ax}\UIC{$(\NP\impr\S)\impl\NP\fCenter(\NP\impr\S)\impl\NP$}
+    \RightLabel{$\impr$E}
+    \BIC{$\NP\prod(\NP\impr\S)\impl\NP\fCenter\S\impl\NP$}
+    \AXC{}\RightLabel{Ax}\UIC{$\NP\fCenter\NP$}
+    \RightLabel{$\impl$E}
+    \BIC{$\NP\prod(\NP\impr\S)\impl\NP\prod\NP\fCenter\S$}
+  \end{pfbox}
+\end{center}
+
+\input{fig-display-calculus}
+\input{fig-extension-lexical-ambiguity}
+\input{fig-extension-quantifier-raising}
+\input{fig-extension-scope-islands}
 
 % - implicit semantic calculus;
 % - explicit semantic calculus;
