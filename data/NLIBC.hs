@@ -10,7 +10,7 @@
 module NLIBC where
 
 
-import           Prelude         hiding (pred,read,reads,(<$))
+import           Prelude         hiding (pred,read,reads,(<$),(*))
 import           Data.List       (nub)
 import           Data.Singletons (fromSing)
 import           NLIBC.Syntax    hiding (Q,T,S,N,NP,PP,INF)
@@ -22,42 +22,41 @@ import           NLIBC.Semantics.Show2
 import           Text.Printf (printf)
 
 
+infixr 3 *; (*) = (,)
+
 
 -- * Example Sentences
 
-eng0  = parseAs S (john , runs)
+eng0  = parseAs S (john * runs)
 
-eng1  = parseAs S (john    , (likes , mary))
-eng2  = parseAs S (someone , (likes , mary))
-eng3  = parseAs S (john    , (likes , everyone))
-eng4  = parseAs S (someone , (likes , everyone))
+eng1  = parseAs S (john    * likes * mary)
+eng2  = parseAs S (someone * likes * mary)
+eng3  = parseAs S (john    * likes * everyone)
+eng4  = parseAs S (someone * likes * everyone)
 
-eng5  = parseAs S ((the               , waiter ) , (serves , everyone))
-eng6  = parseAs S ((the  , (same      , waiter)) , (serves , everyone))
-eng7  = parseAs S ((some , (different , waiter)) , (serves , everyone))
+eng5  = parseAs S ((the              * waiter) * serves * everyone)
+eng6  = parseAs S ((the  * same      * waiter) * serves * everyone)
+eng7  = parseAs S ((some * different * waiter) * serves * everyone)
 
-eng8  = parseAs S (mary , ( wants             , (to , leave)))
-eng9  = parseAs S (mary , ((wants , john)     , (to , leave)))
-eng10 = parseAs S (mary , ((wants , everyone) , (to , leave)))
+eng8  = parseAs S (mary *  wants             * to * leave)
+eng9  = parseAs S (mary * (wants * john)     * to * leave)
+eng10 = parseAs S (mary * (wants * everyone) * to * leave)
 
-eng11 = parseAs S (mary , ( wants             , (to , (like , bill))))
-eng12 = parseAs S (mary , ((wants , john)     , (to , (like , bill))))
-eng13 = parseAs S (mary , ((wants , everyone) , (to , (like , bill))))
+eng11 = parseAs S (mary *  wants             * to * like * bill)
+eng12 = parseAs S (mary * (wants * john)     * to * like * bill)
+eng13 = parseAs S (mary * (wants * everyone) * to * like * bill)
 
-eng14 = parseAs S (mary , ( wants             , (to , (like , someone))))
-eng15 = parseAs S (mary , ((wants , john)     , (to , (like , someone))))
-eng16 = parseAs S (mary , ((wants , everyone) , (to , (like , someone))))
+eng14 = parseAs S (mary *  wants             * to * like * someone)
+eng15 = parseAs S (mary * (wants * john)     * to * like * someone)
+eng16 = parseAs S (mary * (wants * everyone) * to * like * someone)
 
-eng17 = parseAs S (mary , (says , [(john     , (likes , bill))]))
-eng18 = parseAs S (mary , (says , [(everyone , (likes , bill))]))
+eng17 = parseAs S (mary * says * [john     * likes * bill])
+eng18 = parseAs S (mary * says * [everyone * likes * bill])
 
-eng19 = parseAs S (mary , (reads , (some , (book ,
-                  ( (the , (author , (of' , which)))
-                  , (john , likes)
-                  )))))
+eng19 = parseAs S (mary * reads * some * book * (the * author * of' * which) * john * likes)
 
-eng20 = parseAs S (mary , (sees , (some , fox)))
-eng21 = parseAs S (mary , (sees , foxes))
+eng20 = parseAs S (mary * sees * some * fox)
+eng21 = parseAs S (mary * sees * foxes)
 
 
 
@@ -162,6 +161,7 @@ type    IV       = NP :→ S
 type    TV       = (NP :→ S) :← NP
 type    DET      = NP :← N
 type    Q a b c  = UnitR Hollow (c :⇦ (a :⇨ b))
+
 
 pattern S        = SEl SS
 pattern N        = SEl SN
