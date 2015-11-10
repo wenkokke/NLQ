@@ -12,12 +12,14 @@ module NLIBC where
 
 import           Prelude         hiding (pred,read,reads,(<$))
 import           Data.List       (nub)
+import           Data.Singletons (fromSing)
 import           NLIBC.Syntax    hiding (Q,T,S,N,NP,PP,INF)
 import qualified NLIBC.Syntax    as Syn
 import           NLIBC.Semantics (HI,H,E,T,v0,v1,v2,v3,v4,Sem(..))
 import qualified NLIBC.Semantics as Sem
 import           NLIBC.Semantics.Show1 (show1)
 import           NLIBC.Semantics.Show2
+import           Text.Printf (printf)
 
 
 
@@ -188,6 +190,10 @@ pattern x :≢ y   = Not (App (App (Con "≡") x) y)
 data Entry x = Entry (SStructI x) (Repr '[] (HI x))
 
 
+instance Show (Entry x) where
+  show (Entry t r) = show r
+
+
 infix 1 -:
 
 (-:) :: Repr '[] (H a) -> SType a -> Entry (StI a)
@@ -198,7 +204,7 @@ class Combine a b | a -> b where
   combine :: a -> b
 
 instance Combine (Entry t) (Entry t) where
-  combine e = e
+  combine = id
 
 instance (Combine x (Entry a))
          => Combine [x] (Entry (DIA Reset a)) where
