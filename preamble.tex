@@ -20,9 +20,10 @@
 \usepackage{mdframed}%
 \usepackage[inline]{enumitem}%
 \usepackage{natbib}%
+\usepackage[toc,page]{appendix}%
 
 \usepackage{tabularx}%
-\renewcommand{\arraystretch}{3}%
+\renewcommand{\arraystretch}{4}%
 
 \usepackage{bussproofs}%
 \EnableBpAbbreviations%
@@ -69,7 +70,7 @@
 \newcommand{\focus}  [1]{\boxed{#1}}%
 \newcommand{\struct} [1]{{\cdot}#1{\cdot}}%
 \newcommand{\tr}     [1][({\cdot})]{#1^*}%
-\newcommand{\case}   [4]{\text{let}\;(#2, #3)=#1\;\text{in}\;#4}%
+\newcommand{\case}   [4]{\text{case}\;#1\;\text{of}\;(#2, #3)\ra#4}%
 
 \renewcommand*{\&}{%
   \relax

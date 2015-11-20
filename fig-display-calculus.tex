@@ -78,8 +78,8 @@
     Extension of semantic calculus from
     \autoref{fig:implicit-semantic-calculus}:
     \begin{alignat*}{4}
-      \text{Type}\;&A,B&&\coloneqq\ldots\vsep A\times B\vsep\\
-      \text{Term}\;&M,N&&\coloneqq\ldots\vsep (M, N)\vsep\case{M}{x}{y}{N}\vsep()
+      \text{Type}\;&A,B&&\coloneqq\ldots\vsep A\times B\\
+      \text{Term}\;&M,N&&\coloneqq\ldots\vsep (M, N)\vsep\case{M}{x}{y}{N}
     \end{alignat*}
     \begin{prooftree}
       \AXC{$Γ\fCenter M : A$}
@@ -104,8 +104,8 @@
       \BIC{$Γ\prod Δ\fCenter A\times B$}
     \end{prooftree}
     \begin{prooftree}
-      \AXC{$Γ\fCenter M : A\times B$}
-      \AXC{$Δ\prod A\prod B\fCenter N : C$}
+      \AXC{$Γ\fCenter A\times B$}
+      \AXC{$Δ\prod A\prod B\fCenter C$}
       \RightLabel{$\times$E}
       \BIC{$Γ\prod Δ\fCenter C$}
     \end{prooftree}
@@ -113,7 +113,7 @@
   \end{mdframed}
   \caption{An extension of the semantic calculi from
     \autoref{fig:implicit-semantic-calculus} and
-    \autoref{fig:explicit-semantic-calculus}}.
+    \autoref{fig:explicit-semantic-calculus}.}
   \label{fig:extended-semantic-calculi}
 \end{figure}
 %
