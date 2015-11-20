@@ -49,40 +49,36 @@ following:
   Given a tree of words, compute the meaning of the overall tree.
 \end{center}
 %
-The approach that type-logical grammar takes -- drawing heavily from
-categorial grammar and Montague semantics -- is two-fold:
-\begin{enumerate*}[label=(\arabic*)]
-\item%
-  we use a simply-typed lambda calculus to represent the meanings of the
-  words, and compute the meanings of the sentences by composing the
-  meanings of the words;
-\item%
-  and because this approach over-generates -- from the set
-  $\{\john,\likes,\mary\}$ we can build both
-  $\likes(\john,\mary)$ and
-  $\likes(\mary,\john)$ -- we will use a second,
-  more restricted type-theory, in which only those utterances that are
-  grammatical can be typed.
-\end{enumerate*}
-We will interpret the part-of-speech tags (\texttt{NP}, \texttt{TV},
-etc.) as types in the syntactic calculus, and the morphemes
-(e.g. lemmas, \texttt{PAST} and \texttt{PLURAL}) as terms in the
-semantic calculus. We can then find the meaning of a sentence by
-searching for a term of the appropriate type (as dictated by the
-part-of-speech tags) in our syntactic calculus, and then translating
-this term into our semantic calculus.
+Type-logical grammar offers a solution to this problem. A type-logical
+grammar consists of three things:
+\begin{enumerate}[label=(\arabic*)]
+\item a syntactic calculus, set up in such a fashion that only
+  grammatical sentences are well-typed, and for which an efficient
+  method of proof-search exists;
+\item a semantic calculus, used to represent the meanings of words and
+  sentences; and
+\item a translation from the syntactic to the semantic calculus.
+\end{enumerate}
+We interpret the part-of-speech tags in our input as (NP, TV, etc.)
+types in the syntactic calculus, and use these -- together with the
+desired constituent type -- to form an input sequent. We then search
+for a term of that type in the syntactic calculus, and translate it to
+the semantic calculus. Once there, we interpret the morphemes
+(e.g. lemmas, \texttt{PAST} and \texttt{PLURAL}) as (possibly complex)
+terms in the semantic calculus.
 
 In \autoref{sec:simple-type-logical-grammar}, we will have a look at
-a simple type-logical grammar, and give some examples of the process
-of computing sentence meanings.
+an example type-logical grammar, and give some examples of this
+process of computing sentence meaning.
 
 \subsection{A simple type-logical grammar}\label{sec:simple-type-logical-grammar}
-The simplest type-logical grammar that comes to mind is composed of
-the simply-typed lambda calculus with atomic types \e\ and \t\ (\et1) as
+The simplest type-logical grammar that comes to mind -- drawing
+heavily from Montague grammar and categorial grammar -- is composed of
+the simply-typed lambda calculus with atomic types \e\ and \t\ (\lamET) as
 a semantic calculus, and the non-associative Lambek calculus (NL) as a
 syntactic calculus.
 
-The usual natural deduction formulation of \et1\ can to be seen
+The usual natural deduction formulation of \lamET\ can to be seen
 in~\autoref{fig:implicit-semantic-calculus}. It is a simple lambda
 calculus, with atomic types \e\ (`entity') and \t\ (`truth-value'). In
 addition, all logical operators and word-meanings we need are assumed
@@ -95,43 +91,27 @@ applications.
 
 \input{fig-implicit-semantic-calculus}%
 
-As was mentioned in the previous section, using this calculus as a
-semantics function directly would over-generate as, for instance, the
-below proofs are both valid for the environment
-$\{\john,\likes,\mary\}$:
-\begin{center}
-  \begin{pfbox}[0.75]
-    \AXC{$\john:\e$}
-    \AXC{$\likes:\e\ra\e\ra\t$}
-    \BIC{$(\likes\;\john):\e\ra\t$}
-    \AXC{$\mary:\e$}
-    \BIC{$((\likes\;\john)\;\mary):\t$}
-  \end{pfbox}
-  \begin{pfbox}[0.75]
-    \AXC{$\mary:\e$}
-    \AXC{$\likes:\e\ra\e\ra\t$}
-    \BIC{$(\likes\;\mary):\e\ra\t$}
-    \AXC{$\john:\e$}
-    \BIC{$((\likes\;\mary)\;\john):\t$}
-  \end{pfbox}
-\end{center}
+Using this calculus as a semantics function directly would
+over-generate as, e.g. for the sequent $\{\john:\e,
+\likes:\e\ra\e\ra\t, \mary:\e\}\fCenter\t$ we can derive
+both $((\likes\;\john)\;\mary)$ and $((\likes\;\mary)\;\john)$.
 The reason for this is, of course, that the set structure used in this
 formulation is much too expressive for natural language grammar.
-%
+
 If we want more control over the structure of our terms, a good first
 step is to move to a purely syntactic formulation, where all the
-structural properties are made explicit; this has been done in
-\autoref{fig:explicit-semantic-calculus}. We have replaced the set by
-a (possibly empty) binary tree, spanned by the structural product
-`$\prod$', and have included a number of new structural rules which
-implement the structure of a multiset\footnote{%
-  In \autoref{fig:implicit-semantic-calculus}, we can use the
-  structure of a set because it is populated by \textit{typing
-  assumptions} of the form $x : A$ -- as such, the environment can
-  contain both $x : A$ and $y : A$. When we dropped the terms from the
-  formulation in \autoref{fig:explicit-semantic-calculus}, we had to
-  make the switch to multisets.
-}.
+structural properties are made explicit in the calculus itself; this
+has been done in \autoref{fig:explicit-semantic-calculus}. We have
+replaced the set by a (possibly empty) binary tree, spanned by the
+structural product `$\prod$', and have included a number of new
+structural rules which implement the structure of a set.
+% footnote:
+%   In \autoref{fig:implicit-semantic-calculus}, we can use the
+%   structure of a set because it is populated by \textit{typing
+%   assumptions} of the form $x : A$ -- as such, the environment can
+%   contain both $x : A$ and $y : A$. When we dropped the terms from the
+%   formulation in \autoref{fig:explicit-semantic-calculus}, we had to
+%   make the switch to multisets.
 
 \input{fig-explicit-semantic-calculus}
 
@@ -148,6 +128,35 @@ the formulas in it.\footnote{%
   and greatly decrease the length of proofs that need to use any of
   these structural rules.
 }
+
+We can use the term language from \autoref{fig:implicit-semantic-calculus}
+for the explicit version of \lamET. The term labelling of the logical
+rules is exactly the same. The structural rules only manipulate
+structures, and therefore do not change the terms. The only exception
+to this is contraction, for which the term labelling is as follows:
+\begin{prooftree}
+  \AXC{$Σ[y : A\prod z : A]\fCenter M : B$}
+  \RightLabel{Cont.}
+  \UIC{$Σ[x : A]\fCenter M[x/y][x/z] : B$}
+\end{prooftree}
+Contraction, therefore, contracts two names. For this it uses
+substitution, which is defined as usual:
+\begin{alignat*}{3}
+  &x             &&[N/y] \mapsto
+  \begin{cases}
+    N, &\text{if}\;x=y\\
+    x, &\text{otherwise}
+  \end{cases}
+  \\
+  &C             &&[N/y] \mapsto C\\
+  &(\lambda x.M) &&[N/y] \mapsto
+  \begin{cases}
+    \lambda x.M[N/y], &\text{if}\;x=y\\
+    \lambda x.M,      &\text{otherwise}
+  \end{cases}
+  \\
+  &(M\;M')       &&[N/y] \mapsto (M[N/y]\;M'[N/y])
+\end{alignat*}
 
 Now that we have a semantic calculus where all structure has been made
 explicit, we can construct our syntactic calculus in three simple
@@ -167,7 +176,9 @@ steps:
   are S (`sentence'), NP (`noun phrase'), N (`noun'), PP
   (`prepositional phrase') and INF (`infinitive').
 \end{enumerate}
-The resulting system can be seen in \autoref{fig:syntactic-calculus}.
+The resulting system can be seen in \autoref{fig:syntactic-calculus},
+defined along with the type-aliases \A\ (`adjective'), \IV\
+(`intransitive verb') and \TV\ (`transitive verb').
 
 \input{fig-syntactic-calculus}
 
@@ -186,31 +197,84 @@ little bit harder to understand, but the interested reader can refer
 to \citet[p. 33, 105-106]{moot2012}, who show some ungrammatical
 sentences that would be accepted in the presence of these rules.
 
-\todo{Describe the translation from NL to \et1.}
+The last component we need for a type-logical grammar is a translation
+from our syntactic calculus to our semantic calculus. This translation
+is described in \autoref{fig:translation-1}:
+\begin{enumerate*}[label=(\arabic*)]
+\item a function $\tr$, translating the types in NL to types in
+  \lamET; and
+\item a set of rewrite rules, that rewrite proofs in NL to proofs in
+  \lamET.
+\end{enumerate*}
+With these two translation functions, we can set up a new presentation
+for our syntactic proofs, namely one where the syntactic proofs are
+labelled with the semantic terms resulting from the translation.
 
-\subsection{An example}\label{sec:an-example}
-
-As an example sentence, let's give an analysis of the sentence ``Mary
-likes `Slaughterhouse-Five'''.
-First, we `run' the morphological, lexical and syntactic phases. This
-turns our input sequent into $\NP\prod(\NP\impr\S)\impl\NP\prod\NP
-\fCenter\S$.
+As an example, let's give an analysis of the sentence ``Mary likes
+Bill.''. We assume the morphological, lexical and syntactic phases
+have been taken care of. This turns our input sequent into:
 \begin{center}
-  \begin{pfbox}[0.8]
-    \AXC{}\RightLabel{Ax}\UIC{$\NP\fCenter\NP$}
-    \AXC{}\RightLabel{Ax}\UIC{$(\NP\impr\S)\impl\NP\fCenter(\NP\impr\S)\impl\NP$}
-    \RightLabel{$\impr$E}
-    \BIC{$\NP\prod(\NP\impr\S)\impl\NP\fCenter\S\impl\NP$}
-    \AXC{}\RightLabel{Ax}\UIC{$\NP\fCenter\NP$}
-    \RightLabel{$\impl$E}
-    \BIC{$\NP\prod(\NP\impr\S)\impl\NP\prod\NP\fCenter\S$}
+  \begin{pfbox}[0.9]
+    \AXC{$\mary:\NP\prod\likes:\TV\prod\bill:\NP\;\fCenter\;?:\S$}
   \end{pfbox}
-\end{center}
+\end{center}%
+Since our logic is propositional, proof search is decidable and we can
+simply search the space of all possible proofs that end in this
+sequent. We will find that the only proof is:
+\begin{center}
+  \hspace*{-0.25cm}%
+  \begin{pfbox}[0.9]
+    \AXC{}\RightLabel{Ax}\UIC{$\mary:\NP\fCenter\mary:\NP$}
+    \AXC{}\RightLabel{Ax}\UIC{$\likes:\TV\fCenter\likes:\TV$}
+    \RightLabel{$\impr$E}
+    \BIC{$\mary:\NP\prod\likes:\TV\fCenter(\likes\;\mary):\S\impl\NP$}
+    \AXC{}\RightLabel{Ax}\UIC{$\bill:\NP\fCenter\bill:\NP$}
+    \RightLabel{$\impl$E}
+    \BIC{$\mary:\NP\prod\likes:\TV\prod\bill:\NP\fCenter((\likes\;\mary)\;\bill):\S$}
+  \end{pfbox}
+\end{center}%
+And so, by searching for a proof in our syntactic calculus, and
+translating it to our semantic calculus, we get a meaning
+representation for our input sequent.
+
+
+\section{Display Calculus -- Research and Proof Search}\label{sec:display-calculus}
+In the previous section, we glossed over the issue of proof
+search. However, the natural deduction formulation of the syntactic
+calculus in \autoref{fig:syntactic-calculus} is not especially suited
+to proof search.
+In this section, we will develop a display calculus
+\citep{belnap1982} for NL based on work by
+\citet{bernardi2010,bastenhof2012}\footnote{%
+  While the cited work on focused proof search developed these
+  techniques in order to obtain a CPS translation of the
+  Lambek-Grishin calculus, we will adopt their techniques for a
+  different reason: because they greatly reduce the search space, and
+  therefore increase the efficiency of proof search. We will outfit
+  our display calculus with a direct translation.
+}. There are a few key advantages to this approach:
+\begin{enumerate}
+\item display calculi have a general cut-elimination theorem;
+\item display calculi have the sub-formula property;
+\end{enumerate}
+The general cut-elimination theorem is incredibly useful when
+developing a grammar logic, as any extension of the logic preserves
+cut-elimination as long as it obeys the rules of display logic.
+The sub-formula property allows the logic to be searched using naive
+backward-chaining proof search. A further advantage of display
+calculus is that it does not use contexts or plugging functions, as
+used in \autoref{fig:explicit-semantic-calculus} and the usual sequent
+calculus formulation of NL. This allows for the proof search to be
+truly naive: we can say a rule applies if its conclusion can be
+unified with the current proof obligation, and do not have to check
+all possible contexts under which this unification could succeed.
 
 \input{fig-display-calculus}
 \input{fig-extension-lexical-ambiguity}
 \input{fig-extension-quantifier-raising}
 \input{fig-extension-scope-islands}
+\input{fig-extension-infixation}
+\input{fig-extension-extraction}
 
 % - implicit semantic calculus;
 % - explicit semantic calculus;
@@ -226,6 +290,24 @@ turns our input sequent into $\NP\prod(\NP\impr\S)\impl\NP\prod\NP
 %   * treatment of same & different;
 %   * treatment of plurals;
 % - extension: scope islands;
+
+\section{Future work}
+
+\paragraph*{Forward-Chaining Proof Search}
+In \autoref{sec:what-is-type-logical-grammar} it was mentioned that
+most research focuses on implementing what I call the `semantic
+function' (i.e. interpreting). This is a good approach for research:
+we can limit ourselves to sequent calculus, which has pleasant
+properties, refer to the huge body of work on generative grammar to
+inform our choice for sentence structure, and simply focus on making
+these known structures derivable. However, in order to be feasible in
+a practical system, one must also implement what I call the `syntactic
+function' (i.e. parsing). One way of doing this is by switching to
+forward-chaining proof search, i.e. by constructing all possible
+sentences based on the given words, and filtering on those which are
+both pronounceable and maintain the correct word-order.
+\todo{Ask Michael for a reference.}
+
 
 \bibliographystyle{apalike}%
 \bibliography{main}%

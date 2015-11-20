@@ -7,8 +7,9 @@ module NLIBC.Semantics where
 
 import           Prelude hiding ((!!),abs,pred)
 import           Control.Monad.State
-import           NLIBC.Syntax (Prf(..),Sequent(..))
-import qualified NLIBC.Syntax as S
+import qualified NLIBC.Syntax.Base as S
+import           NLIBC.Syntax.Backward (Prf(..),Sequent(..))
+import qualified NLIBC.Syntax.Backward as S
 import           Data.Set (Set)
 import qualified Data.Set as Set
 import           Data.Singletons.Decide
@@ -45,13 +46,12 @@ nat (S n) = 1 + nat n
 
 
 class Sem (repr :: [*] -> * -> *) where
-  var  :: SNat n -> repr ts (ts :!! n)
-  abs  :: repr (t1 ': ts) t2 -> repr ts (t1 -> t2)
-  app  :: repr ts (t1 -> t2) -> repr ts t1 -> repr ts t2
-  top  :: repr ts ()
-  pair :: repr ts t1 -> repr ts t2 -> repr ts (t1, t2)
-  p1   :: repr ts (t1, t2) -> repr ts t1
-  p2   :: repr ts (t1, t2) -> repr ts t2
+  var    :: SNat n -> repr ts (ts :!! n)
+  abs    :: repr (t1 ': ts) t2 -> repr ts (t1 -> t2)
+  app    :: repr ts (t1 -> t2) -> repr ts t1 -> repr ts t2
+  unit   :: repr ts ()
+  pair   :: repr ts t1 -> repr ts t2 -> repr ts (t1, t2)
+  caseof :: repr ts (t1, t2) -> repr (t1 ': t2 ': ts) t3 -> repr ts t3
 
 
 v0 :: Sem repr => repr (t0 ': ts) t0
@@ -108,16 +108,16 @@ eta (UnfR  _ f) = eta f
 eta (UnfL  _ f) = eta f
 eta (FocR  _ f) = eta f
 eta (FocL  _ f) = eta f
-eta (WithL1  f) = abs (eta f `app` p1 v0)
-eta (WithL2  f) = abs (eta f `app` p2 v0)
+eta (WithL1  f) = abs (caseof v0 (eta f `app` v0))
+eta (WithL2  f) = abs (caseof v0 (eta f `app` v1))
 eta (WithR f g) = abs (pair (eta f `app` v0) (eta g `app` v0))
 eta (ImpRL f g) = abs (abs (eta g `app` (v1 `app` (eta f `app` v0))))
 eta (ImpRR   f) = eta f
 eta (ImpLL f g) = abs (abs (eta g `app` (v1 `app` (eta f `app` v0))))
 eta (ImpLR   f) = eta f
-eta (Res11   f) = abs ((eta f `app` p2 v0) `app` p1 v0)
+eta (Res11   f) = abs (caseof v0 ((eta f `app` v1) `app` v0))
 eta (Res12   f) = abs (abs (eta f `app` (pair v0 v1)))
-eta (Res13   f) = abs ((eta f `app` p1 v0) `app` p2 v0)
+eta (Res13   f) = abs (caseof v0 ((eta f `app` v0) `app` v1))
 eta (Res14   f) = abs (abs (eta f `app` (pair v1 v0)))
 eta (DiaL    f) = eta f
 eta (DiaR    f) = eta f
@@ -126,20 +126,20 @@ eta (BoxR    f) = eta f
 eta (Res21   f) = eta f
 eta (Res22   f) = eta f
 eta (UnitRL  f) = abs (eta f `app` v0)
-eta (UnitRR  f) = abs (pair (eta f `app` p1 v0) top)
-eta (UnitRI  f) = abs (eta f `app` p1 v0)
-eta (ExtLL   f) = abs (eta f `app` pair (pair (p1 v0) (p1 (p2 v0))) (p2 (p2 v0)))
-eta (ExtLR   f) = abs (eta f `app` pair (pair (p1 (p1 v0)) (p2 v0)) (p2 (p1 v0)))
-eta (ExtRL   f) = abs (eta f `app` pair (p1 (p2 v0)) (pair (p1 v0) (p2 (p2 v0))))
-eta (ExtRR   f) = abs (eta f `app` pair (p1 (p1 v0)) (pair (p2 (p1 v0)) (p2 v0)))
-eta (IfxLL   f) = abs (eta f `app` pair (p1 (p1 v0)) (pair (p2 (p1 v0)) (p2 v0)))
-eta (IfxLR   f) = abs (eta f `app` pair (pair (p1 (p1 v0)) (p2 v0)) (p2 (p1 v0)))
-eta (IfxRL   f) = abs (eta f `app` pair (p1 (p2 v0)) (pair (p1 v0) (p2 (p2 v0))))
-eta (IfxRR   f) = abs (eta f `app` pair (pair (p1 v0) (p1 (p2 v0))) (p2 (p2 v0)))
-eta (DnB     f) = abs (eta f `app` pair (p2 (p1 (p2 v0))) (pair (p1 v0) (p2 (p2 v0))))
-eta (UpB     f) = abs (eta f `app` pair (p1 (p2 v0)) (pair (pair top (p1 v0)) (p2 (p2 v0))))
-eta (DnC     f) = abs (eta f `app` pair (pair (p1 v0) (p2 (p1 (p2 v0)))) (p2 (p2 v0)))
-eta (UpC     f) = abs (eta f `app` pair (p1 (p1 v0)) (pair (pair top (p2 (p1 v0))) (p2 v0)))
+eta (UnitRR  f) = abs (caseof v0 (pair (eta f `app` v0) unit))
+eta (UnitRI  f) = abs (caseof v0 (eta f `app` v0))
+eta (ExtLL   f) = abs (caseof v0 (caseof v1 (eta f `app` pair (pair v2 v0) v1)))
+eta (ExtLR   f) = abs (caseof v0 (caseof v0 (eta f `app` pair (pair v0 v3) v1)))
+eta (ExtRL   f) = abs (caseof v0 (caseof v1 (eta f `app` pair v0 (pair v2 v1))))
+eta (ExtRR   f) = abs (caseof v0 (caseof v0 (eta f `app` pair v0 (pair v1 v3))))
+eta (IfxLL   f) = abs (caseof v0 (caseof v0 (eta f `app` pair v0 (pair v1 v3))))
+eta (IfxLR   f) = abs (caseof v0 (caseof v0 (eta f `app` pair (pair v0 v3) v1)))
+eta (IfxRL   f) = abs (caseof v0 (caseof v1 (eta f `app` pair v0 (pair v2 v1))))
+eta (IfxRR   f) = abs (caseof v0 (caseof v1 (eta f `app` pair (pair v2 v0) v1)))
+eta (DnB     f) = abs (caseof v0 (caseof v1 (caseof v0 (eta f `app` pair v1 (pair v4 v3)))))
+eta (UpB     f) = abs (caseof v0 (caseof v1 (eta f `app` pair v0 (pair (pair unit v2) v1))))
+eta (DnC     f) = abs (caseof v0 (caseof v1 (caseof v0 (eta f `app` pair (pair v4 v1) v3))))
+eta (UpC     f) = abs (caseof v0 (caseof v0 (eta f `app` pair v0 (pair (pair unit v1) v3))))
 
 
 -- * Translate to Haskell
@@ -163,13 +163,13 @@ data Env (ts :: [*]) where
 newtype Hask (ts :: [*]) (t :: *) = Hask { runHask :: Env ts -> ToHask t }
 
 instance Sem Hask where
-  var  n   = Hask $ \env -> env %!! n
-  abs  f   = Hask $ \env x -> runHask f (Cons x env)
-  app  f x = Hask $ \env -> runHask f env (runHask x env)
-  top      = Hask $ const ()
-  pair x y = Hask $ \env -> (runHask x env , runHask y env)
-  p1   x   = Hask $ \env -> fst (runHask x env)
-  p2   x   = Hask $ \env -> snd (runHask x env)
+  var    n   = Hask $ \env -> env %!! n
+  abs    f   = Hask $ \env x -> runHask f (Cons x env)
+  app    f x = Hask $ \env -> runHask f env (runHask x env)
+  unit       = Hask $ const ()
+  pair   x y = Hask $ \env -> (runHask x env , runHask y env)
+  caseof p f = Hask $ \env ->
+    case (runHask p env) of (x,y) -> runHask f (Cons x (Cons y env))
 
 eval :: ToHask (HI x) -> Prf (x :⊢ y) -> ToHask (HO y)
 eval x f = runHask (eta f `app` (Hask (const x))) Nil

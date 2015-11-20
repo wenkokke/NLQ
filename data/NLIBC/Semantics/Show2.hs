@@ -3,45 +3,42 @@
 module NLIBC.Semantics.Show2 (Repr(..),show2) where
 
 
-import Prelude hiding ((!!))
-import Control.Monad.State
-import Data.Map (Map)
+import           Prelude hiding ((!!))
+import           Control.Monad.State
+import           Data.Map (Map)
 import qualified Data.Map as M
-import Data.Singletons (fromSing)
-import NLIBC.Syntax (Prf(..),Sequent(..))
-import NLIBC.Semantics (Nat(..),SNat(..),(:!!),(!!),Sem(..),HI,eta)
-import Text.Printf (printf)
-
+import           Data.Singletons (fromSing)
+import           NLIBC.Semantics (Nat(..),SNat(..),(:!!),(!!),Sem(..),HI,HO)
+import           Text.Printf (printf)
 
 
 data Repr (ts :: [*]) (t :: *) where
-  Var  :: SNat n -> Repr ts (ts :!! n)
-  Con  :: String -> Repr ts t
-  Abs  :: Repr (t1 ': ts) t2 -> Repr ts (t1 -> t2)
-  App  :: Repr ts (t1 -> t2) -> Repr ts t1 -> Repr ts t2
-  Top  :: Repr ts ()
-  Pair :: Repr ts t1 -> Repr ts t2 -> Repr ts (t1, t2)
-  P1   :: Repr ts (t1, t2) -> Repr ts t1
-  P2   :: Repr ts (t1, t2) -> Repr ts t2
+  Var    :: SNat n -> Repr ts (ts :!! n)
+  Con    :: String -> Repr ts t
+  Abs    :: Repr (t1 ': ts) t2 -> Repr ts (t1 -> t2)
+  App    :: Repr ts (t1 -> t2) -> Repr ts t1 -> Repr ts t2
+  Unit   :: Repr ts ()
+  Pair   :: Repr ts t1 -> Repr ts t2 -> Repr ts (t1, t2)
+  CaseOf :: Repr ts (t1, t2) -> Repr (t1 ': t2 ': ts) t3 -> Repr ts t3
+
 
 instance Sem Repr where
-  var  = Var
-  abs  = Abs
-  app  = App
-  top  = Top
-  pair = Pair
-  p1   = P1
-  p2   = P2
+  var    = Var
+  abs    = Abs
+  app    = App
+  unit   = Unit
+  pair   = Pair
+  caseof = CaseOf
+
 
 data ReprU where
-  VarU  :: Name -> ReprU
-  ConU  :: Name -> ReprU
-  AbsU  :: Name -> ReprU -> ReprU
-  AppU  :: ReprU -> ReprU -> ReprU
-  TopU  :: ReprU
-  PairU :: ReprU -> ReprU -> ReprU
-  P1U   :: ReprU -> ReprU
-  P2U   :: ReprU -> ReprU
+  VarU    :: Name -> ReprU
+  ConU    :: Name -> ReprU
+  AbsU    :: Name -> ReprU -> ReprU
+  AppU    :: ReprU -> ReprU -> ReprU
+  UnitU   :: ReprU
+  PairU   :: ReprU -> ReprU -> ReprU
+  CaseOfU :: ReprU -> (Name, Name) -> ReprU -> ReprU
 
 
 type Name = String
@@ -55,67 +52,77 @@ forget :: Repr ts t -> ReprU
 forget x = evalState (go x) ([],freshNames)
   where
     go :: Repr ts t -> State ([String],[String]) ReprU
-    go (Var n)    = do (env,_) <- get; return $ VarU (env !! fromSing n)
-    go (Con c)    = return $ ConU c
-    go (Abs u)    = do (env,x:xs) <- get
-                       put (x:env,xs)
-                       u' <- go u
-                       (x:env,xs) <- get
-                       put (env,xs)
-                       return $ AbsU x u'
-    go (App u v)  = AppU <$> go u <*> go v
-    go  Top       = return TopU
-    go (Pair u v) = PairU <$> go u <*> go v
-    go (P1 u)     = P1U <$> go u
-    go (P2 u)     = P2U <$> go u
+    go (Var n)      = do (env,_) <- get; return $ VarU (env !! fromSing n)
+    go (Con c)      = return $ ConU c
+    go (Abs u)      = do (env,x:xs) <- get
+                         put (x:env,xs)
+                         u' <- go u
+                         (x:env,xs) <- get
+                         put (env,xs)
+                         return $ AbsU x u'
+    go (App u v)    = AppU <$> go u <*> go v
+    go  Unit        = return UnitU
+    go (Pair u v)   = PairU <$> go u <*> go v
+    go (CaseOf u v) = do u' <- go u
+                         (env,x:y:xs) <- get
+                         put (x:y:env,xs)
+                         v' <- go v
+                         (x:y:env,xs) <- get
+                         put (env,xs)
+                         return $ CaseOfU u' (x,y) v'
 
 
-show2 :: Repr '[] (HI x) -> Prf (x :⊢ y) -> String
-show2 x f = show (evalState (relabel (normalise (forget (eta f `App` x)))) (M.empty,freshNames))
+show2 :: Repr '[] x -> Repr '[] (x -> y) -> String
+show2 x f = show (evalState (relabel (normalise (forget (f `App` x)))) (M.empty,freshNames))
   where
     relabel :: ReprU -> State (Map Name Name,[Name]) ReprU
-    relabel (VarU  y)   = do (env,x:xs) <- get
-                             case M.lookup y env of
-                               Just  z -> return (VarU z)
-                               Nothing -> do put (M.insert y x env,xs)
-                                             return (VarU x)
-    relabel (AbsU  y u) = do (env,x:xs) <- get
-                             let z = M.lookup y env
-                             put (M.insert y x env,xs)
-                             u' <- relabel u
-                             (env,xs) <- get
-                             put (M.alter (const z) y env,xs)
-                             return (AbsU x u')
-    relabel (AppU  u v) = AppU  <$> relabel u <*> relabel v
-    relabel (PairU u v) = PairU <$> relabel u <*> relabel v
-    relabel (P1U   u)   = P1U   <$> relabel u
-    relabel (P2U   u)   = P2U   <$> relabel u
-    relabel u           = return u
+    relabel (VarU  y)              = do (env,x:xs) <- get
+                                        case M.lookup y env of
+                                          Just  z -> return (VarU z)
+                                          Nothing -> do put (M.insert y x env,xs)
+                                                        return (VarU x)
+    relabel (AbsU  x u)            = do (env,newX:xs) <- get
+                                        let oldX = M.lookup x env
+                                        put (M.insert x newX env,xs)
+                                        u' <- relabel u
+                                        (env,xs) <- get
+                                        put (M.alter (const oldX) x env,xs)
+                                        return (AbsU newX u')
+    relabel (AppU  u v)            = AppU  <$> relabel u <*> relabel v
+    relabel (PairU u v)            = PairU <$> relabel u <*> relabel v
+    relabel (CaseOfU u (x,y) v)    = do u' <- relabel u
+                                        (env,newX:newY:xs) <- get
+                                        let oldX = M.lookup x env
+                                        let oldY = M.lookup y env
+                                        put (M.insert x newX (M.insert y newY env),xs)
+                                        v' <- relabel v
+                                        put ( M.alter (const oldX) x
+                                            . M.alter (const oldY) y $ env,xs)
+                                        return (CaseOfU u' (newX,newY) v')
+    relabel u                      = return u
 
     subst :: Name -> ReprU -> ReprU -> ReprU
-    subst x t (VarU  y)   | x == y = t
-    subst x t (AbsU  y u) | x /= y = AbsU  y             (subst x t u)
-    subst x t (AppU  u v)          = AppU  (subst x t u) (subst x t v)
-    subst x t (PairU u v)          = PairU (subst x t u) (subst x t v)
-    subst x t (P1U   u)            = P1U   (subst x t u)
-    subst x t (P2U   u)            = P2U   (subst x t u)
-    subst x t u                    = u
+    subst x t (VarU  y)   | x == y  = t
+    subst x t (AbsU  y u) | x /= y  = AbsU y (subst x t u)
+    subst x t (AppU  u v)           = AppU  (subst x t u) (subst x t v)
+    subst x t (PairU u v)           = PairU (subst x t u) (subst x t v)
+    subst x t (CaseOfU u (y,z) v)
+      | x `notElem` [y,z]           = CaseOfU (subst x t u) (y,z) (subst x t v)
+      | otherwise                   = CaseOfU (subst x t u) (y,z) v
+    subst x t u                     = u
 
     normalise :: ReprU -> ReprU
-    normalise (VarU x)    = VarU x
-    normalise (ConU c)    = ConU c
-    normalise (AbsU x u)  = AbsU x (normalise u)
-    normalise (AppU u v)  = case normalise u of
+    normalise (VarU x)            = VarU x
+    normalise (ConU c)            = ConU c
+    normalise (AbsU x u)          = AbsU x (normalise u)
+    normalise (AppU u v)          = case normalise u of
       AbsU x w -> normalise (subst x (normalise v) w)
       w        -> AppU w (normalise v)
-    normalise  TopU       = TopU
-    normalise (PairU u v) = PairU (normalise u) (normalise v)
-    normalise (P1U u)     = case normalise u of
-      PairU w _ -> w
-      w         -> P1U w
-    normalise (P2U u)     = case normalise u of
-      PairU _ w -> w
-      w         -> P2U w
+    normalise  UnitU              = UnitU
+    normalise (PairU u v)         = PairU (normalise u) (normalise v)
+    normalise (CaseOfU u (x,y) v) = case normalise u of
+      PairU u1 u2 -> normalise (subst x (normalise u1) (subst y (normalise u2) v))
+      u'          -> CaseOfU u' (x,y) (normalise v)
 
 
 instance Show (Repr ts t) where
@@ -181,10 +188,12 @@ instance Show ReprU where
   showsPrec d (AppU  u v)   =
     showParen (d > 10) $ showsPrec 10 u . showChar ' ' . showsPrec 11 v
 
-  showsPrec _  TopU     = showString "()"
+  showsPrec _  UnitU    = showString "()"
   showsPrec _ (VarU  x) = showString x
   showsPrec _ (ConU  c) = showString c
 
-  showsPrec d (PairU u v) = showArgs [u,v]
-  showsPrec d (P1U   u)   = showString "π₁" . showArgs [u]
-  showsPrec d (P2U   u)   = showString "π₂" . showArgs [u]
+  showsPrec d (PairU u v)         = showArgs [u,v]
+  showsPrec d (CaseOfU u (x,y) v) =
+    showParen (d > 1) $ showString "case " . shows u
+                      . showString (" of (" ++ x ++ ", " ++ y ++ ") → ")
+                      . showsPrec 2 v

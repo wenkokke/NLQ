@@ -1,11 +1,22 @@
 \begin{figure}
   \begin{mdframed}
     \centering
-    \begin{alignat*}{4}
-      \text{Type}     \;&A,B&&\coloneqq\text{S}\vsep\text{N}\vsep\text{NP}\vsep\text{PP}\vsep \text{INF}\vsep A\impr B\vsep B\impl A\\
-      \text{Structure}\;&Γ,Δ&&\coloneqq A\vsep Γ\prodΔ\\
-    \end{alignat*}
+    \begin{minipage}{0.66\linewidth}
+      \begin{alignat*}{4}
+        \text{Type}     \;&A,B&&\coloneqq \S &&\vsep\N\vsep\NP\vsep\PP\vsep\INF\\
+                        \;&   &&             &&\vsep A\impr B\vsep B\impl A\\
+        \text{Structure}\;&Γ,Δ&&\coloneqq A  &&\vsep Γ\prodΔ
+      \end{alignat*}
+    \end{minipage}%
+    \begin{minipage}{0.33\linewidth}
+      \begin{alignat*}{3}
+        &\A \;&&\coloneqq \N\impl\N\\
+        &\IV\;&&\coloneqq \NP\impr\S\\
+        &\TV\;&&\coloneqq \IV\impl\NP
+      \end{alignat*}
+    \end{minipage}
 
+    \vspace*{\baselineskip}
     \begin{pfbox}
       \AXC{} \RightLabel{{Ax}} \UIC{$A\fCenter A$}
     \end{pfbox}
@@ -34,6 +45,79 @@
   \end{mdframed}
   \caption{A simple syntactic calculus.}%
   \label{fig:syntactic-calculus}
+\end{figure}
+%
+\begin{figure}
+  \begin{mdframed}
+    \begin{alignat*}{6}
+      &\tr[\S]         &&\mapsto\t\\
+      &\tr[\N]         &&\mapsto\e\ra\t         &\qquad&\tr[\INF]       &&\mapsto\e\ra\t\\
+      &\tr[\NP]        &&\mapsto\e              &\qquad&\tr[\PP]        &&\mapsto\e\\
+      &\tr[(A\impr B)] &&\mapsto\tr[A]\ra\tr[B] &\qquad&\tr[(B\impl A)] &&\mapsto\tr[A]\ra\tr[B]
+    \end{alignat*}%
+    \hrulefill%
+    \\
+    \hspace*{-0.25cm}%
+    \begin{tabularx}{1.0\linewidth}{c c c}
+      \begin{pfbox}
+        \AXC{}\RightLabel{Ax}\UIC{$A\fCenter A$}
+      \end{pfbox}
+      & $\Longrightarrow$ &
+      \begin{pfbox}
+        \AXC{}\RightLabel{Ax}\UIC{$\tr[A]\fCenter\tr[A]$}
+      \end{pfbox}
+      \\
+      \begin{pfbox}
+        \AXC{$A\prod Γ\fCenter B$} \RightLabel{$\impr${I}}
+        \UIC{$Γ\fCenter A\impr B$}
+      \end{pfbox}
+      & $\Longrightarrow$ &
+      \begin{pfbox}
+        \AXC{$\tr[A]\prod\tr[Γ]\fCenter\tr[B]$} \RightLabel{Comm.}
+        \UIC{$\tr[Γ]\prod\tr[A]\fCenter\tr[B]$} \RightLabel{$\ra$I}
+        \UIC{$\tr[Γ]\fCenter\tr[A]\ra\tr[B]$}
+      \end{pfbox}
+      \\
+      \begin{pfbox}
+        \AXC{$Γ\prod A\fCenter B$} \RightLabel{$\impl${I}}
+        \UIC{$Γ\fCenter B\impl A$}
+      \end{pfbox}
+      & $\Longrightarrow$ &
+      \begin{pfbox}
+        \AXC{$\tr[Γ]\prod\tr[A]\fCenter\tr[B]$} \RightLabel{$\ra$I}
+        \UIC{$\tr[Γ]\fCenter\tr[A]\ra\tr[B]$}
+      \end{pfbox}
+      \\
+      \begin{pfbox}
+        \AXC{$Γ\fCenter A$} \AXC{$Δ\fCenter A\impr B$}
+        \RightLabel{$\impr${E}} \BIC{$Γ\prod Δ\fCenter B$}
+      \end{pfbox}
+      & $\Longrightarrow$ &
+      \begin{pfbox}
+        \AXC{$\tr[Δ]\fCenter\tr[A]\ra\tr[B]$}
+        \AXC{$\tr[Γ]\fCenter\tr[A]$} \RightLabel{$\ra${E}}
+        \BIC{$\tr[Δ]\prod\tr[Γ]\fCenter\tr[B]$} \RightLabel{Comm.}
+        \UIC{$\tr[Γ]\prod\tr[Δ]\fCenter\tr[B]$}
+      \end{pfbox}
+      \\
+      \begin{pfbox}
+        \AXC{$Γ\fCenter B\impl A$}
+        \AXC{$Δ\fCenter A$} \RightLabel{$\impl${E}}
+        \BIC{$Γ\prod Δ\fCenter B$}
+      \end{pfbox}
+      & $\Longrightarrow$ &
+      \begin{pfbox}
+        \AXC{$\tr[Γ]\fCenter\tr[A]\ra\tr[B]$}
+        \AXC{$\tr[Δ]\fCenter\tr[A]$} \RightLabel{$\ra${E}}
+        \BIC{$\tr[Γ]\prod\tr[Δ]\fCenter\tr[B]$}
+      \end{pfbox}
+    \end{tabularx}%
+    \vspace*{\baselineskip}
+  \end{mdframed}
+  \caption{A translation from the syntactic calculus in
+    \autoref{fig:syntactic-calculus} to the semantic calculus
+    in \autoref{fig:explicit-semantic-calculus}.}%
+  \label{fig:translation-1}
 \end{figure}
 %
 %%% Local Variables:

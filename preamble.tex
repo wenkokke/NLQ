@@ -5,12 +5,14 @@
 \usepackage[greek,english]{babel}%
 \languageattribute{greek}{polutoniko}%
 
+\usepackage{xcolor}%
+
 \usepackage{hyperref}%
 \addto\extrasenglish{%
   \renewcommand*{\figureautorefname}{figure}%
 }
 
-\usepackage{amsmath,amssymb,wasysym}%
+\usepackage{amsmath, amscd, amsthm, amssymb, mathrsfs, amsfonts, wasysym}%
 \let\oldemptyset\emptyset%
 \let\emptyset\varnothing%
 
@@ -19,22 +21,56 @@
 \usepackage[inline]{enumitem}%
 \usepackage{natbib}%
 
+\usepackage{tabularx}%
+\renewcommand{\arraystretch}{3}%
+
 \usepackage{bussproofs}%
 \EnableBpAbbreviations%
-\def\fCenter{\mathbin{\vdash}}%
-\def\la{\leftarrow}%
-\def\ra{\rightarrow}%
-\def\impl{\mathbin{\slash}}%
-\def\impr{\mathbin{\backslash}}%
-\def\prod{\bullet}%
-\def\prodl{\bullet}%
-\def\prodr{\bullet}%
-\def\himpl{\fatslash\ }%
-\def\himpr{\fatbslash}%
-\def\hprod{\mathbin{\circ}}%
-\def\hprodl{\mathbin{\circ}}%
-\def\hprodr{\mathbin{\circ}}%
-\def\vsep{\ \vert\ }%
+\def\fCenter {\mathbin{\vdash}}%
+\def\la      {\leftarrow}%
+\def\ra      {\rightarrow}%
+\def\impl    {\mathbin{\slash}}%
+\def\impr    {\mathbin{\backslash}}%
+\def\prod    {\bullet}%
+\def\prodl   {\bullet}%
+\def\prodr   {\bullet}%
+\def\himpl   {\fatslash\ }%
+\def\himpr   {\fatbslash}%
+\def\hprod   {\mathbin{\circ}}%
+\def\hprodl  {\mathbin{\circ}}%
+\def\hprodr  {\mathbin{\circ}}%
+\def\unit    {\ensuremath{\mathbf{I}}}%
+\def\sq      {\ensuremath{\Box}}%
+\def\di      {\ensuremath{\Diamond}}%
+\def\diIfx   {\ensuremath{\hat{\di}}}%
+\def\sqIfx   {\ensuremath{\hat{\sq}}}%
+\def\diExt   {\rotatebox[origin=c]{180}{\diIfx}}%
+\def\sqExt   {\rotatebox[origin=c]{180}{\sqIfx}}%
+\def\vsep    {\ \vert\ }%
+\def\e       {\ensuremath{\mathbf{e}}}%
+\def\t       {\ensuremath{\mathbf{t}}}%
+\def\lamET   {\ensuremath{\lambda^{\ra}_{\{\e,\t\}}}}%
+\def\S       {\text{S}}%
+\def\N       {\text{N}}%
+\def\NP      {\text{NP}}%
+\def\PP      {\text{PP}}%
+\def\INF     {\text{INF}}%
+\def\A       {\text{A}}%
+\def\IV      {\text{IV}}%
+\def\TV      {\text{TV}}%
+\def\john    {\ensuremath{\text{john}}}%
+\def\mary    {\ensuremath{\text{mary}}}%
+\def\bill    {\ensuremath{\text{bill}}}%
+\def\walks   {\ensuremath{\text{walks}}}%
+\def\likes   {\ensuremath{\text{likes}}}%
+\def\plug    {\ensuremath{\:\cdot\:[\:\cdot\:]}}%
+
+\newcommand{\qr}     [1][{\cdot}]{\mathbf{Q}(#1)}%
+\newcommand{\focus}  [1]{\boxed{#1}}%
+\newcommand{\struct} [1]{{\cdot}#1{\cdot}}%
+\newcommand{\tr}     [1][({\cdot})]{#1^*}%
+\newcommand{\case}   [4]{\text{let}\;(#2, #3)=#1\;\text{in}\;#4}%
+
 \renewcommand*{\&}{%
   \relax
   \ifmmode
@@ -43,19 +79,6 @@
     \char`\&\relax
   \fi
 }
-\def\e{\ensuremath{\mathbf{e}}}%
-\def\t{\ensuremath{\mathbf{t}}}%
-\def\et1{\ensuremath{\lambda^{\ra}_{\{\e,\t\}}}}%
-\def\john{\ensuremath{\mathbf{john}}}%
-\def\mary{\ensuremath{\mathbf{mary}}}%
-\def\walks{\ensuremath{\mathbf{walks}}}%
-\def\likes{\ensuremath{\mathbf{likes}}}%
-\def\plug{\ensuremath{\:\cdot\:[\:\cdot\:]}}%
-\def\S{\text{S}}%
-\def\N{\text{N}}%
-\def\NP{\text{NP}}%
-\def\PP{\text{PP}}%
-\def\INF{\text{INF}}%
 
 \newenvironment{pfbox}[1][1.0]%
   {\gdef\scalefactor{#1} \leavevmode\hbox\bgroup}
