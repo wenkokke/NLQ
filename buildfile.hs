@@ -24,8 +24,8 @@ main =
         src  = out -<.> "tex"
         lcl  = fromBuild src
 
-      figs <- getDirectoryFiles "" ["fig-*.tex"]
-      need (toBuild <$> ["main.tex" , "main.bib", "preamble.tex"] ++ figs)
+      etc <- getDirectoryFiles "" ["fig-*.tex","app-*.tex"]
+      need (toBuild <$> ["main.tex" , "main.bib", "preamble.tex"] ++ etc)
 
       command_ [Cwd "_build", EchoStdout True ] "pdflatex" ["-draftmode", lcl]
       command_ [Cwd "_build", EchoStdout False] "bibtex"   [dropExtension lcl]
@@ -38,6 +38,7 @@ main =
           , "main.bib"
           , "preamble.tex"
           , "fig-*.tex"
+          , "app-*.tex"
           ]
     static |%> \out -> do
       copyFile' (fromBuild out) out
