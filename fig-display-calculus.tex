@@ -4,52 +4,52 @@
     \begin{alignat*}{4}
       \text{Type}&\;        &A,B &\coloneqq \text{S}\vsep\text{N}\vsep\text{NP}\vsep\text{PP}\vsep A\impr B\vsep B\impl A\\
       \text{Structure}&^+\; &Γ   &\coloneqq \cdot A\cdot\vsep Γ_1\prod Γ_2\\
-      \text{Structure}&^-\; &Δ   &\coloneqq \cdot A\cdot\vsep Γ\imprΔ\vsep Δ\implΓ\\
+      \text{Structure}&^-\; &Δ   &\coloneqq \cdot A\cdot\vsep Γ\imprΔ\vsep Δ\implΓ
     \end{alignat*}
 
     \begin{pfbox}
-      \AXC{} \RightLabel{Ax$^L$} \UIC{$[A]\fCenter A$}
+      \AXC{} \RightLabel{Ax$^L$} \UIC{$\focus{A}\fCenter\struct{A}$}
     \end{pfbox}
     \begin{pfbox}
-      \AXC{} \RightLabel{Ax$^R$} \UIC{$A\fCenter [A]$}
+      \AXC{} \RightLabel{Ax$^R$} \UIC{$\struct{A}\fCenter\focus{A}$}
     \end{pfbox}
 
     \vspace*{\baselineskip}
     \begin{pfbox}
-      \AXC{$[A]\fCenter Δ$}
+      \AXC{$\focus{A}\fCenterΔ$}
       \doubleLine\RightLabel{Foc$^L$}
-      \UIC{$\cdot A\cdot\fCenter Δ$}
+      \UIC{$\struct{A}\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
-      \AXC{$Γ\fCenter[B]$}
+      \AXC{$Γ\fCenter\focus{B}$}
       \doubleLine\RightLabel{Foc$^R$}
-      \UIC{$Γ\fCenter\cdot B\cdot$}
+      \UIC{$Γ\fCenter\struct{B}$}
     \end{pfbox}
 
     \vspace*{\baselineskip}
     \begin{pfbox}
-      \AXC{$ Γ \fCenter[A]$}
-      \AXC{$[B]\fCenter Δ $}
+      \AXC{$Γ\fCenter\focus{A}$}
+      \AXC{$\focus{B}\fCenter Δ$}
       \RightLabel{L$\impr$}
-      \BIC{$[A\impr B]\fCenter Γ\impr Δ$}
+      \BIC{$\focus{A\impr B}\fCenter Γ\impr Δ$}
     \end{pfbox}
     \begin{pfbox}
-      \AXC{$Γ\fCenter\cdot A\cdot\impr\cdot B\cdot$}
+      \AXC{$Γ\fCenter\struct{A}\impr\struct{B}$}
       \RightLabel{R$\impr$}
-      \UIC{$Γ\fCenter\cdot A\impr B\cdot$}
+      \UIC{$Γ\fCenter\struct{A\impr B}$}
     \end{pfbox}
 
     \vspace*{\baselineskip}
     \begin{pfbox}
-      \AXC{$ Γ \fCenter[A]$}
-      \AXC{$[B]\fCenter Δ $}
+      \AXC{$Γ\fCenter\focus{A}$}
+      \AXC{$\focus{B}\fCenter Δ$}
       \RightLabel{L$\impl$}
-      \BIC{$[B\impl A]\fCenter Δ\impl Γ$}
+      \BIC{$\focus{B\impl A}\fCenter Δ\impl Γ$}
     \end{pfbox}
     \begin{pfbox}
-      \AXC{$Γ\fCenter\cdot B\cdot\impl\cdot A\cdot$}
+      \AXC{$Γ\fCenter\struct{B}\impl\struct{A}$}
       \RightLabel{R$\impl$}
-      \UIC{$Γ\fCenter\cdot B\impl A\cdot$}
+      \UIC{$Γ\fCenter\struct{B\impl A}$}
     \end{pfbox}
 
     \vspace*{\baselineskip}
@@ -57,17 +57,66 @@
       \AXC{$Γ_2\fCenter Γ_1\impr Δ$}
       \doubleLine\RightLabel{Res$\impr\prod$}
       \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
-      \doubleLine\RightLabel{Res$\impl\prod$}
-      \UIC{$Γ_1\fCenter Δ\impl Γ_2$}
     \end{pfbox}
     \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Γ_1\fCenter Δ\impl Γ_2$}
+      \doubleLine\RightLabel{Res$\impl\prod$}
+      \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
+    \end{pfbox}
   \end{mdframed}
   \caption{
     The syntactic calculus from~\autoref{fig:syntactic-calculus} as a
     display calculus.}%
   \label{fig:display-calculus}
 \end{figure}
-
+%
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \vspace*{\baselineskip}
+    Extension of semantic calculus from
+    \autoref{fig:implicit-semantic-calculus}:
+    \begin{alignat*}{4}
+      \text{Type}\;&A,B&&\coloneqq\ldots\vsep A\times B\vsep\\
+      \text{Term}\;&M,N&&\coloneqq\ldots\vsep (M, N)\vsep\case{M}{x}{y}{N}\vsep()
+    \end{alignat*}
+    \begin{prooftree}
+      \AXC{$Γ\fCenter M : A$}
+      \AXC{$Γ\fCenter N : B$}
+      \RightLabel{$\times$I}
+      \BIC{$Γ\fCenter (M, N) : A\times B$}
+    \end{prooftree}
+    \begin{prooftree}
+      \AXC{$Γ\fCenter M : A\times B$}
+      \AXC{$Γ, x : A, y : B\fCenter N : C$}
+      \RightLabel{$\times$E}
+      \BIC{$Γ\fCenter \case{M}{x}{y}{N} : C$}
+    \end{prooftree}
+    \hrulefill\\%
+    \vspace*{\baselineskip}
+    Extension of semantic calculus from
+    \autoref{fig:explicit-semantic-calculus}:
+    \begin{prooftree}
+      \AXC{$Γ\fCenter A$}
+      \AXC{$Δ\fCenter B$}
+      \RightLabel{$\times$I}
+      \BIC{$Γ\prod Δ\fCenter A\times B$}
+    \end{prooftree}
+    \begin{prooftree}
+      \AXC{$Γ\fCenter M : A\times B$}
+      \AXC{$Δ\prod A\prod B\fCenter N : C$}
+      \RightLabel{$\times$E}
+      \BIC{$Γ\prod Δ\fCenter C$}
+    \end{prooftree}
+    \vspace*{0.5\baselineskip}
+  \end{mdframed}
+  \caption{An extension of the semantic calculi from
+    \autoref{fig:implicit-semantic-calculus} and
+    \autoref{fig:explicit-semantic-calculus}}.
+  \label{fig:extended-semantic-calculi}
+\end{figure}
+%
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: t

@@ -1,0 +1,55 @@
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \begin{minipage}{0.66\linewidth}
+      \begin{alignat*}{4}
+        \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\diExt A\vsep\sqExt A\\
+        \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\diExt Γ\\
+        \text{Structure}&^-\;&Δ  &\coloneqq \ldots\vsep\sqExt Δ
+      \end{alignat*}
+    \end{minipage}%
+    \begin{minipage}{0.33\linewidth}
+      \begin{alignat*}{3}
+        &A \downharpoonleft  B\;&&\coloneqq\;\diExt\sqExt A\impr B\\
+        &B \downharpoonright A\;&&\coloneqq\;\diExt\sqExt B\impl A
+      \end{alignat*}
+    \end{minipage}
+    \\
+    \vspace*{\baselineskip}%
+    (copy of rules for $\{\di,\sq\}$ from
+    \autoref{fig:extension-scope-islands} for $\{\diExt,\sqExt\}$)
+    \\
+    \vspace*{\baselineskip}%
+    \begin{pfbox}
+      \AXC{$Γ_1\prod (Γ_2\prod\diExt Γ_3)\fCenter Δ$}
+      \RightLabel{RR\diExt}
+      \UIC{$(Γ_1\prod Γ_2)\prod\diExt Γ_3\fCenter Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$(Γ_1\prod\diExt Γ_3)\prod Γ_2\fCenter Δ$}
+      \RightLabel{LR\diExt}
+      \UIC{$(Γ_1\prod Γ_2)\prod\diExt Γ_3\fCenter Δ$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}%
+    \begin{pfbox}
+      \AXC{$(\diExt Γ_3\prod Γ_2)\prod Γ_1\fCenter Δ$}
+      \RightLabel{LL\diExt}
+      \UIC{$\diExt Γ_3\prod (Γ_2\prod Γ_1)\fCenter Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ_2\prod (\diExt Γ_3\prod Γ_1)\fCenter Δ$}
+      \RightLabel{RL\diExt}
+      \UIC{$\diExt Γ_3\prod (Γ_2\prod Γ_1)\fCenter Δ$}
+    \end{pfbox}
+    \vspace*{\baselineskip}%
+  \end{mdframed}
+  \caption{Extension of calculus in \autoref{fig:display-calculus}
+    which supports extraction.}
+  \label{fig:extension-extraction}
+\end{figure}
+%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

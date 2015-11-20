@@ -1,0 +1,55 @@
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \begin{minipage}{0.66\linewidth}
+      \begin{alignat*}{4}
+        \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\diIfx A\vsep\sqIfx A\\
+        \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\diIfx Γ\\
+        \text{Structure}&^-\;&Δ  &\coloneqq \ldots\vsep\sqIfx Δ
+      \end{alignat*}
+    \end{minipage}%
+    \begin{minipage}{0.33\linewidth}
+      \begin{alignat*}{3}
+        &A \upharpoonleft  B\;&&\coloneqq\;\diIfx\sqIfx(A\impr B)\\
+        &B \upharpoonright A\;&&\coloneqq\;\diIfx\sqIfx(B\impl A)
+      \end{alignat*}
+    \end{minipage}
+    \\
+    \vspace*{\baselineskip}%
+    (copy of rules for $\{\di,\sq\}$ from
+    \autoref{fig:extension-scope-islands} for $\{\diIfx,\sqIfx\}$)
+    \\
+    \vspace*{\baselineskip}%
+    \begin{pfbox}
+      \AXC{$(Γ_1\prodΓ_2)\prod\diIfxΓ_3\fCenterΔ$}
+      \RightLabel{RR\diIfx}
+      \UIC{$Γ_1\prod(Γ_2\prod\diIfxΓ_3)\fCenterΔ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$((Γ_1\prod\diIfxΓ_3)\prodΓ_2)\fCenterΔ$}
+      \RightLabel{LR\diIfx}
+      \UIC{$Γ_1\prod(Γ_2\prod\diIfxΓ_3)\fCenterΔ$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}%
+    \begin{pfbox}
+      \AXC{$\diIfxΓ_1\prod(Γ_2\prodΓ_3)\fCenterΔ$}
+      \RightLabel{LL\diIfx}
+      \UIC{$(\diIfxΓ_1\prodΓ_2)\prodΓ_3\fCenterΔ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$\diIfxΓ_1\prod(Γ_2\prodΓ_3)\fCenterΔ$}
+      \RightLabel{RL\diIfx}
+      \UIC{$Γ_2\prod(\diIfxΓ_1\prodΓ_3)\fCenterΔ$}
+    \end{pfbox}
+    \vspace*{\baselineskip}%
+  \end{mdframed}
+  \caption{Extension of calculus in \autoref{fig:display-calculus}
+    which supports infixation.}
+  \label{fig:extension-infixation}
+\end{figure}
+%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

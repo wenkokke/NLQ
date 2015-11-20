@@ -3,38 +3,44 @@
     \centering
     \begin{alignat*}{4}
       \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\Diamond A\vsep\Box A\\
-      \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\Diamond Γ\\
-      \text{Structure}&^-\;&Δ  &\coloneqq \ldots\vsep\Box     Δ
+      \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\langle Γ\rangle\\
+      \text{Structure}&^-\;&Δ  &\coloneqq \ldots\vsep[Δ]
     \end{alignat*}
 
     \begin{pfbox}
-      \AXC{$\Diamond\cdot A\cdot\fCenter Δ$}
-      \RightLabel{L$\Diamond$}
-      \UIC{$\cdot\;\Diamond\;A\cdot\fCenter Δ$}
+      \AXC{$\langle\struct{A}\rangle\fCenter Δ$}
+      \RightLabel{L$\di$}
+      \UIC{$\struct{\di A}\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
-      \AXC{$Γ\fCenter[B]$}
-      \RightLabel{R$\Diamond$}
-      \UIC{$\Diamond Γ\fCenter[\Diamond B]$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$[A]\fCenter Δ$}
-      \RightLabel{L$\Diamond$}
-      \UIC{$[\Box A]\fCenter\Box Δ$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$Γ\fCenter\Box\cdot B\cdot$}
-      \RightLabel{R$\Box$}
-      \UIC{$Γ\fCenter\cdot\;\Box\;B\cdot$}
+      \AXC{$Γ\fCenter\focus{B}$}
+      \RightLabel{R$\di$}
+      \UIC{$\langle Γ\rangle\fCenter\focus{\di B}$}
     \end{pfbox}
 
     \vspace*{\baselineskip}
     \begin{pfbox}
-      \AXC{$Γ\fCenter\Box Δ$}
-      \doubleLine\RightLabel{Res$\Box\Diamond$}
-      \UIC{$\Diamond Γ\fCenter Δ$}
+      \AXC{$\focus{A}\fCenter Δ$}
+      \RightLabel{L$\di$}
+      \UIC{$\focus{\sq A}\fCenter[Δ]$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter[\struct{B}]$}
+      \RightLabel{R$\sq$}
+      \UIC{$Γ\fCenter\struct{\sq B}$}
+    \end{pfbox}
+
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter[Δ]$}
+      \RightLabel{Res$\sq\di$}
+      \UIC{$\langle Γ\rangle\fCenter Δ$}
+    \end{pfbox}
+    \vspace*{\baselineskip}
+    \begin{pfbox}
+      \AXC{$\langle Γ\rangle\fCenter Δ$}
+      \RightLabel{Res$\di\sq$}
+      \UIC{$Γ\fCenter[Δ]$}
     \end{pfbox}
     \vspace*{\baselineskip}
   \end{mdframed}

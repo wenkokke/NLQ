@@ -7,17 +7,18 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
-module NLIBC where
+module Main where
 
 
 import           Prelude         hiding (pred,read,reads,(<$),(*))
 import           Data.List       (nub)
 import           Data.Singletons (fromSing)
-import           NLIBC.Syntax    hiding (Q,T,S,N,NP,PP,INF)
-import qualified NLIBC.Syntax    as Syn
-import           NLIBC.Semantics (HI,H,E,T,v0,v1,v2,v3,v4,Sem(..))
+import           NLIBC.Syntax.Backward
+import qualified NLIBC.Syntax.Backward as Syn
+import           NLIBC.Syntax.Base hiding (Q,T,S,N,NP,PP,INF)
+import qualified NLIBC.Syntax.Base as Syn (Q,T,Atom(..))
+import           NLIBC.Semantics (HI,HO,H,E,T,v0,v1,v2,v3,v4,eta)
 import qualified NLIBC.Semantics as Sem
-import           NLIBC.Semantics.Show1 (show1)
 import           NLIBC.Semantics.Show2
 import           Text.Printf (printf)
 
@@ -27,36 +28,43 @@ infixr 3 *; (*) = (,)
 
 -- * Example Sentences
 
-eng0  = parseAs S (john * runs)
+eng0  = parseBwd S (john * runs)
 
-eng1  = parseAs S (john    * likes * mary)
-eng2  = parseAs S (someone * likes * mary)
-eng3  = parseAs S (john    * likes * everyone)
-eng4  = parseAs S (someone * likes * everyone)
+eng1  = parseBwd S (john    * likes * mary)
+eng2  = parseBwd S (someone * likes * mary)
+eng3  = parseBwd S (john    * likes * everyone)
+eng4  = parseBwd S (someone * likes * everyone)
 
-eng5  = parseAs S ((the              * waiter) * serves * everyone)
-eng6  = parseAs S ((the  * same      * waiter) * serves * everyone)
-eng7  = parseAs S ((some * different * waiter) * serves * everyone)
+eng5  = parseBwd S ((the              * waiter) * serves * everyone)
+eng6  = parseBwd S ((the  * same      * waiter) * serves * everyone)
+eng7  = parseBwd S ((some * different * waiter) * serves * everyone)
 
-eng8  = parseAs S (mary *  wants             * to * leave)
-eng9  = parseAs S (mary * (wants * john)     * to * leave)
-eng10 = parseAs S (mary * (wants * everyone) * to * leave)
+eng8  = parseBwd S (mary *  wants             * to * leave)
+eng9  = parseBwd S (mary * (wants * john)     * to * leave)
+eng10 = parseBwd S (mary * (wants * everyone) * to * leave)
 
-eng11 = parseAs S (mary *  wants             * to * like * bill)
-eng12 = parseAs S (mary * (wants * john)     * to * like * bill)
-eng13 = parseAs S (mary * (wants * everyone) * to * like * bill)
+eng11 = parseBwd S (mary *  wants             * to * like * bill)
+eng12 = parseBwd S (mary * (wants * john)     * to * like * bill)
+eng13 = parseBwd S (mary * (wants * everyone) * to * like * bill)
 
-eng14 = parseAs S (mary *  wants             * to * like * someone)
-eng15 = parseAs S (mary * (wants * john)     * to * like * someone)
-eng16 = parseAs S (mary * (wants * everyone) * to * like * someone)
+eng14 = parseBwd S (mary *  wants             * to * like * someone)
+eng15 = parseBwd S (mary * (wants * john)     * to * like * someone)
+eng16 = parseBwd S (mary * (wants * everyone) * to * like * someone)
 
-eng17 = parseAs S (mary * says * [john     * likes * bill])
-eng18 = parseAs S (mary * says * [everyone * likes * bill])
+eng17 = parseBwd S (mary * says * [john     * likes * bill])
+eng18 = parseBwd S (mary * says * [everyone * likes * bill])
 
-eng19 = parseAs S (mary * reads * some * book * (the * author * of' * which) * john * likes)
+eng19 = parseBwd S (mary * reads * some * book * (the * author * of' * which) * john * likes)
 
-eng20 = parseAs S (mary * sees * some * fox)
-eng21 = parseAs S (mary * sees * foxes)
+eng20 = parseBwd S (mary * sees * some * fox)
+eng21 = parseBwd S (mary * sees * foxes)
+
+
+main :: IO ()
+main = sequence_
+       [eng0,eng1,eng2,eng3,eng4,eng5,eng6,eng7,eng8,eng9,eng10,eng11,eng12
+       ,eng13,eng14,eng15,eng16,eng17,eng18,eng19,eng20,eng21]
+
 
 
 
@@ -65,51 +73,50 @@ eng21 = parseAs S (mary * sees * foxes)
 john      = Con "john"       -: NP
 mary      = Con "mary"       -: NP
 bill      = Con "bill"       -: NP
+someone   = some  <$ person
+everyone  = every <$ person
 
-waiter    = Con "waiter"     -: N                    ; waiters  = plural <$ waiter
-fox       = Con "fox"        -: N                    ; foxes    = plural <$ fox
-person    = Con "person"     -: N                    ; people   = plural <$ person
-book      = Con "book"       -: N                    ; books    = plural <$ book
-author    = Con "author"     -: N                    ; authors  = plural <$ author
+waiter    = Con "waiter"     -: N             ; waiters  = plural <$ waiter
+fox       = Con "fox"        -: N             ; foxes    = plural <$ fox
+person    = Con "person"     -: N             ; people   = plural <$ person
+book      = Con "book"       -: N             ; books    = plural <$ book
+author    = Con "author"     -: N             ; authors  = plural <$ author
 
-run       = verb1 "run"      -: IV                   ; runs     = run
-leave     = verb1 "leave"    -: IV                   ; leaves   = leave
-read      = verb2 "read"     -: TV                   ; reads    = read
-see       = verb2 "see"      -: TV                   ; sees     = see
-like      = verb2 "like"     -: TV                   ; likes    = like
-serve     = verb2 "serve"    -: TV                   ; serves   = serve
-say       = verb2 "say"      -: IV :%← SDia SReset S ; says     = say
+run       = verb1 "run"      -: IV            ; runs     = run
+leave     = verb1 "leave"    -: IV            ; leaves   = leave
+read      = verb2 "read"     -: TV            ; reads    = read
+see       = verb2 "see"      -: TV            ; sees     = see
+like      = verb2 "like"     -: TV            ; likes    = like
+serve     = verb2 "serve"    -: TV            ; serves   = serve
+say       = verb2 "say"      -: IV :%← SRes S ; says     = say
 
 want      = Pair want1 want2 -: (IV :%← INF) :%& ((IV :%← INF) :%← NP)
   where
-  want1   = (Abs (Abs (     Con "want" `App` v0 `App` (v1 `App` v0) )))
-  want2   = (Abs (Abs (Abs (Con "want" `App` v0 `App` (v1 `App` v2)))))
+  want1   = Abs (Abs (     Con "want" `App` v0 `App` (v1 `App` v0) ))
+  want2   = Abs (Abs (Abs (Con "want" `App` v0 `App` (v1 `App` v2))))
 wants     = want
 
 the       = Con "the"        -: DET
 some      = some1            -: Q NP S S :%← N
   where
-  some1   = Abs (Pair (Abs (Exists ((App v2 v0) :∧ (App v1 v0)))) Top)
+  some1   = Abs (Pair (Abs (Exists ((App v2 v0) :∧ (App v1 v0)))) Unit)
 every     = every1           -: Q NP S S :%← N
   where
-  every1  = Abs (Pair (Abs (Forall ((App v2 v0) :⊃ (App v1 v0)))) Top)
+  every1  = Abs (Pair (Abs (Forall ((App v2 v0) :⊃ (App v1 v0)))) Unit)
 
-someone   = some  <$ person
-everyone  = every <$ person
-
-same      = Pair same1 Top   -: Q (Q A NP'S NP'S) S S
+same      = Pair same1 Unit   -: Q (Q A NP'S NP'S) S S
   where
   same1   = Abs (Exists (App v1 (Pair (Abs (Abs (App (App v1 (
-            Abs (Abs (App v1 v0 :∧ (v0 :≡ v4))))) v0))) Top)))
-different = Pair diff1 Top   -: Q (Q A NP'S NP'S) S S
+            Abs (Abs (App v1 v0 :∧ (v0 :≡ v4))))) v0))) Unit)))
+different = Pair diff1 Unit   -: Q (Q A NP'S NP'S) S S
   where
   cond1   = Forall (Forall (Not (Exists (App (App v3 v2) v0 :∧ App (App v3 v1) v0))))
   diff1   = Abs (Exists (cond1 :∧ (App v1 (Pair (Abs (Abs (App (App v1 (
-            Abs (Abs (App v1 v0 :∧ (App (App v4 v0) v2))))) v0))) Top))))
+            Abs (Abs (App v1 v0 :∧ (App (App v4 v0) v2))))) v0))) Unit))))
 
 which     = Pair whTm whTm   -: whTy1 :%& whTy2
   where
-  whTm    = Pair (Abs (Abs (Abs (Abs (App v1 v0 :∧ App v2 (App v3 v0)))))) Top
+  whTm    = Pair (Abs (Abs (Abs (Abs (App v1 v0 :∧ App v2 (App v3 v0)))))) Unit
   whTy1   = Q NP NP ((N :%→ N) :%← (S :%⇂ NP))
   whTy2   = Q NP NP ((N :%→ N) :%← (NP :%→ S))
 
@@ -146,7 +153,7 @@ more_than_one = Abs (Exists (Exists ((App v2 v1 :∧ App v2 v0) :∧ (v1 :≢ v0
 plural :: Entry (StI (NS :← N))
 plural = Entry (SStI (NS :%← N))
   (Abs (Pair (Abs (Exists (App more_than_one v0
-    :∧ Forall (App v1 v0 :⊃ (App v3 v0 :∧ App v2 v0))))) Top))
+    :∧ Forall (App v1 v0 :⊃ (App v3 v0 :∧ App v2 v0))))) Unit))
 
 
 type    S        = El 'Syn.S
@@ -182,7 +189,7 @@ pattern Not  x   = App (Con "¬") x
 pattern x :∧ y   = App (App (Con "∧") x) y
 pattern x :⊃ y   = App (App (Con "⊃") x) y
 pattern x :≡ y   = App (App (Con "≡") x) y
-pattern x :≢ y   = Not (App (App (Con "≡") x) y)
+pattern x :≢ y   = Not (x :≡ y)
 
 
 -- * DSL for lexicons and parses
@@ -193,12 +200,10 @@ data Entry x = Entry (SStructI x) (Repr '[] (HI x))
 instance Show (Entry x) where
   show (Entry t r) = show r
 
-
 infix 1 -:
 
 (-:) :: Repr '[] (H a) -> SType a -> Entry (StI a)
 r -: t = Entry (SStI t) r
-
 
 class Combine a b | a -> b where
   combine :: a -> b
@@ -215,13 +220,12 @@ instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
          => Combine (x1,x2) (Entry (a1 :∙ a2))
   where
     combine (x1,x2) = case (combine x1,combine x2) of
-      (Entry a1 r1,Entry a2 r2)
-        -> Entry (a1 :%∙ a2) (Pair r1 r2)
+      (Entry a1 r1,Entry a2 r2) -> Entry (a1 :%∙ a2) (Pair r1 r2)
 
 
-parseAs :: Combine x (Entry a) => SType b -> x -> IO ()
-parseAs b e = case combine e of
-  Entry x r -> do let ps = show2 r <$> findAll (x :%⊢ SStO b)
+parseBwd :: Combine x (Entry a) => SType b -> x -> IO ()
+parseBwd b e = case combine e of
+  Entry x r -> do let ps = show2 r . eta <$> findAll (x :%⊢ SStO b)
                   print (length ps)
                   mapM_ putStrLn ps
 
