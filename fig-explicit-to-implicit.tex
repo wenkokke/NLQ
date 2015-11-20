@@ -1,0 +1,139 @@
+\begin{sidewaysfigure}
+  \begin{mdframed}
+  \begin{tabularx}{1.0\linewidth}{l c l r}
+    \begin{pfbox}[0.7]
+      \AXC{}\RightLabel{Ax}\UIC{$A\fCenter A$}
+    \end{pfbox}
+    &$\Longrightarrow$&
+    \begin{pfbox}[0.7]
+      \AXC{}\RightLabel{Ax}\UIC{$Π,A\fCenter A$}
+      \RightLabel{$\ra$I}
+      \UIC{$Π\fCenter A\ra A$}
+    \end{pfbox}
+    &
+    \multirow{3}{*}{\fbox{\(\!
+      \begin{aligned}
+        &\tr[A]             &&\mapsto A                  \\
+        &\tr[\emptyset]     &&\mapsto \top               \\
+        &\tr[(Γ\prod Δ)]    &&\mapsto \tr[Γ]\times\tr[Δ] \\
+        &\tr[(Γ\fCenter A)] &&\mapsto Π\fCenter\tr[Γ]\ra A
+        \quad\text{\footnotesize(for arbitrary Π)}
+      \end{aligned}
+    \)}}\\
+
+    \begin{pfbox}[0.7]
+      \AXC{$Γ\prod A\fCenter B$}
+      \RightLabel{$\ra${I}}
+      \UIC{$Γ\fCenter A\ra B$}
+    \end{pfbox}
+    &$\Longrightarrow$&
+    \begin{pfbox}[0.7]
+      \AXC{$Π\fCenter\tr[Γ]\times A\ra B$}
+      \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ]\fCenter\tr[Γ]$}
+      \AXC{}\RightLabel{Ax}\UIC{$Π,A\fCenter A$}
+      \RightLabel{$\times$I}
+      \BIC{$Π,\tr[Γ],A\fCenter\tr[Γ]\times A$}
+      \RightLabel {$\ra$E}
+      \BIC{$Π,\tr[Γ],A\fCenter B$}
+      \RightLabel{$\ra$I}
+      \UIC{$Π,\tr[Γ]\fCenter A\ra B$}
+      \RightLabel{$\ra$I}
+      \UIC{$Π\fCenter\tr[Γ]\ra A\ra B$}
+    \end{pfbox}
+    \\
+
+    \begin{pfbox}[0.7]
+      \AXC{$Γ\fCenter A\ra B$}
+      \AXC{$Δ\fCenter A$}
+      \RightLabel{$\ra${E}}
+      \BIC{$Γ\prod Δ\fCenter B$}
+    \end{pfbox}
+    &$\Longrightarrow$&
+    \\
+    \multicolumn{4}{r}{%
+    \begin{pfbox}[0.7]
+      \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ]\times\tr[Δ]\fCenter\tr[Γ]\times\tr[Δ]$}
+      \AXC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter \tr[Γ]\ra A\ra B$}
+      \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter\tr[Γ]$}
+      \RightLabel{$\ra$E}
+      \BIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter A\ra B$}
+      \AXC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter \tr[Δ]\ra A$}
+      \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter \tr[Δ]$}
+      \RightLabel{$\ra$E}
+      \BIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter A$}
+      \RightLabel{$\times$E}
+      \BIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter B$}
+      \BIC{$Π,\tr[Γ]\times\tr[Δ]\fCenter B$}
+      \RightLabel{$\ra$I}
+      \UIC{$Π\fCenter\tr[Γ]\times\tr[Δ]\ra B$}
+    \end{pfbox}
+    }
+    \\
+
+    \begin{pfbox}[0.7]
+      \AXC{$Γ\fCenter A$}
+      \AXC{$Δ\fCenter B$}
+      \RightLabel{$\times$I}
+      \BIC{$Γ\prod Δ\fCenter A\times B$}
+    \end{pfbox}
+    &$\Longrightarrow$&
+    \\
+    \multicolumn{4}{r}{%
+    \begin{pfbox}[0.7]
+      \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ]\times\tr[Δ]\fCenter\tr[Γ]\times\tr[Δ]$}
+      \AXC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter\tr[Γ]\ra A$}
+      \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter\tr[Γ]$}
+      \RightLabel{$\ra$E}
+      \BIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter A$}
+      \AXC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter\tr[Δ]\ra B$}
+      \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter\tr[Δ]$}
+      \RightLabel{$\ra$E}
+      \BIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter B$}
+      \RightLabel{$\times$I}
+      \BIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter A\times B$}
+      \RightLabel{$\times$E}
+      \BIC{$Π,\tr[Γ]\times\tr[Δ]\fCenter A\times B$}
+      \RightLabel{$\ra$I}
+      \UIC{$Π\fCenter\tr[Γ]\times\tr[Δ]\ra A\times B$}
+    \end{pfbox}
+    }
+    \\
+
+    \begin{pfbox}[0.7]
+      \AXC{$Γ\fCenter A\times B$}
+      \AXC{$Δ\prod A\prod B\fCenter C$}
+      \RightLabel{$\times$E}
+      \BIC{$Γ\prod Δ\fCenter C$}
+    \end{pfbox}
+    &$\Longrightarrow$&
+    \\
+    \multicolumn{4}{r}{%
+    \begin{pfbox}[0.7]
+      \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ]\times\tr[Δ]\fCenter\tr[Γ]\times\tr[Δ]$}
+      \AXC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter\tr[Γ]\ra A\times B$}
+      \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter\tr[Γ]$}
+      \RightLabel{$\ra$E}
+      \BIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter A\times B$}
+      \AXC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ],A,B\fCenter\tr[Δ]\ra C$}
+      \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ],A,B\fCenter\tr[Δ]$}
+      \RightLabel{$\ra$E}
+      \BIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ],A,B\fCenter C$}
+      \RightLabel{$\times$E}
+      \BIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter C$}
+      \RightLabel{$\times$E}
+      \BIC{$Π,\tr[Γ]\times\tr[Δ]\fCenter C$}
+      \RightLabel{$\ra$I}
+      \UIC{$Π\fCenter\tr[Γ]\times\tr[Δ]\ra C$}
+    \end{pfbox}
+    }
+  \end{tabularx}%
+  \vspace*{\baselineskip}
+  \end{mdframed}%
+  \caption{Translation from explicit to implicit version of \lamET.}%
+  \label{fig:explicit-to-implicit}
+\end{sidewaysfigure}%
+%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
