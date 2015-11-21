@@ -199,7 +199,7 @@ sentences that would be accepted in the presence of these rules.
 
 The last component we need for a type-logical grammar is a translation
 from our syntactic calculus to our semantic calculus. This translation
-is described in \autoref{fig:translation-1}:
+is described in \autoref{fig:syntactic-calculus-to-explicit-lamET}:
 \begin{enumerate*}[label=(\arabic*)]
 \item a function $\tr$, translating the types in NL to types in
   \lamET; and
@@ -270,8 +270,10 @@ unified with the current proof obligation, and do not have to check
 all possible contexts under which this unification could succeed.
 
 \input{fig-display-calculus}
+\input{fig-extension-products}
 \input{fig-extension-lexical-ambiguity}
 \input{fig-extension-quantifier-raising}
+\input{fig-extension-units}
 \input{fig-extension-scope-islands}
 \input{fig-extension-infixation}
 \input{fig-extension-extraction}
@@ -308,9 +310,7 @@ sentences based on the given words, and filtering on those which are
 both pronounceable and maintain the correct word-order.
 \todo{Ask Michael for a reference.}
 
-\begin{appendices}
-  \input{fig-explicit-to-implicit}
-\end{appendices}
+\input{fig-explicit-to-implicit}
 
 \bibliographystyle{apalike}%
 \bibliography{main}%

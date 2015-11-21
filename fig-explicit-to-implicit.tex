@@ -1,6 +1,6 @@
 \begin{sidewaysfigure}
   \begin{mdframed}
-  \begin{tabularx}{1.0\linewidth}{l c l r}
+  \begin{tabularx}{1.0\linewidth}{l c c r}
     \begin{pfbox}[0.7]
       \AXC{}\RightLabel{Ax}\UIC{$A\fCenter A$}
     \end{pfbox}
@@ -11,7 +11,7 @@
       \UIC{$Π\fCenter A\ra A$}
     \end{pfbox}
     &
-    \multirow{3}{*}{\fbox{\(\!
+    \multirow{3}{*}{\fbox{\scriptsize\(\!
       \begin{aligned}
         &\tr[A]             &&\mapsto A                  \\
         &\tr[\emptyset]     &&\mapsto \top               \\
@@ -28,9 +28,9 @@
     \end{pfbox}
     &$\Longrightarrow$&
     \begin{pfbox}[0.7]
-      \AXC{$Π\fCenter\tr[Γ]\times A\ra B$}
-      \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ]\fCenter\tr[Γ]$}
-      \AXC{}\RightLabel{Ax}\UIC{$Π,A\fCenter A$}
+      \AXC{$Π,\tr[Γ],A\fCenter\tr[Γ]\times A\ra B$}
+      \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ],A\fCenter\tr[Γ]$}
+      \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ],A\fCenter A$}
       \RightLabel{$\times$I}
       \BIC{$Π,\tr[Γ],A\fCenter\tr[Γ]\times A$}
       \RightLabel {$\ra$E}
@@ -61,8 +61,9 @@
       \AXC{}\RightLabel{Ax}\UIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter \tr[Δ]$}
       \RightLabel{$\ra$E}
       \BIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter A$}
-      \RightLabel{$\times$E}
+      \RightLabel{$\ra$E}
       \BIC{$Π,\tr[Γ]\times\tr[Δ],\tr[Γ],\tr[Δ]\fCenter B$}
+      \RightLabel{$\times$E}
       \BIC{$Π,\tr[Γ]\times\tr[Δ]\fCenter B$}
       \RightLabel{$\ra$I}
       \UIC{$Π\fCenter\tr[Γ]\times\tr[Δ]\ra B$}
@@ -129,7 +130,8 @@
   \end{tabularx}%
   \vspace*{\baselineskip}
   \end{mdframed}%
-  \caption{Translation from explicit to implicit version of \lamET.}%
+  \caption{Translation from explicit to implicit version of \lamET\ as
+    used in the Haskell implementation.}%
   \label{fig:explicit-to-implicit}
 \end{sidewaysfigure}%
 %
