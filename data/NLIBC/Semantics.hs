@@ -7,14 +7,14 @@ module NLIBC.Semantics where
 
 import           Prelude hiding ((!!),abs,pred)
 import           Control.Monad.State
-import qualified NLIBC.Syntax.Base as S
-import           NLIBC.Syntax.Backward (Prf(..),Sequent(..))
-import qualified NLIBC.Syntax.Backward as S
+import qualified NLIBC.Syntax.Base as NL
+import           NLIBC.Syntax.Backward (Syn(..))
+import qualified NLIBC.Syntax.Backward as NL
 import           Data.Set (Set)
 import qualified Data.Set as Set
 import           Data.Singletons.Decide
 import           Data.Singletons.Prelude
-import           Data.Singletons.TH (promote,promoteOnly,singletons)
+import           Data.Singletons.TH (promote,promoteOnly,singletons,singletonsOnly)
 import           Text.Printf (printf)
 import           Unsafe.Coerce (unsafeCoerce)
 
@@ -69,39 +69,47 @@ v5  = var (SS (SS (SS (SS (SS SZ)))))
 
 
 type family H a where
-  H (S.El S.S)      = T
-  H (S.El S.N)      = (E -> T)
-  H (S.El S.NP)     = E
-  H (S.El S.PP)     = E
-  H (S.El S.INF)    = (E -> T)
-  H (S.Dia k a)     = H a
-  H (S.Box k a)     = H a
-  H (a S.:& b)      = (H a, H b)
-  H (S.UnitR k a)   = (H a, ())
-  H (S.ImpR k a b)  = H a -> H b
-  H (S.ImpL k b a)  = H a -> H b
+  H (NL.El NL.S)     = T
+  H (NL.El NL.N)     = (E -> T)
+  H (NL.El NL.NP)    = E
+  H (NL.El NL.PP)    = E
+  H (NL.El NL.INF)   = (E -> T)
+  H (NL.Dia k a)     = H a
+  H (NL.Box k a)     = H a
+  H (a NL.:& b)      = (H a, H b)
+  H (NL.UnitR k a)   = (H a, ())
+  H (NL.ImpR k a b)  = H a -> H b
+  H (NL.ImpL k b a)  = H a -> H b
+
+--type family HS x where
+--  HS (NL.StI  a)     = '[ H  a ]
+--  HS (NL.DIA k x)    = HS x
+--  HS  NL.B           = '[]
+--  HS  NL.C           = '[]
+--  HS (NL.UNIT k)     = '[]
+--  HS (NL.PROD k x y) = HS x :++ HS y
 
 type family HI x where
-  HI (S.StI  a)     = H a
-  HI (S.DIA k x)    = HI x
-  HI  S.B           = ()
-  HI  S.C           = ()
-  HI (S.UNIT k)     = ()
-  HI (S.PROD k x y) = (HI x, HI y)
+  HI (NL.StI  a)     = H  a
+  HI (NL.DIA k x)    = HI x
+  HI  NL.B           = ()
+  HI  NL.C           = ()
+  HI (NL.UNIT k)     = ()
+  HI (NL.PROD k x y) = (HI x, HI y)
 
 type family HO x where
-  HO (S.StO  a)     = H  a
-  HO (S.BOX k x)    = HO x
-  HO (S.IMPR k x y) = HI x -> HO y
-  HO (S.IMPL k y x) = HI x -> HO y
+  HO (NL.StO  a)     = H  a
+  HO (NL.BOX k x)    = HO x
+  HO (NL.IMPR k x y) = HI x -> HO y
+  HO (NL.IMPL k y x) = HI x -> HO y
 
 type family HS s where
-  HS (x :⊢  y)      = HI x -> HO y
-  HS (x :⊢> b)      = HI x -> H  b
-  HS (a :<⊢ y)      = H  a -> HO y
+  HS (x NL.:⊢  y)    = HI x -> HO y
+  HS (x NL.:⊢> b)    = HI x -> H  b
+  HS (a NL.:<⊢ y)    = H  a -> HO y
 
 
-eta :: Sem repr => Prf s -> repr ts (HS s)
+eta :: Sem repr => Syn s -> repr ts (HS s)
 eta (AxR     _) = abs v0
 eta (AxL     _) = abs v0
 eta (UnfR  _ f) = eta f
@@ -171,13 +179,8 @@ instance Sem Hask where
   caseof p f = Hask $ \env ->
     case (runHask p env) of (x,y) -> runHask f (Cons x (Cons y env))
 
-eval :: ToHask (HI x) -> Prf (x :⊢ y) -> ToHask (HO y)
+eval :: ToHask (HI x) -> Syn (x NL.:⊢ y) -> ToHask (HO y)
 eval x f = runHask (eta f `app` (Hask (const x))) Nil
-
-
-
-
-
 
 
 -- -}

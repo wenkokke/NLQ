@@ -71,38 +71,40 @@
   \label{fig:display-calculus}
 \end{figure}
 %
-\begin{figure}
+\input{fig-extension-products}
+%
+\begin{landscape}
+  \begin{figure}
   \begin{mdframed}
-    \centering Extension of the translation on types from
-    \autoref{fig:syntactic-calculus-to-explicit-lamET} to structures
-    and sequents:\\
-    \begin{minipage}{0.45\linewidth}
-      \begin{alignat*}{3}
-        &\tr[(\struct{A})]          &&\mapsto \tr[A]\\
-        &\tr[(Γ_1\prod Γ_2)]        &&\mapsto \tr[Γ_1]\times\tr[Γ_2]\\
-        &\tr[(Δ\impl Γ)]            &&\mapsto \tr[Γ]\ra\tr[Δ]\\
-        &\tr[(Γ\impr Δ)] &&\mapsto \tr[Γ]\ra\tr[Δ]
-      \end{alignat*}
-    \end{minipage}
-    \begin{minipage}{0.45\linewidth}
-      \begin{alignat*}{6}
-        &\tr[(Γ\fCenterΔ)]         &&\mapsto \tr[Γ]\fCenter\tr[Δ]\\
+    \renewcommand{\arraystretch}{5}%
+    \begin{tabularx}{1.0\linewidth}{l c c c}
+      \multirow{6}{*}{%
+      \framebox{\(\!
+      \begin{aligned}
+        &\textit{Structures}\\
+        &\trd[(\struct{A})]   &&\mapsto \tr[A]\\
+        &\trd[(Γ_1\prod Γ_2)] &&\mapsto \trd[Γ_1]\prod\trd[Γ_2]\\
+        \\
+        &\tr[(\struct{A})]   &&\mapsto \tr[A]\\
+        &\tr[(Γ_1\prod Γ_2)] &&\mapsto \tr[Γ_1]\times\tr[Γ_2]\\
+        \\
+        &\tr[(\struct{A})]   &&\mapsto \tr[A]\\
+        &\tr[(Δ\impl Γ)]     &&\mapsto \tr[Γ]\ra\tr[Δ]\\
+        &\tr[(Γ\impr Δ)]     &&\mapsto \tr[Γ]\ra\tr[Δ]\\
+        \\
+        &\textit{Sequents}\\
+        &\tr[(Γ\fCenterΔ)]         &&\mapsto \trd[Γ]\fCenter\tr[Δ]\\
         &\tr[(\focus{A}\fCenterΔ)] &&\mapsto \tr[A]\fCenter\tr[Δ]\\
-        &\tr[(Γ\fCenter\focus{B})] &&\mapsto \tr[Γ]\fCenter\tr[B]
-      \end{alignat*}
-    \end{minipage}
-    \\
-    \vspace*{\baselineskip}\hrulefill%
-    \\
-    \begin{tabularx}{1.0\linewidth}{l c r}
-      \begin{pfbox}[0.7]
+        &\tr[(Γ\fCenter\focus{B})] &&\mapsto \trd[Γ]\fCenter\tr[B]
+      \end{aligned}\)}}&
+      \begin{pfbox}[0.9]
         \AXC{$Γ\fCenter\focus{A}$}
         \AXC{$\focus{B}\fCenter Δ$}
         \RightLabel{L$\impr$}
         \BIC{$\focus{A\impr B}\fCenter Γ\impr Δ$}
       \end{pfbox}
       &$\Longrightarrow$&
-      \begin{pfbox}[0.7]
+      \begin{pfbox}[0.9]
         \AXC{$\tr[B]\fCenter\tr[Δ]$}
         %\RightLabel{Weak.}
         %\UIC{$\tr[B]\prod\emptyset\fCenter\tr[B]\ra\tr[Δ]$}
@@ -111,59 +113,88 @@
         \RightLabel{$\ra$I}
         \UIC{$\emptyset\fCenter\tr[B]\ra\tr[Δ]$}
         \AXC{}\RightLabel{Ax}\UIC{$\tr[A]\ra\tr[B]\fCenter\tr[A]\ra\tr[B]$}
-        \AXC{$\tr[Γ]\fCenter\tr[A]$}
+        \AXC{$\trd[Γ]\fCenter\tr[A]$}
         \RightLabel{$\ra$E}
-        \BIC{$\tr[A]\ra\tr[B]\prod\tr[Γ]\fCenter\tr[B]$}
+        \BIC{$\tr[A]\ra\tr[B]\prod\trd[Γ]\fCenter\tr[B]$}
         \RightLabel{$\ra$E}
-        %\BIC{$\emptyset\prod(\tr[A]\ra\tr[B]\prod\tr[Γ])\fCenter\tr[Δ]$}
+        %\BIC{$\emptyset\prod(\tr[A]\ra\tr[B]\prod\trd[Γ])\fCenter\tr[Δ]$}
         %\RightLabel{Comm.}
-        %\UIC{$(\tr[A]\ra\tr[B]\prod\tr[Γ])\prod\emptyset\fCenter\tr[Δ]$}
+        %\UIC{$(\tr[A]\ra\tr[B]\prod\trd[Γ])\prod\emptyset\fCenter\tr[Δ]$}
         %\RightLabel{$\emptyset$E}
-        \BIC{$\tr[A]\ra\tr[B]\prod\tr[Γ]\fCenter\tr[Δ]$}
+        \BIC{$\tr[A]\ra\tr[B]\prod\trd[Γ]\fCenter\tr[Δ]$}
         \RightLabel{$\ra$I}
-        \UIC{$\tr[A]\ra\tr[B]\fCenter\tr[Γ]\ra\tr[Δ]$}
+        \UIC{$\tr[A]\ra\tr[B]\fCenter\trd[Γ]\ra\tr[Δ]$}
       \end{pfbox}
-      \\
-      \begin{pfbox}[0.7]
+      \\&
+      \begin{pfbox}[0.9]
         \AXC{$Γ\fCenter\focus{A}$}
         \AXC{$\focus{B}\fCenter Δ$}
         \RightLabel{L$\impl$}
         \BIC{$\focus{B\impl A}\fCenter Δ\impl Γ$}
       \end{pfbox}
       &$\Longrightarrow$&
-      \\
-      \begin{pfbox}[0.7]
+      \multicolumn{1}{c}{\text{(as above)}}
+      \\&
+      \begin{pfbox}[0.9]
         \AXC{$Γ_2\fCenter Γ_1\impr Δ$}
         \RightLabel{Res$\impr\prod$}
         \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
       \end{pfbox}
       &$\Longrightarrow$&
-      \\
-      \begin{pfbox}[0.7]
+      \begin{pfbox}[0.9]
+        \AXC{$\trd[Γ_2]\fCenter\trd[Γ_1]\ra\tr[Δ]$}
+        \AXC{}\RightLabel{Ax}\UIC{$\trd[Γ_1]\fCenter\trd[Γ_1]$}
+        \RightLabel{$\ra$E}
+        \BIC{$\trd[Γ_2]\prod\trd[Γ_1]\fCenter\tr[Δ]$}
+        \RightLabel{Comm.}
+        \UIC{$\trd[Γ_1]\prod\trd[Γ_2]\fCenter\tr[Δ]$}
+      \end{pfbox}
+      \\&
+      \begin{pfbox}[0.9]
         \AXC{$Γ_1\prod Γ_2\fCenter Δ$}
         \RightLabel{Res$\prod\impr$}
         \UIC{$Γ_2\fCenter Γ_1\impr Δ$}
       \end{pfbox}
       &$\Longrightarrow$&
-      \\
-      \begin{pfbox}[0.7]
+      \begin{pfbox}[0.9]
+        \AXC{$\trd[Γ_1]\prod\trd[Γ_2]\fCenter\tr[Δ]$}
+        \RightLabel{Comm.}
+        \UIC{$\trd[Γ_2]\prod\trd[Γ_1]\fCenter\tr[Δ]$}
+        \RightLabel{$\ra$I}
+        \UIC{$\trd[Γ_2]\fCenter\trd[Γ_1]\ra\tr[Δ]$}
+      \end{pfbox}
+      \\&
+      \begin{pfbox}[0.9]
         \AXC{$Γ_1\fCenter Δ\impl Γ_2$}
         \RightLabel{Res$\impl\prod$}
         \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
       \end{pfbox}
       &$\Longrightarrow$&
-      \\
-      \begin{pfbox}[0.7]
+      \begin{pfbox}[0.9]
+        \AXC{$\trd[Γ_1]\fCenter\trd[Γ_2]\ra\tr[Δ]$}
+        \AXC{}\RightLabel{Ax}\UIC{$\trd[Γ_2]\fCenter\trd[Γ_2]$}
+        \RightLabel{$\ra$E}
+        \BIC{$\trd[Γ_1]\prod\trd[Γ_2]\fCenter\tr[Δ]$}
+      \end{pfbox}
+      \\&
+      \begin{pfbox}[0.9]
         \AXC{$Γ_1\prod Γ_2\fCenter Δ$}
         \RightLabel{Res$\prod\impl$}
         \UIC{$Γ_1\fCenter Δ\impl Γ_2$}
       \end{pfbox}
       &$\Longrightarrow$&
+      \begin{pfbox}[0.9]
+        \AXC{$\trd[Γ_1]\prod\trd[Γ_2]\fCenter\tr[Δ]$}
+        \RightLabel{$\ra$I}
+        \UIC{$\trd[Γ_1]\fCenter\trd[Γ_2]\ra\tr[Δ]$}
+      \end{pfbox}
     \end{tabularx}
+    \vspace*{\baselineskip}
   \end{mdframed}
   \caption{Translation from display calculus to explicit \lamET.}
   \label{fig:display-calculus-to-explicit-lamET}
-\end{figure}
+  \end{figure}
+\end{landscape}
 %
 %%% Local Variables:
 %%% mode: latex

@@ -22,6 +22,7 @@
 \usepackage{natbib}%
 \usepackage[toc,page]{appendix}%
 \usepackage{rotating}%
+\usepackage{pdflscape}%
 
 \usepackage{tabularx}%
 \renewcommand{\arraystretch}{3}%
@@ -72,6 +73,7 @@
 \newcommand{\focus}  [1]{\boxed{#1}}%
 \newcommand{\struct} [1]{{\cdot}#1{\cdot}}%
 \newcommand{\tr}     [1][({\cdot})]{#1^*}%
+\newcommand{\trd}    [1][({\cdot})]{#1^{**}}%
 \newcommand{\case}   [4]{\text{case}\;#1\;\text{of}\;(#2, #3)\ra#4}%
 
 \renewcommand*{\&}{%
@@ -127,6 +129,7 @@
 
 % include notes
 \usepackage{ifthen}%
+
 \newboolean{notes}%
 \setboolean{notes}{true}%
 \newcommand{\todo}[1]{%

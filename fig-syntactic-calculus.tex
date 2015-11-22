@@ -49,64 +49,73 @@
 %
 \begin{figure}
   \begin{mdframed}
-    \begin{alignat*}{6}
-      &\tr[\S]         &&\mapsto\t                                                       \\
-      &\tr[\N]         &&\mapsto\e\ra\t         &\qquad&\tr[\INF]       &&\mapsto\e\ra\t \\
-      &\tr[\NP]        &&\mapsto\e              &\qquad&\tr[\PP]        &&\mapsto\e      \\
-      &\tr[(A\impr B)] &&\mapsto\tr[A]\ra\tr[B] &\qquad&\tr[(B\impl A)] &&\mapsto\tr[A]\ra\tr[B]
-    \end{alignat*}%
-    \hrulefill%
-    \\
-    \hspace*{-0.25cm}%
+    \vspace*{\baselineskip}
+    \[\!
+      \fbox{\(
+        \begin{aligned}
+          &\tr[\S]         &&\mapsto\t      \\
+          &\tr[\N]         &&\mapsto\e\ra\t \\
+          &\tr[\NP]        &&\mapsto\e      \\
+          &\tr[(A\impr B)] &&\mapsto\tr[A]\ra\tr[B]
+        \end{aligned}
+        \qquad
+        \begin{aligned}
+                                            \\
+          &\tr[\INF]       &&\mapsto\e\ra\t \\
+          &\tr[\PP]        &&\mapsto\e      \\
+          &\tr[(B\impl A)] &&\mapsto\tr[A]\ra\tr[B]
+        \end{aligned}
+        \)}
+    \]
     \begin{tabularx}{1.0\linewidth}{c c c}
-      \begin{pfbox}
+      \begin{pfbox}[0.9]
         \AXC{}\RightLabel{Ax}\UIC{$A\fCenter A$}
       \end{pfbox}
       & $\Longrightarrow$ &
-      \begin{pfbox}
+      \begin{pfbox}[0.9]
         \AXC{}\RightLabel{Ax}\UIC{$\tr[A]\fCenter\tr[A]$}
       \end{pfbox}
       \\
-      \begin{pfbox}
+      \begin{pfbox}[0.9]
         \AXC{$A\prod Γ\fCenter B$} \RightLabel{$\impr${I}}
         \UIC{$Γ\fCenter A\impr B$}
       \end{pfbox}
       & $\Longrightarrow$ &
-      \begin{pfbox}
+      \begin{pfbox}[0.9]
         \AXC{$\tr[A]\prod\tr[Γ]\fCenter\tr[B]$} \RightLabel{Comm.}
         \UIC{$\tr[Γ]\prod\tr[A]\fCenter\tr[B]$} \RightLabel{$\ra$I}
         \UIC{$\tr[Γ]\fCenter\tr[A]\ra\tr[B]$}
       \end{pfbox}
       \\
-      \begin{pfbox}
+      \begin{pfbox}[0.9]
         \AXC{$Γ\prod A\fCenter B$} \RightLabel{$\impl${I}}
         \UIC{$Γ\fCenter B\impl A$}
       \end{pfbox}
       & $\Longrightarrow$ &
-      \begin{pfbox}
+      \begin{pfbox}[0.9]
         \AXC{$\tr[Γ]\prod\tr[A]\fCenter\tr[B]$} \RightLabel{$\ra$I}
         \UIC{$\tr[Γ]\fCenter\tr[A]\ra\tr[B]$}
       \end{pfbox}
       \\
-      \begin{pfbox}
+      \begin{pfbox}[0.9]
         \AXC{$Γ\fCenter A$} \AXC{$Δ\fCenter A\impr B$}
         \RightLabel{$\impr${E}} \BIC{$Γ\prod Δ\fCenter B$}
       \end{pfbox}
       & $\Longrightarrow$ &
-      \begin{pfbox}
+      \begin{pfbox}[0.9]
         \AXC{$\tr[Δ]\fCenter\tr[A]\ra\tr[B]$}
         \AXC{$\tr[Γ]\fCenter\tr[A]$} \RightLabel{$\ra${E}}
         \BIC{$\tr[Δ]\prod\tr[Γ]\fCenter\tr[B]$} \RightLabel{Comm.}
         \UIC{$\tr[Γ]\prod\tr[Δ]\fCenter\tr[B]$}
       \end{pfbox}
       \\
-      \begin{pfbox}
+      \begin{pfbox}[0.9]
         \AXC{$Γ\fCenter B\impl A$}
         \AXC{$Δ\fCenter A$} \RightLabel{$\impl${E}}
         \BIC{$Γ\prod Δ\fCenter B$}
       \end{pfbox}
       & $\Longrightarrow$ &
-      \begin{pfbox}
+      \begin{pfbox}[0.9]
         \AXC{$\tr[Γ]\fCenter\tr[A]\ra\tr[B]$}
         \AXC{$\tr[Δ]\fCenter\tr[A]$} \RightLabel{$\ra${E}}
         \BIC{$\tr[Γ]\prod\tr[Δ]\fCenter\tr[B]$}
