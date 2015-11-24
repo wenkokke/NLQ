@@ -3,8 +3,7 @@
     \centering
     \begin{alignat*}{4}
       \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\qr[A]\\
-      \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep Γ_1\hprod Γ_2
-      \vsep\mathbf{I}\vsep\mathbf{B}\vsep\mathbf{C}\\
+      \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep Γ_1\hprod Γ_2\vsep\I\vsep\B\vsep\C\\
       \text{Structure}&^-\;&Δ   &\coloneqq \ldots\vsep Δ\himpl Γ
       \vsep Γ\himpr Δ
     \end{alignat*}
@@ -14,32 +13,95 @@
 
     \vspace*{\baselineskip}
     \begin{pfbox}
-      \AXC{$\struct{A}\hprod\unit\fCenter Δ$}
-      \RightLabel{L\unit}
+      \AXC{$\struct{A}\hprod\I\fCenter Δ$}
+      \RightLabel{L\I}
       \UIC{$\struct{\qr[A]}\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
       \AXC{$Γ\fCenter\focus{B}$}
-      \RightLabel{R\unit}
-      \UIC{$Γ\hprod\unit\fCenter\focus{\qr[B]}$}
+      \RightLabel{R\I}
+      \UIC{$Γ\hprod\I\fCenter\focus{\qr[B]}$}
     \end{pfbox}
     \begin{pfbox}
       \AXC{$Γ\fCenter Δ$}
-      \RightLabel{$\unit^-$}
-      \UIC{$Γ\hprod\unit\fCenter Δ$}
+      \RightLabel{$\I^-$}
+      \UIC{$Γ\hprod\I\fCenter Δ$}
     \end{pfbox}
 
     \vspace*{\baselineskip}
     \begin{pfbox}
       \AXC{$Γ_1\prod(Γ_2\hprod Γ_3)\fCenter Δ$}
-      \doubleLine\RightLabel{\textbf{B}}
-      \UIC{$Γ_2\hprod((\mathbf{B}\prod Γ_1)\prod Γ_3)\fCenter Δ$}
+      \doubleLine\RightLabel{\B}
+      \UIC{$Γ_2\hprod((\B\prod Γ_1)\prod Γ_3)\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
       \AXC{$(Γ_1\hprod Γ_2)\prod Γ_3\fCenter Δ$}
-      \doubleLine\RightLabel{\textbf{C}}
-      \UIC{$Γ_1\hprod((\mathbf{C}\prod Γ_2)\prod Γ_3)\fCenter Δ$}
+      \doubleLine\RightLabel{\C}
+      \UIC{$Γ_1\hprod((\C\prod Γ_2)\prod Γ_3)\fCenter Δ$}
     \end{pfbox}
+    \\
+    \vspace*{\baselineskip}
+    \hrulefill
+    \renewcommand{\arraystretch}{1.5}%
+    \[
+      \begin{array}{c c c}
+        \multicolumn{3}{c}{%
+        \qr[\tr[A]]\mapsto\tr[A]
+        }\\
+        \trd[\I]\mapsto\emptyset&
+        \trd[\B]\mapsto\emptyset&
+        \trd[\C]\mapsto\emptyset\\
+        \tr[\I]\mapsto\top&
+        \tr[\B]\mapsto\top&
+        \tr[\C]\mapsto\top\\
+      \end{array}
+    \]
+    (copy of translations for $\{\impr,\prod,\impl\}$ from
+    \autoref{fig:display-calculus-to-explicit-lamET} for
+    $\{\himpr,\hprod,\himpl\}$)\\
+    \renewcommand{\arraystretch}{3}%
+    \begin{tabular}{c c c}
+      \begin{pfbox}
+        \AXC{$\struct{A}\hprod\I\fCenter Δ$}
+        \RightLabel{L\I}
+        \UIC{$\struct{\qr[A]}\fCenter Δ$}
+      \end{pfbox}
+      &$\Longrightarrow$&
+      \begin{pfbox}
+        \AXC{$\tr[A]\prod\emptyset\fCenter\tr[Δ]$}
+        \RightLabel{$\emptyset$E}
+        \UIC{$\tr[A]\fCenter\tr[Δ]$}
+      \end{pfbox}
+      \\
+      \begin{pfbox}
+        \AXC{$Γ\fCenter\focus{B}$}
+        \RightLabel{R\I}
+        \UIC{$Γ\hprod\I\fCenter\focus{\qr[B]}$}
+      \end{pfbox}
+      &$\Longrightarrow$&
+      \begin{pfbox}
+        \AXC{$\trd[Γ]\fCenter\tr[B]$}
+        \RightLabel{Weak.}
+        \UIC{$\trd[Γ]\prod\emptyset\fCenter\tr[B]$}
+      \end{pfbox}
+      \\
+      \begin{pfbox}
+        \AXC{$Γ\fCenter Δ$}
+        \RightLabel{$\I^-$}
+        \UIC{$Γ\hprod\I\fCenter Δ$}
+      \end{pfbox}
+      &$\Longrightarrow$&
+      \begin{pfbox}
+        \AXC{$\trd[Γ]\fCenter\tr[Δ]$}
+        \RightLabel{Weak.}
+        \UIC{$\trd[Γ]\prod\emptyset\fCenter\tr[Δ]$}
+      \end{pfbox}
+    \end{tabular}
+    \\
+    \vspace*{\baselineskip}
+    (\B\ and \C\ translate to various combinations of associativity,
+    commutativity, $\emptyset$E and weakening)
+    \\
     \vspace*{\baselineskip}
   \end{mdframed}
   \caption{

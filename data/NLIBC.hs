@@ -99,24 +99,24 @@ wants     = want
 the       = Con "the"        -: DET
 some      = some1            -: Q NP S S :%← N
   where
-  some1   = Abs (Pair (Abs (Exists ((App v2 v0) :∧ (App v1 v0)))) Unit)
+  some1   = Abs (Abs (Exists ((App v2 v0) :∧ (App v1 v0))))
 every     = every1           -: Q NP S S :%← N
   where
-  every1  = Abs (Pair (Abs (Forall ((App v2 v0) :⊃ (App v1 v0)))) Unit)
+  every1  = Abs (Abs (Forall ((App v2 v0) :⊃ (App v1 v0))))
 
-same      = Pair same1 Unit   -: Q (Q A NP'S NP'S) S S
+same      = same1            -: Q (Q A NP'S NP'S) S S
   where
-  same1   = Abs (Exists (App v1 (Pair (Abs (Abs (App (App v1 (
-            Abs (Abs (App v1 v0 :∧ (v0 :≡ v4))))) v0))) Unit)))
-different = Pair diff1 Unit   -: Q (Q A NP'S NP'S) S S
+  same1   = Abs (Exists (App v1 (Abs (Abs (App (App v1 (
+            Abs (Abs (App v1 v0 :∧ (v0 :≡ v4))))) v0)))))
+different = diff1            -: Q (Q A NP'S NP'S) S S
   where
   cond1   = Forall (Forall (Not (Exists (App (App v3 v2) v0 :∧ App (App v3 v1) v0))))
-  diff1   = Abs (Exists (cond1 :∧ (App v1 (Pair (Abs (Abs (App (App v1 (
-            Abs (Abs (App v1 v0 :∧ (App (App v4 v0) v2))))) v0))) Unit))))
+  diff1   = Abs (Exists (cond1 :∧ (App v1 (Abs (Abs (App (App v1 (
+            Abs (Abs (App v1 v0 :∧ (App (App v4 v0) v2))))) v0))))))
 
 which     = Pair whTm whTm   -: whTy1 :%& whTy2
   where
-  whTm    = Pair (Abs (Abs (Abs (Abs (App v1 v0 :∧ App v2 (App v3 v0)))))) Unit
+  whTm    = Abs (Abs (Abs (Abs (App v1 v0 :∧ App v2 (App v3 v0)))))
   whTy1   = Q NP NP ((N :%→ N) :%← (S :%⇂ NP))
   whTy2   = Q NP NP ((N :%→ N) :%← (NP :%→ S))
 
@@ -152,8 +152,8 @@ more_than_one = Abs (Exists (Exists ((App v2 v1 :∧ App v2 v0) :∧ (v1 :≢ v0
 -- |Expression transforming nouns into plural nouns.
 plural :: Entry (StI (NS :← N))
 plural = Entry (SStI (NS :%← N))
-  (Abs (Pair (Abs (Exists (App more_than_one v0
-    :∧ Forall (App v1 v0 :⊃ (App v3 v0 :∧ App v2 v0))))) Unit))
+  (Abs (Abs (Exists (App more_than_one v0
+    :∧ Forall (App v1 v0 :⊃ (App v3 v0 :∧ App v2 v0))))))
 
 
 type    S        = El 'Syn.S
