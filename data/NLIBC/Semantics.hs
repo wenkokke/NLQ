@@ -40,18 +40,18 @@ promote [d|
   |]
 
 
-nat :: Nat -> Int
-nat  Z    = 0
-nat (S n) = 1 + nat n
-
-
 class Sem (repr :: [*] -> * -> *) where
   var    :: SNat n -> repr ts (ts :!! n)
   abs    :: repr (t1 ': ts) t2 -> repr ts (t1 -> t2)
   app    :: repr ts (t1 -> t2) -> repr ts t1 -> repr ts t2
   unit   :: repr ts ()
   pair   :: repr ts t1 -> repr ts t2 -> repr ts (t1, t2)
+  proj1  :: repr ts (t1, t2) -> repr ts t1
+  proj1  x   = caseof x v0
+  proj2  :: repr ts (t1, t2) -> repr ts t2
+  proj2  x   = caseof x v1
   caseof :: repr ts (t1, t2) -> repr (t1 ': t2 ': ts) t3 -> repr ts t3
+  caseof x f = abs (abs f) `app` proj2 x `app` proj1 x
 
 
 v0 :: Sem repr => repr (t0 ': ts) t0
@@ -77,17 +77,9 @@ type family H a where
   H (NL.Dia k a)     = H a
   H (NL.Box k a)     = H a
   H (a NL.:& b)      = (H a, H b)
-  H (NL.UnitR k a)   = (H a, ())
+  H (NL.UnitR k a)   = H a
   H (NL.ImpR k a b)  = H a -> H b
   H (NL.ImpL k b a)  = H a -> H b
-
---type family HS x where
---  HS (NL.StI  a)     = '[ H  a ]
---  HS (NL.DIA k x)    = HS x
---  HS  NL.B           = '[]
---  HS  NL.C           = '[]
---  HS (NL.UNIT k)     = '[]
---  HS (NL.PROD k x y) = HS x :++ HS y
 
 type family HI x where
   HI (NL.StI  a)     = H  a
@@ -116,8 +108,8 @@ eta (UnfR  _ f) = eta f
 eta (UnfL  _ f) = eta f
 eta (FocR  _ f) = eta f
 eta (FocL  _ f) = eta f
-eta (WithL1  f) = abs (caseof v0 (eta f `app` v0))
-eta (WithL2  f) = abs (caseof v0 (eta f `app` v1))
+eta (WithL1  f) = abs (eta f `app` proj1 v0)
+eta (WithL2  f) = abs (eta f `app` proj2 v0)
 eta (WithR f g) = abs (pair (eta f `app` v0) (eta g `app` v0))
 eta (ImpRL f g) = abs (abs (eta g `app` (v1 `app` (eta f `app` v0))))
 eta (ImpRR   f) = eta f
@@ -133,8 +125,8 @@ eta (BoxL    f) = eta f
 eta (BoxR    f) = eta f
 eta (Res21   f) = eta f
 eta (Res22   f) = eta f
-eta (UnitRL  f) = abs (eta f `app` v0)
-eta (UnitRR  f) = abs (caseof v0 (pair (eta f `app` v0) unit))
+eta (UnitRL  f) = abs (eta f `app` pair v0 unit)
+eta (UnitRR  f) = abs (caseof v0 (eta f `app` v0))
 eta (UnitRI  f) = abs (caseof v0 (eta f `app` v0))
 eta (ExtLL   f) = abs (caseof v0 (caseof v1 (eta f `app` pair (pair v2 v0) v1)))
 eta (ExtLR   f) = abs (caseof v0 (caseof v0 (eta f `app` pair (pair v0 v3) v1)))
@@ -144,9 +136,9 @@ eta (IfxLL   f) = abs (caseof v0 (caseof v0 (eta f `app` pair v0 (pair v1 v3))))
 eta (IfxLR   f) = abs (caseof v0 (caseof v0 (eta f `app` pair (pair v0 v3) v1)))
 eta (IfxRL   f) = abs (caseof v0 (caseof v1 (eta f `app` pair v0 (pair v2 v1))))
 eta (IfxRR   f) = abs (caseof v0 (caseof v1 (eta f `app` pair (pair v2 v0) v1)))
-eta (DnB     f) = abs (caseof v0 (caseof v1 (caseof v0 (eta f `app` pair v1 (pair v4 v3)))))
+eta (DnB     f) = abs (caseof v0 (caseof v1 (eta f `app` pair (proj2 v0) (pair v2 v1))))
 eta (UpB     f) = abs (caseof v0 (caseof v1 (eta f `app` pair v0 (pair (pair unit v2) v1))))
-eta (DnC     f) = abs (caseof v0 (caseof v1 (caseof v0 (eta f `app` pair (pair v4 v1) v3))))
+eta (DnC     f) = abs (caseof v0 (caseof v1 (eta f `app` pair (pair v2 (proj2 v0)) v1)))
 eta (UpC     f) = abs (caseof v0 (caseof v0 (eta f `app` pair v0 (pair (pair unit v1) v3))))
 
 
@@ -172,10 +164,12 @@ newtype Hask (ts :: [*]) (t :: *) = Hask { runHask :: Env ts -> ToHask t }
 
 instance Sem Hask where
   var    n   = Hask $ \env -> env %!! n
-  abs    f   = Hask $ \env x -> runHask f (Cons x env)
+  abs    f   = Hask $ \env -> \x -> runHask f (Cons x env)
   app    f x = Hask $ \env -> runHask f env (runHask x env)
   unit       = Hask $ const ()
   pair   x y = Hask $ \env -> (runHask x env , runHask y env)
+  proj1  p   = Hask $ \env -> fst (runHask p env)
+  proj2  p   = Hask $ \env -> snd (runHask p env)
   caseof p f = Hask $ \env ->
     case (runHask p env) of (x,y) -> runHask f (Cons x (Cons y env))
 

@@ -4,7 +4,7 @@
     \begin{alignat*}{4}
       \text{Type}&\;&A, B&\coloneqq \ldots\vsep A\& B
     \end{alignat*}
-
+    %
     \begin{pfbox}
       \AXC{$\focus{A}\fCenter Δ$}
       \RightLabel{L\&$_1$}
@@ -21,6 +21,58 @@
       \RightLabel{R\&}
       \BIC{$Γ\fCenter\focus{A\& B}$}
     \end{pfbox}
+    \\
+    \vspace*{\baselineskip}
+    \hrulefill
+    \[
+      \tr[(A \& B)] \mapsto \tr[A]\times\tr[B]
+    \]
+    \setlength{\tabcolsep}{0pt}
+    \hspace*{-0.75cm}%
+    \begin{tabular}{c c c}
+      \begin{pfbox}[0.9]
+        \AXC{$\focus{A}\fCenter Δ$}
+        \RightLabel{L\&$_1$}
+        \UIC{$\focus{A\& B}\fCenter Δ$}
+      \end{pfbox}
+      &$\Longrightarrow$&
+      \begin{pfbox}[0.9]
+        \AXC{}\RightLabel{Ax}\UIC{$\tr[A]\times\tr[B]\fCenter\tr[A]\times\tr[B]$}
+        \AXC{$\tr[A]\fCenter\tr[Δ]$}
+        \RightLabel{Weak.}
+        \UIC{$\tr[A]\prod\tr[B]\fCenter\tr[Δ]$}
+        \RightLabel{$\times$E}
+        \BIC{$\tr[A]\times\tr[B]\fCenter\tr[Δ]$}
+      \end{pfbox}
+      \\
+      \begin{pfbox}[0.9]
+        \AXC{$\focus{B}\fCenter Δ$} \RightLabel{L\&$_2$}
+        \UIC{$\focus{A\& B}\fCenter Δ$}
+      \end{pfbox}
+      &$\Longrightarrow$&
+      \begin{pfbox}[0.9]
+        \AXC{}\RightLabel{Ax}\UIC{$\tr[A]\times\tr[B]\fCenter\tr[A]\times\tr[B]$}
+        \AXC{$\tr[B]\fCenter\tr[Δ]$}
+        \RightLabel{Weak.}
+        \UIC{$\tr[A]\prod\tr[B]\fCenter\tr[Δ]$}
+        \RightLabel{$\times$E}
+        \BIC{$\tr[A]\times\tr[B]\fCenter\tr[Δ]$}
+      \end{pfbox}
+      \\
+      \begin{pfbox}[0.9]
+        \AXC{$Γ\fCenter\focus{A}$} \AXC{$Γ\fCenter\focus{B}$}
+        \RightLabel{R\&} \BIC{$Γ\fCenter\focus{A\& B}$}
+      \end{pfbox}
+      &$\Longrightarrow$&
+      \begin{pfbox}[0.9]
+        \AXC{$\trd[Γ]\fCenter\tr[A]$}
+        \AXC{$\trd[Γ]\fCenter\tr[B]$}
+        \RightLabel{$\times$I}
+        \BIC{$\trd[Γ]\prod\trd[Γ]\fCenter\tr[A]\times\tr[B]$}
+        \RightLabel{Cont.}
+        \UIC{$\trd[Γ]\fCenter\tr[A]\times\tr[B]$}
+      \end{pfbox}
+    \end{tabular}
     \vspace*{\baselineskip}
   \end{mdframed}
   \caption{
@@ -28,7 +80,7 @@
     supports ambiguity.}%
   \label{fig:extension-lexical-ambiguity}
 \end{figure}
-
+%
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: t

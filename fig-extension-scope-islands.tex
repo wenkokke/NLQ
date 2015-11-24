@@ -2,7 +2,7 @@
   \begin{mdframed}
     \centering
     \begin{alignat*}{4}
-      \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\Diamond A\vsep\Box A\\
+      \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\di A\vsep\sq A\\
       \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\langle Γ\rangle\\
       \text{Structure}&^-\;&Δ  &\coloneqq \ldots\vsep[Δ]
     \end{alignat*}
@@ -42,6 +42,21 @@
       \RightLabel{Res$\di\sq$}
       \UIC{$Γ\fCenter[Δ]$}
     \end{pfbox}
+    \\
+    \vspace*{\baselineskip}
+    \hrulefill
+    \renewcommand{\arraystretch}{1.5}%
+    \[
+      \begin{array}{c c c}
+      \tr [\di A]             \mapsto\tr [A]&
+      \tr [\langle Γ \rangle] \mapsto\tr [Γ]&
+      \trd[\langle Γ \rangle] \mapsto\trd[Γ]\\
+      \tr [\sq A]             \mapsto\tr [A]&
+      \tr [{[}Δ{]}]           \mapsto\tr [Δ]\\
+      \end{array}
+    \]
+    (all rules translate to the identity)
+    \\
     \vspace*{\baselineskip}
   \end{mdframed}
   \caption{
