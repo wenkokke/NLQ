@@ -16,7 +16,20 @@ main :: IO ()
 main =
   shakeArgs shakeOptions { shakeFiles = "_build" } $ do
 
-    want ["main.pdf"]
+    want ["main.pdf","slides.pdf"]
+
+    -- compile slides.tex with PdfLaTeX
+    toBuild "slides.pdf" %> \out -> do
+      let
+        src  = out -<.> "tex"
+        lcl  = fromBuild src
+
+      etc <- getDirectoryFiles "" ["fig-*.tex"]
+      need (toBuild <$> ["slides.tex" , "preamble.tex", "lambek.pdf"] ++ etc)
+
+      command_ [Cwd "_build", EchoStdout True ] "pdflatex" ["-draftmode", lcl]
+      command_ [Cwd "_build", EchoStdout False] "pdflatex" [lcl]
+
 
     -- compile main.tex with PdfLaTeX
     toBuild "main.pdf" %> \out -> do
@@ -24,7 +37,7 @@ main =
         src  = out -<.> "tex"
         lcl  = fromBuild src
 
-      etc <- getDirectoryFiles "" ["fig-*.tex","app-*.tex"]
+      etc <- getDirectoryFiles "" ["fig-*.tex"]
       need (toBuild <$> ["main.tex" , "main.bib", "preamble.tex"] ++ etc)
 
       command_ [Cwd "_build", EchoStdout True ] "pdflatex" ["-draftmode", lcl]
@@ -36,9 +49,10 @@ main =
     let static = map toBuild $
           [ "main.tex"
           , "main.bib"
+          , "slides.tex"
+          , "lambek.pdf"
           , "preamble.tex"
           , "fig-*.tex"
-          , "app-*.tex"
           ]
     static |%> \out -> do
       copyFile' (fromBuild out) out
@@ -46,6 +60,7 @@ main =
     -- copy files out of the _build directory
     let result =
           [ "main.pdf"
+          , "slides.pdf"
           ]
     result |%> \out -> do
       copyFile' (toBuild out) out
