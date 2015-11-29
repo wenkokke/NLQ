@@ -4,14 +4,11 @@
     \begin{alignat*}{4}
       \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\qr[A]\\
       \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep Γ_1\hprod Γ_2\vsep\I\vsep\B\vsep\C\\
-      \text{Structure}&^-\;&Δ   &\coloneqq \ldots\vsep Δ\himpl Γ
-      \vsep Γ\himpr Δ
+      \text{Structure}&^-\;&Δ   &\coloneqq \ldots\vsepΔ\himplΓ\vsepΓ\himprΔ
     \end{alignat*}
-
     (copy of rules for $\{\impr,\prod,\impl\}$ from
-    \autoref{fig:display-calculus} for $\{\himpr,\hprod,\himpl\}$)\\
-
-    \vspace*{\baselineskip}
+    \autoref{fig:display-calculus} for $\{\himpr,\hprod,\himpl\}$)
+    \\[1\baselineskip]
     \begin{pfbox}
       \AXC{$\struct{A}\hprod\I\fCenter Δ$}
       \RightLabel{L\I}
@@ -27,8 +24,7 @@
       \RightLabel{$\I^-$}
       \UIC{$Γ\hprod\I\fCenter Δ$}
     \end{pfbox}
-
-    \vspace*{\baselineskip}
+    \\[1\baselineskip]
     \begin{pfbox}
       \AXC{$Γ_1\prod(Γ_2\hprod Γ_3)\fCenter Δ$}
       \doubleLine\RightLabel{\B}
@@ -39,8 +35,7 @@
       \doubleLine\RightLabel{\C}
       \UIC{$Γ_1\hprod((\C\prod Γ_2)\prod Γ_3)\fCenter Δ$}
     \end{pfbox}
-    \\
-    \vspace*{\baselineskip}
+    \\[1\baselineskip]
     \hrulefill
     \renewcommand{\arraystretch}{1.5}%
     \[

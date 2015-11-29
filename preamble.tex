@@ -4,30 +4,31 @@
 \usepackage{alphabeta}%
 \usepackage[greek,english]{babel}%
 \languageattribute{greek}{polutoniko}%
+\usepackage{hyperref}%
+\addto\extrasenglish{\def\figureautorefname{figure}}%
+\usepackage{lmodern}%
 
 \usepackage{xcolor}%
-\usepackage{adjustbox}%
-
-\usepackage{hyperref}%
-\addto\extrasenglish{%
-  \renewcommand*{\figureautorefname}{figure}%
-}
-
-\usepackage{amsmath, amscd, amsthm, amssymb, mathrsfs, amsfonts, wasysym}%
-\let\oldemptyset\emptyset%
-\let\emptyset\varnothing%
-
 \usepackage{mathtools}%
 \usepackage{mdframed}%
 \usepackage[inline]{enumitem}%
 \usepackage{natbib}%
 \usepackage[toc,page]{appendix}%
-\usepackage{rotating}%
 \usepackage{pdflscape}%
+\usepackage{stmaryrd}%
+\usepackage{comment}%
+\usepackage{ifthen}%
+\usepackage{tikz}%
+\usepackage{tikz-qtree}%
+
+\usepackage{amsmath, amscd, amsthm, amssymb, mathrsfs, amsfonts, wasysym}%
+\let\oldemptyset\emptyset%
+\let\emptyset\varnothing%
 
 \usepackage{tabularx}%
-\renewcommand{\arraystretch}{3}%
 \usepackage{multirow}%
+\renewcommand{\arraystretch}{3}%
+
 
 \usepackage{bussproofs}%
 \EnableBpAbbreviations%
@@ -79,6 +80,7 @@
 \newcommand{\tr}     [1][({\cdot})]{#1^*}%
 \newcommand{\trd}    [1][({\cdot})]{#1^{**}}%
 \newcommand{\case}   [4]{\text{case}\;#1\;\text{of}\;(#2, #3)\ra#4}%
+\newcommand{\add}[2]{#1 + #2}
 
 \renewcommand*{\&}{%
   \relax
@@ -93,56 +95,79 @@
   {\gdef\scalefactor{#1} \leavevmode\hbox\bgroup}
   {\scalebox{\scalefactor}{\DisplayProof} \egroup}
 
-\usepackage{stmaryrd}%
-\usepackage{comment}%
-\usepackage{pict2e}%
-\usepackage{picture}%
-
-\makeatletter
-\def\ignorespacesandallpars{%
-  \@ifnextchar\par
-    {\expandafter\ignorespacesandallpars\@gobble}%
-    {}%
-}
-\makeatother
-
-\makeatletter
-\newcommand{\pictslash}[2]{%
-  \vcenter{%
-    \sbox0{$\m@th#1\varobslash$}\dimen0=.55\wd0
-    \hbox to\wd 0{%
-      \hfil\pictslash@aux#2\hfil
-    }%
-  }%
-}
-\newcommand{\pictslash@aux}[2]{%
-    \begin{picture}(\dimen0,\dimen0)
-    \roundcap
-    \linethickness{.15ex}
-    \put(0,#1\dimen0){\line(1,#2){\dimen0}}
-    \end{picture}%
-}
-\makeatother
-\newcommand{\varslash}{%
-  \mathpalette\pictslash{{0}{1}}%
-}
-\newcommand{\varbslash}{%
-  \mathpalette\pictslash{{1}{-1}}%
-}
-
-
-% include notes
-\usepackage{ifthen}%
-
 \newboolean{notes}%
 \setboolean{notes}{true}%
-\newcommand{\todo}[1]{%
-\ifthenelse%
+\providecommand{\todo}[1]{%
+  \ifthenelse%
   {\boolean{notes}}%
   {{\color{red}\textbf{TODO:~}#1}}%
   {}}
-\newcommand{\note}[1]{%
-\ifthenelse%
+\providecommand{\note}[1]{%
+  \ifthenelse%
   {\boolean{notes}}%
   {{\color{green}\textbf{NOTE:~}#1}}%
   {}}
+
+
+% rules from the Haskell code
+\newcommand{\AxR}[1]{\AXC{}\RightLabel{Ax$^L$}\UIC{$#1$}}%
+\newcommand{\AxL}[1]{\AXC{}\RightLabel{Ax$^R$}\UIC{$#1$}}%
+\newcommand{\UnfR}[1]{\RightLabel{Foc$^R'$}\UIC{$#1$}}%
+\newcommand{\UnfL}[1]{\RightLabel{Foc$^L'$}\UIC{$#1$}}%
+\newcommand{\FocR}[1]{\RightLabel{Foc$^R$}\UIC{$#1$}}%
+\newcommand{\FocL}[1]{\RightLabel{Foc$^L$}\UIC{$#1$}}%
+\newcommand{\WithL}[2]{\RightLabel{\&L$_{#1}$}\UIC{$#2$}}%
+\newcommand{\WithR}[1]{\RightLabel{\&R}\BIC{$#1$}}%
+\newcommand{\ImpRL}[1]{\RightLabel{$\impr$L}\BIC{$#1$}}%
+\newcommand{\ImpRR}[1]{\RightLabel{$\impr$R}\UIC{$#1$}}%
+\newcommand{\ImpLL}[1]{\RightLabel{$\impl$L}\BIC{$#1$}}%
+\newcommand{\ImpLR}[1]{\RightLabel{$\impl$R}\UIC{$#1$}}%
+\newcommand{\Res}[3]{%
+  \RightLabel{%
+    \ifstrequal{1}{#1}{%
+      \ifstrequal{1}{#2}{%
+        Res$\impr\prod$ % Res11
+      }{%
+        \ifstrequal{2}{#2}{%
+          Res$\prod\impr$ % Res12
+        }{%
+          \ifstrequal{2}{#2}{%
+            Res$\impl\prod$ % Res13
+          }{%
+            Res$\prod\impl$ % Res14
+          }
+        }
+      }
+    }{%
+      \ifstrequal{1}{#2}{%
+        Res$\sq\di$ % Res21
+      }{%
+        Res$\di\sq$ % Res22
+      }
+    }
+  }
+  \UIC{$#3$}
+}%
+\newcommand{\DiaL}[1]{\RightLabel{$\di$L}\UIC{$#1$}}%
+\newcommand{\DiaR}[1]{\RightLabel{$\di$R}\UIC{$#1$}}%
+\newcommand{\BoxL}[1]{\RightLabel{$\sq$L}\UIC{$#1$}}%
+\newcommand{\BoxR}[1]{\RightLabel{$\sq$R}\UIC{$#1$}}%
+\newcommand{\IfxRR}[1]{\RightLabel{$\Ifx$RR}\UIC{$#1$}}%
+\newcommand{\IfxLR}[1]{\RightLabel{$\Ifx$LR}\UIC{$#1$}}%
+\newcommand{\IfxLL}[1]{\RightLabel{$\Ifx$LL}\UIC{$#1$}}%
+\newcommand{\IfxRL}[1]{\RightLabel{$\Ifx$RL}\UIC{$#1$}}%
+\newcommand{\ExtRR}[1]{\RightLabel{$\Ext$RR}\UIC{$#1$}}%
+\newcommand{\ExtLR}[1]{\RightLabel{$\Ext$LR}\UIC{$#1$}}%
+\newcommand{\ExtLL}[1]{\RightLabel{$\Ext$LL}\UIC{$#1$}}%
+\newcommand{\ExtRL}[1]{\RightLabel{$\Ext$RL}\UIC{$#1$}}%
+\newcommand{\UnitRL}[1]{\RightLabel{$\I$L}\UIC{$#1$}}%
+\newcommand{\UnitRR}[1]{\RightLabel{$\I$R}\UIC{$#1$}}%
+\newcommand{\UnitRI}[1]{\RightLabel{$\I^-$}\UIC{$#1$}}%
+\newcommand{\DnB}[1]{\RightLabel{$\B$}\UIC{$#1$}}%
+\newcommand{\UpB}[1]{\RightLabel{$\B'$}\UIC{$#1$}}%
+\newcommand{\DnC}[1]{\RightLabel{$\C$}\UIC{$#1$}}%
+\newcommand{\UpC}[1]{\RightLabel{$\C'$}\UIC{$#1$}}%
+
+\ifdefined\usetheme\usetheme{Boadilla}\fi
+\ifdefined\usecolortheme\usecolortheme{seagull}\fi
+\ifdefined\beamertemplatenavigationsymbolsempty\beamertemplatenavigationsymbolsempty\fi
