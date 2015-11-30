@@ -1213,6 +1213,44 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Future Work}
+  \vfill
+  \only<1>{%
+    \centering
+    {
+      \color{gray}
+      {Mary:NP see:TV.PAST fox:NP.PL}\\
+      $\downarrow$\\
+      \fbox{Syntactic}\\
+      $\downarrow$\\
+    }
+    {Mary:NP [see:TV.PAST fox:NP.PL]}\\
+    $\downarrow$\\
+    \fbox{Semantic}\\
+    $\downarrow$\\
+    $\exists p.\forall x.p(x)\supset(\mathbf{fox}(x)\land
+    \mathbf{past}(\mathbf{see}(\text{mary},x)))$
+  }
+  \only<2->{%
+    \onslide<2->{%
+      Forward-Chaining Proof Search:
+      \begin{itemize}
+      \item[--] generate all possible sentences;
+      \item[--] filter on the sentences with the right word order.
+      \end{itemize}
+    }
+    \onslide<3->{%
+      Weak versus strong quantifiers:
+      \begin{itemize}
+      \item[--] different quantifiers show different behaviour
+        w.r.t. scope islands.
+      \end{itemize}
+    }
+  }
+  \vfill
+\end{frame}
+
+\begin{frame}
   \centering
   \vfill
   \LARGE
