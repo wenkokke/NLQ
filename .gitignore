@@ -17,6 +17,8 @@ auto/
 *.ind
 *.out
 *.pdf
+*.dyn_o
+*.dyn_hi
 flycheck_*
 flycheck_*
 TAGS
