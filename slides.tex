@@ -1098,6 +1098,29 @@
     \end{pfbox}
   }
   \only<4>{%
+    \begin{pfbox}[0.7]
+      \noLine\AXC{\vphantom{$($}$\vdots$\vphantom{$)$}}
+      \noLine\UIC{$
+        \struct{{\color{green}\S\impl(\NP\impr\S)}}\prod
+        (\B\prod\struct{{\color{red}\S\impl(\NP\impr\S)}}\prod
+        (\C\prod(\B\prod\B)\prod\I)\prod
+        (\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I
+        \fCenter\struct{\S}$}
+      \noLine\UIC{\vphantom{$($}$\vdots$\vphantom{$)$}}
+      \noLine\UIC{$
+        \struct{{\color{red}\S\impl(\NP\impr\S)}}\prod
+        (\B\prod\struct{{\color{green}\S\impl(\NP\impr\S)}})\prod
+        (\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I
+        \fCenter\struct{\S}$}
+      \noLine\UIC{\vphantom{$($}$\vdots$\vphantom{$)$}}
+      \noLine\UIC{$
+        \struct{{\color{green}\S\impl(\NP\impr\S)}}\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod
+        \struct{{\color{red}\S\impl(\NP\impr\S)}}
+        \fCenter\struct{\S}$}
+    \end{pfbox}
+  }
+  \only<5>{%
     \(\!
     \begin{aligned}
       \text{Structure}&^+\;&Γ &\coloneqq \ldots\vsep Γ_1\hprod Γ_2\vsep\I\vsep\B\vsep\C\\
@@ -1129,7 +1152,39 @@
       \UIC{$Γ_1\hprod((\C\prod Γ_2)\prod Γ_3)\fCenter Δ$}
     \end{pfbox}
   }
-  \only<5>{%
+  \only<6>{%
+    \begin{pfbox}[0.7]
+      \noLine\AXC{\vphantom{$($}$\vdots$\vphantom{$)$}}
+      \noLine\UIC{$
+        \struct{{\color{red}(\NP\impr\S)\impl\NP}}\hprod
+        (\B\prod\struct{\NP})\prod
+        ((\C\prod\I)\prod\struct{\NP})$}
+      \noLine\UIC{\vphantom{$($}$\vdots$\vphantom{$)$}}
+      \noLine\UIC{$
+        \struct{\NP}\prod
+        \struct{{\color{red}(\NP\impr\S)\impl\NP}}\prod
+        \struct{\NP}
+        \fCenter\struct{\S}$}
+    \end{pfbox}
+    \begin{pfbox}[0.7]
+      \noLine\AXC{\vphantom{$($}$\vdots$\vphantom{$)$}}
+      \noLine\UIC{$
+        ((\struct{\NP}\hprod\I)\hprod\I)\prod
+        \struct{\NP\impr\S}\prod
+        \fCenter\struct{\S}$}
+      \noLine\UIC{\vphantom{$($}$\vdots$\vphantom{$)$}}
+      \noLine\UIC{$
+        (\struct{\NP}\hprod\I)\prod
+        \struct{\NP\impr\S}\prod
+        \fCenter\struct{\S}$}
+      \noLine\UIC{\vphantom{$($}$\vdots$\vphantom{$)$}}
+      \noLine\UIC{$
+        \struct{\NP}\prod
+        \struct{\NP\impr\S}\prod
+        \fCenter\struct{\S}$}
+    \end{pfbox}
+  }
+  \only<7>{%
     \(\!
     \begin{aligned}
       \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\qr[A]\\
@@ -1167,8 +1222,48 @@
       \UIC{$Γ_1\hprod((\C\prod Γ_2)\prod Γ_3)\fCenter Δ$}
     \end{pfbox}
   }
+  \only<8>{%
+    \begin{pfbox}[0.7]
+      \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{{\color{red}\S}}$}
+      \AXC{$
+        \struct{\NP}\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod
+        \struct{{\color{red}\NP}}
+        \fCenter
+        \struct{{\color{red}\S}}$}
+      \noLine\UIC{\vphantom{$($}$\vdots$\vphantom{$)$}}
+      \noLine\UIC{$
+        \struct{{\color{red}\NP}}\hprod
+        ((\B\prod\struct{\NP})\prod
+        ((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))
+        \fCenter
+        \struct{{\color{red}\S}}$}
+      \RightLabel{R$\impr$}
+      \UIC{$
+        ((\B\prod\struct{\NP})\prod
+        ((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))
+        \fCenter
+        \struct{{\color{red}\NP\himpr\S}}$}
+      \RightLabel{L$\impl$}
+      \BIC{$
+        \struct{{\color{red}\S\himpl(\NP\himpr\S)}}\hprod
+        ((\B\prod\struct{\NP})\prod
+        ((\B\prod\struct{(\NP\himpr\S)\himpl\NP})\prod\I))
+        \fCenter
+        \struct{\S}$}
+      \noLine\UIC{\vphantom{$($}$\vdots$\vphantom{$)$}}
+      \noLine\UIC{$
+        \struct{\NP}\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod
+        \struct{{\color{red}\qr[\S\himpl(\NP\himpr\S)]}}
+        \fCenter
+        \struct{\S}$}
+    \end{pfbox}
+  }
   \vfill
 \end{frame}
+
+
 
 \begin{frame}
   \frametitle{Quantifier Raising and Scope Islands}
@@ -1240,7 +1335,7 @@
       \end{itemize}
     }
     \onslide<3->{%
-      Weak versus strong quantifiers:
+      Weak vs. Strong quantifiers:
       \begin{itemize}
       \item[--] different quantifiers show different behaviour
         w.r.t. scope islands.
