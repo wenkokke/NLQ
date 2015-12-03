@@ -6,6 +6,8 @@
 
 \begin{document}
 
+\maketitle
+
 \begin{frame}
   \frametitle{An abstract NLU-pipeline}
   \vfill
@@ -179,6 +181,99 @@
     and $z_0$ to $z_i$) which have to be point-wise relabelled (to say
     $x_0$ to $x_i$).
   }
+\end{frame}
+
+\begin{frame}
+  \frametitle{An example}
+  \centering
+  \vfill
+  \only<1>{%
+    \begin{pfbox}[0.9]
+      \AXC{saw}\RightLabel{Ax}\UIC{$\e\e\t\fCenter\e\e\t$}
+      \AXC{foxes}\RightLabel{Ax}\UIC{${\color{green}\e}\fCenter\e$}
+      \RightLabel{$\ra$E}
+      \BIC{$\e\e\t\prod{\color{green}\e}\fCenter\e\t$}
+      \AXC{mary}\RightLabel{Ax}\UIC{${\color{red}\e}\fCenter\e$}
+      \RightLabel{$\ra$E}
+      \BIC{$(\e\e\t\prod{\color{green}\e})\prod{\color{red}\e}\fCenter\e\t$}
+      \RightLabel{Comm.}
+      \UIC{${\color{red}\e}\prod(\e\e\t\prod{\color{green}\e})\fCenter\e\t$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    $\Downarrow$
+    \\[1\baselineskip]
+    $\text{mary}:\e,\text{saw}:\e\e\t,\text{foxes}:\e
+    \fCenter((\text{saw}\;\text{foxes})\;\text{mary}):\t$
+  }
+  \only<2>{%
+    \begin{pfbox}[0.9]
+      \AXC{saw}\RightLabel{Ax}\UIC{$\e\e\t\fCenter\e\e\t$}
+      \AXC{mary}\RightLabel{Ax}\UIC{${\color{red}\e}\fCenter\e$}
+      \RightLabel{$\ra$E}
+      \BIC{$\e\e\t\prod{\color{red}\e}\fCenter\e\t$}
+      \AXC{foxes}\RightLabel{Ax}\UIC{${\color{green}\e}\fCenter\e$}
+      \RightLabel{$\ra$E}
+      \BIC{$(\e\e\t\prod{\color{red}\e})\prod{\color{green}\e}\fCenter\e\t$}
+      \RightLabel{Comm.}
+      \UIC{$({\color{red}\e}\prod\e\e\t)\prod{\color{green}\e}\fCenter\e\t$}
+      \RightLabel{Ass.}
+      \UIC{${\color{red}\e}\prod(\e\e\t\prod{\color{green}\e})\fCenter\e\t$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    $\Downarrow$
+    \\[1\baselineskip]
+    $\text{mary}:\e,\text{saw}:\e\e\t,\text{foxes}:\e
+    \fCenter((\text{saw}\;\text{mary})\;\text{foxes}):\t$
+  }
+  \only<3>{%
+    \begin{pfbox}[0.9]
+      \AXC{saw}\RightLabel{Ax}\UIC{$\e\e\t\fCenter\e\e\t$}
+      \AXC{mary}\RightLabel{Ax}\UIC{${\color{red}\e}\fCenter\e$}
+      \RightLabel{$\ra$E}
+      \BIC{$\e\e\t\prod{\color{red}\e}\fCenter\e\t$}
+      \AXC{mary}\RightLabel{Ax}\UIC{${\color{red}\e}\fCenter\e$}
+      \RightLabel{$\ra$E}
+      \BIC{$(\e\e\t\prod{\color{red}\e})\prod{\color{red}\e}\fCenter\e\t$}
+      \RightLabel{Ass.}
+      \UIC{$\e\e\t\prod({\color{red}\e}\prod{\color{red}\e})\fCenter\e\t$}
+      \RightLabel{Comm.}
+      \UIC{$({\color{red}\e}\prod{\color{red}\e})\prod\e\e\t\fCenter\e\t$}
+      \RightLabel{Cont.}
+      \UIC{${\color{red}\e}\prod\e\e\t\prod\fCenter\e\t$}
+      \RightLabel{Weak.}
+      \UIC{${\color{red}\e}\prod(\e\e\t\prod{\color{green}\e})\fCenter\e\t$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    $\Downarrow$
+    \\[1\baselineskip]
+    $\text{mary}:\e,\text{saw}:\e\e\t,\text{foxes}:\e
+    \fCenter((\text{saw}\;\text{mary})\;\text{mary}):\t$
+  }
+  \only<4>{%
+    \begin{pfbox}[0.9]
+      \AXC{saw}\RightLabel{Ax}\UIC{$\e\e\t\fCenter\e\e\t$}
+      \AXC{foxes}\RightLabel{Ax}\UIC{${\color{green}\e}\fCenter\e$}
+      \RightLabel{$\ra$E}
+      \BIC{$\e\e\t\prod{\color{green}\e}\fCenter\e\t$}
+      \AXC{foxes}\RightLabel{Ax}\UIC{${\color{green}\e}\fCenter\e$}
+      \RightLabel{$\ra$E}
+      \BIC{$(\e\e\t\prod{\color{green}\e})\prod{\color{green}\e}\fCenter\e\t$}
+      \RightLabel{Ass.}
+      \UIC{$\e\e\t\prod({\color{green}\e}\prod{\color{green}\e})\fCenter\e\t$}
+      \RightLabel{Cont.}
+      \UIC{$\e\e\t\prod{\color{green}\e}\fCenter\e\t$}
+      \RightLabel{Weak.}
+      \UIC{$(\e\e\t\prod{\color{green}\e})\prod{\color{red}\e}\fCenter\e\t$}
+      \RightLabel{Comm.}
+      \UIC{${\color{red}\e}\prod(\e\e\t\prod{\color{green}\e})\fCenter\e\t$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    $\Downarrow$
+    \\[1\baselineskip]
+    $\text{mary}:\e,\text{saw}:\e\e\t,\text{foxes}:\e
+    \fCenter((\text{saw}\;\text{foxes})\;\text{foxes}):\t$
+  }
+  \vfill
 \end{frame}
 
 \begin{frame}
@@ -468,6 +563,30 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{An example}
+  \centering
+  \vfill
+  \begin{pfbox}[0.9]
+    \AXC{}\RightLabel{Ax}\UIC{$\struct{\NP}\fCenter\struct{\NP}$}
+    \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+    \RightLabel{L$\impr$}
+    \BIC{$\struct{\NP\impr\S}\fCenter\struct{\NP}\impr\struct{\S}$}
+    \AXC{}\RightLabel{Ax}\UIC{$\struct{\NP}\fCenter\struct{\NP}$}
+    \RightLabel{L$\impl$}
+    \BIC{$\struct{(\NP\impr\S)\impl\NP}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\NP}$}
+    \RightLabel{Res$\impl\prod$}
+    \UIC{$\struct{(\NP\impr\S)\impl\NP}\prod\struct{\NP}\fCenter\struct{\NP}\impr\struct{\S}$}
+    \RightLabel{Res$\impr\prod$}
+    \UIC{$\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{\NP}\fCenter\struct{\S}$}
+  \end{pfbox}
+  \\[1\baselineskip]
+  $\Downarrow$
+  \\[1\baselineskip]
+  ?
+  \vfill
+\end{frame}
+
+\begin{frame}
   \frametitle{From display calculus to semantic calculus}
   \centering
   \vfill
@@ -477,18 +596,18 @@
       \qquad
       &\trd[(\struct{A})]        \; &\mapsto& \; \tr[A]&
       \\
-      &\tr[(Γ_1\prod Γ_2)]       \; &\mapsto& \; \tr[Γ_1]\times\tr[Γ_2]&
+      &\tr[(Γ_1\prod Γ_2)]       \; &\mapsto& \; \tr[Γ_1]\prod\tr[Γ_2]&
       \qquad
-      &\trd[(Γ_1\prod Γ_2)]      \; &\mapsto& \; \trd[Γ_1]\prod\trd[Γ_2]&
+      &\trd[(Γ_1\prod Γ_2)]      \; &\mapsto& \; \trd[Γ_1]\times\trd[Γ_2]&
       \\
       \\
       &\tr[(\struct{A})]         \; &\mapsto& \; \tr[A]&
       \\
-      &\tr[(Δ\impl Γ)]           \; &\mapsto& \; \tr[Γ]\ra\tr[Δ]&
+      &\tr[(Δ\impl Γ)]           \; &\mapsto& \; \trd[Γ]\ra\tr[Δ]&
       \\
-      &\tr[(Γ\impr Δ)]           \; &\mapsto& \; \tr[Γ]\ra\tr[Δ]&
+      &\tr[(Γ\impr Δ)]           \; &\mapsto& \; \trd[Γ]\ra\tr[Δ]&
       \qquad
-      &\tr[(Γ\fCenterΔ)]         \; &\mapsto& \; \trd[Γ]\fCenter\tr[Δ]&
+      &\tr[(Γ\fCenterΔ)]         \; &\mapsto& \; \tr[Γ]\fCenter\tr[Δ]&
     \end{alignat*}
   }
   \only<2>{%
@@ -620,30 +739,6 @@
   \frametitle{An example}
   \centering
   \vfill
-  \begin{pfbox}[0.9]
-    \AXC{}\RightLabel{Ax}\UIC{$\struct{\NP}\fCenter\struct{\NP}$}
-    \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
-    \RightLabel{L$\impr$}
-    \BIC{$\struct{\NP\impr\S}\fCenter\struct{\NP}\impr\struct{\S}$}
-    \AXC{}\RightLabel{Ax}\UIC{$\struct{\NP}\fCenter\struct{\NP}$}
-    \RightLabel{L$\impl$}
-    \BIC{$\struct{(\NP\impr\S)\impl\NP}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\NP}$}
-    \RightLabel{Res$\impl\prod$}
-    \UIC{$\struct{(\NP\impr\S)\impl\NP}\prod\struct{\NP}\fCenter\struct{\NP}\impr\struct{\S}$}
-    \RightLabel{Res$\impr\prod$}
-    \UIC{$\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{\NP}\fCenter\struct{\S}$}
-  \end{pfbox}
-  \\[1\baselineskip]
-  $\Downarrow$
-  \\[1\baselineskip]
-  ?
-  \vfill
-\end{frame}
-
-\begin{frame}
-  \frametitle{An example}
-  \centering
-  \vfill
   \only<1>{%
     \begin{pfbox}[0.6]
       \AXC{}\RightLabel{Ax}\UIC{$\t\fCenter\t$}
@@ -702,16 +797,44 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Principle of Compositionality}
-  \centering
+  \frametitle{Let's take a step back}
+  We now have:
   \vfill
-  \begin{quote}
-  The meaning of a complex expression is determined by the meanings of
-  its constituent expressions and the rules used to combine them.\\
-  \hfill---Gottlob Frege
-  \end{quote}
+  \begin{itemize}
+  \item[--] a natural deduction semantic calculus;
+  \item[--] a display logic syntactic calculus;
+  \item[--] a decidable algorithm for proof search in the syntactic
+    calculus;
+  \item[--] a translation from the syntactic to the semantic calculus.
+  \end{itemize}
   \vfill
+  If we put all these items together, we can build our semantic
+  function!
+  \begin{center}
+    Mary:NP [see:TV.PAST fox:NP.PL]
+    \\
+    $\downarrow$
+    \\
+    \framebox{Semantic}
+    \\
+    $\downarrow$
+    \\
+    $\exists p.\forall x.p(x) \supset (\mathbf{fox}(x) \land
+    \mathbf{past}(\mathbf{see}(\text{mary},x)))$
+  \end{center}
 \end{frame}
+
+%\begin{frame}
+%  \frametitle{Principle of Compositionality}
+%  \centering
+%  \vfill
+%  \begin{quote}
+%  The meaning of a complex expression is determined by the meanings of
+%  its constituent expressions and the rules used to combine them.\\
+%  \hfill---Gottlob Frege
+%  \end{quote}
+%  \vfill
+%\end{frame}
 
 \begin{frame}
   \only<1-3>{%
@@ -1169,12 +1292,12 @@
     \begin{pfbox}[0.7]
       \noLine\AXC{\vphantom{$($}$\vdots$\vphantom{$)$}}
       \noLine\UIC{$
-        ((\struct{\NP}\hprod\I)\hprod\I)\prod
+        ((\struct{\NP}{\;\color{red}\hprod\;\I}){\;\color{red}\hprod\;\I})\prod
         \struct{\NP\impr\S}\prod
         \fCenter\struct{\S}$}
       \noLine\UIC{\vphantom{$($}$\vdots$\vphantom{$)$}}
       \noLine\UIC{$
-        (\struct{\NP}\hprod\I)\prod
+        (\struct{\NP}{\;\color{red}\hprod\;\I})\prod
         \struct{\NP\impr\S}\prod
         \fCenter\struct{\S}$}
       \noLine\UIC{\vphantom{$($}$\vdots$\vphantom{$)$}}
@@ -1267,44 +1390,59 @@
 
 \begin{frame}
   \frametitle{Quantifier Raising and Scope Islands}
-  \centering
-  \vfill
-  \(\!
-  \begin{aligned}
-    \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\di A\vsep\sq A\\
-    \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\langle Γ\rangle\\
-    \text{Structure}&^-\;&Δ  &\coloneqq \ldots\vsep[Δ]
-  \end{aligned}
-  \)
-  \\[1\baselineskip]
-  \begin{pfbox}
-    \AXC{$\langle\struct{A}\rangle\fCenter Δ$}
-    \RightLabel{L$\di$}
-    \UIC{$\struct{\di A}\fCenter Δ$}
-  \end{pfbox}
-  \begin{pfbox}
-    \AXC{$Γ\fCenter\struct{B}$}
-    \RightLabel{R$\di$}
-    \UIC{$\langle Γ\rangle\fCenter\struct{\di B}$}
-  \end{pfbox}
-  \\[1\baselineskip]
-  \begin{pfbox}
-    \AXC{$\struct{A}\fCenter Δ$}
-    \RightLabel{L$\di$}
-    \UIC{$\struct{\sq A}\fCenter[Δ]$}
-  \end{pfbox}
-  \begin{pfbox}
-    \AXC{$Γ\fCenter[\struct{B}]$}
-    \RightLabel{R$\sq$}
-    \UIC{$Γ\fCenter\struct{\sq B}$}
-  \end{pfbox}
-  \\[1\baselineskip]
-  \begin{pfbox}
-    \AXC{$Γ\fCenter[Δ]$}
-    \doubleLine\RightLabel{Res$\sq\di$}
-    \UIC{$\langle Γ\rangle\fCenter Δ$}
-  \end{pfbox}
-  \vfill
+  \only<1>{%
+    \vfill
+    \begin{center}
+      \(\!
+      \begin{aligned}
+        \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\di A\vsep\sq A\\
+        \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\langle Γ\rangle\\
+        \text{Structure}&^-\;&Δ &\coloneqq \ldots\vsep[Δ]
+      \end{aligned}
+      \)
+      \\[1\baselineskip]
+      \begin{pfbox}
+        \AXC{$\langle\struct{A}\rangle\fCenter Δ$} \RightLabel{L$\di$}
+        \UIC{$\struct{\di A}\fCenter Δ$}
+      \end{pfbox}
+      \begin{pfbox}
+        \AXC{$Γ\fCenter\struct{B}$} \RightLabel{R$\di$}
+        \UIC{$\langle Γ\rangle\fCenter\struct{\di B}$}
+      \end{pfbox}
+      \\[1\baselineskip]
+      \begin{pfbox}
+        \AXC{$\struct{A}\fCenter Δ$} \RightLabel{L$\di$}
+        \UIC{$\struct{\sq A}\fCenter[Δ]$}
+      \end{pfbox}
+      \begin{pfbox}
+        \AXC{$Γ\fCenter[\struct{B}]$} \RightLabel{R$\sq$}
+        \UIC{$Γ\fCenter\struct{\sq B}$}
+      \end{pfbox}
+      \\[1\baselineskip]
+      \begin{pfbox}
+        \AXC{$Γ\fCenter[Δ]$} \doubleLine\RightLabel{Res$\sq\di$}
+        \UIC{$\langle Γ\rangle\fCenter Δ$}
+      \end{pfbox}
+    \end{center}
+    \vfill
+  }
+  \only<2>{%
+    \textit{``Mary \underline{said} \underline{everyone} left.''}
+    \vfill
+    \begin{center}
+      \begin{pfbox}
+        \noLine\AXC{\vphantom{$($}$\vdots$\vphantom{$)$}}
+        \noLine\UIC{$ \struct{\NP}\prod
+          \struct{(\NP\impr\S)\impl\di\S}\prod
+          \langle
+          \struct{\qr[\S\himpl(\NP\himpr\S)]}\prod
+          \struct{\NP\impr\S}
+          \rangle
+          \fCenter\struct{\S}$}
+      \end{pfbox}
+    \end{center}
+    \vfill
+  }
 \end{frame}
 
 \begin{frame}
