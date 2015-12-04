@@ -8,8 +8,7 @@ module NLIBC.Semantics where
 import           Prelude hiding ((!!),abs,pred)
 import           Control.Monad.State
 import qualified NLIBC.Syntax.Base as NL
-import           NLIBC.Syntax.Backward (Syn(..))
-import qualified NLIBC.Syntax.Backward as NL
+import           NLIBC.Syntax.Base (Syn(..))
 import           Data.Set (Set)
 import qualified Data.Set as Set
 import           Data.Singletons.Decide
