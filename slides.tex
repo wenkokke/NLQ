@@ -1018,6 +1018,134 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Quantifier Raising}
+  \centering
+  \vfill
+  \only<1-2>{%
+    \begin{pfbox}[0.9]
+      \AXC{}\RightLabel{Ax}\UIC{$\struct{{\color{red}\NP}}\fCenter\struct{\NP}$}
+      \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{{\color{red}\S}}$}
+      \RightLabel{L$\impr$}
+      \BIC{$\struct{\NP\impr\S}\fCenter\struct{{\color{red}\NP}}\impr\struct{{\color{red}\S}}$}
+      \RightLabel{Res$\impr\prod$}
+      \only<1>{%
+        \UIC{$\struct{{\color{red}\NP}}\prod\struct{\NP\impr\S}\fCenter\struct{{\color{red}\S}}$}
+      }
+      \only<2>{%
+        \UIC{$\boxed{\struct{{\color{red}\NP}}\prod\struct{\NP\impr\S}\fCenter\struct{{\color{red}\S}}}$}
+      }
+      \RightLabel{Res$\prod\impr$}
+      \UIC{$\struct{\NP\impr\S}\fCenter\struct{{\color{red}\NP}}\impr\struct{{\color{red}\S}}$}
+      \RightLabel{R$\impr$}
+      \UIC{$\struct{\NP\impr\S}\fCenter\struct{{\color{red}\NP\impr\S}}$}
+      \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+      \BIC{$\struct{{\color{red}\S\impl(\NP\impr\S)}}\fCenter\struct{\S}\impl\struct{\NP\impr\S}$}
+      \RightLabel{Res$\impl\prod$}
+      \UIC{$\struct{{\color{red}\S\impl(\NP\impr\S)}}\prod\struct{\NP\impr\S}\fCenter\struct{\S}$}
+    \end{pfbox}
+  }
+  \only<3>{%
+    \begin{pfbox}[0.9]
+      \AXC{$\vdots$}
+      \noLine
+      \UIC{$
+        \struct{\NP}\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod
+        \struct{{\color{red}\NP}}
+        \fCenter\struct{{\color{red}\S}}$}
+      \RightLabel{$\downarrow$}
+      \UIC{$
+        \struct{{\color{red}\NP}}\prod
+        \struct{\NP}\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod\I
+        \fCenter\struct{{\color{red}\S}}$}
+      \RightLabel{Res$\prod\impr$}
+      \UIC{$
+        \struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\I
+        \fCenter
+        \struct{{\color{red}\NP}}\impr\struct{{\color{red}\S}}$}
+      \RightLabel{R$\impr$}
+      \UIC{$
+        \struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\I
+        \fCenter
+        \struct{{\color{red}\NP\impr\S}}$}
+      \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+      \RightLabel{L$\impl$}
+      \BIC{$
+        \struct{{\color{red}\S\impl(\NP\impr\S)}}
+        \fCenter\struct{\S}\impl
+        (\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\I)$}
+      \RightLabel{Res$\impl\prod$}
+      \UIC{$
+        \struct{{\color{red}\S\impl(\NP\impr\S)}}\prod
+        \struct{\NP}\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod\I
+        \fCenter\struct{\S}$}
+      \RightLabel{$\uparrow$}
+      \UIC{$
+        \struct{\NP}\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod
+        \struct{{\color{red}\S\impl(\NP\impr\S)}}
+        \fCenter\struct{\S}$}
+    \end{pfbox}
+  }
+  \only<4>{%
+    \begin{pfbox}[0.9]
+      \AXC{$Γ\prod Σ\ [\ \I\ ]\fCenter Δ$}
+      \doubleLine\RightLabel{$\uparrow\downarrow$}
+      \UIC{$Σ\ [\ Γ\ ]\fCenter Δ$}
+    \end{pfbox}
+  }
+  \only<5>{%
+    \begin{pfbox}[0.9]
+      \AXC{$\vdots$}
+      \UIC{$
+        \struct{{\color{green}\NP}}\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod
+        \struct{{\color{red}\NP}}
+        \fCenter\struct{\S}$}
+      \RightLabel{$\downarrow$}
+      \UIC{$
+        \struct{{\color{red}\NP}}\prod
+        \struct{{\color{green}\NP}}\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod\I
+        \fCenter\struct{\S}$}
+      \RightLabel{Res$\prod\impr$}
+      \UIC{$
+        \struct{{\color{green}\NP}}\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod\I
+        \fCenter\struct{{\color{red}\NP}}\impr\struct{\S}$}
+      \RightLabel{$\downarrow$}
+      \UIC{$
+        \struct{{\color{green}\NP}}\prod
+        \I\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod\I
+        \fCenter\struct{{\color{red}\NP}}\impr\struct{\S}$}
+      \RightLabel{Res$\impr\prod$}
+      \UIC{$
+        \struct{{\color{red}\NP}}\prod
+        \struct{{\color{green}\NP}}\prod
+        \I\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod\I
+        \fCenter\struct{\S}$}
+      \RightLabel{$\uparrow$}
+      \UIC{$
+        \struct{{\color{green}\NP}}\prod
+        \struct{{\color{red}\NP}}\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod\I
+        \fCenter\struct{\S}$}
+      \RightLabel{$\uparrow$}
+      \UIC{$
+        \struct{{\color{red}\NP}}\prod
+        \struct{(\NP\impr\S)\impl\NP}\prod
+        \struct{{\color{green}\NP}}
+        \fCenter\struct{\S}$}
+    \end{pfbox}
+  }
+  \vfill
+\end{frame}
+
+\begin{frame}
   \frametitle{Quantifier Raising and NL\textsubscript{IBC}}
   \centering
   \vfill
@@ -1397,7 +1525,7 @@
       \begin{aligned}
         \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\di A\vsep\sq A\\
         \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\langle Γ\rangle\\
-        \text{Structure}&^-\;&Δ &\coloneqq \ldots\vsep[Δ]
+        \text{Structure}&^-\;&Δ  &\coloneqq \ldots\vsep[Δ]
       \end{aligned}
       \)
       \\[1\baselineskip]
@@ -1427,7 +1555,7 @@
     \vfill
   }
   \only<2>{%
-    \textit{``Mary \underline{said} \underline{everyone} left.''}
+    \textit{``Mary \underline{said} everyone left.''}
     \vfill
     \begin{center}
       \begin{pfbox}

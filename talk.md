@@ -535,13 +535,13 @@ said..." etc. Mary'd be doing a whole to more saying, is what I mean.
 
 ####21
 So we've talked about the continuation monad while we were going over
-the data, but there's a number of different things we could do. Since
-we could decide to give words multiple meanings, we can give
-quantifiers a whole bunch of different types. For instance, that first
-type takes scope as a subject. The second one as a direct object. But
-then we'd need one for indirect object. And two for objects which are
-also under a prepositional phrase, and *many more*. So really,
-that's... not an option.
+the data, but there's a number of different things we can do. Since
+we can give words multiple meanings, we can give quantifiers a whole
+bunch of different types. For instance, that first type takes scope as
+a subject. The second one as a direct object. But then we'd need one
+for indirect object. And two for objects which are also under a
+prepositional phrase, and *many more*. So really, that's... not an
+option.
 
 Secondly, we have continuation monads. Now this approach was advocated
 by Barker for a while. But as we've seen, it has too many limitation.

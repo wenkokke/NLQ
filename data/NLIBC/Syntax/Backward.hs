@@ -20,229 +20,6 @@ import           Data.Singletons.TH (promote,promoteOnly,singletons)
 import           Unsafe.Coerce (unsafeCoerce)
 
 
--- * Types, Structures and Sequents
-
-singletons [d|
-
-  data StructO :: * where
-    StO  :: Type -> StructO
-    BOX  :: Kind -> StructO -> StructO
-    IMPR :: Kind -> StructI -> StructO -> StructO
-    IMPL :: Kind -> StructO -> StructI -> StructO
-    deriving (Eq,Show)
-
-  data Sequent :: * where
-    (:⊢)  :: StructI -> StructO -> Sequent
-    (:<⊢) :: Type    -> StructO -> Sequent
-    (:⊢>) :: StructI -> Type    -> Sequent
-    deriving (Eq,Show)
-
-  |]
-
-infix 1 ⊢, :⊢, :⊢>, :<⊢, :%⊢, :%⊢>, :%<⊢
-
-class Turnstile a b c | a b -> c where
-  (⊢) :: a -> b -> c
-instance Turnstile (SStructI x) (SStructO y) (SSequent (x :⊢ y)) where
-  x ⊢ y = x :%⊢ y
-instance Turnstile (SType a) (SStructO y) (SSequent (StI a :⊢ y)) where
-  a ⊢ y = SStI a :%⊢ y
-instance Turnstile (SStructI x) (SType b) (SSequent (x :⊢ StO b)) where
-  x ⊢ b = x :%⊢ SStO b
-instance Turnstile (SType a) (SType b) (SSequent (StI a :⊢ StO b)) where
-  a ⊢ b = SStI a :%⊢ SStO b
-
-
-deriving instance Ord StructO
-deriving instance Ord Sequent
-
-
--- * Contexts, Plugging and Traces
-
-singletons [d|
-
-  data Context :: * where
-    HOLE  :: Context
-    (:<∙) :: Context -> StructI -> Context
-    (:∙>) :: StructI -> Context -> Context
-
-  |]
-
-infixr 3 :<∙, :∙>
-
-promote [d|
-
-  plug :: Context -> StructI -> StructI
-  plug HOLE      z = z
-  plug (x :<∙ y) z = PROD Solid (plug x z) y
-  plug (x :∙> y) z = PROD Solid x (plug y z)
-
-  trace :: Context -> StructI
-  trace HOLE      = UNIT Hollow
-  trace (x :∙> y) = PROD Solid (PROD Solid B x) (trace y)
-  trace (x :<∙ y) = PROD Solid (PROD Solid C (trace x)) y
-
-  |]
-
-data Focus (z :: StructI) :: * where
-     Focus :: SContext x -> SStructI y -> Plug x y :~: z -> Focus z
-
-data Trail (z :: StructI) :: * where
-     Trail :: SContext x -> Trace x :~: z -> Trail z
-
-sPlug :: SContext x -> SStructI z -> SStructI (Plug x z)
-sPlug SHOLE      z = z
-sPlug (x :%<∙ y) z = SPROD SSolid (sPlug x z) y
-sPlug (x :%∙> y) z = SPROD SSolid x (sPlug y z)
-
-sTrace :: SContext x -> SStructI (Trace x)
-sTrace SHOLE      = SUNIT SHollow
-sTrace (x :%∙> y) = SPROD SSolid (SPROD SSolid SB x) (sTrace y)
-sTrace (x :%<∙ y) = SPROD SSolid (SPROD SSolid SC (sTrace x)) y
-
-sFocus :: SStructI x -> [Focus x]
-sFocus x = Focus SHOLE x Refl : sFocus' x
-  where
-    sFocus' :: SStructI x -> [Focus x]
-    sFocus' (x :%∙ y) = (inl <$> sFocus x) ++ (inr <$> sFocus y)
-      where
-        inl (Focus x z Refl) = Focus (x :%<∙ y) z Refl
-        inr (Focus y z Refl) = Focus (x :%∙> y) z Refl
-    sFocus' x         = []
-
-sFollow :: SStructI x -> Maybe (Trail x)
-sFollow (SUNIT SHollow) = Just (Trail SHOLE Refl)
-sFollow (SPROD SSolid (SPROD SSolid SC x) y) = case sFollow x of
-  Just (Trail x Refl) -> Just (Trail (x :%<∙ y) Refl)
-  _                   -> Nothing
-sFollow (SPROD SSolid (SPROD SSolid SB x) y) = case sFollow y of
-  Just (Trail y Refl) -> Just (Trail (x :%∙> y) Refl)
-  _                   -> Nothing
-sFollow _                  = Nothing
-
-
--- * Positive and Negative Types
-
-data Pos :: Type -> * where
-  Pos_Dia    :: Pos (Dia k a)
-  Pos_UnitR  :: Pos (UnitR k a)
-
-data Neg :: Type -> * where
-  Neg_El     :: Neg (El a)
-  Neg_Box    :: Neg (Box k a)
-  Neg_With   :: Neg (a1 :& a2)
-  Neg_ImpR   :: Neg (ImpR k a b)
-  Neg_ImpL   :: Neg (ImpL k b a)
-
-pol :: SType a -> Either (Pos a) (Neg a)
-pol (SEl a)       = Right Neg_El
-pol (_ :%& _)     = Right Neg_With
-pol (SDia _ _)    = Left  Pos_Dia
-pol (SBox _ _)    = Right Neg_Box
-pol (SUnitR _ _)  = Left  Pos_UnitR
-pol (SImpR _ _ _) = Right Neg_ImpR
-pol (SImpL _ _ _) = Right Neg_ImpL
-
-
--- * Proofs
-
-data Syn :: Sequent -> * where
-  AxR    :: Pos b -> Syn (StI b :⊢> b)
-  AxL    :: Neg a -> Syn (a :<⊢ StO a)
-  UnfR   :: Neg b -> Syn (x :⊢ StO b) -> Syn (x :⊢> b)
-  UnfL   :: Pos a -> Syn (StI a :⊢ y) -> Syn (a :<⊢ y)
-  FocR   :: Pos b -> Syn (x :⊢> b) -> Syn (x :⊢ StO b)
-  FocL   :: Neg a -> Syn (a :<⊢ y) -> Syn (StI a :⊢ y)
-
-  WithL1 :: Syn (a1 :<⊢ y) -> Syn (a1 :& a2 :<⊢ y)
-  WithL2 :: Syn (a2 :<⊢ y) -> Syn (a1 :& a2 :<⊢ y)
-  WithR  :: Syn (x :⊢> b1) -> Syn (x :⊢> b2) -> Syn (x :⊢> b1 :& b2)
-
-  ImpRL  :: Syn (x :⊢> a) -> Syn (b :<⊢ y) -> Syn (ImpR k a b :<⊢ IMPR k x y)
-  ImpRR  :: Syn (x :⊢ IMPR k (StI a) (StO b)) -> Syn (x :⊢ StO (ImpR k a b))
-  ImpLL  :: Syn (x :⊢> a) -> Syn (b :<⊢ y) -> Syn (ImpL k b a :<⊢ IMPL k y x)
-  ImpLR  :: Syn (x :⊢ IMPL k (StO b) (StI a)) -> Syn (x :⊢ StO (ImpL k b a))
-  Res11  :: Syn (y :⊢ IMPR k x z) -> Syn (PROD k x y :⊢ z)
-  Res12  :: Syn (PROD k x y :⊢ z) -> Syn (y :⊢ IMPR k x z)
-  Res13  :: Syn (x :⊢ IMPL k z y) -> Syn (PROD k x y :⊢ z)
-  Res14  :: Syn (PROD k x y :⊢ z) -> Syn (x :⊢ IMPL k z y)
-
-  DiaL   :: Syn (DIA k (StI a) :⊢ y) -> Syn (StI (Dia k a) :⊢ y)
-  DiaR   :: Syn (x :⊢> b) -> Syn (DIA k x :⊢> Dia k b)
-  BoxL   :: Syn (a :<⊢ y) -> Syn (Box k a :<⊢ BOX k y)
-  BoxR   :: Syn (x :⊢ BOX k (StO b)) -> Syn (x :⊢ StO (Box k b))
-  Res21  :: Syn (x :⊢ BOX k y) -> Syn (DIA k x :⊢ y)
-  Res22  :: Syn (DIA k x :⊢ y) -> Syn (x :⊢ BOX k y)
-
-  IfxRR   :: Syn ((x :∙ y) :∙ IFX z :⊢ w) -> Syn (x :∙ (y :∙ IFX z) :⊢ w)
-  IfxLR   :: Syn ((x :∙ y) :∙ IFX z :⊢ w) -> Syn ((x :∙ IFX z) :∙ y :⊢ w)
-  IfxLL   :: Syn (IFX z :∙ (y :∙ x) :⊢ w) -> Syn ((IFX z :∙ y) :∙ x :⊢ w)
-  IfxRL   :: Syn (IFX z :∙ (y :∙ x) :⊢ w) -> Syn (y :∙ (IFX z :∙ x) :⊢ w)
-
-  ExtRR   :: Syn (x :∙ (y :∙ EXT z) :⊢ w) -> Syn ((x :∙ y) :∙ EXT z :⊢ w)
-  ExtLR   :: Syn ((x :∙ EXT z) :∙ y :⊢ w) -> Syn ((x :∙ y) :∙ EXT z :⊢ w)
-  ExtLL   :: Syn ((EXT z :∙ y) :∙ x :⊢ w) -> Syn (EXT z :∙ (y :∙ x) :⊢ w)
-  ExtRL   :: Syn (y :∙ (EXT z :∙ x) :⊢ w) -> Syn (EXT z :∙ (y :∙ x) :⊢ w)
-
-  UnitRL :: Syn (PROD k (StI a) (UNIT k) :⊢ y) -> Syn (StI (UnitR k a) :⊢ y)
-  UnitRR :: Syn (x :⊢> b) -> Syn (PROD k x (UNIT k) :⊢> UnitR k b)
-  UnitRI :: Syn (x :⊢ y) -> Syn (PROD k x (UNIT k) :⊢ y)
-
-  DnB    :: Syn (x :∙ (y :∘ z) :⊢ w) -> Syn (y :∘ ((B :∙ x) :∙ z) :⊢ w)
-  UpB    :: Syn (y :∘ ((B :∙ x) :∙ z) :⊢ w) -> Syn (x :∙ (y :∘ z) :⊢ w)
-  DnC    :: Syn ((x :∘ y) :∙ z :⊢ w) -> Syn (x :∘ ((C :∙ y) :∙ z) :⊢ w)
-  UpC    :: Syn (x :∘ ((C :∙ y) :∙ z) :⊢ w) -> Syn ((x :∘ y) :∙ z :⊢ w)
-
-
-instance Show (SSequent s) where
-  show ss = show (fromSing ss)
-
-deriving instance Eq   (Pos s)
-deriving instance Eq   (Neg s)
-deriving instance Eq   (Syn s)
-deriving instance Ord  (Pos s)
-deriving instance Ord  (Neg s)
-deriving instance Show (Pos s)
-deriving instance Show (Neg s)
-deriving instance Show (Syn s)
-
-
-qrL :: SContext x
-    -> Syn (Trace x :⊢> b)
-    -> Syn (c :<⊢ y)
-    -> Syn (Plug x (StI (QR (c :⇦ b))) :⊢ y)
-qrL x f g = unsafeCoerce . init x
-          $ unsafeCoerce . move x
-          $ Res13 (FocL Neg_ImpL (ImpLL f g))
-  where
-    init :: SContext x
-         -> Syn (Plug x (StI a :∘ T) :⊢ y)
-         -> Syn (Plug x (StI (QR a)) :⊢ y)
-    init SHOLE      f = UnitRL f
-    init (x :%<∙ y) f = Res13 (unsafeCoerce (init x (Res14 (unsafeCoerce f))))
-    init (x :%∙> y) f = Res11 (unsafeCoerce (init y (Res12 (unsafeCoerce f))))
-
-    move :: SContext x
-         -> Syn (y :∘ Trace x :⊢ z)
-         -> Syn (Plug x (y :∘ T) :⊢ z)
-    move SHOLE      f = f
-    move (x :%<∙ y) f = Res13 (unsafeCoerce (move x (Res14 (UpC (unsafeCoerce f)))))
-    move (x :%∙> y) f = Res11 (unsafeCoerce (move y (Res12 (UpB (unsafeCoerce f)))))
-
-
-qrR :: SContext x
-    -> Syn (Plug x (StI a) :⊢ StO b)
-    -> Syn (Trace x :⊢ StO (a :⇨ b))
-qrR x f = ImpRR (Res12 (move x f))
-  where
-    move :: SContext x
-         -> Syn (Plug x y :⊢ z)
-         -> Syn (y :∘ Trace x :⊢ z)
-    move SHOLE      f = UnitRI f
-    move (x :%<∙ y) f = DnC (Res13 (unsafeCoerce (move x (Res14 (unsafeCoerce f)))))
-    move (x :%∙> y) f = DnB (Res11 (unsafeCoerce (move y (Res12 (unsafeCoerce f)))))
-
-
 -- * Proof search
 
 find :: SSequent s -> Maybe (Syn s)
@@ -271,7 +48,7 @@ search ss = do
           , [ifxLL,ifxLR,ifxRL,ifxRR]
           --, [unitL,unitR,unitI]
           --, [upB,upC,dnB,dnC]
-          , [up,dn]
+          , [qrR',qrL']
           ]
 
     loop :: SSequent s -> Search m (Syn s)
@@ -389,14 +166,14 @@ search ss = do
     dnC (x :%∘ ((SC :%∙ y) :%∙ z) :%⊢ w) = DnC <$> loop ((x :%∘ y) :%∙ z :%⊢ w)
     dnC _                                = empty
 
-    up,dn :: SSequent s -> Search m (Syn s)
-    up (x :%⊢ y)              = msum (app <$> sFocus x)
+    qrL',qrR' :: SSequent s -> Search m (Syn s)
+    qrL' (x :%⊢ y)              = msum (app <$> sFocus x)
       where
         app (Focus x (SStI (SQR (c :%⇦ b))) Refl)
-                              = qrL x <$> prog (sTrace x :%⊢> b) <*> prog (c :%<⊢ y)
-        app _                 = empty
-    up _                      = empty
-    dn (x :%⊢ SStO (a :%⇨ b)) = msum (maybeToList (app <$> sFollow x))
+                                = qrL x <$> prog (sTrace x :%⊢> b) <*> prog (c :%<⊢ y)
+        app _                   = empty
+    qrL' _                      = empty
+    qrR' (x :%⊢ SStO (a :%⇨ b)) = msum (maybeToList (app <$> sFollow x))
       where
-        app (Trail x Refl)    = qrR x <$> prog (sPlug x (SStI a) :%⊢ SStO b)
-    dn _                      = empty
+        app (Trail x Refl)      = qrR x <$> prog (sPlug x (SStI a) :%⊢ SStO b)
+    qrR' _                      = empty
