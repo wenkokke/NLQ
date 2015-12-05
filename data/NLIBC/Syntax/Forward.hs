@@ -48,170 +48,193 @@ instance Show (TypedBy xs b) where
   show (TypedBy _ _ f) = show f
 
 
+-- * Top-Down Proof Search
 
--- * Proof search
-
-type NP = El 'NP   ; sNP  = SEl SNP
-type S  = El 'S    ; sS   = SEl SS
-type N  = El 'N    ; sN   = SEl SN
-type IV = NP :→ S  ; sIV  = sNP :%→ sS
-type TV = IV :← NP ; sTV  = sIV :%← sNP
-infixr 4 %: ; (%:) = SCons
-
-test1 :: [TypedBy [NP,IV] S]
-test1 = topDown (sNP %: sIV %: SNil) sS
-test2 :: [TypedBy [NP,TV,NP] S]
-test2 = topDown (sNP %: sTV %: sNP %: SNil) sS
-test3 :: [TypedBy [Q NP S S,IV] S]
-test3 = topDown (SQ sNP sS sS %: sIV %: SNil) sS
-test4 :: [TypedBy [Q NP S S,TV,NP] S]
-test4 = topDown (SQ sNP sS sS %: sTV %: sNP %: SNil) sS
-test5 :: [TypedBy [NP,TV,Q NP S S] S]
-test5 = topDown (sNP %: sTV %: SQ sNP sS sS %: SNil) sS
-test6 :: [TypedBy [Q NP S S,TV,Q NP S S] S]
-test6 = topDown (SQ sNP sS sS %: sTV %: SQ sNP sS sS %: SNil) sS
+type PartialProof = ([Type],[Typed])
 
 topDown :: SList (xs :: [Type]) -> SType b -> [TypedBy xs b]
 topDown sxs sb = case setup sxs sb of
   Nothing -> []
-  Just pp -> mapMaybe (check sxs sb) (next [pp])
-
-
--- |Setup the initial set of axioms from the given types.
-setup :: SList (xs :: [Type]) -> SType b -> Maybe PartialProof
-setup sxs sb =
-  if isBalanced (as,bs) then Just (ts2,xs0) else Nothing
+  Just pp -> mapMaybe (check sxs sb) (search [pp])
   where
-    complex (El _) = False
-    complex _      = True
+  setup :: SList (xs :: [Type]) -> SType b -> Maybe PartialProof
+  setup sxs sb =
+    if isBalanced (as,bs) then Just (ts2,xs0) else Nothing
+    where
+      complex (El _) = False
+      complex _      = True
+      ts0     = map (True,) (fromSing sxs) ++ [(False,fromSing sb)]
+      ts1     = subformulas (map snd ts0)
+      ts2     = filter complex ts1
+      (as,bs) = allAtoms ts0
+      xs0     = sort (allAxioms as)
 
-    ts0     = map (True,) (fromSing sxs) ++ [(False,fromSing sb)]
-    ts1     = subformulas (map snd ts0)
-    ts2     = filter complex ts1
-    (as,bs) = allAtoms ts0
-    xs0     = sort (allAxioms as)
+  check :: SList xs -> SType b -> Typed -> Maybe (TypedBy xs b)
+  check xs1 b1 (Typed (x :%⊢ SStO b2) f) =
+    case b1 %~ b2 of
+    Disproved _ -> Nothing ; Proved Refl ->
+      case toList x of
+      Nothing  -> Nothing ; Just xs2 ->
+        case xs2 %~ xs1 of
+        Disproved _ -> Nothing ; Proved Refl -> Just (TypedBy x Refl f)
+  check _ _ _ = Nothing
 
+  search :: [PartialProof] -> [Typed]
+  search []  = []
+  search in0 = out ++ search in1
+    where
+      out = map (head . snd) (filter ((==1).length) in0)
+      in1 = nubSort (concatMap fun1 in0 ++ concatMap fun2 in0)
 
--- |Check the results and return only those proofs with the desired type.
-check :: SList xs -> SType b -> Typed -> Maybe (TypedBy xs b)
-check xs1 b1 (Typed (x :%⊢ SStO b2) f) =
-  case b1 %~ b2 of
-  Disproved _ -> Nothing ; Proved Refl ->
-    case toList x of
-    Nothing  -> Nothing ; Just xs2 ->
-      case xs2 %~ xs1 of
-      Disproved _ -> Nothing ; Proved Refl -> Just (TypedBy x Refl f)
-check _ _ _ = Nothing
+      fun1 :: PartialProof -> [PartialProof]
+      fun1 (ts0,xs0) = do
+        f                   <- [unfR,unfL,focR,focL,impRR,impLR
+                               ,res11,res12,res13,res14,qrR'
+                               ,diaL,diaR,boxL,boxR,res21,res22
+                               ,ifxRR,ifxLR,ifxLL,ifxRL
+                               ,extRR,extLR,extLL,extRL]
+        x1                  <- xs0     ; let xs1 = xs0 `minus` [x1]
+        (ts1,x@(Typed s _)) <- f x1    ; let xs2 = insertBag x xs1
 
+        let ts2 = ts0 `minus` ts1
+        if not (ts1 `subset` ts0) then empty else return (ts2,xs2)
 
+      fun2 :: PartialProof -> [PartialProof]
+      fun2 (ts0,xs0) = do
+        f                   <- [impRL,impLL,qrL']
+        x1                  <- xs0     ; let xs1 = xs0 `minus` [x1]
+        x2                  <- xs1     ; let xs2 = xs1 `minus` [x2]
+        (ts1,x@(Typed s _)) <- f x1 x2 ; let xs3 = insertBag x xs2
 
-type PartialProof = ([Type],[Typed])
+        let ts2 = ts0 `minus` ts1
+        if not (ts1 `subset` ts0) then empty else return (ts2,xs3)
 
-next :: [PartialProof] -> [Typed]
-next []  = []
-next in0 = out ++ next in1
-  where
-    out = map (head . snd) (filter ((==1).length) in0)
-    in1 = nubSort (concatMap fun1 in0 ++ concatMap fun2 in0)
+      unfR,unfL,focR,focL :: Typed -> [([Type],Typed)]
+      unfR (Typed (x :%⊢ SStO b) f) = case pol b of
+        Left  p -> empty
+        Right n -> return ([],Typed (x :%⊢> b) (UnfR n f))
+      unfR _ = empty
+      unfL (Typed (SStI a :%⊢ y) f) = case pol a of
+        Left  p -> return ([],Typed (a :%<⊢ y) (UnfL p f))
+        Right n -> empty
+      unfL _ = empty
+      focR (Typed (x :%⊢> b) f) = case pol b of
+        Left  p -> return ([],Typed (x :%⊢ SStO b) (FocR p f))
+        Right n -> empty
+      focR _ = empty
+      focL (Typed (a :%<⊢ y) f) = case pol a of
+        Left  p -> empty
+        Right n -> return ([],Typed (SStI a :%⊢ y) (FocL n f))
+      focL _ = empty
 
-    fun1 :: PartialProof -> [PartialProof]
-    fun1 (ts0,xs0) = do
-      f                   <- [unfR,unfL,focR,focL,impRR,impLR,res11,res12,res13,res14,qrR']
-      x1                  <- xs0     ; let xs1 = xs0 `minus` [x1]
-      (ts1,x@(Typed s _)) <- f x1    ; let xs2 = insertBag x xs1
+      impRL,impLL :: Typed -> Typed -> [([Type],Typed)]
+      impRL (Typed (x :%⊢> a) f) (Typed (b :%<⊢ y) g) =
+        forEach [Solid,Hollow] $ \k ->
+        let t = SImpR k a b in ([fromSing t],Typed (t :%<⊢ SIMPR k x y) (ImpRL f g))
+      impRL _ _ = empty
+      impLL (Typed (x :%⊢> a) f) (Typed (b :%<⊢ y) g) =
+        forEach [Solid,Hollow] $ \k ->
+        let t = SImpL k b a in ([fromSing t],Typed (t :%<⊢ SIMPL k y x) (ImpLL f g))
+      impLL _ _ = empty
 
-      let ts2 = ts0 `minus` ts1
-      if not (ts1 `subset` ts0) then empty else return (ts2,xs2)
-
-    fun2 :: PartialProof -> [PartialProof]
-    fun2 (ts0,xs0) = do
-      f                   <- [impRL,impLL,qrL']
-      x1                  <- xs0     ; let xs1 = xs0 `minus` [x1]
-      x2                  <- xs1     ; let xs2 = xs1 `minus` [x2]
-      (ts1,x@(Typed s _)) <- f x1 x2 ; let xs3 = insertBag x xs2
-
-      let ts2 = ts0 `minus` ts1
-      if not (ts1 `subset` ts0) then empty else return (ts2,xs3)
-
-    unfR,unfL,focR,focL :: Typed -> [([Type],Typed)]
-    unfR (Typed (x :%⊢ SStO b) f) = case pol b of
-      Left  p -> empty
-      Right n -> return ([],Typed (x :%⊢> b) (UnfR n f))
-    unfR _ = empty
-    unfL (Typed (SStI a :%⊢ y) f) = case pol a of
-      Left  p -> return ([],Typed (a :%<⊢ y) (UnfL p f))
-      Right n -> empty
-    unfL _ = empty
-    focR (Typed (x :%⊢> b) f) = case pol b of
-      Left  p -> return ([],Typed (x :%⊢ SStO b) (FocR p f))
-      Right n -> empty
-    focR _ = empty
-    focL (Typed (a :%<⊢ y) f) = case pol a of
-      Left  p -> empty
-      Right n -> return ([],Typed (SStI a :%⊢ y) (FocL n f))
-    focL _ = empty
-
-    impRL,impLL :: Typed -> Typed -> [([Type],Typed)]
-    impRL (Typed (x :%⊢> a) f) (Typed (b :%<⊢ y) g) =
-      forEach [Solid,Hollow] $ \k ->
+      impRR,impLR :: Typed -> [([Type],Typed)]
+      impRR (Typed (x :%⊢ SIMPR k (SStI a) (SStO b)) f) =
         let t = SImpR k a b in
-             ([fromSing t],Typed (t :%<⊢ SIMPR k x y) (ImpRL f g))
-    impRL _ _ = empty
-    impLL (Typed (x :%⊢> a) f) (Typed (b :%<⊢ y) g) =
-      forEach [Solid,Hollow] $ \k ->
+        return ([fromSing t],Typed (x :%⊢ SStO t) (ImpRR f))
+      impRR _ = empty
+      impLR (Typed (x :%⊢ SIMPL k (SStO b) (SStI a)) f) =
         let t = SImpL k b a in
-             ([fromSing t],Typed (t :%<⊢ SIMPL k y x) (ImpLL f g))
-    impLL _ _ = empty
+        return ([fromSing t],Typed (x :%⊢ SStO t) (ImpLR f))
+      impLR _ = empty
 
-    impRR,impLR :: Typed -> [([Type],Typed)]
-    impRR (Typed (x :%⊢ SIMPR k (SStI a) (SStO b)) f) =
-      let t = SImpR k a b in
-      return ([fromSing t],Typed (x :%⊢ SStO t) (ImpRR f))
-    impRR _ = empty
-    impLR (Typed (x :%⊢ SIMPL k (SStO b) (SStI a)) f) =
-      let t = SImpL k b a in
-      return ([fromSing t],Typed (x :%⊢ SStO t) (ImpLR f))
-    impLR _ = empty
+      res11,res12,res13,res14 :: Typed -> [([Type],Typed)]
+      res11 (Typed (y :%⊢ SIMPR k x z) (Res12 _)) = empty
+      res11 (Typed (y :%⊢ SIMPR k x z) f)         =
+        return ([],Typed (SPROD k x y :%⊢ z) (Res11 f))
+      res11 _                                     = empty
+      res12 (Typed (SPROD k x y :%⊢ z) (Res11 _)) = empty
+      res12 (Typed (SPROD k x y :%⊢ z) f)         =
+        return ([],Typed (y :%⊢ SIMPR k x z) (Res12 f))
+      res12 _                                     = empty
+      res13 (Typed (x :%⊢ SIMPL k z y) (Res14 _)) = empty
+      res13 (Typed (x :%⊢ SIMPL k z y) f)         =
+        return ([],Typed (SPROD k x y :%⊢ z) (Res13 f))
+      res13 _                                     = empty
+      res14 (Typed (SPROD k x y :%⊢ z) (Res13 _)) = empty
+      res14 (Typed (SPROD k x y :%⊢ z) f)         =
+        return ([],Typed (x :%⊢ SIMPL k z y) (Res14 f))
+      res14 _                                     = empty
 
-    res11,res12,res13,res14 :: Typed -> [([Type],Typed)]
-    res11 (Typed (y :%⊢ SIMPR k x z) (Res12 _)) = empty
-    res11 (Typed (y :%⊢ SIMPR k x z) f) =
-      return ([],Typed (SPROD k x y :%⊢ z) (Res11 f))
-    res11 _ = empty
-    res12 (Typed (SPROD k x y :%⊢ z) (Res11 _)) = empty
-    res12 (Typed (SPROD k x y :%⊢ z) f) =
-      return ([],Typed (y :%⊢ SIMPR k x z) (Res12 f))
-    res12 _ = empty
-    res13 (Typed (x :%⊢ SIMPL k z y) (Res14 _)) = empty
-    res13 (Typed (x :%⊢ SIMPL k z y) f) =
-      return ([],Typed (SPROD k x y :%⊢ z) (Res13 f))
-    res13 _ = empty
-    res14 (Typed (SPROD k x y :%⊢ z) (Res13 _)) = empty
-    res14 (Typed (SPROD k x y :%⊢ z) f) =
-      return ([],Typed (x :%⊢ SIMPL k z y) (Res14 f))
-    res14 _ = empty
+      qrL' :: Typed -> Typed -> [([Type],Typed)]
+      qrL' (Typed (sig :%⊢> b) f) (Typed (c :%<⊢ y) g) = case sFollow sig of
+        Nothing             -> empty
+        Just (Trail x Refl) ->
+          let t = SQR (c :%⇦ b) in
+          return ([fromSing t],Typed (sPlug x (SStI t) :%⊢ y) (qrL x f g))
+      qrL' _ _ = empty
+      qrR' :: Typed -> [([Type],Typed)]
+      qrR' (Typed (sig :%⊢ SStO b) f) = concatMap go (sFocus sig)
+        where
+          go (Focus x (SStI a) Refl) =
+            let t = a :%⇨ b in
+            return ([fromSing t],Typed (sTrace x :%⊢ SStO t) (qrR x f))
+          go _ = empty
+      qrR' _ = empty
 
-    qrL' :: Typed -> Typed -> [([Type],Typed)]
-    qrL' (Typed (sig :%⊢> b) f) (Typed (c :%<⊢ y) g) = case sFollow sig of
-      Nothing             -> empty
-      Just (Trail x Refl) ->
-        let t = SQR (c :%⇦ b) in
-        return ([fromSing t],Typed (sPlug x (SStI t) :%⊢ y) (qrL x f g))
-    qrL' _ _ = empty
-    qrR' :: Typed -> [([Type],Typed)]
-    qrR' (Typed (sig :%⊢ SStO b) f) = concatMap go (sFocus sig)
-      where
-        go (Focus x (SStI a) Refl) =
-          let t = a :%⇨ b in
-          return ([fromSing t],Typed (sTrace x :%⊢ SStO t) (qrR x f))
-        go _ = empty
-    qrR' _ = empty
+      diaL,diaR,boxL,boxR :: Typed -> [([Type],Typed)]
+      diaL (Typed (SDIA k (SStI a) :%⊢ y) f) =
+        let t = SDia k a in return ([fromSing t],Typed (SStI t :%⊢ y) (DiaL f))
+      diaL _                                 = empty
+      diaR (Typed (x :%⊢> b) f)              =
+        forEach [Reset,Infixate,Extract] $ \k ->
+        let t = SDia k b in ([fromSing t],Typed (SDIA k x :%⊢> t) (DiaR f))
+      diaR _                                 = empty
+      boxL (Typed (a :%<⊢ y) f)              =
+        forEach [Reset,Infixate,Extract] $ \k ->
+        let t = SBox k a in ([fromSing t],Typed (t :%<⊢ SBOX k y) (BoxL f))
+      boxL _                                 = empty
+      boxR (Typed (x :%⊢ SBOX k (SStO b)) f) =
+        let t = SBox k b in return ([fromSing t],Typed (x :%⊢ SStO t) (BoxR f))
+      boxR _                                 = empty
 
--- -}
--- -}
--- -}
--- -}
--- -}
+      res21,res22 :: Typed -> [([Type],Typed)]
+      res21 (Typed (x :%⊢ SBOX k y) (Res22 _)) = empty
+      res21 (Typed (x :%⊢ SBOX k y) f)         =
+        return ([],Typed (SDIA k x :%⊢ y) (Res21 f))
+      res21 _                                  = empty
+      res22 (Typed (SDIA k x :%⊢ y) (Res21 _)) = empty
+      res22 (Typed (SDIA k x :%⊢ y) f)         =
+        return ([],Typed (x :%⊢ SBOX k y) (Res22 f))
+      res22 _                                  = empty
+
+      ifxRR,ifxLR,ifxLL,ifxRL :: Typed -> [([Type],Typed)]
+      ifxRR (Typed ((x :%∙ y) :%∙ SIFX z :%⊢ w) f) =
+        return ([],Typed (x :%∙ (y :%∙ SIFX z) :%⊢ w) (IfxRR f))
+      ifxRR _ = empty
+      ifxLR (Typed ((x :%∙ y) :%∙ SIFX z :%⊢ w) f) =
+        return ([],Typed ((x :%∙ SIFX z) :%∙ y :%⊢ w) (IfxLR f))
+      ifxLR _ = empty
+      ifxLL (Typed (SIFX z :%∙ (y :%∙ x) :%⊢ w) f) =
+        return ([],Typed ((SIFX z :%∙ y) :%∙ x :%⊢ w) (IfxLL f))
+      ifxLL _ = empty
+      ifxRL (Typed (SIFX z :%∙ (y :%∙ x) :%⊢ w) f) =
+        return ([],Typed (y :%∙ (SIFX z :%∙ x) :%⊢ w) (IfxRL f))
+      ifxRL _ = empty
+
+      extRR,extLR,extLL,extRL :: Typed -> [([Type],Typed)]
+      extRR (Typed (x :%∙ (y :%∙ SEXT z) :%⊢ w) f) =
+       return ([],Typed ((x :%∙ y) :%∙ SEXT z :%⊢ w) (ExtRR f))
+      extRR _ = empty
+      extLR (Typed ((x :%∙ SEXT z) :%∙ y :%⊢ w) f) =
+       return ([],Typed ((x :%∙ y) :%∙ SEXT z :%⊢ w) (ExtLR f))
+      extLR _ = empty
+      extLL (Typed ((SEXT z :%∙ y) :%∙ x :%⊢ w) f) =
+       return ([],Typed (SEXT z :%∙ (y :%∙ x) :%⊢ w) (ExtLL f))
+      extLL _ = empty
+      extRL (Typed (y :%∙ (SEXT z :%∙ x) :%⊢ w) f) =
+       return ([],Typed (SEXT z :%∙ (y :%∙ x) :%⊢ w) (ExtRL f))
+      extRL _ = empty
+
 
 -- * Helper functions
 

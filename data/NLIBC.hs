@@ -12,6 +12,7 @@ module Main where
 
 import           Prelude         hiding (pred,read,reads,(<$),(*))
 import           Data.List       (nub)
+import           Data.Singletons.Prelude
 import           Data.Singletons (fromSing)
 import           NLIBC.Syntax.Backward
 import qualified NLIBC.Syntax.Backward as Syn
@@ -24,46 +25,43 @@ import           Text.Printf (printf)
 
 
 infixr 3 *; (*) = (,)
+infixr 4 ∷; (∷) = SCons
 
 
--- * Example Sentences
-
-eng0  = parseBwd S (john * runs)
-
-eng1  = parseBwd S (john    * likes * mary)
-eng2  = parseBwd S (someone * likes * mary)
-eng3  = parseBwd S (john    * likes * everyone)
-eng4  = parseBwd S (someone * likes * everyone)
-
-eng5  = parseBwd S ((the              * waiter) * serves * everyone)
-eng6  = parseBwd S ((the  * same      * waiter) * serves * everyone)
-eng7  = parseBwd S ((some * different * waiter) * serves * everyone)
-
-eng8  = parseBwd S (mary *  wants             * to * leave)
-eng9  = parseBwd S (mary * (wants * john)     * to * leave)
-eng10 = parseBwd S (mary * (wants * everyone) * to * leave)
-
-eng11 = parseBwd S (mary *  wants             * to * like * bill)
-eng12 = parseBwd S (mary * (wants * john)     * to * like * bill)
-eng13 = parseBwd S (mary * (wants * everyone) * to * like * bill)
-
-eng14 = parseBwd S (mary *  wants             * to * like * someone)
-eng15 = parseBwd S (mary * (wants * john)     * to * like * someone)
-eng16 = parseBwd S (mary * (wants * everyone) * to * like * someone)
-
-eng17 = parseBwd S (mary * says * [john     * likes * bill])
-eng18 = parseBwd S (mary * says * [everyone * likes * bill])
-
-eng19 = parseBwd S (mary * reads * some * book * (the * author * of' * which) * john * likes)
-
-eng20 = parseBwd S (mary * sees * some * fox)
-eng21 = parseBwd S (mary * sees * foxes)
 
 
-main :: IO ()
-main = sequence_
-       [eng0,eng1,eng2,eng3,eng4,eng5,eng6,eng7,eng8,eng9,eng10,eng11,eng12
-       ,eng13,eng14,eng15,eng16,eng17,eng18,eng19,eng20,eng21]
+-- * Example Sentences (Backward-Chaining Search)
+
+bwd0  = parseBwd S (john * runs)
+
+bwd1  = parseBwd S (john    * likes * mary)
+bwd2  = parseBwd S (someone * likes * mary)
+bwd3  = parseBwd S (john    * likes * everyone)
+bwd4  = parseBwd S (someone * likes * everyone)
+
+bwd5  = parseBwd S ((the              * waiter) * serves * everyone)
+bwd6  = parseBwd S ((the  * same      * waiter) * serves * everyone)
+bwd7  = parseBwd S ((some * different * waiter) * serves * everyone)
+
+bwd8  = parseBwd S (mary *  wants             * to * leave)
+bwd9  = parseBwd S (mary * (wants * john)     * to * leave)
+bwd10 = parseBwd S (mary * (wants * everyone) * to * leave)
+
+bwd11 = parseBwd S (mary *  wants             * to * like * bill)
+bwd12 = parseBwd S (mary * (wants * john)     * to * like * bill)
+bwd13 = parseBwd S (mary * (wants * everyone) * to * like * bill)
+
+bwd14 = parseBwd S (mary *  wants             * to * like * someone)
+bwd15 = parseBwd S (mary * (wants * john)     * to * like * someone)
+bwd16 = parseBwd S (mary * (wants * everyone) * to * like * someone)
+
+bwd17 = parseBwd S (mary * says * [john     * likes * bill])
+bwd18 = parseBwd S (mary * says * [everyone * likes * bill])
+
+bwd19 = parseBwd S (mary * reads * some * book * (the * author * of' * which) * john * likes)
+
+bwd20 = parseBwd S (mary * sees * some * fox)
+bwd21 = parseBwd S (mary * sees * foxes)
 
 
 
@@ -192,6 +190,7 @@ pattern x :≡ y   = App (App (Con "≡") x) y
 pattern x :≢ y   = Not (x :≡ y)
 
 
+
 -- * DSL for lexicons and parses
 
 data Entry x = Entry (SStructI x) (Repr '[] (HI x))
@@ -228,6 +227,10 @@ parseBwd b e = case combine e of
   Entry x r -> do let ps = show2 r . eta <$> findAll (x :%⊢ SStO b)
                   print (length ps)
                   mapM_ putStrLn ps
+
+
+
+
 
 
 -- This file contains example sentences treated with my extension of
