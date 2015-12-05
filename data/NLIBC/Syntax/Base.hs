@@ -284,17 +284,17 @@ instance Ord (SType    s) where compare x y = compare (fromSing x) (fromSing y)
 instance Ord (SStructI s) where compare x y = compare (fromSing x) (fromSing y)
 
 
-type family ToList (x :: StructI) :: [Type] where
-  ToList (StI  a    ) = (a ': '[])
+type family ToList (x :: StructI) :: [StructI] where
+  ToList (StI  a    ) = (StI a ': '[])
   ToList (DIA  k x  ) = ToList x
   ToList (PROD k x y) = ToList x :++ ToList y
 
 
-toList :: SStructI x -> Maybe (SList (ToList x))
-toList (SStI  a)     = Just (SCons a SNil)
-toList (SDIA  k x)   = toList x
-toList (SPROD k x y) = (%:++) <$> toList x <*> toList y
-toList _             = Nothing
+sToList :: SStructI x -> Maybe (SList (ToList x))
+sToList x@(SStI  a)     = Just (SCons x SNil)
+sToList   (SDIA  k x)   = sToList x
+sToList   (SPROD k x y) = (%:++) <$> sToList x <*> sToList y
+sToList   _             = Nothing
 
 
 
