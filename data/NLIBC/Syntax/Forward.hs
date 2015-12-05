@@ -41,7 +41,7 @@ instance Ord Typed where
     case fromSing t1 `compare` fromSing t2 of
     { EQ -> forget x1 `compare` forget x2 ; o -> o }
 
-data TypedBy (xs :: [Type]) (b :: Type) where
+data TypedBy (xs :: [StructI]) (b :: Type) where
   TypedBy :: SStructI x -> ToList x :~: xs -> Syn (x :⊢ StO b) -> TypedBy xs y
 
 instance Show (TypedBy xs b) where
@@ -52,28 +52,30 @@ instance Show (TypedBy xs b) where
 
 type PartialProof = ([Type],[Typed])
 
-topDown :: SList (xs :: [Type]) -> SType b -> [TypedBy xs b]
-topDown sxs sb = case setup sxs sb of
+findAll :: SList (xs :: [StructI]) -> SType b -> [TypedBy xs b]
+findAll sxs sb = case setup sxs sb of
   Nothing -> []
   Just pp -> mapMaybe (check sxs sb) (search [pp])
   where
-  setup :: SList (xs :: [Type]) -> SType b -> Maybe PartialProof
+  setup :: SList (xs :: [StructI]) -> SType b -> Maybe PartialProof
   setup sxs sb =
     if isBalanced (as,bs) then Just (ts2,xs0) else Nothing
     where
-      complex (El _) = False
-      complex _      = True
-      ts0     = map (True,) (fromSing sxs) ++ [(False,fromSing sb)]
+      complex (El _)  = False
+      complex _       = True
+      fromStI (StI a) = Just a
+      fromStI _       = Nothing
+      ts0     = map (True,) (mapMaybe fromStI (fromSing sxs)) ++ [(False,fromSing sb)]
       ts1     = subformulas (map snd ts0)
       ts2     = filter complex ts1
       (as,bs) = allAtoms ts0
       xs0     = sort (allAxioms as)
 
-  check :: SList xs -> SType b -> Typed -> Maybe (TypedBy xs b)
+  check :: SList (xs :: [StructI]) -> SType b -> Typed -> Maybe (TypedBy xs b)
   check xs1 b1 (Typed (x :%⊢ SStO b2) f) =
     case b1 %~ b2 of
     Disproved _ -> Nothing ; Proved Refl ->
-      case toList x of
+      case sToList x of
       Nothing  -> Nothing ; Just xs2 ->
         case xs2 %~ xs1 of
         Disproved _ -> Nothing ; Proved Refl -> Just (TypedBy x Refl f)
