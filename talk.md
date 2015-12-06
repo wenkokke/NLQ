@@ -2,73 +2,77 @@
 Today we're going to talk about the way that type theory can be used
 in natural language processing. This is usually called "categorial
 grammar" or "type-logical grammar". Now, since this topic isn't really
-a part of the CS programme here in Utrecht, I'm gonna start now out by
+a part of the CS programme here in Utrecht, I'm gonna start out by
 giving you a quick introduction to the field... now!
 
 ---
 
 ####2
 Okay, so the part of NLP that we're going to discuss is called NLU for
-natural language understanding. And behind me, you can see what I've
-titled an "abstract natural language understanding pipeline". Now, an
-NLU pipeline is a function from sentences, which are strings, into
+natural language understanding. And behind me, you can see what I'm
+gonna call an "abstract natural language understanding pipeline". Now,
+an NLU pipeline is a function from sentences, which are strings, into
 formulas in _higher-order_ logic -- and, we'll get into defining what
-that means in a minute. Natural language understanding is a whole
-bunch of work, so it's generally subdivided into some smaller, more
-manageable problems -- morphological or word-form analysis, lexical
-analysis, etc. To the left you see these phases, or functions. And to
-the right you see what they do.
+that means in a minute. Natural language understanding is a hugely
+complicated problem, so we generally divide it into smaller, more
+manageable problems that we can actually solve. So for instance,
+morphological analysis, lexical analysis, etc. You see these smaller
+problem behind me, to the left. And to the right you see the inputs
+and outputs for the functions that solve these problems.
 
-The morphological function lemmatises words -- that means, get's them
+So, the morphological function lemmatises words -- that means, get's them
 in some sort of base form, like with see-saw -- and adds some
-information. For instance, foxes is reduced to the base form fox, and
-we add the marker PL to show that we mean the plural.
-The lexical function just looks up the part-of-speech tags -- or types
--- of the words. For instance, Mary is an NP -- a noun phrase -- and
-see is a transitive verb -- meaning a verb with two arguments.
+information. For instance, when we reduce 'foxes' to its lemma 'fox',
+we add a little marker PL to show that it's the plural.
+Then, the lexical function just kinda looks up the part-of-speech
+tags, which are sorta the types of words. For instance, 'Mary' is an
+NP -- or a noun phrase -- and 'see' is a transitive verb -- meaning a
+verb with two arguments.
 
 Then, interesting things start to happen. The syntactic function takes
-the string of words (and information) and turns it into a tree -- or
-parse tree, which is sort of like an abstract syntax tree for natural
-language.
+the sentence, which basically a list of words and some info by now,
+and and turns it into a parse tree, sort of like an abstract syntax
+tree for natural language.
 And the semantic function takes this tree, and compiles it to some
 expression in higher order logic.
 The eh, pragmatic function is listed here for completeness, but we
 can't really list an output here, since pragmatics is all about using
 contextual information -- body language, intonation, conversational
-history and stuff... and we don't have any of that.
+history and stuff... and we don't have any of that. 'Cuz we just have
+one example sentence.
 
 Now, the part of this pipeline that we're going to address today --
 and that type theory is especially suited at dealing with -- is the
 semantic phase. Ideally, we'd want to cover the syntactic phase as
-well -- without parsing we can hardly call our field grammar -- and we
-might come back to that near the end of the talk. But the current
-state of affair in the field is that in most publications, people are
-preoccupied with accepting the right parse trees, and translating them
-to the right semantics. And that's what we'll be doing today.
+well, and we'll get to that, because without parsing we can hardly
+call our field grammar. But there's a lot of research in linguistics
+arguing which parse trees are the correct ones for which sentence, so
+for most of this talk we'll just use these trees and focus on giving
+them the right semantics.
 
-Now sometimes we might simplify things somewhat. For instance, we
-might forget about that whole "past" marker up there, since it's
-rather trivial to insert. Other times we may make gross
-oversimplifications. But don't worry, there'll be a pedagogical reason
-for that, and at the end of this talk we should have a clear
-understanding of how the semantic phase can be implemented, and of
-some things it can and cannot do.
+Now, that expression up there is a little bit complicated, so for a
+lot of this talk we'll simplify things somewhat. We might forget about
+that whole "past" marker up there, since it's pretty easy to
+insert. And we might be making a little bit of a gross
+oversimplification for most of this talk. But don't worry, there's be
+a pedagogical reason for that, and at the end of this talk we should
+have a clear understanding of how to properly build this semantic
+function.
 
 Oh. It might be worthwhile to spend just a second talking about that
 sentence meaning right there, while it's still on screen. Because it's
 all complicated-looking. So what it says is "there is a p", and
-that `p` is a predicate or a (characteristic function of a) set,
-"there is a p, such that for all x for which p(x)", which you can read
-as "for all x in that set", "x is a fox, and in the past Mary saw
-x". So there's a set of things, and they're foxes, and Mary saw
-them.
+that `p` is a predicate or a set, "there is a p, such that for all x
+for which p(x)", which you can read as "for all x in that set", "x is
+a fox, and in the past Mary saw x". So there's a set of things, and
+they're foxes, and Mary saw them.
 
 It's not that simple, right, because this doesn't guarantee that she
-saw two or more foxes -- and you would be kinda upset if I said
-this, knowing that she saw exactly zero foxes. And this would also be
-true if Mary saw all foxes in p, but she saw them at different events
-in the past. But all in all, it's pretty good.
+saw two or more foxes -- which is what people generally mean when they
+use a plural. And this particular meaning would also be true if Mary
+saw all foxes in p, but she saw them at different times in the
+past. We can fix all that. But we're not gonna. For now, it's pretty
+good.
 
 ---
 
@@ -76,20 +80,29 @@ in the past. But all in all, it's pretty good.
 Okay, so the first thing we're going to do is to give a definition of
 "higher-order logic". What you see behind me is the simply-typed
 lambda calculus. Pretty much the simplest possible type system, so I
-hope you've all seen this before. A set of types as the antecedent,
-variables are things that are in that set, and you have two rules for
-lambda abstraction and function application.
+hope you've all seen this before.  We have a bunch of variables with
+types as the antecedent or environment, and then we have lambda
+abstraction and function application.
 
-Now, linguists usually make two changes to this calculus. First,
-there's only two basic types: **e** and and **t**, for *entity* and
-*truth-value* or boolean. Secondly, they assume that any logical
-constant they need is available as a constant in this language. So,
-for instance, implication (written as a horseshoe here) is available
-as a function from **tttt**. It's important to see here that both the
-universal quantifier and the existential quantifier are there, with a
-whole bunch of types. They're **(et)t**, **((et)t)t**, etc. Any form
-of **(xt)t**. So we're basically pretending to have polymorphic types
-here.
+Now, linguists usually make two changes to this calculus.
+
+First, there's only two basic types: there's **e**, for entity --
+things, basically -- and **t**, for *truth-value* -- an old-timey way
+of saying boolean.
+
+---
+
+Secondly, they assume that any logical constant they need is available
+as a constant in this language. So, for instance, implication (written
+as a horseshoe here) is available as a function from **ttt**.
+
+This is a great time to note, by the way, that because all types are
+one letter, and we only have implication, we really don't need to
+write it. So in linguistics, you usually just leave it out.
+
+With the universal and existential quantifiers, we're cheating a
+little bit. They're there, but they've got a whole bunch of
+types. They're **(et)t**, **((et)t)t**, etc. Any form of **(xt)t**.
 
 Oh, and while we should technically write sometime like "the constant
 'forall' applied to a lambda abstraction", we're just gonna ignore
@@ -99,16 +112,17 @@ that, and use the traditional notation from logic.
 
 ####4
 Now, we can use this calculus as it is to express the meanings of our
-example sentence -- and, yes, this is a little short and hard to read,
+example sentence -- eh, this is a little short and hard to read,
 but there's no way the full thing would fit on a slide. It's just
-important to note that the antecedent is, in order, "mary saw
-foxes" everywhere. We've just put the words in the sentence in the
-antecedent, basically the same as assuming that we some sort of
-meanings for these words.
-Then below the proof, I'm showing just the end sequent in full. So we
-can see that, given the antecedent or sentence "mary saw foxes", we
-can get the meaning `((saw foxes) mary)`, which is what we
-want. Kinda. It's good enough for now, at least.
+important to note that see that the antecedent is, in order, "mary saw
+foxes" everywhere. So we've basically taken the sentence, and made it
+into our antecedent. And over each axiom, I've written the word that
+that axiom picks.
+
+Then below the proof, I'm showing the last sequent in full. So we can
+see that, given the "mary saw foxes", we can get the meaning `((saw
+foxes) mary)`, which is what we want. Kinda. It's good enough for now,
+at least.
 
 ---
 
@@ -125,17 +139,17 @@ Or we can just choose to apply it to 'mary' twice.
 Or forget about 'mary' altogether.
 
 So clearly, we can use the lambda calculus to express the meanings
-that we're after. But we also said something about "only accepting the
-right trees, and assigning the right meanings to those trees", and
-this is where lambda calculus isn't really enough anymore.
+that we're after. But we also said something about "assigning the
+right meanings", and we obviously cannot do that with the lambda
+calculus.
 
 So what we're gonna do is this: we're gonna keep this in mind as
 "perfectly fine as our semantic calculus", but we're going to look for
 a new calculus. And in this new calculus, when we put our sentence or
-syntax tree in the antecedent, we only want to be able to derive the
+parse tree in the antecedent, we only want to be able to derive the
 *right* meaning.
 
-Now, a lot of the problems we have with our semantic calculus had to
+Now, a lot of the problems we have with our semantic calculus have to
 do with the fact that our antecedent was implicitly a set. We can't
 enforce an order on the words; we can refer to a word any number of
 times we want; and we can forget about them. So what I'm gonna do is
@@ -144,12 +158,15 @@ make all of the set structure explicit, and work from there.
 ---
 
 ####5
-First we're gonna need some new thing to be our antecedent, since
-we're rejecting sets and all. So we're going to define the structure
-you see behind me: it can be empty, it can be just a type, and we have
-this binary operator, the product, which can build a new structure out
-of two structures. So basically what we have here is a possibly empty
-binary tree.
+So, this is about as extreme as it gets. Usually people don't make
+this much structure explicit. But we're gonna do it anyway.
+
+First we're gonna need some new thing to be our antecedent, since we
+don't want it to be a set anymore, obviously. So we're going to define
+the structure you see behind me: it can be empty, it can be just a
+type -- a leaf, if you will -- and we have this binary operator, the
+product, which builds a new structure out of two structures. So
+basically what we have here is a possibly empty binary tree.
 
 ---
 
@@ -566,3 +583,209 @@ to what this would look like.
 ---
 
 ####22
+So first let's have a look at this proof. This is using the
+higher-order type that we talked about on the previous slide. I've
+coloured all things in that quantifier type red. So what you can see
+here is that it takes scope over the entire sentence, and then
+*replaces* the top-level sentence type with it's own -- that's how you
+can see it takes scope. But there's another important thing to note...
+
+---
+
+Have a look at the sequent in the box. That is exactly the sequent we
+would expect for a sentence *without* a quantifier in there. So it
+takes scope, and then just returns the sentence as it is without a
+quantifier. And it's proving as normal from there.
+
+---
+
+So what we're going to propose is that we take this type, which
+already works for subjects, and then we're just going to work on this
+until it works for *everything else*. So have a look at this
+*proposed* proof. What we'd want to do is to take a quantifier of that
+type, and have a magical rule "up", which moves it up to the top of
+the tree... and from there it just resolves as normal, taking scope
+and stuff... and then we have magical rule "down", which moves the NP
+back down into object position.
+
+---
+
+So what we'd want is basically some magical pair of rules, up and
+down, which can move something *up* out of a context -- leaving some
+sort of placeholder which we're writing as boldface capital I here --
+and then back down to the placeholder.
+
+---
+
+Now this would be great, but there's one problem with this simple
+solution. It does what we want it to do, but it does too much. For
+instance, have a look here... where we use it to basically swap to
+NPs. So that'd mean that if we have these rules as they are now,
+"mary saw foxes" would have the same meaning as "foxes saw mary".
+Not ideal.
+
+---
+
+####23
+So we're going to start with a solution that was created by Barker and
+Shan, which is called NL_IBC. And what they proposed was to keep the
+**I**, but to add a **B** and a **C**. Those names come from
+combinator calculus, but don't break your brain over that right
+now. You can just read them as "came from the left branch" and "came
+from the right branch".
+
+So we add these constants as *structural* constants. And then we add
+two rules L**I** and R**I**, which allow us to just add an **I** to
+the left of something... so it's basically a unit now.
+
+And we add four rules, for **B** and **C**, which allow us to move
+something up or push it back down. And specifically because we mark
+things with **B**'s and **C**'s as coming from the left or right,
+because we drop these little breadcrumbs along the way... we *have to*
+move down the same way we came up. So we can't swap no more.
+
+---
+
+And so here's a proof of something. There's a quantifier in object
+position, so it's something like "john likes everyone". And it's a
+little bit complicated, with all of those rules... but...
+
+---
+
+If we take a step back, and just look at what matters, we can see that
+this is doing exactly what we wanted. Move something up. Take
+scope. Move back down. And because of those **B**'s and **C**'s, we
+*have to* move back down, and we *have to* move back down along the
+same path we moved up.
+
+But there's still some problems.
+
+---
+
+So the **B** and **C** rules allow us to move stuff up past
+products. But that means that we can move stuff up past other stuff
+that's moving up. As you can see here. First the red one moves up,
+then the green one moves past it... and then the red again, and then
+the green.
+
+So this is problematic. Obviously, we won't find any new proofs this
+way. But it's still a looping behaviour. And worse, it's a loop in
+which the antecedent *grows*. So we won't know that we're in a loop.
+
+So Barker has a solution to this. I mean, he doesn't really consider
+this a problem as far as I know, and he proposed his solution to solve
+a completely different thing, but it just so happens to solve this
+problem as well. So why not? It's the only thing I've been able to
+find that really solves this.
+
+---
+
+Barker thought that adding the scoping behaviour to the existing
+slashes was problematic -- and it is -- because the semantics of those
+slashes are combining adjacent things. So what he proposed was to add
+a new set of slashes, and and a new product. And to use *these* for
+quantifier scoping.
+
+So what we do is we add a new copy of all the slash rules and stuff
+for these hollow slashes. And we change rules for quantifiers. We
+introduce the unit I with a *hollow* product. And then we change the
+**B** and **C** rules so that they can only move stuff up when it's
+attached to such a hollow product.
+
+So because we can only move past solid products, and quantifiers are
+always attached to a hollow product, these rules ensure that we can't
+move a quantifier *past* another quantifier!
+
+But there's still problems. Small problems, but still. And this is
+where we fully depart from Barker.
+
+---
+
+So. Problem. We can introduce a unit I anywhere we want. That means we
+can quantifier raise *anything*. For instance, a verb. This does not
+make sense. Second thing. We can introduce a unit I anywhere we
+want. Even in a place where we've *just* introduced one. This, again,
+leads to a growing loop. Problem.
+
+---
+
+Solution. This is gonna be a little bit weird. But we're going to
+introduce a type called **Q**. It's a unary thing, it has one
+argument. But when we write down the display rules for it, we see that
+what it really is, is a shorthand for a product with a unit as its
+second argument. Why? Well, we don't want products on our term
+level. We don't really want units on our term level. Neither are used
+in the meanings of words. So we're going to have this one connective
+that represents them. So we change our left and right rules, according
+to the schemes of display calculus. And we add one new rule, which
+allows us to get rid of a unit. We could do that before with our right
+rule, but we had to change that. So we're putting it back in.
+
+---
+
+And so with these rules, we can only quantifier raise in places where
+we've given an explicit license in the type to allow this kind of
+behaviour.
+
+And with that we can do quantifier raising, but have a finite proof
+search algorithm which is logically complete.
+
+---
+
+####24
+But there's one problem we haven't solved yet. Remember this slide? So
+sometimes there's a word that you simply cannot scope past.
+
+However, we've already solved this problem; we already altered the
+calculus such that quantifiers couldn't scope past other quantifiers
+on their way up.
+
+So in principle we could just add a new pair of slashes and product,
+and use these. But we're going to go with something a little bit more
+elegant.
+
+---
+
+####25
+So what we're going to introduce here are two unary operators, diamond
+and box. On the type level we write them that way, as structures, we
+write them as brackets around... well, whatever they're bracketing.
+
+We just write down the rules as they're dictated by display
+calculus. The important one to note is the diamond right rule. We can
+eliminate a structural diamond on the left, against a type-diamond on
+the right.
+
+And they form a residuated pair, just like the slahes and product form
+a residuated triple. Basically, that means you can move them out of
+the way when you need to work on something nested under them.
+
+But the diamond has one important property. It's not a solid product.
+
+---
+
+So have a look at this sequent. If you ignore all the diamond business
+it's pretty easy. There's a subject, and then a verb which takes a
+*sentence* on the right -- because "mary said _" and then a sentence
+-- and a subject on the left... and then there's a sentence. And in
+this case, that sentence happens to be a quantifier, and a
+verb. Everyone left.
+
+So normally, 'everyone' would scope to the top. Resolve against the
+sentence S, and move back down to its embedded position.
+
+    But alternatively, 'everyone' could move to the top of the *embedded*
+sentence, resolve against the S argument of 'said' and thus only take
+scope over the *embedded* sentence.
+
+So what we've done here, is we've marked the S argument of 'said' with
+a diamond. And remember, diamond on the right resolves against a a
+structural diamond on the left. So there *has* to be this structural
+diamond around its argument, which is exactly the embedded sentence.
+
+And a diamond -- say it with me -- is not a solid product. So there's
+no way for everyone to move past it. Not until it's too late.
+
+Because we only get to eliminate that diamond *after* we eliminate the
+slash... and that means that the embedded sentence is separated from
+the main clause now.
