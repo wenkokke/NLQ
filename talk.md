@@ -764,28 +764,78 @@ But the diamond has one important property. It's not a solid product.
 
 ---
 
-So have a look at this sequent. If you ignore all the diamond business
-it's pretty easy. There's a subject, and then a verb which takes a
-*sentence* on the right -- because "mary said _" and then a sentence
--- and a subject on the left... and then there's a sentence. And in
-this case, that sentence happens to be a quantifier, and a
-verb. Everyone left.
+So have a look at the bottom sequent. There an NP, then there's
+'said', which takes a sentence from the right and a noun phrase from
+the left, and then there's the embedded sentence, with a quantifier
+and a single-argument verb.
 
-So normally, 'everyone' would scope to the top. Resolve against the
-sentence S, and move back down to its embedded position.
-
-    But alternatively, 'everyone' could move to the top of the *embedded*
-sentence, resolve against the S argument of 'said' and thus only take
-scope over the *embedded* sentence.
+If there were none of that diamond business, it would all be very
+simple. The quantifier could either move all the way to the top, and
+take scope there, or it could move to the top of the *embedded*
+sentence, and take scope there.
 
 So what we've done here, is we've marked the S argument of 'said' with
 a diamond. And remember, diamond on the right resolves against a a
-structural diamond on the left. So there *has* to be this structural
+structural diamond on the left. So there *has* to be a structural
 diamond around its argument, which is exactly the embedded sentence.
 
-And a diamond -- say it with me -- is not a solid product. So there's
-no way for everyone to move past it. Not until it's too late.
+And a diamond is not a solid product. So there's no way for everyone
+to move past it. Not until it's too late.
 
-Because we only get to eliminate that diamond *after* we eliminate the
-slash... and that means that the embedded sentence is separated from
-the main clause now.
+And because we only get to eliminate that diamond *after* we eliminate
+the slash... and that means that the embedded sentence is separated
+from the main clause now.
+
+So... yeah. That's how we take care of that.
+
+---
+
+####26
+Okay, so to recap. I'm basically just gonna read everything there out
+loud. We set up this calculus, which is a logic, and which has
+decidable proof search, and which can deal with adjacent composition;
+quantifier raising; and scope islands. And then with infixation and
+extraction as well, based on some ideas Michael had. But we didn't
+have time to go into that.
+
+But before we cut this off, I just quickly want to mention some future
+work.
+
+---
+
+####27
+So I mentioned that we'd get into that. And I'm implementing this
+right now, even though I'm calling it future work. It's just not
+technically a part of my thesis.
+
+But we really want to have *parsing* as well. And what you can do, is
+reverse the direction of proof search.
+
+---
+
+So you start out with a bunch of axioms, based on the types of the
+words in your sentence, and you will simply try to compose them in
+every possible way. And then, when you've done that, you filter those
+that, when you dump all the structure, have the correct sentence
+order. And voila! You've got a parse. Now the reason this is cool is
+that this means you don't need any parser, but for instance also you
+will derive that the only valid interpretation of "mary said everyone
+left", based on the types is one which has a scope islands just
+there.
+
+---
+
+Okay. And a second thing that's very interesting to research, for a
+small research project, is the following. So it's known that there's a
+difference between weak and strong quantifiers. Weak quantifiers can
+sometimes move past a scope island where strong quantifiers can't. Or
+the other way around, I forget. Anyway. Now, a structural diamond is
+not the only thing that can eliminate a diamond. What you can also do
+is use a box in the types. A box can also eliminate a scope island.
+So it would be very interesting to look into the modelling of the
+phenomenon using boxes.
+
+---
+
+####28
+Okay, that was it for real. Thank you all for listening.
