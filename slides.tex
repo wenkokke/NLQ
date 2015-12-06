@@ -50,20 +50,43 @@
     \text{Constant}   \;&C  &&\coloneqq
     {\forall}\vsep{\exists}\vsep{\neg}\vsep{\supset}\vsep{\land}\vsep{\lor}\vsep\ldots
   \end{alignat*}
-  \\[\baselineskip]
   \begin{center}
-    \begin{pfbox}[0.9]
-      \AXC{$(x : A)\in Γ$} \RightLabel{{Ax}} \UIC{$Γ\fCenter x : A$}
-    \end{pfbox}
-    \\[\baselineskip]
-    \begin{pfbox}[0.9]
-      \AXC{$Γ,x : A\fCenter M : B$} \RightLabel{$\ra${I}}
-      \UIC{$Γ\fCenter \lambda x.M : A\ra B$}
-    \end{pfbox}
-    \begin{pfbox}[0.9]
-      \AXC{$Γ\fCenter M : A\ra B$} \AXC{$Γ\fCenter N : A$}
-      \RightLabel{$\ra${E}} \BIC{$Γ\fCenter (M\;N) : B$}
-    \end{pfbox}
+    \only<1>{%
+      \vspace*{1\baselineskip}
+      \begin{pfbox}[0.9]
+        \AXC{$(x : A)\in Γ$} \RightLabel{{Ax}} \UIC{$Γ\fCenter x : A$}
+      \end{pfbox}
+      \\[1\baselineskip]
+      \begin{pfbox}[0.9]
+        \AXC{$Γ,x : A\fCenter M : B$} \RightLabel{$\ra${I}}
+        \UIC{$Γ\fCenter \lambda x.M : A\ra B$}
+      \end{pfbox}
+      \begin{pfbox}[0.9]
+        \AXC{$Γ\fCenter M : A\ra B$} \AXC{$Γ\fCenter N : A$}
+        \RightLabel{$\ra${E}} \BIC{$Γ\fCenter (M\;N) : B$}
+      \end{pfbox}
+    }
+    \only<2>{%
+      \[
+        \begin{aligned}
+          \supset &: \t\t\t
+          \\
+          \forall &: (\e\t)\t
+          \\
+          \forall &: ((\e\t)\t)\t
+          \\
+          \forall &: (\alpha\t)\t
+        \end{aligned}
+        \qquad
+        \begin{aligned}
+          \forall x.M &\coloneqq \forall (\lambda x.M)
+          \\
+          \exists x.M &\coloneqq \exists (\lambda x.M)
+          \\
+          \vdots
+        \end{aligned}
+      \]
+    }
   \end{center}
 \end{frame}
 
@@ -957,7 +980,7 @@
   \vfill
 \end{frame}
 
-\begin{frame}
+\begin{frame}[label=scope-islands]
   \frametitle{Scope Islands}
   \textit{``Mary \underline{said} \underline{everyone} left.''}
   \\[0.125\baselineskip]
@@ -1514,7 +1537,7 @@
   \vfill
 \end{frame}
 
-
+\againframe{scope-islands}
 
 \begin{frame}
   \frametitle{Quantifier Raising and Scope Islands}
@@ -1560,7 +1583,25 @@
     \begin{center}
       \begin{pfbox}
         \noLine\AXC{\vphantom{$($}$\vdots$\vphantom{$)$}}
-        \noLine\UIC{$ \struct{\NP}\prod
+        \noLine\UIC{$
+          \struct{\NP}\prod
+          \struct{\NP\impr\S}
+          \fCenter\struct{\S}$}
+        \noLine\UIC{\vphantom{$($}$\vdots$\vphantom{$)$}}
+        \noLine\UIC{$
+          \struct{\qr[\S\himpl(\NP\himpr\S)]}\prod
+          \struct{\NP\impr\S}
+          \fCenter\struct{\S}$}
+        \RightLabel{R$\di$}
+        \UIC{$
+          \langle
+          \struct{\qr[\S\himpl(\NP\himpr\S)]}\prod
+          \struct{\NP\impr\S}
+          \rangle
+          \fCenter\struct{\di\S}$}
+        \noLine\UIC{\vphantom{$($}$\vdots$\vphantom{$)$}}
+        \noLine\UIC{$
+          \struct{\NP}\prod
           \struct{(\NP\impr\S)\impl\di\S}\prod
           \langle
           \struct{\qr[\S\himpl(\NP\himpr\S)]}\prod
@@ -1571,6 +1612,26 @@
     \end{center}
     \vfill
   }
+\end{frame}
+
+\begin{frame}[label=conclusion]
+  \frametitle{Conclusion}
+  \vfill
+  We have:
+  \begin{itemize}
+  \item[--] set up a logical calculus;
+  \item[--] has a decidable proof search;
+  \item[--] which can deal with:
+    \begin{itemize}
+    \item[--] adjacent composition;
+    \item[--] quantifier raising;
+    \item[--] scope islands;
+    \vspace*{1\baselineskip}
+    \item[--] infixation -- i.e.\ moving up and staying there;
+    \item[--] extraction -- i.e.\ moving down and staying there.
+    \end{itemize}
+  \end{itemize}
+  \vfill
 \end{frame}
 
 \begin{frame}
@@ -1603,13 +1664,18 @@
     \onslide<3->{%
       Weak vs. Strong quantifiers:
       \begin{itemize}
-      \item[--] different quantifiers show different behaviour
-        w.r.t. scope islands.
+      \item[--] existential quantifier can sometimes move out of scope
+        islands where universal cannot;
+      \item[--] boxes might be useful, since they can cancel out
+        diamonds\\i.e. using $\qr[\S\impl(\sq\NP\impr\S)]$;
+      \item[--] further research is needed.
       \end{itemize}
     }
   }
   \vfill
 \end{frame}
+
+\againframe{conclusion}
 
 \begin{frame}
   \centering
