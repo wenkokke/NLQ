@@ -2,7 +2,8 @@
   \begin{mdframed}
     \centering
     \begin{alignat*}{4}
-      \text{Type}       \;&A,B&&\coloneqq \e\vsep\t\vsep A\ra B\\
+      \text{Atom}       \;&α  &&\coloneqq \e\vsep\t\\
+      \text{Type}       \;&A,B&&\coloneqq α\vsep A\ra B\\
       \text{Term}       \;&M,N&&\coloneqq x\vsep C\vsep\lambda x.M\vsep(M\;N)\\
       \text{Constant}   \;&C  &&\coloneqq
       {\forall}\vsep{\exists}\vsep{\neg}\vsep{\supset}\vsep{\land}\vsep{\lor}\vsep\ldots\\
@@ -12,8 +13,7 @@
     \begin{pfbox}
       \AXC{$(x : A)\in Γ$} \RightLabel{{Ax}} \UIC{$Γ\fCenter x : A$}
     \end{pfbox}
-
-    \vspace*{\baselineskip}
+    \\[1\baselineskip]
     \begin{pfbox}
       \AXC{$Γ,x : A\fCenter M : B$} \RightLabel{$\ra${I}}
       \UIC{$Γ\fCenter \lambda x.M : A\ra B$}
@@ -25,7 +25,7 @@
 
     \vspace*{\baselineskip}
   \end{mdframed}
-  \caption{A simple semantic calculus.}%
+  \caption{\lamET, a simple semantic calculus.}%
   \label{fig:implicit-semantic-calculus}
 \end{figure}
 %

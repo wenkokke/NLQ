@@ -3,9 +3,9 @@
     \centering
     \begin{minipage}{0.66\linewidth}
       \begin{alignat*}{4}
-        \text{Type}     \;&A,B&&\coloneqq \S &&\vsep\N\vsep\NP\vsep\PP\vsep\INF\\
-                        \;&   &&             &&\vsep A\impr B\vsep B\impl A\\
-        \text{Structure}\;&Γ,Δ&&\coloneqq A  &&\vsep Γ\prodΔ
+        \text{Atom}     \;&α  &&\coloneqq \S\vsep\N\vsep\NP\vsep\PP\vsep\INF\\
+        \text{Type}     \;&A,B&&\coloneqq α\vsep A\impr B\vsep B\impl A\\
+        \text{Structure}\;&Γ,Δ&&\coloneqq A\vsep Γ\prod Δ
       \end{alignat*}
     \end{minipage}%
     \begin{minipage}{0.33\linewidth}
@@ -15,13 +15,11 @@
         &\TV\;&&\coloneqq \IV\impl\NP
       \end{alignat*}
     \end{minipage}
-
-    \vspace*{\baselineskip}
+    \\[1\baselineskip]
     \begin{pfbox}
       \AXC{} \RightLabel{{Ax}} \UIC{$A\fCenter A$}
     \end{pfbox}
-
-    \vspace*{\baselineskip}
+    \\[1\baselineskip]
     \begin{pfbox}
       \AXC{$A\prodΓ\fCenter B$} \RightLabel{$\impr${I}}
       \UIC{$Γ\fCenter A\impr B$}
@@ -30,8 +28,7 @@
       \AXC{$Γ\fCenter A$} \AXC{$Δ\fCenter A\impr B$} \RightLabel{$\impr${E}}
       \BIC{$Γ\prodΔ\fCenter B$}
     \end{pfbox}
-
-    \vspace*{\baselineskip}
+    \\[1\baselineskip]
     \begin{pfbox}
       \AXC{$Γ\prod A\fCenter B$} \RightLabel{$\impl${I}}
       \UIC{$Γ\fCenter B\impl A$}
@@ -40,10 +37,9 @@
       \AXC{$Γ\fCenter B\impl A$} \AXC{$Δ\fCenter A$} \RightLabel{$\impl${E}}
       \BIC{$Γ\prod Δ\fCenter B$}
     \end{pfbox}
-
-    \vspace*{\baselineskip}
+    \vspace*{1\baselineskip}
   \end{mdframed}
-  \caption{A simple syntactic calculus.}%
+  \caption{NL, a simple syntactic calculus.}%
   \label{fig:syntactic-calculus}
 \end{figure}
 %

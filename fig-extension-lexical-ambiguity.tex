@@ -1,10 +1,16 @@
 \begin{figure}
   \begin{mdframed}
     \centering
-    \begin{alignat*}{4}
-      \text{Type}&\;&A, B&\coloneqq \ldots\vsep A\& B
-    \end{alignat*}
-    %
+    \vspace*{1\baselineskip}
+    \begin{minipage}{0.666\linewidth}
+      \centering
+      \(\text{Type}\;A,B\coloneqq\ldots\vsep A\& B\)
+    \end{minipage}%
+    \begin{minipage}{0.333\linewidth}
+      \centering
+      \(\text{Pol}(A \& B) \mapsto {+}\)
+    \end{minipage}
+    \\[1\baselineskip]
     \begin{pfbox}
       \AXC{$\focus{A}\fCenter Δ$}
       \RightLabel{L\&$_1$}
@@ -21,14 +27,12 @@
       \RightLabel{R\&}
       \BIC{$Γ\fCenter\focus{A\& B}$}
     \end{pfbox}
-    \\
-    \vspace*{\baselineskip}
+    \\[1\baselineskip]
     \hrulefill
-    \[
-      \tr[(A \& B)] \mapsto \tr[A]\times\tr[B]
-    \]
+    \\[1\baselineskip]
+    \(\tr[(A \& B)] \mapsto \tr[A]\times\tr[B]\)
     \setlength{\tabcolsep}{0pt}
-    \hspace*{-0.75cm}%
+    \hspace*{-0.5cm}%
     \begin{tabular}{c c c}
       \begin{pfbox}[0.9]
         \AXC{$\focus{A}\fCenter Δ$}
@@ -65,12 +69,12 @@
       \end{pfbox}
       &$\Longrightarrow$&
       \begin{pfbox}[0.9]
-        \AXC{$\trd[Γ]\fCenter\tr[A]$}
-        \AXC{$\trd[Γ]\fCenter\tr[B]$}
+        \AXC{$\tr[Γ]\fCenter\tr[A]$}
+        \AXC{$\tr[Γ]\fCenter\tr[B]$}
         \RightLabel{$\times$I}
-        \BIC{$\trd[Γ]\prod\trd[Γ]\fCenter\tr[A]\times\tr[B]$}
+        \BIC{$\tr[Γ]\prod\tr[Γ]\fCenter\tr[A]\times\tr[B]$}
         \RightLabel{Cont.}
-        \UIC{$\trd[Γ]\fCenter\tr[A]\times\tr[B]$}
+        \UIC{$\tr[Γ]\fCenter\tr[A]\times\tr[B]$}
       \end{pfbox}
     \end{tabular}
     \vspace*{\baselineskip}

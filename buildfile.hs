@@ -11,6 +11,22 @@ toBuild,fromBuild :: FilePath -> FilePath
 toBuild   src = "_build" </> src
 fromBuild out = joinPath (filter (/="_build/") (splitPath out))
 
+thesisFileList :: [FilePattern]
+thesisFileList =
+  [ "main.tex"
+  , "introduction.tex"
+  , "main.bib"
+  , "preamble.tex"
+  , "fig-*.tex"
+  ]
+
+slidesFileList :: [FilePattern]
+slidesFileList =
+  [ "slides.tex"
+  , "main.bib"
+  , "preamble.tex"
+  , "lambek.pdf"
+  ]
 
 main :: IO ()
 main =
@@ -24,8 +40,8 @@ main =
         src  = out -<.> "tex"
         lcl  = fromBuild src
 
-      etc <- getDirectoryFiles "" ["fig-*.tex"]
-      need (toBuild <$> ["slides.tex" , "preamble.tex", "lambek.pdf"] ++ etc)
+      slidesFiles <- getDirectoryFiles "" slidesFileList
+      need (toBuild <$> slidesFiles)
 
       command_ [Cwd "_build", EchoStdout True ] "pdflatex" ["-draftmode", lcl]
       command_ [Cwd "_build", EchoStdout False] "pdflatex" [lcl]
@@ -37,8 +53,8 @@ main =
         src  = out -<.> "tex"
         lcl  = fromBuild src
 
-      etc <- getDirectoryFiles "" ["fig-*.tex"]
-      need (toBuild <$> ["main.tex" , "main.bib", "preamble.tex"] ++ etc)
+      thesisFiles <- getDirectoryFiles "" thesisFileList
+      need (toBuild <$> thesisFiles)
 
       command_ [Cwd "_build", EchoStdout True ] "pdflatex" ["-draftmode", lcl]
       command_ [Cwd "_build", EchoStdout False] "bibtex"   [dropExtension lcl]
@@ -46,24 +62,12 @@ main =
       command_ [Cwd "_build", EchoStdout False] "pdflatex" [lcl]
 
     -- copy files into the _build directory
-    let static = map toBuild $
-          [ "main.tex"
-          , "main.bib"
-          , "slides.tex"
-          , "lambek.pdf"
-          , "preamble.tex"
-          , "fig-*.tex"
-          ]
-    static |%> \out -> do
-      copyFile' (fromBuild out) out
+    let static = map toBuild (thesisFileList ++ slidesFileList)
+    static |%> \out -> copyFile' (fromBuild out) out
 
     -- copy files out of the _build directory
-    let result =
-          [ "main.pdf"
-          , "slides.pdf"
-          ]
-    result |%> \out -> do
-      copyFile' (toBuild out) out
+    let result = [ "main.pdf" , "slides.pdf" ]
+    result |%> \out -> copyFile' (toBuild out) out
 
     -- clean files by removing the _build directory
     phony "clean" $ do

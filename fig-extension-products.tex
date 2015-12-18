@@ -1,42 +1,55 @@
 \begin{figure}
   \begin{mdframed}
     \centering
-    \vspace*{\baselineskip}
+    \vspace*{1\baselineskip}
     Extension of semantic calculus from
     \autoref{fig:implicit-semantic-calculus}:
     \begin{alignat*}{4}
-      \text{Type}\;&A,B&&\coloneqq\ldots\vsep A\times B\\
-      \text{Term}\;&M,N&&\coloneqq\ldots\vsep (M, N)\vsep\case{M}{x}{y}{N}
+      \text{Type}\;&A,B&&\coloneqq\ldots\vsep A\times B\vsep\top\\
+      \text{Term}\;&M,N&&\coloneqq\ldots\vsep (M, N)\vsep\case{M}{x}{y}{N}\vsep()
     \end{alignat*}
-    \begin{prooftree}
+
+    \begin{pfbox}
       \AXC{$Γ\fCenter M : A$}
       \AXC{$Γ\fCenter N : B$}
       \RightLabel{$\times$I}
       \BIC{$Γ\fCenter (M, N) : A\times B$}
-    \end{prooftree}
-    \begin{prooftree}
+    \end{pfbox}
+    \\[1\baselineskip]
+    \begin{pfbox}
       \AXC{$Γ\fCenter M : A\times B$}
       \AXC{$Γ, x : A, y : B\fCenter N : C$}
       \RightLabel{$\times$E}
       \BIC{$Γ\fCenter \case{M}{x}{y}{N} : C$}
-    \end{prooftree}
-    \hrulefill\\%
-    \vspace*{\baselineskip}
+    \end{pfbox}
+    \\[1\baselineskip]
+    \begin{pfbox}
+      \AXC{}\RightLabel{$\top$}\UIC{$Γ\fCenter () : \top$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    \hrulefill
+    \\[1\baselineskip]
     Extension of semantic calculus from
     \autoref{fig:explicit-semantic-calculus}:
-    \begin{prooftree}
+    \\[1\baselineskip]
+    \begin{pfbox}
       \AXC{$Γ\fCenter A$}
       \AXC{$Δ\fCenter B$}
       \RightLabel{$\times$I}
       \BIC{$Γ\prod Δ\fCenter A\times B$}
-    \end{prooftree}
-    \begin{prooftree}
+    \end{pfbox}
+    \\[1\baselineskip]
+    \begin{pfbox}
       \AXC{$Γ\fCenter A\times B$}
       \AXC{$Δ\prod A\prod B\fCenter C$}
       \RightLabel{$\times$E}
       \BIC{$Γ\prod Δ\fCenter C$}
-    \end{prooftree}
-    \vspace*{0.5\baselineskip}
+    \end{pfbox}
+    \\[1\baselineskip]
+    \begin{pfbox}
+      \AXC{}\RightLabel{$\top$}\UIC{$\emptyset\fCenter \top$}
+    \end{pfbox}
+    \vspace*{1\baselineskip}
   \end{mdframed}
   \caption{An extension of the semantic calculi from
     \autoref{fig:implicit-semantic-calculus} and

@@ -3,7 +3,8 @@
     \centering
     \begin{minipage}{0.6\linewidth}
       \begin{alignat*}{4}
-        \text{Type}     \;&A,B  &&\coloneqq\mathbf{e}\vsep\mathbf{t}\vsep A\ra B\\
+        \text{Atom}     \;&α    &&\coloneqq \e\vsep\t\\
+        \text{Type}     \;&A,B  &&\coloneqq α\vsep A\ra B\\
         \text{Structure}\;&Γ,Δ,Π&&\coloneqq A\vsep\emptyset\vsep Γ\prod Δ\\
         \text{Context}  \;&Σ    &&\coloneqq \Box\vsep Σ\prodl Δ\vsep Γ\prodr Σ
       \end{alignat*}
@@ -66,8 +67,8 @@
     \end{pfbox}
     \vspace*{\baselineskip}
   \end{mdframed}
-  \caption{The semantic calculus from \autoref{fig:implicit-semantic-calculus}
-    with explicit structural rules.}%
+  \caption{Explicit \lamET, a simple semantic calculus with explicit
+    structural rules.}%
   \label{fig:explicit-semantic-calculus}
 \end{figure}
 %

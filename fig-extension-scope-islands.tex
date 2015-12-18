@@ -1,12 +1,22 @@
 \begin{figure}
   \begin{mdframed}
     \centering
-    \begin{alignat*}{4}
-      \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\di A\vsep\sq A\\
-      \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\langle Γ\rangle\\
-      \text{Structure}&^-\;&Δ  &\coloneqq \ldots\vsep[Δ]
-    \end{alignat*}
-
+    \begin{minipage}{0.666\linewidth}
+      \centering
+      \begin{alignat*}{4}
+        \text{Type}     &  \;&A,B&\coloneqq\ldots\vsep\di A\vsep\sq A\\
+        \text{Structure}&^+\;&Γ  &\coloneqq\ldots\vsep\langle Γ\rangle\\
+        \text{Structure}&^-\;&Δ  &\coloneqq\ldots\vsep[Δ]
+      \end{alignat*}
+    \end{minipage}%
+    \begin{minipage}{0.333\linewidth}
+      \centering
+      \begin{alignat*}{4}
+        &\text{Pol}(\di A) &&\mapsto{+}\\
+        &\text{Pol}(\sq B) &&\mapsto{-}\\
+      \end{alignat*}
+    \end{minipage}
+    \\[1\baselineskip]
     \begin{pfbox}
       \AXC{$\langle\struct{A}\rangle\fCenter Δ$}
       \RightLabel{L$\di$}
@@ -17,8 +27,7 @@
       \RightLabel{R$\di$}
       \UIC{$\langle Γ\rangle\fCenter\focus{\di B}$}
     \end{pfbox}
-
-    \vspace*{\baselineskip}
+    \\[1\baselineskip]
     \begin{pfbox}
       \AXC{$\focus{A}\fCenter Δ$}
       \RightLabel{L$\di$}
@@ -29,35 +38,30 @@
       \RightLabel{R$\sq$}
       \UIC{$Γ\fCenter\struct{\sq B}$}
     \end{pfbox}
-
-    \vspace*{\baselineskip}
+    \\[1\baselineskip]
     \begin{pfbox}
       \AXC{$Γ\fCenter[Δ]$}
-      \RightLabel{Res$\sq\di$}
+      \doubleLine\RightLabel{Res$\sq\di$}
       \UIC{$\langle Γ\rangle\fCenter Δ$}
     \end{pfbox}
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$\langle Γ\rangle\fCenter Δ$}
-      \RightLabel{Res$\di\sq$}
-      \UIC{$Γ\fCenter[Δ]$}
-    \end{pfbox}
-    \\
-    \vspace*{\baselineskip}
+    \\[1\baselineskip]
     \hrulefill
-    \renewcommand{\arraystretch}{1.5}%
-    \[
+    \\[1\baselineskip]
+    {
+      \renewcommand{\arraystretch}{1.5}%
+      \(
       \begin{array}{c c c}
-      \tr [\di A]             \mapsto\tr [A]&
-      \tr [\langle Γ \rangle] \mapsto\tr [Γ]&
-      \trd[\langle Γ \rangle] \mapsto\trd[Γ]\\
-      \tr [\sq A]             \mapsto\tr [A]&
-      \tr [{[}Δ{]}]           \mapsto\tr [Δ]\\
+        \tr [\di A]             \mapsto\tr [A]&
+        \tr [\langle Γ \rangle] \mapsto\tr [Γ]&
+        \trd[\langle Γ \rangle] \mapsto\trd[Γ]\\
+        \tr [\sq A]             \mapsto\tr [A]&
+        \tr [{[}Δ{]}]           \mapsto\tr [Δ]\\
       \end{array}
-    \]
+      \)
+    }
+    \\[1\baselineskip]
     (all rules translate to the identity)
-    \\
-    \vspace*{\baselineskip}
+    \vspace*{1\baselineskip}
   \end{mdframed}
   \caption{
     Extension of calculus in \autoref{fig:extension-quantifier-raising}
