@@ -20,10 +20,12 @@
 \usepackage{ifthen}%
 \usepackage{tikz}%
 \usepackage{tikz-qtree}%
+\usepackage{textcomp}
 
 \usepackage{amsmath, amscd, amsthm, amssymb, mathrsfs, amsfonts, wasysym}%
 \let\oldemptyset\emptyset%
 \let\emptyset\varnothing%
+\usepackage{cancel}%
 
 \usepackage{tabularx}%
 \usepackage{multirow}%
@@ -40,7 +42,7 @@
 \def\prod    {\bullet}%
 \def\prodl   {\bullet}%
 \def\prodr   {\bullet}%
-\def\himpl   {\fatslash\ }%
+\def\himpl   {\!\fatslash}%
 \def\himpr   {\fatbslash}%
 \def\hprod   {\mathbin{\circ}}%
 \def\hprodl  {\mathbin{\circ}}%
@@ -91,9 +93,13 @@
   \fi
 }
 
-\newenvironment{pfbox}[1][1.0]%
+\newenvironment{pfbox}[1][0.9]%
   {\gdef\scalefactor{#1} \leavevmode\hbox\bgroup}
   {\scalebox{\scalefactor}{\DisplayProof} \egroup}
+
+\newenvironment{pftree}[1][0.9]%
+  {\gdef\scalefactor{#1}\begin{center}\proofSkipAmount \leavevmode}%
+  {\scalebox{\scalefactor}{\DisplayProof}\proofSkipAmount \end{center} }
 
 \newboolean{notes}%
 \setboolean{notes}{true}%

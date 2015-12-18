@@ -31,10 +31,9 @@ verb with two arguments.
 
 Then, interesting things start to happen. The syntactic function takes
 the sentence, which basically a list of words and some info by now,
-and and turns it into a parse tree, sort of like an abstract syntax
-tree for natural language.
-And the semantic function takes this tree, and compiles it to some
-expression in higher order logic.
+and turns it into a parse tree, sort of like an abstract syntax tree
+for natural language. And the semantic function takes this tree, and
+compiles it to some expression in higher order logic.
 The eh, pragmatic function is listed here for completeness, but we
 can't really list an output here, since pragmatics is all about using
 contextual information -- body language, intonation, conversational

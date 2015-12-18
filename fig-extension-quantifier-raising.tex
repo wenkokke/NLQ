@@ -1,11 +1,23 @@
 \begin{figure}
   \begin{mdframed}
     \centering
-    \begin{alignat*}{4}
-      \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\qr[A]\\
-      \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep Γ_1\hprod Γ_2\vsep\I\vsep\B\vsep\C\\
-      \text{Structure}&^-\;&Δ   &\coloneqq \ldots\vsepΔ\himplΓ\vsepΓ\himprΔ
-    \end{alignat*}
+    \begin{minipage}{0.666\linewidth}
+      \centering
+      \begin{alignat*}{4}
+        \text{Type}     &  \;&A,B&\coloneqq\ldots\vsep A\himpr B\vsep B\himpl A\vsep\qr[A]\\
+        \text{Structure}&^+\;&Γ  &\coloneqq\ldots\vsep Γ_1\hprod Γ_2\vsep\I\vsep\B\vsep\C\\
+        \text{Structure}&^-\;&Δ  &\coloneqq\ldots\vsep Γ\himpr Δ\vsep Δ\himpl Γ
+      \end{alignat*}
+    \end{minipage}%
+    \begin{minipage}{0.333\linewidth}
+      \centering
+      \begin{alignat*}{4}
+        &\text{Pol}(A\himpr B) &&\mapsto{-}\\
+        &\text{Pol}(B\himpl A) &&\mapsto{-}\\
+        &\text{Pol}(\qr[A])    &&\mapsto{+}
+      \end{alignat*}
+    \end{minipage}
+    \\[1\baselineskip]
     (copy of rules for $\{\impr,\prod,\impl\}$ from
     \autoref{fig:display-calculus} for $\{\himpr,\hprod,\himpl\}$)
     \\[1\baselineskip]
@@ -37,24 +49,21 @@
     \end{pfbox}
     \\[1\baselineskip]
     \hrulefill
-    \renewcommand{\arraystretch}{1.5}%
-    \[
+    \\[1\baselineskip]
+    {
+      \renewcommand{\arraystretch}{1.5}%
+      \(\!
       \begin{array}{c c c}
-        \multicolumn{3}{c}{%
-        \qr[\tr[A]]\mapsto\tr[A]
-        }\\
-        \trd[\I]\mapsto\emptyset&
-        \trd[\B]\mapsto\emptyset&
-        \trd[\C]\mapsto\emptyset\\
-        \tr[\I]\mapsto\top&
-        \tr[\B]\mapsto\top&
-        \tr[\C]\mapsto\top\\
+        \multicolumn{3}{c}{\qr[\tr[A]]\mapsto\tr[A]}\\
+        \tr[\I]\mapsto\top      & \tr [\B]\mapsto\top     & \tr [\C]\mapsto\top\\
+        \trd[\I]\mapsto\emptyset& \trd[\B]\mapsto\emptyset& \trd[\C]\mapsto\emptyset
       \end{array}
-    \]
+      \)
+    }
+    \\[1\baselineskip]
     (copy of translations for $\{\impr,\prod,\impl\}$ from
     \autoref{fig:display-calculus-to-explicit-lamET} for
     $\{\himpr,\hprod,\himpl\}$)\\
-    \renewcommand{\arraystretch}{3}%
     \begin{tabular}{c c c}
       \begin{pfbox}
         \AXC{$\struct{A}\hprod\I\fCenter Δ$}

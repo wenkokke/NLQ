@@ -2,68 +2,53 @@
   \begin{mdframed}
     \centering
     \begin{alignat*}{4}
-      \text{Type}&\;        &A,B &\coloneqq \text{S}\vsep\text{N}\vsep\text{NP}\vsep\text{PP}\vsep A\impr B\vsep B\impl A\\
+      \text{Atom}&\;        &α   &\coloneqq \S\vsep\N\vsep\NP\vsep\PP\vsep\INF\\
+      \text{Type}&\;        &A,B &\coloneqq α\vsep A\impr B\vsep B\impl A\\
       \text{Structure}&^+\; &Γ   &\coloneqq \cdot A\cdot\vsep Γ_1\prod Γ_2\\
       \text{Structure}&^-\; &Δ   &\coloneqq \cdot A\cdot\vsep Γ\imprΔ\vsep Δ\implΓ
     \end{alignat*}
 
     \begin{pfbox}
-      \AXC{} \RightLabel{Ax$^L$} \UIC{$\focus{A}\fCenter\struct{A}$}
+      \AXC{}
+      \RightLabel{Ax}
+      \UIC{$\struct{α}\fCenter\struct{α}$}
     \end{pfbox}
+    \\[1\baselineskip]
     \begin{pfbox}
-      \AXC{} \RightLabel{Ax$^R$} \UIC{$\struct{A}\fCenter\focus{A}$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$\focus{A}\fCenterΔ$}
-      \doubleLine\RightLabel{Foc$^L$}
-      \UIC{$\struct{A}\fCenter Δ$}
-    \end{pfbox}
-    \begin{pfbox}
-      \AXC{$Γ\fCenter\focus{B}$}
-      \doubleLine\RightLabel{Foc$^R$}
-      \UIC{$Γ\fCenter\struct{B}$}
-    \end{pfbox}
-
-    \vspace*{\baselineskip}
-    \begin{pfbox}
-      \AXC{$Γ\fCenter\focus{A}$}
-      \AXC{$\focus{B}\fCenter Δ$}
+      \AXC{$Γ\fCenter\struct{A}$}
+      \AXC{$\struct{B}\fCenter Δ$}
       \RightLabel{L$\impr$}
-      \BIC{$\focus{A\impr B}\fCenter Γ\impr Δ$}
+      \BIC{$\struct{A\impr B}\fCenter Γ\impr Δ$}
     \end{pfbox}
     \begin{pfbox}
       \AXC{$Γ\fCenter\struct{A}\impr\struct{B}$}
       \RightLabel{R$\impr$}
       \UIC{$Γ\fCenter\struct{A\impr B}$}
     \end{pfbox}
-
-    \vspace*{\baselineskip}
+    \\[1\baselineskip]
     \begin{pfbox}
-      \AXC{$Γ\fCenter\focus{A}$}
-      \AXC{$\focus{B}\fCenter Δ$}
+      \AXC{$Γ\fCenter\struct{A}$}
+      \AXC{$\struct{B}\fCenter Δ$}
       \RightLabel{L$\impl$}
-      \BIC{$\focus{B\impl A}\fCenter Δ\impl Γ$}
+      \BIC{$\struct{B\impl A}\fCenter Δ\impl Γ$}
     \end{pfbox}
     \begin{pfbox}
       \AXC{$Γ\fCenter\struct{B}\impl\struct{A}$}
       \RightLabel{R$\impl$}
       \UIC{$Γ\fCenter\struct{B\impl A}$}
     \end{pfbox}
-
-    \vspace*{\baselineskip}
+    \\[1\baselineskip]
     \begin{pfbox}
       \AXC{$Γ_2\fCenter Γ_1\impr Δ$}
       \doubleLine\RightLabel{Res$\impr\prod$}
       \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
     \end{pfbox}
-    \vspace*{\baselineskip}
     \begin{pfbox}
       \AXC{$Γ_1\fCenter Δ\impl Γ_2$}
       \doubleLine\RightLabel{Res$\impl\prod$}
       \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
     \end{pfbox}
+    \vspace*{1\baselineskip}
   \end{mdframed}
   \caption{
     The syntactic calculus from~\autoref{fig:syntactic-calculus} as a
@@ -82,26 +67,24 @@
       \framebox{\(\!
       \begin{aligned}
         &\textit{Structures}\\
+        &\tr[(\struct{A})]   &&\mapsto \tr[A]\\
+        &\tr[(Γ_1\prod Γ_2)] &&\mapsto \tr[Γ_1]\prod\tr[Γ_2]\\
+        \\
+        &\tr[(\struct{A})]   &&\mapsto \tr[A]\\
+        &\tr[(Δ\impl Γ)]     &&\mapsto \trd[Γ]\ra\tr[Δ]\\
+        &\tr[(Γ\impr Δ)]     &&\mapsto \trd[Γ]\ra\tr[Δ]\\
+        \\
         &\trd[(\struct{A})]   &&\mapsto \tr[A]\\
-        &\trd[(Γ_1\prod Γ_2)] &&\mapsto \trd[Γ_1]\prod\trd[Γ_2]\\
-        \\
-        &\tr[(\struct{A})]   &&\mapsto \tr[A]\\
-        &\tr[(Γ_1\prod Γ_2)] &&\mapsto \tr[Γ_1]\times\tr[Γ_2]\\
-        \\
-        &\tr[(\struct{A})]   &&\mapsto \tr[A]\\
-        &\tr[(Δ\impl Γ)]     &&\mapsto \tr[Γ]\ra\tr[Δ]\\
-        &\tr[(Γ\impr Δ)]     &&\mapsto \tr[Γ]\ra\tr[Δ]\\
+        &\trd[(Γ_1\prod Γ_2)] &&\mapsto \trd[Γ_1]\times\trd[Γ_2]\\
         \\
         &\textit{Sequents}\\
-        &\tr[(Γ\fCenterΔ)]         &&\mapsto \trd[Γ]\fCenter\tr[Δ]\\
-        &\tr[(\focus{A}\fCenterΔ)] &&\mapsto \tr[A]\fCenter\tr[Δ]\\
-        &\tr[(Γ\fCenter\focus{B})] &&\mapsto \trd[Γ]\fCenter\tr[B]
+        &\tr[(Γ\fCenterΔ)]         &&\mapsto \tr[Γ]\fCenter\tr[Δ]
       \end{aligned}\)}}&
       \begin{pfbox}[0.9]
-        \AXC{$Γ\fCenter\focus{A}$}
-        \AXC{$\focus{B}\fCenter Δ$}
+        \AXC{$Γ\fCenter\struct{A}$}
+        \AXC{$\struct{B}\fCenter Δ$}
         \RightLabel{L$\impr$}
-        \BIC{$\focus{A\impr B}\fCenter Γ\impr Δ$}
+        \BIC{$\struct{A\impr B}\fCenter Γ\impr Δ$}
       \end{pfbox}
       &$\Longrightarrow$&
       \begin{pfbox}[0.9]
@@ -113,24 +96,24 @@
         \RightLabel{$\ra$I}
         \UIC{$\emptyset\fCenter\tr[B]\ra\tr[Δ]$}
         \AXC{}\RightLabel{Ax}\UIC{$\tr[A]\ra\tr[B]\fCenter\tr[A]\ra\tr[B]$}
-        \AXC{$\trd[Γ]\fCenter\tr[A]$}
+        \AXC{$\tr[Γ]\fCenter\tr[A]$}
         \RightLabel{$\ra$E}
-        \BIC{$\tr[A]\ra\tr[B]\prod\trd[Γ]\fCenter\tr[B]$}
+        \BIC{$\tr[A]\ra\tr[B]\prod\tr[Γ]\fCenter\tr[B]$}
         \RightLabel{$\ra$E}
-        %\BIC{$\emptyset\prod(\tr[A]\ra\tr[B]\prod\trd[Γ])\fCenter\tr[Δ]$}
+        %\BIC{$\emptyset\prod(\tr[A]\ra\tr[B]\prod\tr[Γ])\fCenter\tr[Δ]$}
         %\RightLabel{Comm.}
-        %\UIC{$(\tr[A]\ra\tr[B]\prod\trd[Γ])\prod\emptyset\fCenter\tr[Δ]$}
+        %\UIC{$(\tr[A]\ra\tr[B]\prod\tr[Γ])\prod\emptyset\fCenter\tr[Δ]$}
         %\RightLabel{$\emptyset$E}
-        \BIC{$\tr[A]\ra\tr[B]\prod\trd[Γ]\fCenter\tr[Δ]$}
+        \BIC{$\tr[A]\ra\tr[B]\prod\tr[Γ]\fCenter\tr[Δ]$}
         \RightLabel{$\ra$I}
-        \UIC{$\tr[A]\ra\tr[B]\fCenter\trd[Γ]\ra\tr[Δ]$}
+        \UIC{$\tr[A]\ra\tr[B]\fCenter\tr[Γ]\ra\tr[Δ]$}
       \end{pfbox}
       \\&
       \begin{pfbox}[0.9]
-        \AXC{$Γ\fCenter\focus{A}$}
-        \AXC{$\focus{B}\fCenter Δ$}
+        \AXC{$Γ\fCenter\struct{A}$}
+        \AXC{$\struct{B}\fCenter Δ$}
         \RightLabel{L$\impl$}
-        \BIC{$\focus{B\impl A}\fCenter Δ\impl Γ$}
+        \BIC{$\struct{B\impl A}\fCenter Δ\impl Γ$}
       \end{pfbox}
       &$\Longrightarrow$&
       \multicolumn{1}{c}{\text{(as above)}}
@@ -142,12 +125,12 @@
       \end{pfbox}
       &$\Longrightarrow$&
       \begin{pfbox}[0.9]
-        \AXC{$\trd[Γ_2]\fCenter\trd[Γ_1]\ra\tr[Δ]$}
-        \AXC{}\RightLabel{Ax}\UIC{$\trd[Γ_1]\fCenter\trd[Γ_1]$}
+        \AXC{$\tr[Γ_2]\fCenter\tr[Γ_1]\ra\tr[Δ]$}
+        \AXC{}\RightLabel{Ax}\UIC{$\tr[Γ_1]\fCenter\tr[Γ_1]$}
         \RightLabel{$\ra$E}
-        \BIC{$\trd[Γ_2]\prod\trd[Γ_1]\fCenter\tr[Δ]$}
+        \BIC{$\tr[Γ_2]\prod\tr[Γ_1]\fCenter\tr[Δ]$}
         \RightLabel{Comm.}
-        \UIC{$\trd[Γ_1]\prod\trd[Γ_2]\fCenter\tr[Δ]$}
+        \UIC{$\tr[Γ_1]\prod\tr[Γ_2]\fCenter\tr[Δ]$}
       \end{pfbox}
       \\&
       \begin{pfbox}[0.9]
@@ -157,11 +140,11 @@
       \end{pfbox}
       &$\Longrightarrow$&
       \begin{pfbox}[0.9]
-        \AXC{$\trd[Γ_1]\prod\trd[Γ_2]\fCenter\tr[Δ]$}
+        \AXC{$\tr[Γ_1]\prod\tr[Γ_2]\fCenter\tr[Δ]$}
         \RightLabel{Comm.}
-        \UIC{$\trd[Γ_2]\prod\trd[Γ_1]\fCenter\tr[Δ]$}
+        \UIC{$\tr[Γ_2]\prod\tr[Γ_1]\fCenter\tr[Δ]$}
         \RightLabel{$\ra$I}
-        \UIC{$\trd[Γ_2]\fCenter\trd[Γ_1]\ra\tr[Δ]$}
+        \UIC{$\tr[Γ_2]\fCenter\tr[Γ_1]\ra\tr[Δ]$}
       \end{pfbox}
       \\&
       \begin{pfbox}[0.9]
@@ -171,10 +154,10 @@
       \end{pfbox}
       &$\Longrightarrow$&
       \begin{pfbox}[0.9]
-        \AXC{$\trd[Γ_1]\fCenter\trd[Γ_2]\ra\tr[Δ]$}
-        \AXC{}\RightLabel{Ax}\UIC{$\trd[Γ_2]\fCenter\trd[Γ_2]$}
+        \AXC{$\tr[Γ_1]\fCenter\tr[Γ_2]\ra\tr[Δ]$}
+        \AXC{}\RightLabel{Ax}\UIC{$\tr[Γ_2]\fCenter\tr[Γ_2]$}
         \RightLabel{$\ra$E}
-        \BIC{$\trd[Γ_1]\prod\trd[Γ_2]\fCenter\tr[Δ]$}
+        \BIC{$\tr[Γ_1]\prod\tr[Γ_2]\fCenter\tr[Δ]$}
       \end{pfbox}
       \\&
       \begin{pfbox}[0.9]
@@ -184,9 +167,9 @@
       \end{pfbox}
       &$\Longrightarrow$&
       \begin{pfbox}[0.9]
-        \AXC{$\trd[Γ_1]\prod\trd[Γ_2]\fCenter\tr[Δ]$}
+        \AXC{$\tr[Γ_1]\prod\tr[Γ_2]\fCenter\tr[Δ]$}
         \RightLabel{$\ra$I}
-        \UIC{$\trd[Γ_1]\fCenter\trd[Γ_2]\ra\tr[Δ]$}
+        \UIC{$\tr[Γ_1]\fCenter\tr[Γ_2]\ra\tr[Δ]$}
       \end{pfbox}
     \end{tabular}
     \vspace*{\baselineskip}
@@ -195,6 +178,120 @@
   \label{fig:display-calculus-to-explicit-lamET}
   \end{figure}
 \end{landscape}
+%
+\begin{figure}
+  \begin{mdframed}
+    \centering
+    \vspace*{1\baselineskip}
+    \(\!
+      \begin{aligned}
+        &\text{Pol}(α)        &&\mapsto{-} \\
+        &\text{Pol}(B\impl A) &&\mapsto{-}
+      \end{aligned}
+      \quad
+      \begin{aligned}
+        \\
+        &\text{Pol}(A\impr B) &&\mapsto{-}
+      \end{aligned}
+    \)
+    \\[1\baselineskip]
+    \(\!
+    \cancel{
+      \AXC{}
+      \RightLabel{Ax}
+      \UIC{$\struct{α}\fCenter\struct{α}$}
+      \DisplayProof
+    }
+    \)
+    \\[1\baselineskip]
+    \(\!
+    \color{gray}
+    \text{if}\ \text{Pol}(α) = {+}
+    \left\lbrace
+      \quad
+      \begin{aligned}
+        \\
+        \AXC{}
+        \RightLabel{Ax$^R$}
+        \UIC{$\struct{α}\fCenter\focus{α}$}
+        \DisplayProof
+        \\[1\baselineskip]
+      \end{aligned}
+      \quad
+      \normalcolor
+      \middle\vert
+      \normalcolor
+      \quad
+      \begin{aligned}
+        \\
+        \AXC{}
+        \RightLabel{Ax$^L$}
+        \UIC{$\focus{α}\fCenter\struct{α}$}
+        \DisplayProof
+        \\[1\baselineskip]
+      \end{aligned}
+      \quad
+    \right\rbrace
+    \normalcolor
+    \text{if}\ \text{Pol}(α) = {-}
+    \)
+    \\[1\baselineskip]
+    \(\!
+    \text{if}\ \text{Pol}(A) = {+}
+    \left\lbrace
+      \quad
+      \begin{aligned}
+        \\
+        \AXC{$Γ\fCenter\focus{A}$}
+        \RightLabel{Foc$^R$}
+        \UIC{$Γ\fCenter\struct{A}$}
+        \DisplayProof
+        \\[1\baselineskip]
+        \AXC{$\struct{A}\fCenter Δ$}
+        \RightLabel{Unf$^L$}
+        \UIC{$\focus{A}\fCenterΔ$}
+        \DisplayProof
+        \\[1\baselineskip]
+      \end{aligned}
+      \quad
+      \middle\vert
+      \quad
+      \begin{aligned}
+        \\
+        \AXC{$\focus{A}\fCenterΔ$}
+        \RightLabel{Foc$^L$}
+        \UIC{$\struct{A}\fCenter Δ$}
+        \DisplayProof
+        \\[1\baselineskip]
+        \AXC{$Γ\fCenter\struct{A}$}
+        \RightLabel{Unf$^R$}
+        \UIC{$Γ\fCenter\focus{A}$}
+        \DisplayProof
+        \\[1\baselineskip]
+      \end{aligned}
+      \quad
+    \right\rbrace
+    \text{if}\ \text{Pol}(A) = {-}
+    \)
+    \\[1\baselineskip]
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\focus{A}$}
+      \AXC{$\focus{B}\fCenter Δ$}
+      \RightLabel{L$\impr$}
+      \BIC{$\focus{A\impr B}\fCenter Γ\impr Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\focus{A}$}
+      \AXC{$\focus{B}\fCenter Δ$}
+      \RightLabel{L$\impl$}
+      \BIC{$\focus{B\impl A}\fCenter Δ\impl Γ$}
+    \end{pfbox}
+    \vspace*{1\baselineskip}
+  \end{mdframed}
+  \caption{Changes to the display calculus
+    from~\autoref{fig:display-calculus}, implementing focusing.}
+  \label{fig:focused-display-calculus}
+\end{figure}
 %
 %%% Local Variables:
 %%% mode: latex

@@ -36,7 +36,7 @@
       $\downarrow$\\
       $\exists p.\forall x.p(x)\supset(\mathbf{fox}(x)\land\mathbf{past}(\mathbf{see}(\text{mary},x)))$\\
       $\downarrow$\\
-      \ldots\footnotemark\\
+      \ldots\\
     \end{minipage}
   \end{center}
   \vfill
@@ -925,7 +925,7 @@
 
 \begin{frame}
   \frametitle{Quantifier Raising}
-  \only<1>{%
+  \only<1-2>{%
     \textit{``Mary saw \underline{foxes}.''}
     \\[0.125\baselineskip]
     Given that the parse tree is:
@@ -936,9 +936,15 @@
       \end{tikzpicture}
     \end{center}
     And the denotation is:
-    $$\exists p.\forall x.p(x)\supset(\mathbf{fox}(x)\land\mathbf{past}(\mathbf{see}(\text{mary},x)))$$
+    \only<1>{%
+      $$((\text{see}\;\text{foxes})\;\text{mary})$$
+    }
+    \only<2>{%
+      $$\exists p.\forall
+      x.p(x)\supset(\mathbf{fox}(x)\land\mathbf{past}(\mathbf{see}(\text{mary},x)))$$
+    }
   }
-  \only<2>{%
+  \only<3>{%
     \textit{``John loves \underline{everyone}.''}
     \\[0.125\baselineskip]
     Given that the parse tree is:
@@ -982,7 +988,7 @@
 
 \begin{frame}[label=scope-islands]
   \frametitle{Scope Islands}
-  \textit{``Mary \underline{said} \underline{everyone} left.''}
+  \textit{``Mary \underline{said} everyone left.''}
   \\[0.125\baselineskip]
   Given that the parse tree is:
   \\[1\baselineskip]
@@ -1562,7 +1568,7 @@
       \end{pfbox}
       \\[1\baselineskip]
       \begin{pfbox}
-        \AXC{$\struct{A}\fCenter Δ$} \RightLabel{L$\di$}
+        \AXC{$\struct{A}\fCenter Δ$} \RightLabel{L$\sq$}
         \UIC{$\struct{\sq A}\fCenter[Δ]$}
       \end{pfbox}
       \begin{pfbox}
@@ -1578,6 +1584,21 @@
     \vfill
   }
   \only<2>{%
+    \textit{``Mary \underline{said} everyone left.''}
+    \vfill
+    \begin{center}
+      \begin{pfbox}
+        \AXC{$
+          \struct{\NP}\prod
+          \struct{(\NP\impr\S)\impl\S}\prod
+          \struct{\qr[\S\himpl(\NP\himpr\S)]}\prod
+          \struct{\NP\impr\S}
+          \fCenter\struct{\S}$}
+      \end{pfbox}
+    \end{center}
+    \vspace*{1\baselineskip}
+  }
+  \only<3>{%
     \textit{``Mary \underline{said} everyone left.''}
     \vfill
     \begin{center}
@@ -1610,7 +1631,7 @@
           \fCenter\struct{\S}$}
       \end{pfbox}
     \end{center}
-    \vfill
+    \vspace*{1\baselineskip}
   }
 \end{frame}
 

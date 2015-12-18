@@ -4,277 +4,441 @@
 
 \begin{document}
 
-\section{Introduction}
+\include{introduction}
 
-\subsection{What is type-logical grammar?}\label{sec:what-is-type-logical-grammar}
-Before we address the question of what type-logical grammar is, let us
-look at the abstract pipeline for natural language understanding
-in~\autoref{fig:abstract-nlu-pipeline}.
-%
-\input{fig-abstract-nlu-pipeline}%
-%
-To the left of the figure, you see the various phases or functions
-commonly associated with an NLU-pipeline. To the right, you see the
-inputs and outputs of these functions.
-For instance, the morphological function will take an unanalysed
-sentence, and return a sentence which is lemmatised and has all
-morphemes made explicit (in the case of the example
-in~\autoref{fig:abstract-nlu-pipeline}, \texttt{PAST} and
-\texttt{PLURAL}).
+\section{Display calculus and focused proof search}
+\label{sec:display-calculus}
 
-There is some disagreement on the exact role of type-logical grammars in
-this pipeline. Ideally, type-logical grammars would play the role of
-both the syntactic and the semantic function. However, the current
-state of affairs in research is that often only the semantic function
-is truly considered\footnote{%
-  This statement is not true for \emph{associative} type-logical
-  grammars, which fundamentally treat the syntactic and semantic
-  functions as the same function by rejecting the tree structure of
-  sentences.
-}. That is the approach we will also take in this thesis -- that is,
-we consider type-logical grammars to be the function:
-%
-\begin{center}
-  Mary:NP [see:TV.PAST fox:NP.PL]\\
-  $\downarrow$\\
-  \framebox{Type-Logical Grammar}\\
-  $\downarrow$\\
-  $\exists X.X\subseteq\mathbf{fox}\land\mathbf{past}(\mathbf{see}(\text{mary},X))$
-\end{center}
-%
-The problem that the semantic function is trying to address is the
-following:
-%
-\begin{center}\itshape
-  Given a tree of words, compute the meaning of the overall tree.
-\end{center}
-%
-Type-logical grammar offers a solution to this problem. A type-logical
-grammar consists of three things:
-\begin{enumerate}[label=(\arabic*)]
-\item a syntactic calculus, set up in such a fashion that only
-  grammatical sentences are well-typed, and for which an efficient
-  method of proof-search exists;
-\item a semantic calculus, used to represent the meanings of words and
-  sentences; and
-\item a translation from the syntactic to the semantic calculus.
-\end{enumerate}
-We interpret the part-of-speech tags in our input as (NP, TV, etc.)
-types in the syntactic calculus, and use these -- together with the
-desired constituent type -- to form an input sequent. We then search
-for a term of that type in the syntactic calculus, and translate it to
-the semantic calculus. Once there, we interpret the morphemes
-(e.g. lemmas, \texttt{PAST} and \texttt{PLURAL}) as (possibly complex)
-terms in the semantic calculus.
-
-In \autoref{sec:simple-type-logical-grammar}, we will have a look at
-an example type-logical grammar, and give some examples of this
-process of computing sentence meaning.
-
-\subsection{A simple type-logical grammar}\label{sec:simple-type-logical-grammar}
-The simplest type-logical grammar that comes to mind -- drawing
-heavily from Montague grammar and categorial grammar -- is composed of
-the simply-typed lambda calculus with atomic types \e\ and \t\ (\lamET) as
-a semantic calculus, and the non-associative Lambek calculus (NL) as a
-syntactic calculus.
-
-The usual natural deduction formulation of \lamET\ can to be seen
-in~\autoref{fig:implicit-semantic-calculus}. It is a simple lambda
-calculus, with atomic types \e\ (`entity') and \t\ (`truth-value'). In
-addition, all logical operators and word-meanings we need are assumed
-to be defined as constants, with their expected type. For instance,
-$\forall$ is a constant of type $(\e\ra\t)\ra\t$, and \john\ is a
-constant of type \e. Note that we will often write logical operators
-in their usual notation, e.g.\ $M\land N$ or $\forall x.M$, but this
-should be take as syntactic sugar for constants, abstractions and
-applications.
-
-\input{fig-implicit-semantic-calculus}%
-
-Using this calculus as a semantics function directly would
-over-generate as, e.g. for the sequent $\{\john:\e,
-\likes:\e\ra\e\ra\t, \mary:\e\}\fCenter\t$ we can derive
-both $((\likes\;\john)\;\mary)$ and $((\likes\;\mary)\;\john)$.
-The reason for this is, of course, that the set structure used in this
-formulation is much too expressive for natural language grammar.
-
-If we want more control over the structure of our terms, a good first
-step is to move to a purely syntactic formulation, where all the
-structural properties are made explicit in the calculus itself; this
-has been done in \autoref{fig:explicit-semantic-calculus}. We have
-replaced the set by a (possibly empty) binary tree, spanned by the
-structural product `$\prod$', and have included a number of new
-structural rules which implement the structure of a set.
-% footnote:
-%   In \autoref{fig:implicit-semantic-calculus}, we can use the
-%   structure of a set because it is populated by \textit{typing
-%   assumptions} of the form $x : A$ -- as such, the environment can
-%   contain both $x : A$ and $y : A$. When we dropped the terms from the
-%   formulation in \autoref{fig:explicit-semantic-calculus}, we had to
-%   make the switch to multisets.
-
-\input{fig-explicit-semantic-calculus}
-
-Note that, in order to define these structural rules, we had to define
-the notion of a `context' --  which is a structure with \emph{exactly
-one} hole in it -- and a plugging function `\plug' -- which inserts a
-structure into that hole. The reason for this is that we have to be
-able to apply commutativity and associativity \emph{anywhere} in the
-structure to be able to freely change the order (and bracketing) of
-the formulas in it.\footnote{%
-  The contexts are not strictly necessary for $\emptyset E$,
-  contraction and weakening, since we can already move any formula
-  anywhere we want, but they make the proof system much more usable
-  and greatly decrease the length of proofs that need to use any of
-  these structural rules.
-}
-
-We can use the term language from \autoref{fig:implicit-semantic-calculus}
-for the explicit version of \lamET. The term labelling of the logical
-rules is exactly the same. The structural rules only manipulate
-structures, and therefore do not change the terms. The only exception
-to this is contraction, for which the term labelling is as follows:
-\begin{prooftree}
-  \AXC{$Σ[y : A\prod z : A]\fCenter M : B$}
-  \RightLabel{Cont.}
-  \UIC{$Σ[x : A]\fCenter M[x/y][x/z] : B$}
-\end{prooftree}
-Contraction, therefore, contracts two names. For this it uses
-substitution, which is defined as usual:
-\begin{alignat*}{3}
-  &x             &&[N/y] \mapsto
-  \begin{cases}
-    N, &\text{if}\;x=y\\
-    x, &\text{otherwise}
-  \end{cases}
-  \\
-  &C             &&[N/y] \mapsto C\\
-  &(\lambda x.M) &&[N/y] \mapsto
-  \begin{cases}
-    \lambda x.M[N/y], &\text{if}\;x=y\\
-    \lambda x.M,      &\text{otherwise}
-  \end{cases}
-  \\
-  &(M\;M')       &&[N/y] \mapsto (M[N/y]\;M'[N/y])
-\end{alignat*}
-
-Now that we have a semantic calculus where all structure has been made
-explicit, we can construct our syntactic calculus in three simple
-steps:
-\begin{enumerate}
-\item%
-  we drop \emph{all} structural rules;
-\item%
-  since the implication `$\ra$' can now only take arguments directly
-  from the left, we add a second implication `$\la$' which can only
-  take arguments from the right -- by convention, implications in this
-  system are written as division lines, with the argument \emph{under}
-  the line (so, as `$\impr$' and `$\impl$', respectively);
-\item%
-  we replace the atomic semantic types \e\ and \t\ by atomic syntactic
-  types, reminiscent of part-of-speech tags -- in this case, these
-  are S (`sentence'), NP (`noun phrase'), N (`noun'), PP
-  (`prepositional phrase') and INF (`infinitive').
-\end{enumerate}
-The resulting system can be seen in \autoref{fig:syntactic-calculus},
-defined along with the type-aliases \A\ (`adjective'), \IV\
-(`intransitive verb') and \TV\ (`transitive verb').
-
-\input{fig-syntactic-calculus}
-
-Dropping \emph{all} structural rules may seem unnecessary, but there
-is a good motivation for each rule.  For example, in the presence of
-commutativity, there is no way to distinguish between ``Mary walks.''
-and ``walks Mary.''; under weakening, we can add any word anywhere in a
-grammatical sentence, and the sentence will remain grammatical --
-e.g. ``Mary banana walks.''; and with contraction, we can remove
-consecutive words with the same type -- this means that ``John gave
-Bill a book.'' would be just as grammatical as ``John gave Bill.'',
-and the two could be taken to mean the same!
-
-The motivations to drop associativity and the empty structure are a
-little bit harder to understand, but the interested reader can refer
-to \citet[p. 33, 105-106]{moot2012}, who show some ungrammatical
-sentences that would be accepted in the presence of these rules.
-
-The last component we need for a type-logical grammar is a translation
-from our syntactic calculus to our semantic calculus. This translation
-is described in \autoref{fig:syntactic-calculus-to-explicit-lamET}:
-\begin{enumerate*}[label=(\arabic*)]
-\item a function $\tr$, translating the types in NL to types in
-  \lamET; and
-\item a set of rewrite rules, that rewrite proofs in NL to proofs in
-  \lamET.
-\end{enumerate*}
-With these two translation functions, we can set up a new presentation
-for our syntactic proofs, namely one where the syntactic proofs are
-labelled with the semantic terms resulting from the translation.
-
-As an example, let's give an analysis of the sentence ``Mary likes
-Bill.''. We assume the morphological, lexical and syntactic phases
-have been taken care of. This turns our input sequent into:
-\begin{center}
-  \begin{pfbox}[0.9]
-    \AXC{$\mary:\NP\prod\likes:\TV\prod\bill:\NP\;\fCenter\;?:\S$}
-  \end{pfbox}
-\end{center}%
-Since our logic is propositional, proof search is decidable and we can
-simply search the space of all possible proofs that end in this
-sequent. We will find that the only proof is:
-\begin{center}
-  \hspace*{-0.25cm}%
-  \begin{pfbox}[0.9]
-    \AXC{}\RightLabel{Ax}\UIC{$\mary:\NP\fCenter\mary:\NP$}
-    \AXC{}\RightLabel{Ax}\UIC{$\likes:\TV\fCenter\likes:\TV$}
-    \RightLabel{$\impr$E}
-    \BIC{$\mary:\NP\prod\likes:\TV\fCenter(\likes\;\mary):\S\impl\NP$}
-    \AXC{}\RightLabel{Ax}\UIC{$\bill:\NP\fCenter\bill:\NP$}
-    \RightLabel{$\impl$E}
-    \BIC{$\mary:\NP\prod\likes:\TV\prod\bill:\NP\fCenter((\likes\;\mary)\;\bill):\S$}
-  \end{pfbox}
-\end{center}%
-And so, by searching for a proof in our syntactic calculus, and
-translating it to our semantic calculus, we get a meaning
-representation for our input sequent.
-
-
-\section{Display Calculus -- Research and Proof Search}\label{sec:display-calculus}
 In the previous section, we glossed over the issue of proof
 search. However, the natural deduction formulation of the syntactic
-calculus in \autoref{fig:syntactic-calculus} is not especially suited
-to proof search.
+calculus we presented in \autoref{fig:syntactic-calculus} is not
+especially suited to proof search. \citet{lambek1958} originally
+developed a sequent calculus for NL, which does have a practical proof
+search algorithm.
+
 In this section, we will develop a display calculus
-\citep{belnap1982} for NL based on work by
-\citet{bernardi2010,bastenhof2012}\footnote{%
-  While the cited work on focused proof search developed these
-  techniques in order to obtain a CPS translation for the
-  Lambek-Grishin calculus, we will adopt their techniques for a
-  different reason: because they greatly reduce the search space, and
-  therefore increase the efficiency of proof search. We will outfit
-  our display calculus with a direct translation.
-}. There are a few key advantages to this approach:
-\begin{enumerate}
-\item display calculi have a general cut-elimination theorem;
-\item display calculi have the sub-formula property;
-\end{enumerate}
-The general cut-elimination theorem is incredibly useful when
-developing a grammar logic, as any extension of the logic preserves
-cut-elimination as long as it obeys the rules of display logic.
-The sub-formula property allows the logic to be searched using naive
-backward-chaining proof search. A further advantage of display
-calculus is that it does not use contexts or plugging functions, as
-used in \autoref{fig:explicit-semantic-calculus} and the usual sequent
-calculus formulation of NL. This allows for the proof search to be
-truly naive: we can say a rule applies if its conclusion can be
-unified with the current proof obligation, and do not have to check
-all possible contexts under which this unification could succeed.
+\citep{belnap1982} for NL. We will start out by motivating our choice
+for display calculus. Then we will present a display calculus for NL
+based on work by \citet{bernardi2010,gore1998}.
+In \autoref{sec:translation-to-lamET} we will relate our display
+calculus back to the framework discussed in
+\autoref{sec:introduction}, by defining a translation from our display
+calculus back to \lamET.
+And finally, in \autoref{sec:focusing-and-spurious-ambiguity}, we will
+then conclude this section by discussing the problem of spurious
+ambiguity, and address this problem by developing an extension to
+display calculus, using polarities and focusing
+\citep{girard1991,bastenhof2012}.
+
+\subsection{Why use display calculus?}
+\label{sec:why-use-display-calculus}
+There are a few key advantages to using display calculus. First of
+all, display calculus generalises sequent calculus. What this means is
+that if something is a display calculus, it has all the properties
+commonly associated with sequent calculus. Amongst others, display
+calculus has the property that we are looking for: it has an easy to
+implement, complete algorithm for proof search---backward-chaining
+proof search.
+
+However, display calculus is more than sequent calculus. One of the
+main theorems regarding sequent calculus---Gentzen's `Hauptsatz'--is
+the proof of cut-elimination. Whereas for sequent calculus, this
+theorem has to be proved separately for each instance, display
+calculus has a generic proof of cut-elimination, which holds whenever
+the calculus obeys certain easy to check conditions.
+
+One last reason is that display calculus is, due to the way in which
+it is usually formulated, relatively easy to formalise.
+
+Below we will discuss these arguments in favour of display calculus in
+more detail.
+
+\paragraph{Practical proof search procedure}
+One important property of sequent calculus, is the \emph{sub-formula}
+property---the property that a derivation of a sequent uses only
+sub-formulas of the formulas in that sequent.
+As a direct consequence of this property, we generally get an
+algorithm for proof search which is both easy to implement, and
+complete. This algorithm is backward-chaining proof search: we
+\begin{enumerate*}[label=(\arabic*)]
+\item start with the desired sequent;
+\item branch, applying each rule that can be applied; and
+\item repeat.
+\end{enumerate*}
+This algorithm is trivially complete, because we try all rules. It is
+also trivially guaranteed to terminate, since a derivation can only
+use sub-formulas of the formulas in the conclusion---the number of
+available formulas is strictly smaller than the number of formulas in
+the end sequent, and so we will eventually run out of formulas.
+
+While all display calculi have the sub-formula property, they do not
+necessarily have the \emph{sub-structure} property---the property that
+the derivation of a sequent can only use sub-structures of the
+structure in that sequent. While the original formulation of NL
+\citep{lambek1961} has this property, it makes sense not to require it
+from all display calculi, since many logics depend crucially on rules
+that do not have this property.
+However, this does mean we will have to take special care that the
+structural rules we introduce will not break our guarantee of
+termination. In practice, this also means that we will have to adjust
+the algorithm for proof search.
+
+\todo{Rewrite this section to be about residuation in general, and
+  about a change in the search algorithm for display calculus. And
+  only reference \autoref{fig:display-calculus} as an example.}
+As an example, take the residuation rules given in
+\autoref{fig:display-calculus}: these rules do not have the
+sub-structure property, and---since they can be applied either
+way---they can form loops.
+However, in this particular case, these loops are benign, as they are
+guaranteed to always return to the \emph{same} sequent. We can
+preserve our termination guarantee by adding loop-checking to our
+proof search algorithm. We do this by
+\begin{enumerate*}[label=(\arabic*)]
+\item passing along a set of visited sequents;
+\item stopping the proof search if we ever visit the same sequent
+  twice; and
+\item emptying out this set if we make progress---where progress means
+  eliminating a connective.
+\end{enumerate*}
+This extension also preserves completeness, since any proof that has a
+loop in it can be trivially rewritten to a proof without a loop by
+cutting out the loop.
+
+The problem then remains to avoid structural rules---or combinations
+of structural rules---which can cause a growing loop, in which no
+sequent is visited more than once. We will discuss this further in
+\todo{Reference section on Barker's NL$_{QR}$.}
+
+\paragraph{Generic proof of cut-elimination}
+Another important property of display calculus is the generic proof of
+cut-elimination.
+A proof of cut-elimination means that every proof which uses the cut
+rule can be rewritten to a proof that does not use the cut rule:
+\begin{prooftree}
+  \AXC{$Γ\fCenter A$}
+  \AXC{$A\fCenter Δ$}
+  \RightLabel{Cut}
+  \BIC{$Γ\fCenter Δ$}
+\end{prooftree}
+This is important, amongst other reasons, because a logic has to admit
+the cut rule by definition. However, if we were to include cut as an
+explicit rule, we would no longer be able to use backward-chaining
+proof search; the cut rule can always be applied, and introduces a
+unknown formula $A$.
+
+Another reason why cut is important is because it embodies a
+linguistic intuition that many of us have: the idea that if you have a
+sentence which contains a noun phrase---e.g. `a book' in ``Mary read
+a book''---and we have some other phrase of which we known that it is
+also a noun phrase---e.g. ``the tallest man''---then we should be
+able to substitute that second noun phrase for the first, and the
+result should still be a grammatical sentence---e.g. ``Mary read the
+tallest man.''
+
+It should be clear that it is always important for the cut rule to be
+admissible. However, in practice, one often has to give a separate
+proof of cut-elimination for every logic. The generic proof of
+cut-elimination for display calculus, however, states that if a
+calculus obeys certain conditions \citep[see][]{gore1998}, the cut
+rule is admissible.
+This makes it an invaluable tool for research. In this thesis, we will
+discuss several extensions to the non-associative Lambek calculus.
+Because we know that each of these extensions respects the rules of
+display calculus, we can be sure that any combination of then will
+have a proof of cut-elimination, without having to prove this even
+once.
+
+\paragraph{Easy to formalise}
+One last property of display calculus that is useful in formalising
+the calculus, is the fact that display calculus does not rely on the
+mechanisms of contexts and plugging functions, as used in
+\autoref{fig:explicit-semantic-calculus} and the usual sequent
+calculus formulation of NL.
+These mechanisms are sometimes touted for simplifying the presentation
+of proofs on paper, and for decreasing the complexity of proof
+search---the idea being that there are fewer rules to apply.
+
+However, they greatly complicate formal meta-logical proofs using, for
+instance, proof assistants such as Coq or Agda.
+For some intuition as to why, note that using contexts generally
+inserts an application of the plugging function `\plug' in the
+\emph{conclusions} of inference rules. This means that, in order to
+do, for instance, a proof by induction on the structure of the
+sequent, one has a much harder time proving which rules can lead to
+this sequent.
+In dependently-typed programming, the equivalent is inserting
+function applications in the return types of the constructors of
+datatypes. In his implementation of verified binary search trees,
+\citet{mcbride2014} notes that this is bad design, as it leads to an
+increased proof burden.
+
+To make matters worse, it is not trivial to see if these mechanisms
+actually \emph{do} decrease the size of the proofs. Undoubtedly, there
+are fewer rule applications, but the flipside of this is that each
+rule application involving a context must now implicitly be decorated
+with that context.
+In a similar vein, it is hard to see whether these mechanisms reduce
+amount of work to be done during proof search. While there are indeed
+fewer rules, each of these rules can now be applied under a variety of
+contexts.
+This last point hints at another advantage of not using contexts: it
+allows for the proof search algorithm to be truly trivial, as we can
+say a rule applies if its conclusion can be unified with the current
+proof obligation, and do not have to check all possible contexts under
+which this unification could succeed.
+
+
+\subsection{NL as a display calculus}
+\label{sec:nl-as-a-display-calculus}
+
+In \autoref{fig:display-calculus}, we present the display calculus
+version of NL. It features the same atoms and types as in
+\autoref{fig:syntactic-calculus}, but structures have been
+expanded: there are now positive and negative structures, and
+residuation rules to navigate those. These two work together to
+guarantee the \emph{display property}---the property that any
+sub-structure can be made the sole structure in either the antecedent
+or the succedent, depending on its polarity. For instance, below we
+use residuation to isolate the object NP on the left-hand side:
+\begin{center}
+  \begin{pfbox}
+    \AXC{$\vdots$}\noLine
+    \UIC{$\struct{\NP}\prod(\struct{\TV}\prod\struct{\underline{\NP}})\fCenter\struct{\S}$}
+    \RightLabel{Res$\prod\impr$}
+    \UIC{$\struct{\TV}\prod\struct{\underline{\NP}}\fCenter\struct{\NP}\impr\struct{\S}$}
+    \RightLabel{Res$\prod\impl$}
+    \UIC{$\struct{\underline{\NP}}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\TV}$}
+  \end{pfbox}
+\end{center}
+In order for our calculus to be a valid display calculus, it obeys
+eight simple conditions. Of these conditions, the only one that
+involves any proof burden is the last---adapted from \citet{gore1998}:
+\begin{quote}
+  If there are inference rules $ρ_1$ and $ρ_2$ with respective
+  conclusions $Γ\fCenter\struct{A}$ and $\struct{A}\fCenter Δ$
+  and if {Cut} is applied to yield $Γ\fCenter Δ$ then, either
+  $Γ\fCenter Δ$ is identical to $Γ\fCenter\struct{A}$ or to
+  $\struct{A}\fCenter Δ$; or it is possible to pass from the premises
+  of $ρ_1$ and $ρ_2$ to $Γ\fCenter Δ$ by means of inferences falling
+  under {Cut} where the cut-formula is always a proper sub-formula of
+  $A$.
+\end{quote}
+In other words, we have to show that---in our logic---we can rewrite a
+cut on matching left and right rules to smaller cuts on proper
+sub-formulas of the cut-formula. For L$\impr$ and R$\impr$, this is
+done as follows:
+\begin{center}
+  \begin{pfbox}
+    \AXC{$\vdots$}\noLine\UIC{$Π\fCenter\struct{A}\impr\struct{B}$}
+    \RightLabel{R$\impr$}
+    \UIC{$Π\fCenter\struct{A\impr B}$}
+    \AXC{$\vdots$}\noLine\UIC{$Γ\fCenter\struct{A}$}
+    \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter Δ$}
+    \RightLabel{L$\impr$}
+    \BIC{$\struct{A\impr B}\fCenter Γ\impr Δ$}
+    \RightLabel{Cut}
+    \BIC{$Π\fCenter Γ\impr Δ$}
+  \end{pfbox}
+  \\[1\baselineskip] $\Longrightarrow$ \\
+  \begin{pfbox}
+    \AXC{$\vdots$}\noLine\UIC{$Γ\fCenter\struct{A}$}
+    \AXC{$\vdots$}\noLine\UIC{$Π\fCenter\struct{A}\impr\struct{B}$}
+    \RightLabel{Res$\impr\prod$}
+    \UIC{$\struct{A}\prodΠ\fCenter\struct{B}$}
+    \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter Δ$}
+    \RightLabel{Cut}
+    \BIC{$\struct{A}\prod Π\fCenter Δ$}
+    \RightLabel{Res$\prod\impl$}
+    \UIC{$\struct{A}\fCenter Δ\impl Π$}
+    \RightLabel{Cut}
+    \BIC{$Γ\fCenter Δ\impl Π$}
+    \RightLabel{Res$\impl\prod$}
+    \UIC{$Γ\prod Π\fCenter Δ$}
+    \RightLabel{Res$\prod\impr$}
+    \UIC{$Π\fCenter Γ\impr Δ$}
+  \end{pfbox}
+\end{center}
+And likewise for L$\impl$ and R$\impl$.
+
+Another change that was made in this display calculus, is that the
+axiom has been restricted to atoms. This does not mean our logic no
+longer has the identity, since it is derivable by simple induction
+over the structure of the formula. For instance, in the case of an
+identity on $A\impr B$:
+\begin{center}
+  \begin{pfbox}
+    \AXC{$\vdots$}\noLine\UIC{$\struct{A}\fCenter\struct{A}$}
+    \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter\struct{B}$}
+    \RightLabel{L$\impr$}
+    \BIC{$\struct{A\impr B}\fCenter\struct{A}\impr\struct{B}$}
+    \RightLabel{R$\impr$}
+    \UIC{$\struct{A\impr B}\fCenter\struct{A\impr B}$}
+  \end{pfbox}
+\end{center}
+Instead, the change was made to avoid spurious ambiguity. \emph{If}
+the calculus were to have a full identity, then there would be
+\emph{two} proofs of the identity over, for instance \IV:
+\begin{center}
+  \begin{pfbox}
+    \AXC{}
+    \RightLabel{Ax}
+    \UIC{$\struct{\NP\impr\S}\fCenter\struct{\NP\impr\S}$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{}\RightLabel{Ax}\UIC{$\struct{\NP}\fCenter\struct{\NP}$}
+    \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+    \RightLabel{L$\impr$}
+    \BIC{$\struct{\NP\impr\S}\fCenter\struct{\NP}\impr\struct{\S}$}
+    \RightLabel{R$\impr$}
+    \UIC{$\struct{\NP\impr\S}\fCenter\struct{\NP\impr\S}$}
+  \end{pfbox}
+\end{center}
+This is problematic. When we search for proofs, ideally we only want
+different proofs if then sentence has different meanings, but the two
+proofs above do not appear to have a radically different structure. In
+fact, when we derive the identity by induction, both expand to the
+same proof. The problem of spurious ambiguity is further discussed in
+\autoref{sec:focusing-and-spurious-ambiguity}.
+
+\subsection{Translation to \lamET}
+\label{sec:translation-to-lamET}
+In the previous sections, we defined a display calculus which is
+equivalent to our natural deduction formulation of NL from
+\autoref{sec:introduction}. However, there is still one thing missing
+from our new implementation: a translation to \lamET.
+We could make the equivalence between display NL and natural deduction
+explicit, and use our old translation to \lamET, but in the interest
+of clarity, we choose to give a direct translation instead. This
+translation is presented in
+\autoref{fig:display-calculus-to-explicit-lamET}.
+
+There is one problem in translating display NL to \lamET---or to
+natural deduction NL, for that matter: the display structures are more
+expressive. To solve this problem, we remedy the distinction between
+positive and negative structures. We translate positive
+structure to structures, but translate negative structures---which are
+built out of implications---to formulas instead. This neatly ensures
+that the ``single formula succedent'' restriction on intuitionistic
+logic is obeyed.
+
+Though it does occurs in neither the premises nor the conclusions of
+the rules of display NL, positive structures \emph{can} also occur
+under negative structures. We cannot simply translate these to
+structures, as this would be a type error. Therefore, we define a
+second translation function `$\trd$' which maps positive structures to
+formulas. Because this translation maps the structural product `$\prod$'
+to the product type `$\times$', we have to extend \lamET with support
+for product types. This is done in \autoref{fig:extension-products}.
+
+\vspace*{1\baselineskip}
+
+Now that we once again have a complete type-logical grammar, let us
+take a look at our running example:
+\begin{center}
+  \begin{pfbox}[0.8]
+    \AXC{$\struct{\mary:\NP}
+      \prod(\struct{\likes:\TV}
+      \prod\struct{\bill:\NP})\;
+      \fCenter\;?:\struct{\S}$}
+  \end{pfbox}
+\end{center}%
+One valid derivation of the following sequent---keeping in mind that
+TV is short for $(\NP\impr\S)\impl\NP$---is:
+\begin{center}
+  \begin{pfbox}
+    \AXC{}\RightLabel{Ax}\UIC{$\struct{\NP}\fCenter\struct{\NP}$}
+    \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+    \RightLabel{L$\impr$}
+    \BIC{$\struct{\NP\impr\S}\fCenter\struct{\NP}\impr\struct{\S}$}
+    \AXC{}\RightLabel{Ax}\UIC{$\struct{\NP}\fCenter\struct{\NP}$}
+    \RightLabel{L$\impl$}
+    \BIC{$\struct{(\NP\impr\S)\impl\NP}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\NP}$}
+    \RightLabel{Res$\impl\prod$}
+    \UIC{$\struct{(\NP\impr\S)\impl\NP}\prod\struct{\NP}\fCenter\struct{\NP}\impr\struct{\S}$}
+    \RightLabel{Res$\impr\prod$}
+    \UIC{$\struct{\NP}\prod(\struct{(\NP\impr\S)\impl\NP}\prod\struct{\NP})\fCenter\struct{\S}$}
+  \end{pfbox}
+\end{center}
+Using the translation from
+\autoref{fig:display-calculus-to-explicit-lamET}, this translates to
+the following proof (and term) in \lamET:
+\begin{center}
+  \hspace*{-1.8em}
+  \begin{pfbox}[0.8]
+    \AXC{}\RightLabel{Ax}\UIC{$\t\fCenter\t$}
+    \RightLabel{$\ra$I}
+    \UIC{$\emptyset\fCenter\t\t$}
+    \AXC{}\RightLabel{Ax}\UIC{$\e\t\fCenter\e\t$}
+    \AXC{}\RightLabel{Ax}\UIC{$\e\fCenter\e$}
+    \RightLabel{$\ra$E}
+    \BIC{$\e\t\prod\e\fCenter\t$}
+    \RightLabel{$\ra$E}
+    \BIC{$\e\t\prod\e\fCenter\t$}
+    \RightLabel{$\ra$I}
+    \UIC{$\e\t\fCenter\e\t$}
+    \RightLabel{$\ra$I}
+    \UIC{$\emptyset\fCenter(\e\t)\e\t$}
+    \AXC{}\RightLabel{Ax}\UIC{$\e\e\t\fCenter\e\e\t$}
+    \AXC{}\RightLabel{Ax}\UIC{$\e\fCenter\e$}
+    \RightLabel{$\ra$E}
+    \BIC{$\e\e\t\prod\e\fCenter\e\t$}
+    \RightLabel{$\ra$E}
+    \BIC{$\e\e\t\prod\e\fCenter\e\t$}
+    \RightLabel{$\ra$I}
+    \UIC{$\e\e\t\fCenter\e\e\t$}
+    \AXC{}\RightLabel{Ax}\UIC{$\e\fCenter\e$}
+    \RightLabel{$\ra$E}
+    \BIC{$\e\e\t\prod\e\fCenter\e\t$}
+    \AXC{}\RightLabel{Ax}\UIC{$\e\fCenter\e$}
+    \RightLabel{$\ra$E}
+    \BIC{$(\e\e\t\prod\e)\prod\e\fCenter\t$}
+    \RightLabel{Comm.}
+    \UIC{$\e\prod(\e\e\t\prod\e)\fCenter\t$}
+  \end{pfbox}
+  \\[1\baselineskip]
+  $(((\lambda x.(\lambda k.\lambda y.(\lambda z.z)\;(k\;y))\;(\likes\;x))\;\bill)\;\mary)$
+\end{center}
+Admittedly, this looks somewhat unwieldy, but it $\beta$-reduces
+neatly to:
+\begin{center}
+  \begin{pfbox}
+    \AXC{}\RightLabel{Ax}\UIC{$\e\e\t\fCenter\e\e\t$}
+    \AXC{}\RightLabel{Ax}\UIC{$\e\fCenter\e$}
+    \RightLabel{$\ra$E}
+    \BIC{$\e\e\t\prod\e\fCenter\e\t$}
+    \AXC{}\RightLabel{Ax}\UIC{$\e\fCenter\e$}
+    \RightLabel{$\ra$E}
+    \BIC{$(\e\e\t\prod\e)\prod\e\fCenter\t$}
+    \RightLabel{Comm.}
+    \UIC{$\e\prod(\e\e\t\prod\e)\fCenter\t$}
+  \end{pfbox}
+  \\[1\baselineskip]
+  $((\likes\;\bill)\;\mary)$
+\end{center}
+
+\subsection{Focusing and spurious ambiguity}
+\label{sec:focusing-and-spurious-ambiguity}
+
+In \autoref{sec:nl-as-a-display-calculus}, we briefly touched upon
+spurious ambiguity.
+
+% \footnote{%
+%   \citet{bastenhof2012} develops the techniques for focused proof
+%   search in order to obtain an elegant CPS translation for the
+%   Lambek-Grishin calculus \citep{moortgat2009}.
+%   In this thesis, we will not use a CPS translation, and in fact argue
+%   against it in \todo{WRITE THIS}. Because of this, our usage of the
+%   techniques -- in particular, the assignment of polarities to atomic
+%   types -- will be different.
+% }.
 
 \input{fig-display-calculus}
 \input{fig-extension-lexical-ambiguity}
 \input{fig-extension-quantifier-raising}
-\input{fig-extension-scope-islands}
-\input{fig-extension-infixation}
-\input{fig-extension-extraction}
+%\input{fig-extension-scope-islands}
+%\input{fig-extension-infixation}
+%\input{fig-extension-extraction}
 
 % - implicit semantic calculus;
 % - explicit semantic calculus;

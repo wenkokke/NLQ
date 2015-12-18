@@ -46,8 +46,6 @@ search ss = do
           , [diaL,diaR,boxL,boxR,res21,res22]
           , [extLL,extLR,extRL,extRR]
           , [ifxLL,ifxLR,ifxRL,ifxRR]
-          --, [unitL,unitR,unitI]
-          --, [upB,upC,dnB,dnC]
           , [qrR',qrL']
           ]
 
@@ -144,6 +142,7 @@ search ss = do
     extRL (SEXT z :%∙ (y :%∙ x) :%⊢ w) = ExtRL <$> loop (y :%∙ (SEXT z :%∙ x) :%⊢ w)
     extRL _                            = empty
 
+    {-
     unitL,unitR,unitI :: SSequent s -> Search m (Syn s)
     unitL (SStI (SUnitR k a) :%⊢ y)                = UnitRL <$> prog (SPROD k (SStI a) (SUNIT k) :%⊢ y)
     unitL _                                        = empty
@@ -155,7 +154,9 @@ search ss = do
           Proved Refl                             -> UnitRI <$> prog (x :%⊢ y)
           _                                       -> empty
     unitI _                                        = empty
+    -}
 
+    {-
     dnB, dnC, upB, upC :: SSequent s -> Search m (Syn s)
     upB (x :%∙ (y :%∘ z) :%⊢ w)          = UpB <$> loop (y :%∘ ((SB :%∙ x) :%∙ z) :%⊢ w)
     upB _                                = empty
@@ -165,6 +166,7 @@ search ss = do
     upC _                                = empty
     dnC (x :%∘ ((SC :%∙ y) :%∙ z) :%⊢ w) = DnC <$> loop ((x :%∘ y) :%∙ z :%⊢ w)
     dnC _                                = empty
+    -}
 
     qrL',qrR' :: SSequent s -> Search m (Syn s)
     qrL' (x :%⊢ y)              = msum (app <$> sFocus x)
