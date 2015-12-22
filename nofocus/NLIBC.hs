@@ -19,8 +19,6 @@ import           Data.Singletons.Prelude hiding (Sing(SCons,SNil))
 import qualified Data.Singletons.Prelude.List as SL
 import           Data.Singletons (fromSing)
 import qualified NLIBC.Syntax.Backward as Bwd
-import           NLIBC.Syntax.Forward (TypedBy(..))
-import qualified NLIBC.Syntax.Forward as Fwd
 import           NLIBC.Syntax.Base hiding (Q,T,S,N,NP,PP,INF)
 import qualified NLIBC.Syntax.Base as Syn (Q,T,Atom(..))
 import           NLIBC.Semantics (HI,HO,H,E,T,v0,v1,v2,v3,v4,eta)
@@ -28,48 +26,6 @@ import qualified NLIBC.Semantics as Sem
 import           NLIBC.Semantics.Show2
 import           Text.Printf (printf)
 import           Unsafe.Coerce (unsafeCoerce)
-
-
--- * Example Sentences (Backward-Chaining Search)
-
-fwd0  = parseFwd S (john ∷ runs ∷ (·))
-
-fwd1  = parseFwd S (john    ∷ likes ∷ mary ∷ (·))
-fwd2  = parseFwd S (someone ∷ likes ∷ mary ∷ (·))
-fwd3  = parseFwd S (john    ∷ likes ∷ everyone ∷ (·))
-fwd4  = parseFwd S (someone ∷ likes ∷ everyone ∷ (·))
-
-fwd5  = parseFwd S (the              ∷ waiter ∷ serves ∷ everyone ∷ (·))
-
--- don't seem to be terminating fast enough
-fwd6  = parseFwd S (the  ∷ same      ∷ waiter ∷ serves ∷ everyone ∷ (·))
-fwd7  = parseFwd S (some ∷ different ∷ waiter ∷ serves ∷ everyone ∷ (·))
-
--- cannot use `wants' because it uses additive types:
---
---fwd8  = parseFwd S (mary ∷ wants            ∷ to ∷ leave ∷ (·))
---fwd9  = parseFwd S (mary ∷ wants ∷ john     ∷ to ∷ leave ∷ (·))
---fwd10 = parseFwd S (mary ∷ wants ∷ everyone ∷ to ∷ leave ∷ (·))
---
---fwd11 = parseFwd S (mary ∷ wants            ∷ to ∷ like ∷ bill ∷ (·))
---fwd12 = parseFwd S (mary ∷ wants ∷ john     ∷ to ∷ like ∷ bill ∷ (·))
---fwd13 = parseFwd S (mary ∷ wants ∷ everyone ∷ to ∷ like ∷ bill ∷ (·))
---
---fwd14 = parseFwd S (mary ∷ wants            ∷ to ∷ like ∷ someone ∷ (·))
---fwd15 = parseFwd S (mary ∷ wants ∷ john     ∷ to ∷ like ∷ someone ∷ (·))
---fwd16 = parseFwd S (mary ∷ wants ∷ everyone ∷ to ∷ like ∷ someone ∷ (·))
-
-fwd17 = parseFwd S (mary ∷ says ∷ john     ∷ likes ∷ bill ∷ (·))
-fwd18 = parseFwd S (mary ∷ says ∷ everyone ∷ likes ∷ bill ∷ (·))
-
--- cannot use `which' because it uses additive types:
---
---fwd19 = parseFwd S (mary ∷ reads ∷ some ∷ book ∷ the ∷ author ∷ of' ∷ which ∷ john ∷ likes ∷ (·))
-
--- ???: 0 derivations
-fwd20 = parseFwd S (mary ∷ sees ∷ some ∷ fox ∷ (·))
-
-fwd21 = parseFwd S (mary ∷ sees ∷ foxes ∷ (·))
 
 
 -- * Example Sentences (Backward-Chaining Search)
@@ -105,6 +61,7 @@ bwd19 = parseBwd S (mary * reads * some * book * (the * author * of' * which) * 
 bwd20 = parseBwd S (mary * sees * some * fox)
 bwd21 = parseBwd S (mary * sees * foxes)
 bwd22 = parseBwd S (mary * sees * the  * fox)
+
 
 
 -- * Lexicon
@@ -274,46 +231,6 @@ instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
     (Entry a1 r1,Entry a2 r2) -> Entry (a1 :%∙ a2) (Pair r1 r2)
 
 
-
-
--- * Forward-Chaining Parsing and Sentence Construction
-
--- TODO: this section pretty much is a testament to how I don't fully
--- understand the singletons library.
-
-parseFwd :: SType b ->Entries xs ->  IO ()
-parseFwd sb sxs = do let ps = map go (Fwd.findAll (sTypeOf sxs) sb)
-                     print (length ps)
-                     mapM_ putStrLn ps
-  where
-    go (TypedBy x Refl f) =
-      case sJoinTree x sxs of (Entry _ r) -> show2 r (eta f)
-
-
-infixr 4 ∷; (∷) = SCons; (·) = SNil
-
-data Entries (xs :: [StructI]) where
-  SNil  :: Entries '[]
-  SCons :: Entry x -> Entries xs -> Entries (x ': xs)
-
-sTypeOf :: Entries xs -> SList xs
-sTypeOf  SNil                  = SL.SNil
-sTypeOf (SCons (Entry x _) xs) = SL.SCons x (sTypeOf xs)
-
-sJoinTree :: SStructI x -> Entries (ToList x) -> Entry x
-sJoinTree (SStI a) (SCons x SNil) = x
-sJoinTree (SDIA k x) env = entryDIA k (sJoinTree x env)
-  where
-    entryDIA :: SKind k -> Entry x -> Entry (DIA k x)
-    entryDIA k (Entry x r) = Entry (SDIA k x) r
-sJoinTree (SPROD k x y) env = entryPROD k (sJoinTree x xs) (sJoinTree y ys)
-  where
-    (xs,ys) = sBreak (fromJust (sToList x)) env
-    sBreak :: SList xs -> Entries (xs :++ ys) -> (Entries xs, Entries ys)
-    sBreak  SL.SNil                 env  = (SNil, env)
-    sBreak (SL.SCons _ xs) (SCons x env) = first (SCons x) (sBreak xs env)
-    entryPROD :: SKind k -> Entry x -> Entry y -> Entry (PROD k x y)
-    entryPROD k (Entry x f) (Entry y g) = Entry (SPROD k x y) (Pair f g)
 
 -- This file contains example sentences treated with my extension of
 -- NLIBC, which is capable of expressing quantifiers, scope islands,

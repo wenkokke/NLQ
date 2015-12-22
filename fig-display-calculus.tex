@@ -58,126 +58,64 @@
 %
 \input{fig-extension-products}
 %
-\begin{landscape}
-  \begin{figure}
+\begin{figure}
   \begin{mdframed}
-    \renewcommand{\arraystretch}{5}%
-    \begin{tabular}{l c c c}
-      \multirow{6}{*}{%
-      \framebox{\(\!
-      \begin{aligned}
+    \centering
+    \begin{minipage}{0.333\linewidth}
+      \begin{alignat*}{4}
         &\textit{Structures}\\
-        &\tr[(\struct{A})]   &&\mapsto \tr[A]\\
-        &\tr[(Γ_1\prod Γ_2)] &&\mapsto \tr[Γ_1]\prod\tr[Γ_2]\\
+        &\tr[(\struct{A})] &&\mapsto \tr[A]\\
+        &\tr[(Γ_1\prod Γ_2)] &&\mapsto \tr[Γ_1]\times\tr[Γ_2]\\
         \\
-        &\tr[(\struct{A})]   &&\mapsto \tr[A]\\
-        &\tr[(Δ\impl Γ)]     &&\mapsto \trd[Γ]\ra\tr[Δ]\\
-        &\tr[(Γ\impr Δ)]     &&\mapsto \trd[Γ]\ra\tr[Δ]\\
-        \\
-        &\trd[(\struct{A})]   &&\mapsto \tr[A]\\
-        &\trd[(Γ_1\prod Γ_2)] &&\mapsto \trd[Γ_1]\times\trd[Γ_2]\\
+        &\tr[(\struct{A})] &&\mapsto \tr[A]\\
+        &\tr[(Δ\impl Γ)] &&\mapsto \tr[Γ]\ra\tr[Δ]\\
+        &\tr[(Γ\impr Δ)] &&\mapsto \tr[Γ]\ra\tr[Δ]\\
         \\
         &\textit{Sequents}\\
-        &\tr[(Γ\fCenterΔ)]         &&\mapsto \tr[Γ]\fCenter\tr[Δ]
-      \end{aligned}\)}}&
-      \begin{pfbox}[0.9]
-        \AXC{$Γ\fCenter\struct{A}$}
-        \AXC{$\struct{B}\fCenter Δ$}
+        &\tr[(Γ\fCenterΔ)] &&\mapsto \tr[Γ]\fCenter\tr[Δ]\\
+      \end{alignat*}
+    \end{minipage}%
+    \begin{minipage}{0.666\linewidth}
+      \centering
+      \vspace*{1\baselineskip}
+      \begin{prooftree}
+        \AXC{$x:Γ\fCenter M:A$}
+        \AXC{$y:B\fCenter N:Δ$}
         \RightLabel{L$\impr$}
-        \BIC{$\struct{A\impr B}\fCenter Γ\impr Δ$}
-      \end{pfbox}
-      &$\Longrightarrow$&
-      \begin{pfbox}[0.9]
-        \AXC{$\tr[B]\fCenter\tr[Δ]$}
-        %\RightLabel{Weak.}
-        %\UIC{$\tr[B]\prod\emptyset\fCenter\tr[B]\ra\tr[Δ]$}
-        %\RightLabel{Comm.}
-        %\UIC{$\emptyset\prod\tr[B]\fCenter\tr[Δ]$}
-        \RightLabel{$\ra$I}
-        \UIC{$\emptyset\fCenter\tr[B]\ra\tr[Δ]$}
-        \AXC{}\RightLabel{Ax}\UIC{$\tr[A]\ra\tr[B]\fCenter\tr[A]\ra\tr[B]$}
-        \AXC{$\tr[Γ]\fCenter\tr[A]$}
-        \RightLabel{$\ra$E}
-        \BIC{$\tr[A]\ra\tr[B]\prod\tr[Γ]\fCenter\tr[B]$}
-        \RightLabel{$\ra$E}
-        %\BIC{$\emptyset\prod(\tr[A]\ra\tr[B]\prod\tr[Γ])\fCenter\tr[Δ]$}
-        %\RightLabel{Comm.}
-        %\UIC{$(\tr[A]\ra\tr[B]\prod\tr[Γ])\prod\emptyset\fCenter\tr[Δ]$}
-        %\RightLabel{$\emptyset$E}
-        \BIC{$\tr[A]\ra\tr[B]\prod\tr[Γ]\fCenter\tr[Δ]$}
-        \RightLabel{$\ra$I}
-        \UIC{$\tr[A]\ra\tr[B]\fCenter\tr[Γ]\ra\tr[Δ]$}
-      \end{pfbox}
-      \\&
-      \begin{pfbox}[0.9]
-        \AXC{$Γ\fCenter\struct{A}$}
-        \AXC{$\struct{B}\fCenter Δ$}
+        \BIC{$f:\struct{A\impr B}\fCenter\lambda x.\sub{N}{f\;M}{y}:Γ\impr Δ$}
+      \end{prooftree}
+      \begin{prooftree}
+        \AXC{$y:B\fCenter N:Δ$}
+        \AXC{$x:Γ\fCenter M:A$}
         \RightLabel{L$\impl$}
-        \BIC{$\struct{B\impl A}\fCenter Δ\impl Γ$}
-      \end{pfbox}
-      &$\Longrightarrow$&
-      \multicolumn{1}{c}{\text{(as above)}}
-      \\&
-      \begin{pfbox}[0.9]
-        \AXC{$Γ_2\fCenter Γ_1\impr Δ$}
+        \BIC{$f:\struct{B\impl A}\fCenter\lambda x.\sub{N}{f\;M}{y}:Δ\impl Γ$}
+      \end{prooftree}
+      \begin{prooftree}
+        \AXC{$y:Γ_2\fCenter M:Γ_1\impr Δ$}
         \RightLabel{Res$\impr\prod$}
-        \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
-      \end{pfbox}
-      &$\Longrightarrow$&
-      \begin{pfbox}[0.9]
-        \AXC{$\tr[Γ_2]\fCenter\tr[Γ_1]\ra\tr[Δ]$}
-        \AXC{}\RightLabel{Ax}\UIC{$\tr[Γ_1]\fCenter\tr[Γ_1]$}
-        \RightLabel{$\ra$E}
-        \BIC{$\tr[Γ_2]\prod\tr[Γ_1]\fCenter\tr[Δ]$}
-        \RightLabel{Comm.}
-        \UIC{$\tr[Γ_1]\prod\tr[Γ_2]\fCenter\tr[Δ]$}
-      \end{pfbox}
-      \\&
-      \begin{pfbox}[0.9]
-        \AXC{$Γ_1\prod Γ_2\fCenter Δ$}
-        \RightLabel{Res$\prod\impr$}
-        \UIC{$Γ_2\fCenter Γ_1\impr Δ$}
-      \end{pfbox}
-      &$\Longrightarrow$&
-      \begin{pfbox}[0.9]
-        \AXC{$\tr[Γ_1]\prod\tr[Γ_2]\fCenter\tr[Δ]$}
-        \RightLabel{Comm.}
-        \UIC{$\tr[Γ_2]\prod\tr[Γ_1]\fCenter\tr[Δ]$}
-        \RightLabel{$\ra$I}
-        \UIC{$\tr[Γ_2]\fCenter\tr[Γ_1]\ra\tr[Δ]$}
-      \end{pfbox}
-      \\&
-      \begin{pfbox}[0.9]
-        \AXC{$Γ_1\fCenter Δ\impl Γ_2$}
+        \UIC{$z:Γ_1\prod Γ_2\fCenter\case{z}{x}{y}{M\;x}:Δ$}
+      \end{prooftree}
+      \begin{prooftree}
+        \AXC{$x:Γ_1\fCenter M:Δ\impl Γ_2$}
         \RightLabel{Res$\impl\prod$}
-        \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
-      \end{pfbox}
-      &$\Longrightarrow$&
-      \begin{pfbox}[0.9]
-        \AXC{$\tr[Γ_1]\fCenter\tr[Γ_2]\ra\tr[Δ]$}
-        \AXC{}\RightLabel{Ax}\UIC{$\tr[Γ_2]\fCenter\tr[Γ_2]$}
-        \RightLabel{$\ra$E}
-        \BIC{$\tr[Γ_1]\prod\tr[Γ_2]\fCenter\tr[Δ]$}
-      \end{pfbox}
-      \\&
-      \begin{pfbox}[0.9]
-        \AXC{$Γ_1\prod Γ_2\fCenter Δ$}
+        \UIC{$z:Γ_1\prod Γ_2\fCenter\case{z}{x}{y}{M\;y}:Δ$}
+      \end{prooftree}
+      \begin{prooftree}
+        \AXC{$z:Γ_1\prod Γ_2\fCenter M:Δ$}
+        \RightLabel{Res$\prod\impr$}
+        \UIC{$y:Γ_2\fCenter\lambda x.\sub{M}{(x,y)}{z}:Γ_1\impr Δ$}
+      \end{prooftree}
+      \begin{prooftree}
+        \AXC{$z:Γ_1\prod Γ_2\fCenter M:Δ$}
         \RightLabel{Res$\prod\impl$}
-        \UIC{$Γ_1\fCenter Δ\impl Γ_2$}
-      \end{pfbox}
-      &$\Longrightarrow$&
-      \begin{pfbox}[0.9]
-        \AXC{$\tr[Γ_1]\prod\tr[Γ_2]\fCenter\tr[Δ]$}
-        \RightLabel{$\ra$I}
-        \UIC{$\tr[Γ_1]\fCenter\tr[Γ_2]\ra\tr[Δ]$}
-      \end{pfbox}
-    \end{tabular}
-    \vspace*{\baselineskip}
+        \UIC{$x:Γ_1\fCenter\lambda y.\sub{M}{(x,y)}{z}:Δ\impl Γ_2$}
+      \end{prooftree}
+      \vspace*{1\baselineskip}
+    \end{minipage}
   \end{mdframed}
-  \caption{Translation from display calculus to explicit \lamET.}
+  \caption{Term labelling for display NL.}
   \label{fig:display-calculus-to-explicit-lamET}
-  \end{figure}
-\end{landscape}
+\end{figure}
 %
 \begin{figure}
   \begin{mdframed}

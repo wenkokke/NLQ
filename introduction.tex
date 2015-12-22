@@ -1,0 +1,243 @@
+\section{Introduction}
+\label{sec:introduction}
+
+\subsection{What is type-logical grammar?}
+\label{sec:what-is-type-logical-grammar}
+
+Before we address the question of what type-logical grammar is, let us
+look at the abstract pipeline for natural language understanding
+in~\autoref{fig:abstract-nlu-pipeline}.
+
+\input{fig-abstract-nlu-pipeline}
+
+To the left of the figure, you see the various phases or functions
+commonly associated with an NLU-pipeline. To the right, you see the
+inputs and outputs of these functions.
+For instance, the morphological function will take an unanalysed
+sentence, and return a sentence which is lemmatised and has all
+morphemes made explicit (in the case of the example
+in~\autoref{fig:abstract-nlu-pipeline}, \texttt{PAST} and
+\texttt{PLURAL}).
+
+There is some disagreement on the exact role of type-logical grammars in
+this pipeline. Ideally, type-logical grammars would play the role of
+both the syntactic and the semantic function. However, the current
+state of affairs in research is that often only the semantic function
+is truly considered\footnote{%
+  This statement is not true for \emph{associative} type-logical
+  grammars, which fundamentally treat the syntactic and semantic
+  functions as the same function by rejecting the tree structure of
+  sentences.
+}. That is the approach we will also take in this thesis---that is,
+we consider type-logical grammars to be the function:
+\begin{center}
+  Mary:NP [see:TV.PAST fox:NP.PL]\\
+  $\downarrow$\\
+  \framebox{Type-Logical Grammar}\\
+  $\downarrow$\\
+  $\exists X.X\subseteq\mathbf{fox}\land\mathbf{past}(\mathbf{see}(\text{mary},X))$
+\end{center}
+The problem that the semantic function is trying to address is the
+following:
+\begin{center}\itshape
+  Given a parse tree, compute the meaning associated with that parse tree.
+\end{center}
+Type-logical grammar offers a solution to this problem. A type-logical
+grammar consists of three things:
+\begin{enumerate}[label=(\arabic*)]
+\item a syntactic calculus, set up in such a fashion that only
+  grammatical sentences are well-typed, and for which an efficient
+  method of proof-search exists;
+\item a semantic calculus, used to represent the meanings of words and
+  sentences; and
+\item a translation from the syntactic to the semantic calculus.
+\end{enumerate}
+We interpret the part-of-speech tags in our input (NP, TV, etc.) as
+types in the syntactic calculus, and use these---together with the
+desired constituent type---to form an input sequent. We then search
+for a term of that type in the syntactic calculus, and translate it to
+the semantic calculus. Once there, we interpret the morphemes
+(e.g.\ lemmas, \texttt{PAST} and \texttt{PLURAL}) as possibly complex
+terms in the semantic calculus.
+
+In \autoref{sec:simple-type-logical-grammar}, we will have a look at
+an example type-logical grammar, and give some examples of this
+process of computing sentence meaning.
+
+
+
+\subsection{A simple type-logical grammar}
+\label{sec:simple-type-logical-grammar}
+
+The simplest type-logical grammar that comes to mind---drawing
+heavily from Montague grammar and categorial grammar---is composed of
+the simply-typed lambda calculus with atomic types \e\ and \t\ (\lamET) as
+a semantic calculus, and the non-associative Lambek calculus
+\citep[NL;][]{lambek1961} as a syntactic calculus.
+
+The usual natural deduction formulation of \lamET\ can to be seen
+in~\autoref{fig:implicit-semantic-calculus}. It is a simple lambda
+calculus, with atomic types \e\ (`entity') and \t\ (`truth-value'). In
+addition, all logical operators and word-meanings we need are assumed
+to be defined as constants, with their expected type. For instance,
+$\forall$ is a constant of type $(\e\ra\t)\ra\t$, and \john\ is a
+constant of type \e. Note that we will often write logical operators
+in their usual notation, e.g.\ $M\land N$ or $\forall x.M$, but this
+should be take as syntactic sugar for constants, abstractions and
+applications.
+
+\input{fig-implicit-semantic-calculus}%
+
+Using this calculus as a semantics function directly would
+over-generate as, e.g.\ for the sequent $\{\john:\e,
+\likes:\e\ra\e\ra\t, \mary:\e\}\fCenter\t$ we can derive
+both $((\likes\;\john)\;\mary)$ and $((\likes\;\mary)\;\john)$.
+The reason for this is, of course, that the set structure used in this
+formulation is much too expressive for natural language grammar.
+
+If we want more control over the structure of our terms, a good first
+step is to move to a purely syntactic formulation, where all the
+structural properties are made explicit in the calculus itself; this
+has been done in \autoref{fig:explicit-semantic-calculus}. We have
+replaced the set by a (possibly empty) binary tree, spanned by the
+structural product `$\prod$'. We have also included a number of new
+structural rules, which implement the structure of a set: $\emptyset$E
+allows us to have an empty antecedent; contraction and weakening tell
+us that we can use formulas multiple times, or not at all; and with
+commutativity and associativity we can change the order of the
+formulas any way we like.
+
+\input{fig-explicit-semantic-calculus}
+
+Note that, in order to define these structural rules, we had to define
+the notion of a `context'---which is a structure with \emph{exactly
+one} hole in it---and a plugging function `\plug'---which inserts a
+structure into that hole. The reason for this is that we have to be
+able to apply commutativity and associativity \emph{anywhere} in the
+structure to be able to freely change the order (and bracketing) of
+the formulas in it.\footnote{%
+  The contexts are not strictly necessary for $\emptyset$E,
+  contraction and weakening, since we can already move any formula
+  anywhere we want, but they make the proof system much more usable
+  and greatly decrease the length of proofs that need to use any of
+  these structural rules.
+}
+
+It is not hard to convince yourself that the implicit and explicit
+versions of \lamET\ are equivalent---though we will refrain from
+giving the full proof here.
+Because of this equivalence, we can use the term language from
+\autoref{fig:implicit-semantic-calculus} for the explicit version of
+\lamET.
+The term labelling of the logical rules is exactly the same. The
+structural rules only manipulate structures, and therefore do not
+change the terms. The only exception to this is contraction, for which
+the term labelling is as follows:
+\begin{prooftree}
+  \AXC{$Σ[y : A\prod z : A]\fCenter M : B$}
+  \RightLabel{Cont.}
+  \UIC{$Σ[x : A]\fCenter M[x/y][x/z] : B$}
+\end{prooftree}
+Contraction takes a term with two variables of the same type, and
+contracts them using substitution, which is defined as usual:
+\begin{alignat*}{3}
+  &x             &&[N/y] \mapsto
+  \begin{cases}
+    N, &\text{if}\;x=y\\
+    x, &\text{otherwise}
+  \end{cases}
+  \\
+  &C             &&[N/y] \mapsto C\\
+  &(\lambda x.M) &&[N/y] \mapsto
+  \begin{cases}
+    \lambda x.M[N/y], &\text{if}\;x=y\\
+    \lambda x.M,      &\text{otherwise}
+  \end{cases}
+  \\
+  &(M\;M')       &&[N/y] \mapsto (M[N/y]\;M'[N/y])
+\end{alignat*}
+
+Using our explicit semantic calculus, we can construct our syntactic
+calculus in three simple steps:
+\begin{enumerate}
+\item%
+  we drop \emph{all} structural rules;
+\item%
+  since the implication `$\ra$' can now only take arguments directly
+  from the left, we add a second implication `$\la$' which can only
+  take arguments from the right---by convention, implications in this
+  system are written as `$\impr$' and `$\impl$' (pronounced ``under''
+  and ``over'') with the argument \emph{under} the line;
+\item%
+  we replace the atomic semantic types \e\ and \t\ by atomic syntactic
+  types, reminiscent of part-of-speech tags---in this case, these
+  are S (`sentence'), NP (`noun phrase'), N (`noun'), PP
+  (`prepositional phrase') and INF (`infinitive').
+\end{enumerate}
+The resulting system can be seen in \autoref{fig:syntactic-calculus},
+defined along with some definitions for common part-of-speech tags \A\
+(`adjective'), \IV\ (`intransitive verb') and \TV\ (`transitive verb').
+
+\input{fig-syntactic-calculus}
+
+Dropping \emph{all} structural rules may seem unnecessary, but there
+is a good motivation for each rule.  For example, in the presence of
+commutativity, there is no way to distinguish between ``Mary walks.''
+and ``walks Mary.''; under weakening, we can add any word anywhere in a
+grammatical sentence, and the sentence will remain grammatical---
+e.g.\ ``Mary banana walks.''; and with contraction, we can remove
+consecutive words with the same type---this means that ``John read
+a fantastic blue book.'' could be taken to mean the same thing as
+``John read a blue book.''
+
+The motivations to drop associativity and the empty structure are a
+little bit harder to understand, but the interested reader can refer
+to \citet[p. 33, 105-106]{moot2012}, who show some ungrammatical
+sentences that would be accepted in the presence of these rules.
+
+\vspace*{1\baselineskip}
+
+The last component we need for our simple type-logical grammar is a
+translation from our syntactic calculus to our semantic calculus. This
+translation is described in
+\autoref{fig:syntactic-calculus-to-explicit-lamET} as:
+\begin{enumerate}[label=(\arabic*)]
+\item
+  a function $\tr$, translating the types in NL to types in \lamET; and
+\item
+  a set of rewrite rules, that rewrite proofs in NL to proofs in \lamET.
+\end{enumerate}
+With these two translation functions, we can set up a new presentation
+for our syntactic proofs, namely one where the syntactic proofs are
+labelled with the semantic terms resulting from the translation.
+
+As an example, let's give an analysis of the sentence ``Mary likes
+Bill.'' We assume the morphological, lexical and syntactic phases
+have been taken care of. This turns our input sequent into:
+\[
+  \mary:\NP\prod(\likes:\TV\prod\bill:\NP)\;\fCenter\;?:\S
+\]
+Fortunately, proof search is decidable for this system, so we can
+simply search the space of all possible proofs of this sequent. It
+turns out that the only proof is:
+\begin{center}
+  \vspace*{-1\baselineskip}
+  \hspace*{-2em}%
+  \begin{pfbox}
+    \AXC{}\RightLabel{Ax}\UIC{$\mary:\NP\fCenter\mary:\NP$}
+    \AXC{}\RightLabel{Ax}\UIC{$\likes:\TV\fCenter\likes:(\NP\impr\S)\impl\NP$}
+    \AXC{}\RightLabel{Ax}\UIC{$\bill:\NP\fCenter\bill:\NP$}
+    \RightLabel{$\impl$E}
+    \BIC{$\likes:\TV\prod\bill:\NP\fCenter(\likes\;\bill):\NP\impr\S$}
+    \RightLabel{$\impr$E}
+    \BIC{$\mary:\NP\prod(\likes:\TV\prod\bill:\NP)\fCenter((\likes\;\bill)\;\mary):\S$}
+  \end{pfbox}
+\end{center}
+And so, by searching for a proof in our syntactic calculus, and
+translating it to our semantic calculus, we get a meaning
+representation for our input sequent.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
