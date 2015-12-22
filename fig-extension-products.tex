@@ -2,8 +2,6 @@
   \begin{mdframed}
     \centering
     \vspace*{1\baselineskip}
-    Extension of semantic calculus from
-    \autoref{fig:implicit-semantic-calculus}:
     \begin{alignat*}{4}
       \text{Type}\;&A,B&&\coloneqq\ldots\vsep A\times B\vsep\top\\
       \text{Term}\;&M,N&&\coloneqq\ldots\vsep (M, N)\vsep\case{M}{x}{y}{N}\vsep()
@@ -26,34 +24,10 @@
     \begin{pfbox}
       \AXC{}\RightLabel{$\top$}\UIC{$Γ\fCenter () : \top$}
     \end{pfbox}
-    \\[1\baselineskip]
-    \hrulefill
-    \\[1\baselineskip]
-    Extension of semantic calculus from
-    \autoref{fig:explicit-semantic-calculus}:
-    \\[1\baselineskip]
-    \begin{pfbox}
-      \AXC{$Γ\fCenter A$}
-      \AXC{$Δ\fCenter B$}
-      \RightLabel{$\times$I}
-      \BIC{$Γ\prod Δ\fCenter A\times B$}
-    \end{pfbox}
-    \\[1\baselineskip]
-    \begin{pfbox}
-      \AXC{$Γ\fCenter A\times B$}
-      \AXC{$Δ\prod A\prod B\fCenter C$}
-      \RightLabel{$\times$E}
-      \BIC{$Γ\prod Δ\fCenter C$}
-    \end{pfbox}
-    \\[1\baselineskip]
-    \begin{pfbox}
-      \AXC{}\RightLabel{$\top$}\UIC{$\emptyset\fCenter \top$}
-    \end{pfbox}
     \vspace*{1\baselineskip}
   \end{mdframed}
-  \caption{An extension of the semantic calculi from
-    \autoref{fig:implicit-semantic-calculus} and
-    \autoref{fig:explicit-semantic-calculus}.}
+  \caption{An extension of the semantic calculus from
+    \autoref{fig:implicit-semantic-calculus}.}
   \label{fig:extension-products}
 \end{figure}
 %
