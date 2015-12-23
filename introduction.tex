@@ -5,7 +5,7 @@
 \label{sec:what-is-type-logical-grammar}
 
 Before we address the question of what type-logical grammar is, let us
-look at the abstract pipeline for natural language understanding
+look at the abstract pipeline for natural language understanding (NLU)
 in~\autoref{fig:abstract-nlu-pipeline}.
 
 \input{fig-abstract-nlu-pipeline}
@@ -14,10 +14,10 @@ To the left of the figure, you see the various phases or functions
 commonly associated with an NLU-pipeline. To the right, you see the
 inputs and outputs of these functions.
 For instance, the morphological function will take an unanalysed
-sentence, and return a sentence which is lemmatised and has all
-morphemes made explicit (in the case of the example
-in~\autoref{fig:abstract-nlu-pipeline}, \texttt{PAST} and
-\texttt{PLURAL}).
+sentence, and return a sentence which is lemmatised. This entails that
+all morphemes are made explicit---for instance, in the case of the
+example in \autoref{fig:abstract-nlu-pipeline}, the previously
+``implicit'' morphemes for past tense and plurality are added.
 
 There is some disagreement on the exact role of type-logical grammars in
 this pipeline. Ideally, type-logical grammars would play the role of
@@ -28,8 +28,11 @@ is truly considered\footnote{%
   grammars, which fundamentally treat the syntactic and semantic
   functions as the same function by rejecting the tree structure of
   sentences.
-}. That is the approach we will also take in this thesis---that is,
-we consider type-logical grammars to be the function:
+}. This makes sense from a research perspective: we can refer to the
+huge body of work on generative grammar to inform our choice for
+sentence structure, and focus on assigning these structures the right
+meaning. This is also the approach we will also take in this
+thesis---that is, we consider type-logical grammars to be the function:
 \begin{center}
   Mary:NP [see:TV.PAST fox:NP.PL]\\
   $\downarrow$\\
@@ -40,10 +43,12 @@ we consider type-logical grammars to be the function:
 The problem that the semantic function is trying to address is the
 following:
 \begin{center}\itshape
-  Given a parse tree, compute the meaning associated with that parse tree.
+  Given a tree of typed terms, return the meaning associated with that tree.
 \end{center}
-Type-logical grammar offers a solution to this problem. A type-logical
-grammar consists of three things:
+Given the presence of the phrase ``tree of typed terms'', we may
+already suspect that type theory offers a fitting solution to this
+problem. And indeed, under the guise of type-logical grammar, it
+does. A type-logical grammar generally consists of three things:
 \begin{enumerate}[label=(\arabic*)]
 \item a syntactic calculus, set up in such a fashion that only
   grammatical sentences are well-typed, and for which an efficient
@@ -53,12 +58,13 @@ grammar consists of three things:
 \item a translation from the syntactic to the semantic calculus.
 \end{enumerate}
 We interpret the part-of-speech tags in our input (NP, TV, etc.) as
-types in the syntactic calculus, and use these---together with the
-desired constituent type---to form an input sequent. We then search
-for a term of that type in the syntactic calculus, and translate it to
-the semantic calculus. Once there, we interpret the morphemes
-(e.g.\ lemmas, \texttt{PAST} and \texttt{PLURAL}) as possibly complex
-terms in the semantic calculus.
+types in the syntactic calculus, and combine these with the desired
+type for the tree---usually \S\ for `sentence'---to form an input
+sequent.
+We then search for a proof of that sequent in the syntactic calculus,
+and translate it to a term in the semantic calculus.
+Once there, we interpret the morphemes (e.g.\ lemmas, \texttt{PAST}
+and \texttt{PL}) as possibly complex terms in the semantic calculus.
 
 In \autoref{sec:simple-type-logical-grammar}, we will have a look at
 an example type-logical grammar, and give some examples of this
@@ -83,7 +89,7 @@ to be defined as constants, with their expected type. For instance,
 $\forall$ is a constant of type $(\e\ra\t)\ra\t$, and \john\ is a
 constant of type \e. Note that we will often write logical operators
 in their usual notation, e.g.\ $M\land N$ or $\forall x.M$, but this
-should be take as syntactic sugar for constants, abstractions and
+should be taken as syntactic sugar for constants, abstractions and
 applications.
 
 \input{fig-implicit-semantic-calculus}%
@@ -110,12 +116,12 @@ formulas any way we like.
 \input{fig-explicit-semantic-calculus}
 
 Note that, in order to define these structural rules, we had to define
-the notion of a `context'---which is a structure with \emph{exactly
-one} hole in it---and a plugging function `\plug'---which inserts a
+the notion of a `context'---a structure with \emph{exactly one} hole
+in it---and a plugging function `\plug'---a function which inserts a
 structure into that hole. The reason for this is that we have to be
 able to apply commutativity and associativity \emph{anywhere} in the
-structure to be able to freely change the order (and bracketing) of
-the formulas in it.\footnote{%
+structure to be able to freely change the order (and
+bracketing).\footnote{%
   The contexts are not strictly necessary for $\emptyset$E,
   contraction and weakening, since we can already move any formula
   anywhere we want, but they make the proof system much more usable
@@ -167,7 +173,7 @@ calculus in three simple steps:
   from the left, we add a second implication `$\la$' which can only
   take arguments from the right---by convention, implications in this
   system are written as `$\impr$' and `$\impl$' (pronounced ``under''
-  and ``over'') with the argument \emph{under} the line;
+  and ``over'') with the arguments \emph{under} the slash;
 \item%
   we replace the atomic semantic types \e\ and \t\ by atomic syntactic
   types, reminiscent of part-of-speech tags---in this case, these
@@ -182,7 +188,7 @@ defined along with some definitions for common part-of-speech tags \A\
 
 Dropping \emph{all} structural rules may seem unnecessary, but there
 is a good motivation for each rule.  For example, in the presence of
-commutativity, there is no way to distinguish between ``Mary walks.''
+commutativity, there is no way to distinguish between ``Mary walks.''\ %
 and ``walks Mary.''; under weakening, we can add any word anywhere in a
 grammatical sentence, and the sentence will remain grammatical---
 e.g.\ ``Mary banana walks.''; and with contraction, we can remove
@@ -192,8 +198,9 @@ a fantastic blue book.'' could be taken to mean the same thing as
 
 The motivations to drop associativity and the empty structure are a
 little bit harder to understand, but the interested reader can refer
-to \citet[p. 33, 105-106]{moot2012}, who show some ungrammatical
-sentences that would be accepted in the presence of these rules.
+to \citet[p. 33, 105-106]{moot2012} or \citet{lambek1961}, who show
+some ungrammatical sentences that would be accepted in the presence of
+these rules.
 
 \vspace*{1\baselineskip}
 
