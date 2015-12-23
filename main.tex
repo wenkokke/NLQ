@@ -2,40 +2,18 @@
 
 \input{preamble}
 
+
 \begin{document}
 
 % ``We are constructing a \emph{grammar logic}. Therefore, we only
 % want features in our logic for which we can demonstrate a motivating
 % example from natural language.''
 
-%\include{introduction}
-%\include{display-calculus}
-
-\section{Lexical Ambiguity}
-
-\begin{center}
-  \begin{pfbox}
-    \AXC{$\vdots$}\noLine\UIC{$Γ\fCenter\struct{A}$}
-    \AXC{$\vdots$}\noLine\UIC{$Γ\fCenter\struct{B}$}
-    \RightLabel{R\&}
-    \BIC{$Γ\fCenter\struct{A\& B}$}
-    \AXC{$\vdots$}\noLine\UIC{$\struct{A}\fCenter Δ$}
-    \RightLabel{L\&$_1$}
-    \UIC{$\struct{A\& B}\fCenter Δ$}
-    \RightLabel{Cut}
-    \BIC{$Γ\fCenter Δ$}
-  \end{pfbox}
-  \\[1\baselineskip] $\Longrightarrow$ \\
-  \begin{pfbox}
-    \AXC{$\vdots$}\noLine\UIC{$Γ\fCenter\struct{A}$}
-    \AXC{$\vdots$}\noLine\UIC{$\struct{A}\fCenter Δ$}
-    \RightLabel{Cut}
-    \BIC{$Γ\fCenter Δ$}
-  \end{pfbox}
-\end{center}
+\include{introduction}
+\include{display-calculus}
+\include{lexical-ambiguity}
 
 
-\input{fig-extension-lexical-ambiguity}
 
 %\input{fig-extension-quantifier-raising}
 %\input{fig-extension-scope-islands}

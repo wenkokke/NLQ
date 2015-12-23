@@ -135,47 +135,47 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
     IMPL1 : Kind → StructContext p - → Struct          + → StructContext p -
     IMPL2 : Kind → Struct          - → StructContext p + → StructContext p -
 
-  StructPlug : ∀ {p1 p2} → StructContext p1 p2 → Struct p1 → Struct p2
-  StructPlug (HOLE       ) z = z
-  StructPlug (DIA1  k x  ) z = DIA  k   (StructPlug x z)
-  StructPlug (PROD1 k x y) z = PROD k   (StructPlug x z) y
-  StructPlug (PROD2 k x y) z = PROD k x (StructPlug y z)
-  StructPlug (BOX1  k x  ) z = BOX  k   (StructPlug x z)
-  StructPlug (IMPR1 k x y) z = IMPR k   (StructPlug x z) y
-  StructPlug (IMPR2 k x y) z = IMPR k x (StructPlug y z)
-  StructPlug (IMPL1 k x y) z = IMPL k   (StructPlug x z) y
-  StructPlug (IMPL2 k x y) z = IMPL k x (StructPlug y z)
-
   instance
     Pluggable-Struct : ∀ {p} → Pluggable (flip StructContext p) Struct (Struct p)
-    Pluggable-Struct = record { _[_] = StructPlug }
+    Pluggable-Struct = record { _[_] = _[_]′ }
+      where
+        _[_]′ : ∀ {p1 p2} → StructContext p1 p2 → Struct p1 → Struct p2
+        (HOLE       ) [ z ]′ = z
+        (DIA1  k x  ) [ z ]′ = DIA  k   (x [ z ]′)
+        (PROD1 k x y) [ z ]′ = PROD k   (x [ z ]′) y
+        (PROD2 k x y) [ z ]′ = PROD k x (y [ z ]′)
+        (BOX1  k x  ) [ z ]′ = BOX  k   (x [ z ]′)
+        (IMPR1 k x y) [ z ]′ = IMPR k   (x [ z ]′) y
+        (IMPR2 k x y) [ z ]′ = IMPR k x (y [ z ]′)
+        (IMPL1 k x y) [ z ]′ = IMPL k   (x [ z ]′) y
+        (IMPL2 k x y) [ z ]′ = IMPL k x (y [ z ]′)
 
   -- *** Contexts for Sequents
   data SequentContext (p : Polarity) : Set where
     _<⊢_ : StructContext p + → Struct          - → SequentContext p
     _⊢>_ : Struct          + → StructContext p - → SequentContext p
 
-  SequentPlug : ∀ {p} → SequentContext p → Struct p → Sequent
-  SequentPlug (x <⊢ y) z = StructPlug x z ⊢ y
-  SequentPlug (x ⊢> y) z = x ⊢ StructPlug y z
-
   instance
     Pluggable-Sequent : Pluggable SequentContext Struct Sequent
-    Pluggable-Sequent = record { _[_] = SequentPlug }
+    Pluggable-Sequent = record { _[_] = _[_]′ }
+      where
+        _[_]′ : ∀ {p} → SequentContext p → Struct p → Sequent
+        (x <⊢ y) [ z ]′ = x [ z ] ⊢ y
+        (x ⊢> y) [ z ]′ = x ⊢ y [ z ]
+
 
   -- *** Contexts for Display Sequents
   data DisplayContext : Polarity → Set where
     <⊢_ : Struct - → DisplayContext +
     _⊢> : Struct + → DisplayContext -
 
-  DisplayPlug : ∀ {p} → DisplayContext p → Struct p → Sequent
-  DisplayPlug (<⊢ y) x = x ⊢ y
-  DisplayPlug (x ⊢>) y = x ⊢ y
-
   instance
     Pluggable-Display : Pluggable DisplayContext Struct Sequent
-    Pluggable-Display = record { _[_] = DisplayPlug }
-
+    Pluggable-Display = record { _[_] = _[_]′ }
+      where
+        _[_]′ : ∀ {p} → DisplayContext p → Struct p → Sequent
+        (<⊢ y) [ x ]′ = x ⊢ y
+        (x ⊢>) [ y ]′ = x ⊢ y
 
 
   -- ** Inference Rules
@@ -387,7 +387,7 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
 module SynToAgda
   (Atom : Set)
   (PolarisedAtom : Polarised Atom)
-  (Translate-Atom : Translate Atom Set)
+  (TranslateAtom : Translate Atom Set)
   where
 
 
@@ -398,10 +398,10 @@ module SynToAgda
 
 
   instance
-    Translate-Type : Translate ISyn.Type Set
-    Translate-Type = record { _* = _*′ }
+    TranslateType : Translate NL.Type Set
+    TranslateType = record { _* = _*′ }
       where
-        _*′ : ISyn.Type → Set
+        _*′ : NL.Type → Set
         El      a   *′ = a *
         Dia   _ a   *′ = a *′
         Box   _ a   *′ = a *′
@@ -409,10 +409,10 @@ module SynToAgda
         ImpR  _ a b *′ = a *′ → b *′
         ImpL  _ b a *′ = a *′ → b *′
 
-    Translate-Struct : ∀ {p} → Translate (ISyn.Struct p) Set
-    Translate-Struct = record { _* = _*′ }
+    TranslateStruct : ∀ {p} → Translate (NL.Struct p) Set
+    TranslateStruct = record { _* = _*′ }
       where
-        _*′ : ∀ {p} → ISyn.Struct p → Set
+        _*′ : ∀ {p} → NL.Struct p → Set
         · a ·      *′ = a *
         B          *′ = ⊤
         C          *′ = ⊤
@@ -423,16 +423,16 @@ module SynToAgda
         IMPR _ x y *′ = x *′ → y *′
         IMPL _ y x *′ = x *′ → y *′
 
-    Translate-Sequent : Translate ISyn.Sequent Set
-    Translate-Sequent = record { _* = _*′ }
+    TranslateSequent : Translate NL.Sequent Set
+    TranslateSequent = record { _* = _*′ }
       where
-        _*′ : ISyn.Sequent → Set
+        _*′ : NL.Sequent → Set
         (  x  ⊢  y  ) *′ = x * → y *
         ([ a ]⊢  y  ) *′ = a * → y *
         (  x  ⊢[ b ]) *′ = x * → b *
 
-    Translate-Proof : ∀ {s} → Translate (NL s) (s *)
-    Translate-Proof = record { _* = _*′ }
+    TranslateProof : ∀ {s} → Translate (NL s) (s *)
+    TranslateProof = record { _* = _*′ }
       where
         _*′ : ∀ {s} → NL s → s *
         axElR _     *′ = id
@@ -633,15 +633,15 @@ module SynToSem
   where
 
 
-  open module ISyn = Syn Atom1 PolarisedAtom1 hiding (_∙_; _⇒_; ax)
+  open module NL = Syn Atom1 PolarisedAtom1 hiding (_∙_; _⇒_; ax)
   open module ISem = Sem Atom2
 
 
   instance
-    Translate-Type : Translate ISyn.Type ISem.Type
+    Translate-Type : Translate NL.Type ISem.Type
     Translate-Type = record { _* = _*′ }
       where
-        _*′ : ISyn.Type → ISem.Type
+        _*′ : NL.Type → ISem.Type
         El      a   *′ = El (a *)
         Dia   _ a   *′ = a *′
         Box   _ a   *′ = a *′
@@ -649,10 +649,10 @@ module SynToSem
         ImpR  _ a b *′ = a *′ ⇒ b *′
         ImpL  _ b a *′ = a *′ ⇒ b *′
 
-    Translate-Struct : ∀ {p} → Translate (ISyn.Struct p) ISem.Type
+    Translate-Struct : ∀ {p} → Translate (NL.Struct p) ISem.Type
     Translate-Struct = record { _* = _*′ }
       where
-        _*′ : ∀ {p} → ISyn.Struct p → ISem.Type
+        _*′ : ∀ {p} → NL.Struct p → ISem.Type
         · a ·      *′ = a *
         B          *′ = 𝟙
         C          *′ = 𝟙
@@ -663,10 +663,10 @@ module SynToSem
         IMPR _ x y *′ = x *′ ⇒ y *′
         IMPL _ y x *′ = x *′ ⇒ y *′
 
-    Translate-Sequent : Translate ISyn.Sequent ISem.Sequent
+    Translate-Sequent : Translate NL.Sequent ISem.Sequent
     Translate-Sequent = record { _* = _*′ }
       where
-        _*′ : ISyn.Sequent → ISem.Sequent
+        _*′ : NL.Sequent → ISem.Sequent
         (  x  ⊢  y  ) *′ = · x * · ⊢ y *
         ([ a ]⊢  y  ) *′ = · a * · ⊢ y *
         (  x  ⊢[ b ]) *′ = · x * · ⊢ b *

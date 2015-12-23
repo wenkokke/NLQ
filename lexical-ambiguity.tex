@@ -1,0 +1,94 @@
+\section{Lexical Ambiguity}
+In this section, we will introduce `\&' (pronounced `with') from
+linear logic, and show how this can be used to encode lexical
+ambiguity. The original framework for categorial grammar
+\citep{lambek1958} already had machinery in place to deal with
+ambiguity; it allowed for multiple lexical entries for each
+word. However, in the spirit of wanting to deal with linguistic
+phenomena in a logical manner, it seems to make more sense to
+absorb lexical ambiguity into the logic itself. Not only is there a
+perfectly well-understood connective that can deal with this
+phenomenon, but it allows us to define ambiguity at any level in the
+type.
+
+\input{fig-extension-lexical-ambiguity}
+
+We introduce `\&' in \autoref{fig:extension-lexical-ambiguity}, with
+the associated inference rules, and translations. You may notice that
+the left rules seem to \emph{forget} either the left- or the
+right-hand argument, and that in the right rule the context $Γ$ is
+\emph{shared} between the two branches. While this looks like it uses
+weakening and contraction, it is perfectly benign. What it encodes is a
+\emph{choice}.
+The right rule says that if you can construct $A$ from $Γ$, and you
+can construct $B$ from $Γ$, and you have \emph{one} $Γ$, then you have
+a choice between constructing either an $A$ or a $B$.
+The left rules make this choice.
+
+Again, we have to prove condition \textbf{C8}, in order to show that
+this extension is compatible with display calculus. This time, the
+proof is even easier. For L\&$_1$ and R\&:
+\begin{center}
+  \begin{pfbox}
+    \AXC{$\vdots$}\noLine\UIC{$Γ\fCenter\struct{A}$}
+    \AXC{$\vdots$}\noLine\UIC{$Γ\fCenter\struct{B}$}
+    \RightLabel{R\&}
+    \BIC{$Γ\fCenter\struct{A\& B}$}
+    \AXC{$\vdots$}\noLine\UIC{$\struct{A}\fCenter Δ$}
+    \RightLabel{L\&$_1$}
+    \UIC{$\struct{A\& B}\fCenter Δ$}
+    \RightLabel{Cut}
+    \BIC{$Γ\fCenter Δ$}
+  \end{pfbox}
+  \\[1\baselineskip] $\Longrightarrow$ \\
+  \begin{pfbox}
+    \AXC{$\vdots$}\noLine\UIC{$Γ\fCenter\struct{A}$}
+    \AXC{$\vdots$}\noLine\UIC{$\struct{A}\fCenter Δ$}
+    \RightLabel{Cut}
+    \BIC{$Γ\fCenter Δ$}
+  \end{pfbox}
+\end{center}
+And likewise for L\&$_2$ and R\&.
+
+When is this extension useful? Imagine a word like `want'. This can be
+used in two different ways, with two different meanings:\\
+\begin{center}
+  \vspace{-1\baselineskip}
+  \renewcommand{\arraystretch}{1}
+  \begin{tabular}{c c}
+    ``Mary wants John to leave.'' & ``Mary wants to leave.''\\
+    $\WANT(\mary,\leave(\john))$  & $\WANT(\mary,\leave(\mary))$
+  \end{tabular}
+\end{center}
+`Wants' has an implicit reflexive object: if no object is explicitly
+given, it is assumed to be reflexive. Other words that show this
+behaviour are words such as `to wash' and `to shave'.
+
+Using our new connective, we can give a single definition for such
+words, which takes this ambiguity into account:
+\begin{alignat*}{3}
+  &\wants\;&:\;&\tr[((\TV\impl\INF))\&(\IV\impl\INF)]\\
+  &\wants\;&=\;&((\lambda p\;y\;x.\WANT(x,p\;y)),(\lambda p\;x.\WANT(x,p\;x)))
+\end{alignat*}
+
+How much of an advantage does this method have over allowing multiple
+lexical entries for a word? It is a more elegant solution for words
+like `want', which are ambiguous, but where all options encode a
+similar concept---in both cases, the subject wants something to
+happen. However, the similarity between the two definitions, and the
+fact that implicit reflexive objects occur with multiple verbs, might
+be an indication that this is a quirk of grammar, instead of lexical
+ambiguity.
+
+Using `\&' is a lot less elegant for true lexical ambiguity. For
+homonyms like `bow', where there are many different meanings, some of
+which radically different, all of its meanings would have to be
+encoded in a single definition. However, this is easily remedied, as
+it is not hard to imagine a procedure which encodes ambiguity in the
+style of \citeauthor{lambek1958} using `\&'.
+
+On the other hand, `\&' is a more elegant in its formalisation.
+\citeauthor{lambek1958}'s solution involves computing all possible
+trees, given all possible definitions of each word, and attempting to
+find a proof for all of them. The solution using `\&' elegantly
+absorbs this traversal into the proof search.
