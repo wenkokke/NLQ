@@ -12,14 +12,14 @@
     \end{minipage}
     \\[1\baselineskip]
     \begin{pfbox}
-      \AXC{$\focus{A}\fCenter Δ$}
+      \AXC{$\struct{A}\fCenter Δ$}
       \RightLabel{L\&$_1$}
-      \UIC{$\focus{A\& B}\fCenter Δ$}
+      \UIC{$\struct{A\& B}\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
-      \AXC{$\focus{B}\fCenter Δ$}
+      \AXC{$\struct{B}\fCenter Δ$}
       \RightLabel{L\&$_2$}
-      \UIC{$\focus{A\& B}\fCenter Δ$}
+      \UIC{$\struct{A\& B}\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
       \AXC{$Γ\fCenter\focus{A}$}
@@ -29,55 +29,26 @@
     \end{pfbox}
     \\[1\baselineskip]
     \hrulefill
-    \\[1\baselineskip]
-    \(\tr[(A \& B)] \mapsto \tr[A]\times\tr[B]\)
-    \setlength{\tabcolsep}{0pt}
-    \hspace*{-0.5cm}%
-    \begin{tabular}{c c c}
-      \begin{pfbox}[0.9]
-        \AXC{$\focus{A}\fCenter Δ$}
-        \RightLabel{L\&$_1$}
-        \UIC{$\focus{A\& B}\fCenter Δ$}
-      \end{pfbox}
-      &$\Longrightarrow$&
-      \begin{pfbox}[0.9]
-        \AXC{}\RightLabel{Ax}\UIC{$\tr[A]\times\tr[B]\fCenter\tr[A]\times\tr[B]$}
-        \AXC{$\tr[A]\fCenter\tr[Δ]$}
-        \RightLabel{Weak.}
-        \UIC{$\tr[A]\prod\tr[B]\fCenter\tr[Δ]$}
-        \RightLabel{$\times$E}
-        \BIC{$\tr[A]\times\tr[B]\fCenter\tr[Δ]$}
-      \end{pfbox}
-      \\
-      \begin{pfbox}[0.9]
-        \AXC{$\focus{B}\fCenter Δ$} \RightLabel{L\&$_2$}
-        \UIC{$\focus{A\& B}\fCenter Δ$}
-      \end{pfbox}
-      &$\Longrightarrow$&
-      \begin{pfbox}[0.9]
-        \AXC{}\RightLabel{Ax}\UIC{$\tr[A]\times\tr[B]\fCenter\tr[A]\times\tr[B]$}
-        \AXC{$\tr[B]\fCenter\tr[Δ]$}
-        \RightLabel{Weak.}
-        \UIC{$\tr[A]\prod\tr[B]\fCenter\tr[Δ]$}
-        \RightLabel{$\times$E}
-        \BIC{$\tr[A]\times\tr[B]\fCenter\tr[Δ]$}
-      \end{pfbox}
-      \\
-      \begin{pfbox}[0.9]
-        \AXC{$Γ\fCenter\focus{A}$} \AXC{$Γ\fCenter\focus{B}$}
-        \RightLabel{R\&} \BIC{$Γ\fCenter\focus{A\& B}$}
-      \end{pfbox}
-      &$\Longrightarrow$&
-      \begin{pfbox}[0.9]
-        \AXC{$\tr[Γ]\fCenter\tr[A]$}
-        \AXC{$\tr[Γ]\fCenter\tr[B]$}
-        \RightLabel{$\times$I}
-        \BIC{$\tr[Γ]\prod\tr[Γ]\fCenter\tr[A]\times\tr[B]$}
-        \RightLabel{Cont.}
-        \UIC{$\tr[Γ]\fCenter\tr[A]\times\tr[B]$}
-      \end{pfbox}
-    \end{tabular}
-    \vspace*{\baselineskip}
+    \[
+      \tr[(A\& B)] \mapsto \tr[A]\times\tr[B]
+    \]
+    \begin{pfblock}
+      \AXC{$x:\struct{A}\fCenter M:Δ$}
+      \RightLabel{L\&$_1$}
+      \UIC{$z:\struct{A\& B}\fCenter \case{z}{x}{\_}{M}:Δ$}
+    \end{pfblock}
+    \begin{pfblock}
+      \AXC{$y:\struct{B}\fCenter M:Δ$}
+      \RightLabel{L\&$_2$}
+      \UIC{$z:\struct{A\& B}\fCenter \case{z}{\_}{y}{M}:Δ$}
+    \end{pfblock}
+    \begin{pfblock}
+      \AXC{$x:Γ\fCenter\focus{M:A}$}
+      \AXC{$x:Γ\fCenter\focus{N:B}$}
+      \RightLabel{R\&}
+      \BIC{$x:Γ\fCenter\focus{(M,N):A\& B}$}
+    \end{pfblock}
+    \vspace*{0.5\baselineskip}
   \end{mdframed}
   \caption{
     Extension of calculus in \autoref{fig:display-calculus} which

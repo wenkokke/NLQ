@@ -15,6 +15,7 @@ thesisFileList :: [FilePattern]
 thesisFileList =
   [ "main.tex"
   , "introduction.tex"
+  , "display-calculus.tex"
   , "main.bib"
   , "preamble.tex"
   , "fig-*.tex"
