@@ -71,10 +71,16 @@
 \def\mary    {\ensuremath{\text{mary}}}%
 \def\bill    {\ensuremath{\text{bill}}}%
 \def\walks   {\ensuremath{\text{walks}}}%
+\def\damned  {\ensuremath{\text{damned}}}%
+\def\dog     {\ensuremath{\text{dog}}}%
 \def\likes   {\ensuremath{\text{likes}}}%
 \def\leave   {\ensuremath{\text{leave}}}%
 \def\wants   {\ensuremath{\text{wants}}}%
-\def\WANT    {\ensuremath{\textbf{want}}}%
+\def\JOHN    {\ensuremath{\mathbf{john}}}%
+\def\WALK    {\ensuremath{\mathbf{walk}}}%
+\def\DAMN    {\ensuremath{\mathbf{damn}}}%
+\def\DOG     {\ensuremath{\mathbf{dog}}}%
+\def\WANT    {\ensuremath{\mathbf{want}}}%
 \def\plug    {\ensuremath{\:\cdot\:[\:\cdot\:]}}%
 
 \newcommand{\qr}      [1][{\cdot}]{\mathbf{Q}(#1)}%
@@ -109,7 +115,7 @@
 \providecommand{\todo}[1]{%
   \ifthenelse%
   {\boolean{notes}}%
-  {{\color{red}\textbf{TODO:~}#1}}%
+  {\textcolor{red}{\_}\marginpar{\color{red}#1}}%
   {}}
 \providecommand{\note}[1]{%
   \ifthenelse%

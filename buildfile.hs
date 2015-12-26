@@ -56,10 +56,10 @@ main =
       thesisFiles <- getDirectoryFiles "" thesisFileList
       need (toBuild <$> thesisFiles)
 
-      command_ [Cwd "_build", EchoStdout True ] "pdflatex" ["-draftmode", lcl]
-      command_ [Cwd "_build", EchoStdout False] "bibtex"   [dropExtension lcl]
-      command_ [Cwd "_build", EchoStdout False] "pdflatex" ["-draftmode", lcl]
-      command_ [Cwd "_build", EchoStdout False] "pdflatex" [lcl]
+      command_ [Cwd "_build", EchoStdout True] "pdflatex" ["-draftmode", lcl]
+      command_ [Cwd "_build", WithStdout True] "bibtex"   [dropExtension lcl]
+      command_ [Cwd "_build", WithStdout True] "pdflatex" ["-draftmode", lcl]
+      command_ [Cwd "_build", WithStdout True] "pdflatex" [lcl]
 
     -- compile slides.tex with PdfLaTeX
     toBuild "slides.pdf" %> \out -> do
