@@ -14,9 +14,9 @@ type.
 \input{fig-extension-lexical-ambiguity}
 
 We introduce `\&' in \autoref{fig:extension-lexical-ambiguity}, with
-the associated inference rules, and translations. You may notice that
-the left rules seem to \emph{forget} either the left- or the
-right-hand argument, and that in the right rule the context $Γ$ is
+the associated inference rules, and term labelling in \lamET. You may
+notice that the left rules seem to \emph{forget} either the left- or
+the right-hand argument, and that in the right rule the context $Γ$ is
 \emph{shared} between the two branches. While this looks like it uses
 weakening and contraction, it is perfectly benign. What it encodes is a
 \emph{choice}.
@@ -76,18 +76,19 @@ lexical entries for a word? It is a more elegant solution for words
 like `want', which are ambiguous, but where all options encode a
 similar concept---in both cases, the subject wants something to
 happen. However, the similarity between the two definitions, and the
-fact that implicit reflexive objects occur with multiple verbs, might
-be an indication that this is a quirk of grammar, instead of lexical
-ambiguity.
+fact that implicit reflexive objects occur with numerous transitive
+verbs, might be an indication that this is a quirk of grammar, instead
+of lexical ambiguity.\todo{Reference? Proper linguistic terminology?}
 
 Using `\&' is a lot less elegant for true lexical ambiguity. For
-homonyms like `bow', where there are many different meanings, some of
-which radically different, all of its meanings would have to be
-encoded in a single definition. However, this is easily remedied, as
-it is not hard to imagine a procedure which encodes ambiguity in the
-style of \citeauthor{lambek1958} using `\&'.
+homonyms like `bow'---which have many different meanings, some of
+them radically different---all of its meanings would have to be
+encoded in a single definition.
+However, this is easily remedied, as it is not hard to imagine a
+procedure which encodes ambiguity in the style of
+\citeauthor{lambek1958} using `\&'.
 
-On the other hand, `\&' is a more elegant in its formalisation.
+On the other hand, `\&' is more elegant in its formalisation.
 \citeauthor{lambek1958}'s solution involves computing all possible
 trees, given all possible definitions of each word, and attempting to
 find a proof for all of them. The solution using `\&' elegantly

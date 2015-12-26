@@ -41,7 +41,8 @@ module NLPlus where
 
 \begin{comment}
 \begin{code}
-open import Level using (_⊔_)
+open import Level          using (_⊔_)
+open import Category.Monad using (module RawMonad; RawMonad)
 \end{code}
 \end{comment}
 
@@ -501,9 +502,9 @@ structuralise either the antecedent, the succedent, or both.
 \subsection{Translation to Agda}
 \begin{code}
 module SyntaxToAgda
-  (Atom : Set)
-  (PolarisedAtom : Polarised Atom)
-  (TranslateAtom : Translate Atom Set)
+  (Atom : Set) (F  : Set → Set)
+  (PolarisedAtom   : Polarised Atom)
+  (TranslateAtom   : Translate Atom Set)
   where
 \end{code}
 
@@ -522,7 +523,7 @@ module SyntaxToAgda
     TranslateType = record { _* = _*′ }
       where
         _*′ : NL.Type → Set
-        El        a    *′ = a *
+        El        a    *′ = F (a *)
         Dia    _  a    *′ = a *′
         Box    _  a    *′ = a *′
         UnitR  _  a    *′ = a *′
