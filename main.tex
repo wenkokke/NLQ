@@ -28,15 +28,15 @@ Recently, \citet{moot2015} has begun comparing these extended calculi,
 as fragments of first-order linear logic. In time, this may yield a
 canonically agreed-upon extension to NL.
 
-\lamET, too, has been extended and revisited many times. Many of these
+\lamET, too, has been extended and revisited many times. Many of its
 extensions were created to deal with complex semantic phenomena, such
 as intensionality~\citep{winter2009},
 expressives~\citep{potts2003,mccready2010,gutzmann2011}, dynamic
 semantics~\citep{groenendijk1995}, and quantifier
 raising~\citep{barker2015}. \todo{Other important work?}
-In recent research, \citet{shan2002} proposed an interesting paradigm
-to unify these extensions: by using techniques for effectful
-functional programming in \lamET.
+In \citeyear{shan2002}, \citeauthor{shan2002} proposed an interesting
+paradigm to unify these extensions: by implementing them using
+techniques for effectful functional programming in \lamET.
 
 Below, we will briefly discuss \citeauthor{shan2002}'s proposed
 extensions to \lamET and its limitations. We will then turn our
@@ -54,12 +54,17 @@ and quantification. \citet{bumford2013}, \citet{charlow2014} and
 \citet{barker2015} continued this line of research, defining monads to
 deal with a large range of linguistic phenomena.
 
-Formally, a monad is \todo{Monad laws?}
+Formally, a monad is
 \begin{enumerate*}[label=(\arabic*)]
 \item a type-level constructor, $\mathbb{M}$, mapping each type A
   to a corresponding type $\mathbb{M}A$; and
 \item a pair of functions, η and $\star$ (pronounced ``unit'' and
-  ``bind''), with the following types:
+  ``bind''), with the following types\footnote{
+    In addition, these functions have to obey the monad laws: left
+    identity ($\eta N\star M\equiv M\;N$); right identity
+    ($M\star\eta\equiv M$); and associativity ($(M\star\lambda
+    x.N\;x)\star O \equiv M\star(\lambda x.N\;x\star O)$).
+  }:
 \end{enumerate*}
 \[
   η:A\ra\mathbb{M}A
@@ -83,29 +88,60 @@ The term labelling remains the same. However, due to the insertion of
 the monad constructor $\mathbb{M}$ in our types, we now have the
 possibility to implement any sort of ``plumbing'' we need, as long as
 it forms a monad.
+
+\vspace*{1\baselineskip}
+
+As an example, we can use monads analyse expressive content. This is
+content that is present in the sentence meaning, but does not directly
+affect the truth-conditional meaning. It is information present on a
+sort-of side channel. For instance, in ``I walked the damn dog,'' the
+word `damn' does not seem to contribute to the truth-conditional
+meaning, as the utterance would still be considered truthful if the
+dog is well-liked.
+
+We can implement this using a variant of the writer monad: we
+represent values of the type $\mathbb{M}A$ as a tuple of
+truth-conditional (or ``at-issue'') content, and expressive content:
+\begin{align*}
+  \mathbb{M}A&\coloneqq A\times\t       \\
+  \eta\;M     &\coloneqq (M,\text{true}) \\
+  M\star N   &\coloneqq \case{M}{x}{y}{(\case{N\;x}{z}{w}{(z,y\land w)})}
+\end{align*}
+Using this monad, we can define a small lexicon. We lift our regular
+entries into monadic entries---a process which can be automated:
+\begin{align*}
+  \text{john}  &\coloneqq \eta(\JOHN)\\
+  \text{walks} &\coloneqq \lambda y.\lambda x.
+                 y\star(\lambda y'.x\star(\lambda x'.\eta(\WALK(x',y'))))\\
+  \text{the}   &\coloneqq \lambda x.x\star(\lambda x'.\eta(\iota(x')))\footnotemark\\
+  \text{dog}   &\coloneqq \eta(\DOG)
+  \intertext{%
+    We treat `damn' as an identity function in its at-issue
+    content---it binds $x'$, then returns it. However, we also define
+    `damn' as expressing some sort of displeasure, represented as the
+    proposition $\DAMN$ in its expressive content:
+  }
+  \text{damn} &\coloneqq \lambda x.x\star(\lambda x'.(x',\DAMN))
+\end{align*}
+\footnotetext{%
+  The semantics for `the' are commonly given in terms of function
+  `$\iota$'. This is known as the ``definite description
+  operator.'' Given a set, this operator returns its unique
+  inhabitant. Depending on the exact semantics you want for this
+  operator, it can either be implemented as its own monad, or using
+  quantification. However, for this example it suffices to think of it
+  as a function of the type $(\e\t)\e$.
+}%
+The entire utterance ``I walked the damn dog'' then reduces as follows:
 \[
-  \begin{aligned}
-    \mathbb{M}A   &\coloneqq A\times\t       \\
-    \eta(M)       &\coloneqq (M,\text{true}) \\
-    M\star N      &\coloneqq \case{M}{x}{y}{(\case{N\;x}{z}{w}{(z,y\land w)})}
-  \end{aligned}
-\]
-\[
-  \begin{aligned}
-    \text{john}   &\coloneqq \eta(\JOHN)\\
-    \text{walks}  &\coloneqq \lambda y.\lambda x.
-                       y\star(\lambda y'.x\star(\lambda x'.\eta(\WALK(x',y'))))\\
-    \text{the}    &\coloneqq \lambda f.f\star(\lambda f'.\eta(\iota(f')))\\
-    \text{damned} &\coloneqq \lambda x.x\star(\lambda x'.(x',\DAMN))\\
-    \text{dog}    &\coloneqq \eta(\DOG)
-  \end{aligned}
-\]
-\[
-  (\text{walks}\;(\text{the}\;(\text{damned}\;\text{dog}))\;\text{john})
+  (\text{walks}\;(\text{the}\;(\text{damn}\;\text{dog}))\;\text{john})
   \mapsto
   (\WALK(\JOHN,\iota(\DOG)), \DAMN)
 \]
-
+The above analysis is rather coarse, as it does not capture any
+displeasure towards the \emph{specific} dog, or even towards dogs in
+general. We \emph{can} get a more precise meaning, but doing so
+complicates the example too much.
 
 %\input{fig-extension-quantifier-raising}
 %\input{fig-extension-scope-islands}

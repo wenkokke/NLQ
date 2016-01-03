@@ -147,9 +147,9 @@ type     QR x =  UnitR  Hollow x
 pattern  QR x =  UnitR  Hollow x
 pattern SQR x = SUnitR SHollow x
 
-type     T =  UNIT  Hollow
-pattern  T =  UNIT  Hollow
-pattern ST = SUNIT SHollow
+type     I =  UNIT  Hollow
+pattern  I =  UNIT  Hollow
+pattern SI = SUNIT SHollow
 
 type    x  :∘ y =  PROD  Hollow x y
 pattern x  :∘ y =  PROD  Hollow x y
@@ -216,7 +216,7 @@ sPlug (x :%<∙ y) z = SPROD SSolid (sPlug x z) y
 sPlug (x :%∙> y) z = SPROD SSolid x (sPlug y z)
 
 sTrace :: SContext x -> SStructI (Trace x)
-sTrace SHOLE      = SUNIT SHollow
+sTrace SHOLE      = SI
 sTrace (x :%∙> y) = SPROD SSolid (SPROD SSolid SB x) (sTrace y)
 sTrace (x :%<∙ y) = SPROD SSolid (SPROD SSolid SC (sTrace x)) y
 
@@ -231,13 +231,13 @@ sFocus x = Focus SHOLE x Refl : sFocus' x
     sFocus' x         = []
 
 sFollow :: SStructI x -> Maybe (Trail x)
-sFollow (SUNIT SHollow) = Just (Trail SHOLE Refl)
-sFollow (SPROD SSolid (SPROD SSolid SC x) y) = case sFollow x of
-  Just (Trail x Refl) -> Just (Trail (x :%<∙ y) Refl)
-  _                   -> Nothing
-sFollow (SPROD SSolid (SPROD SSolid SB x) y) = case sFollow y of
-  Just (Trail y Refl) -> Just (Trail (x :%∙> y) Refl)
-  _                   -> Nothing
+sFollow  SI                = Just (Trail SHOLE Refl)
+sFollow ((SC :%∙ x) :%∙ y) = case sFollow x of
+  Just (Trail x Refl)     -> Just (Trail (x :%<∙ y) Refl)
+  _                       -> Nothing
+sFollow ((SB :%∙ x) :%∙ y) = case sFollow y of
+  Just (Trail y Refl)     -> Just (Trail (x :%∙> y) Refl)
+  _                       -> Nothing
 sFollow _                  = Nothing
 
 
@@ -372,11 +372,11 @@ up (x :%∙> y) f = DnB (Res11 (unsafeCoerce (up y (Res12 (unsafeCoerce f)))))
 down :: SContext x -> Syn (y :∘ Trace x :⊢ z) -> Syn (Plug x y :⊢ z)
 down x f = unsafeCoerce (init x (unsafeCoerce (move x f)))
   where
-    init :: SContext x -> Syn (Plug x (StI a :∘ T) :⊢ y) -> Syn (Plug x (StI (QR a)) :⊢ y)
+    init :: SContext x -> Syn (Plug x (StI a :∘ I) :⊢ y) -> Syn (Plug x (StI (QR a)) :⊢ y)
     init SHOLE      f = UnitRL f
     init (x :%<∙ y) f = Res13 (unsafeCoerce (init x (Res14 (unsafeCoerce f))))
     init (x :%∙> y) f = Res11 (unsafeCoerce (init y (Res12 (unsafeCoerce f))))
-    move :: SContext x -> Syn (y :∘ Trace x :⊢ z) -> Syn (Plug x (y :∘ T) :⊢ z)
+    move :: SContext x -> Syn (y :∘ Trace x :⊢ z) -> Syn (Plug x (y :∘ I) :⊢ z)
     move SHOLE      f = f
     move (x :%<∙ y) f = Res13 (unsafeCoerce (move x (Res14 (UpC (unsafeCoerce f)))))
     move (x :%∙> y) f = Res11 (unsafeCoerce (move y (Res12 (UpB (unsafeCoerce f)))))

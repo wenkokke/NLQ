@@ -1,5 +1,6 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE PatternSynonyms #-}
@@ -10,70 +11,77 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Main where
 
-
-import           Prelude hiding (pred,read,reads,(<$),(*))
-import           Control.Arrow (first)
-import           Data.Maybe (fromJust)
-import           Data.Singletons.Decide
-import           Data.Singletons.Prelude hiding (Sing(SCons,SNil))
-import qualified Data.Singletons.Prelude.List as SL
-import           Data.Singletons (fromSing)
-import qualified NLIBC.Syntax.Backward as Bwd
-import           NLIBC.Syntax.Forward (TypedBy(..))
-import qualified NLIBC.Syntax.Forward as Fwd
-import           NLIBC.Syntax.Base hiding (Q,T,S,N,NP,PP,INF)
-import qualified NLIBC.Syntax.Base as Syn (Q,T,Atom(..))
-import           NLIBC.Semantics (HI,HO,H,E,T,v0,v1,v2,v3,v4,eta)
-import qualified NLIBC.Semantics as Sem
-import           NLIBC.Semantics.Show2
-import           Text.Printf (printf)
-import           Unsafe.Coerce (unsafeCoerce)
+import Prelude hiding (read,reads,(*),($),(<$),($>))
+import NLIBC.Base
 
 
+bwd0  = parseBwd S (john * runs)
+{-
+bwd1  = parseBwd S (john    * likes * mary)
+bwd2  = parseBwd S (someone * likes * mary)
+bwd3  = parseBwd S (john    * likes * everyone)
+bwd4  = parseBwd S (someone * likes * everyone)
+-}
+
+
+-- ** LEXICON
+
+john     = "john"   ~: NP
+mary     = "mary"   ~: NP
+bill     = "bill"   ~: NP
+
+person   = "person" ~: N             --; people  = plural <$ person
+waiter   = "waiter" ~: N             --; waiters = plural <$ waiter
+fox      = "fox"    ~: N             --; foxes   = plural <$ fox
+book     = "book"   ~: N             --; books   = plural <$ book
+author   = "author" ~: N             --; authors = plural <$ author
+
+run      = "run"    ~: IV            ; runs   = run
+leave    = "leave"  ~: IV            ; leaves = leave
+read     = "read"   ~: IV            ; reads  = read
+see      = "see"    ~: TV            ; sees   = see
+like     = "like"   ~: TV            ; likes  = like
+serve    = "serve"  ~: TV            ; serves = serve
+say      = "say"    ~: IV :%← SRes S ; says   = say
+
+the      = "the"    ~: NP :%← N
+
+some     = lam(\f -> lam(\g -> exists E (\x -> f $ x :∧ g $ x))) -: Q NP S S :%← N
+every    = lam(\f -> lam(\g -> forAll E (\x -> f $ x :⊃ g $ x))) -: Q NP S S :%← N
+someone  = some  <$ person
+everyone = every <$ person
+
+{-
+not_empty :: EXPR ((E -> T) -> T)
+not_empty f = Exists E (\x -> f $ x)
+
+more_than_one :: EXPR ((E -> T) -> T)
+more_than_one f = Exists E (\x -> Exists E (\y -> f $ x :∧ f $ y :∧ x :≢ y))
+
+plural :: Entry (StI (NS  :← N))
+plural = Entry (SStI (NS :%← N)) (EXPR tm)
+  where
+    tm f q =
+      Exists (E :-> T) (\g -> more_than_one g :∧
+        ForAll E (\x -> g $ x :⊃ (f $ x :∧ q $ g)))
+
+
+
+-- ** Define aliases for syntactic types
+-}
+pattern S       = SEl SS
+pattern N       = SEl SN
+pattern NP      = SEl SNP
+pattern PP      = SEl SPP
+pattern INF     = SEl SINF
+pattern Q a b c = SUnitR SHollow (c :%⇦ (a :%⇨ b))
+pattern IV      = NP :%→ S
+pattern TV      = IV :%← NP
+pattern NS      = Q N S S
+
+{-
 -- * Example Sentences (Backward-Chaining Search)
-
-fwd0  = parseFwd S (john ∷ runs ∷ (·))
-
-fwd1  = parseFwd S (john    ∷ likes ∷ mary ∷ (·))
-fwd2  = parseFwd S (someone ∷ likes ∷ mary ∷ (·))
-fwd3  = parseFwd S (john    ∷ likes ∷ everyone ∷ (·))
-fwd4  = parseFwd S (someone ∷ likes ∷ everyone ∷ (·))
-
-fwd5  = parseFwd S (the              ∷ waiter ∷ serves ∷ everyone ∷ (·))
-
--- don't seem to be terminating fast enough
-fwd6  = parseFwd S (the  ∷ same      ∷ waiter ∷ serves ∷ everyone ∷ (·))
-fwd7  = parseFwd S (some ∷ different ∷ waiter ∷ serves ∷ everyone ∷ (·))
-
--- cannot use `wants' because it uses additive types:
---
---fwd8  = parseFwd S (mary ∷ wants            ∷ to ∷ leave ∷ (·))
---fwd9  = parseFwd S (mary ∷ wants ∷ john     ∷ to ∷ leave ∷ (·))
---fwd10 = parseFwd S (mary ∷ wants ∷ everyone ∷ to ∷ leave ∷ (·))
---
---fwd11 = parseFwd S (mary ∷ wants            ∷ to ∷ like ∷ bill ∷ (·))
---fwd12 = parseFwd S (mary ∷ wants ∷ john     ∷ to ∷ like ∷ bill ∷ (·))
---fwd13 = parseFwd S (mary ∷ wants ∷ everyone ∷ to ∷ like ∷ bill ∷ (·))
---
---fwd14 = parseFwd S (mary ∷ wants            ∷ to ∷ like ∷ someone ∷ (·))
---fwd15 = parseFwd S (mary ∷ wants ∷ john     ∷ to ∷ like ∷ someone ∷ (·))
---fwd16 = parseFwd S (mary ∷ wants ∷ everyone ∷ to ∷ like ∷ someone ∷ (·))
-
-fwd17 = parseFwd S (mary ∷ says ∷ john     ∷ likes ∷ bill ∷ (·))
-fwd18 = parseFwd S (mary ∷ says ∷ everyone ∷ likes ∷ bill ∷ (·))
-
--- cannot use `which' because it uses additive types:
---
---fwd19 = parseFwd S (mary ∷ reads ∷ some ∷ book ∷ the ∷ author ∷ of' ∷ which ∷ john ∷ likes ∷ (·))
-
--- ???: 0 derivations
-fwd20 = parseFwd S (mary ∷ sees ∷ some ∷ fox ∷ (·))
-
-fwd21 = parseFwd S (mary ∷ sees ∷ foxes ∷ (·))
-
-
--- * Example Sentences (Backward-Chaining Search)
-
+{-
 bwd0  = parseBwd S (john * runs)
 
 bwd1  = parseBwd S (john    * likes * mary)
@@ -164,118 +172,50 @@ of'       = Con "of"         -: (N :%→ N) :%← NP
 
 
 
+-- * Example Sentences (Forward-Chaining Search; Experimental)
 
--- * Utility Functions
+fwd0  = parseFwd S (john ∷ runs ∷ (·))
 
--- |Create an entry for an intransitive verb.
-verb1 iv = Con iv
+fwd1  = parseFwd S (john    ∷ likes ∷ mary ∷ (·))
+fwd2  = parseFwd S (someone ∷ likes ∷ mary ∷ (·))
+fwd3  = parseFwd S (john    ∷ likes ∷ everyone ∷ (·))
+fwd4  = parseFwd S (someone ∷ likes ∷ everyone ∷ (·))
 
--- |Create an entry for a transitive verb.
-verb2 tv = Abs (Abs (App (App (Con tv) v0) v1))
+fwd5  = parseFwd S (the              ∷ waiter ∷ serves ∷ everyone ∷ (·))
 
--- |Expression enforcing that a predicate is non-empty.
-not_empty :: Repr ts ((E -> T) -> T)
-not_empty = Abs (Exists (App v1 v0))
+-- don't seem to be terminating fast enough
+fwd6  = parseFwd S (the  ∷ same      ∷ waiter ∷ serves ∷ everyone ∷ (·))
+fwd7  = parseFwd S (some ∷ different ∷ waiter ∷ serves ∷ everyone ∷ (·))
 
--- |Expression enforcing that a predicate has at least two members.
-more_than_one :: Repr ts ((E -> T) -> T)
-more_than_one = Abs (Exists (Exists ((App v2 v1 :∧ App v2 v0) :∧ (v1 :≢ v0))))
+-- cannot use `wants' because it uses additive types:
+--
+--fwd8  = parseFwd S (mary ∷ wants            ∷ to ∷ leave ∷ (·))
+--fwd9  = parseFwd S (mary ∷ wants ∷ john     ∷ to ∷ leave ∷ (·))
+--fwd10 = parseFwd S (mary ∷ wants ∷ everyone ∷ to ∷ leave ∷ (·))
+--
+--fwd11 = parseFwd S (mary ∷ wants            ∷ to ∷ like ∷ bill ∷ (·))
+--fwd12 = parseFwd S (mary ∷ wants ∷ john     ∷ to ∷ like ∷ bill ∷ (·))
+--fwd13 = parseFwd S (mary ∷ wants ∷ everyone ∷ to ∷ like ∷ bill ∷ (·))
+--
+--fwd14 = parseFwd S (mary ∷ wants            ∷ to ∷ like ∷ someone ∷ (·))
+--fwd15 = parseFwd S (mary ∷ wants ∷ john     ∷ to ∷ like ∷ someone ∷ (·))
+--fwd16 = parseFwd S (mary ∷ wants ∷ everyone ∷ to ∷ like ∷ someone ∷ (·))
 
--- |Left application for entries.
-(<$) :: Entry (StI (b :← a)) -> Entry (StI a) -> Entry (StI b)
-(Entry (SStI (b :%← _)) f) <$ (Entry (SStI _) x) = Entry (SStI b) (App f x)
+fwd17 = parseFwd S (mary ∷ says ∷ john     ∷ likes ∷ bill ∷ (·))
+fwd18 = parseFwd S (mary ∷ says ∷ everyone ∷ likes ∷ bill ∷ (·))
 
--- |Right application for entries.
-($>) :: Entry (StI a) -> Entry (StI (a :→ b)) -> Entry (StI b)
-(Entry (SStI _) x) $> (Entry (SStI (_ :%→ b)) f) = Entry (SStI b) (App f x)
+-- cannot use `which' because it uses additive types:
+--
+--fwd19 = parseFwd S (mary ∷ reads ∷ some ∷ book ∷ the ∷ author ∷ of' ∷ which ∷ john ∷ likes ∷ (·))
 
--- |Expression transforming nouns into plural nouns.
-plural :: Entry (StI (NS :← N))
-plural = Entry (SStI (NS :%← N))
-  (Abs (Abs (Exists (App more_than_one v0
-    :∧ Forall (App v1 v0 :⊃ (App v3 v0 :∧ App v2 v0))))))
+-- ???: 0 derivations
+fwd20 = parseFwd S (mary ∷ sees ∷ some ∷ fox ∷ (·))
 
-
-type    S        = El 'Syn.S
-type    N        = El 'Syn.N
-type    NP       = El 'Syn.NP
-type    PP       = El 'Syn.PP
-type    INF      = El 'Syn.INF
-type    NP'S     = NP :⇨ S
-type    NS       = Q NP S S
-type    A        = N :← N
-type    IV       = NP :→ S
-type    TV       = (NP :→ S) :← NP
-type    DET      = NP :← N
-type    Q a b c  = UnitR Hollow (c :⇦ (a :⇨ b))
-
-
-pattern S        = SEl SS
-pattern N        = SEl SN
-pattern NP       = SEl SNP
-pattern NP'S     = NP :%⇨ S
-pattern NS       = Q NP S S
-pattern PP       = SEl SPP
-pattern INF      = SEl SINF
-pattern A        = SEl SN :%← SEl SN
-pattern IV       = SEl SNP :%→ SEl SS
-pattern TV       = (SEl SNP :%→ SEl SS) :%← SEl SNP
-pattern DET      = SEl SNP :%← SEl SN
-pattern Q a b c  = SUnitR SHollow (c :%⇦ (a :%⇨ b))
-
-pattern Forall u = App (Con "∀") (Abs u)
-pattern Exists u = App (Con "∃") (Abs u)
-pattern Not  x   = App (Con "¬") x
-pattern x :∧ y   = App (App (Con "∧") x) y
-pattern x :⊃ y   = App (App (Con "⊃") x) y
-pattern x :≡ y   = App (App (Con "≡") x) y
-pattern x :≢ y   = Not (x :≡ y)
-
+fwd21 = parseFwd S (mary ∷ sees ∷ foxes ∷ (·))
 
 
 -- * Type and DSL for lexicon entries
-
-data Entry x = Entry (SStructI x) (Repr '[] (HI x))
-
-instance Show (Entry x) where
-  show (Entry t r) = show r
-
-infix 1 -:
-
-(-:) :: Repr '[] (H a) -> SType a -> Entry (StI a)
-r -: t = Entry (SStI t) r
-
-
-
 -- * Backward-Chaining Parsing and Sentence Construction
-
-parseBwd :: Combine x (Entry a) => SType b -> x -> IO ()
-parseBwd b e = case combine e of
-  Entry x r -> do let ps = show2 r . eta <$> Bwd.findAll (x :%⊢ SStO b)
-                  print (length ps)
-                  mapM_ putStrLn ps
-
-infixr 3 *; (*) = (,)
-
-class Combine a b | a -> b where
-  combine :: a -> b
-
-instance Combine (Entry t) (Entry t) where
-  combine = id
-
-instance (Combine x (Entry a))
-         => Combine [x] (Entry (DIA Reset a)) where
-  combine [x] = case combine x of
-    (Entry a r) -> Entry (SDIA SReset a) r
-
-instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
-         => Combine (x1,x2) (Entry (a1 :∙ a2)) where
-  combine (x1,x2) = case (combine x1,combine x2) of
-    (Entry a1 r1,Entry a2 r2) -> Entry (a1 :%∙ a2) (Pair r1 r2)
-
-
-
-
 -- * Forward-Chaining Parsing and Sentence Construction
 
 -- TODO: this section pretty much is a testament to how I don't fully
@@ -315,35 +255,23 @@ sJoinTree (SPROD k x y) env = entryPROD k (sJoinTree x xs) (sJoinTree y ys)
     entryPROD :: SKind k -> Entry x -> Entry y -> Entry (PROD k x y)
     entryPROD k (Entry x f) (Entry y g) = Entry (SPROD k x y) (Pair f g)
 
--- This file contains example sentences treated with my extension of
--- NLIBC, which is capable of expressing quantifiers, scope islands,
--- infixation and extraction.
---
--- The `findAll` statements will search for proofs in the grammar
--- logic for the given sequent, which can then be interpreted
--- semantically using the `eta` function.
---
--- For purposes of presentation, the `show2` function is applied,
--- which -- when given some lambda term representations for the words
--- in the sentence -- will compute the sentence representation. This
--- means that the sentence meaning is converted to normal-form, the
--- word meanings are inserted in the appropriate places, and
--- quantifiers and such are resolved. Keep in mind, though, that this
--- step is only there to get a string representation of the term, and
--- that the sentence meaning can be anything that forms a simply-typed
--- lambda calculus with products and units.
---
--- Note: the notation used for lambda terms is based on the one used
--- in formal semantics. The most confusing feature is the fact that
--- the application of a postulate -- e.g. person -- is written in the
--- traditional mathematical style -- i.e. person(x) -- whereas the
--- application of a composite function is written in functional
--- style. Additionally, the calculus has some syntactic sugar for the
--- quantifiers -- ∀x.u abbreviates ∀(λx.u) and likewise for ∃ -- and
--- is extended with postulates for the logical connectives.
 
 -- -}
 -- -}
 -- -}
 -- -}
 -- -}
+
+{-
+pattern S        = SEl SS
+pattern N        = SEl SN
+pattern NP       = SEl SNP
+pattern NS       = Q NP S S
+pattern PP       = SEl SPP
+pattern INF      = SEl SINF
+pattern A        = SEl SN :%← SEl SN
+pattern IV       = SEl SNP :%→ SEl SS
+pattern TV       = (SEl SNP :%→ SEl SS) :%← SEl SNP
+pattern DET      = SEl SNP :%← SEl SN
+pattern Q a b c  = SUnitR SHollow (c :%⇦ (a :%⇨ b))
+-}
