@@ -23,11 +23,11 @@ singletons [d|
     deriving (Eq,Show)
 
   data Kind :: * where
-    Solid    :: Kind
-    Hollow   :: Kind
-    Reset    :: Kind
-    Infixate :: Kind
-    Extract  :: Kind
+    KSol :: Kind
+    KHol :: Kind
+    KRes :: Kind
+    KIfx :: Kind
+    KExt :: Kind
     deriving (Eq,Show)
 
   data Type :: * where
@@ -78,13 +78,13 @@ promote [d|
 
   plug :: Context -> StructI -> StructI
   plug HOLE      z = z
-  plug (x :<∙ y) z = PROD Solid (plug x z) y
-  plug (x :∙> y) z = PROD Solid x (plug y z)
+  plug (x :<∙ y) z = PROD KSol (plug x z) y
+  plug (x :∙> y) z = PROD KSol x (plug y z)
 
   trace :: Context -> StructI
-  trace HOLE      = UNIT Hollow
-  trace (x :∙> y) = PROD Solid (PROD Solid B x) (trace y)
-  trace (x :<∙ y) = PROD Solid (PROD Solid C (trace x)) y
+  trace HOLE      = UNIT KHol
+  trace (x :∙> y) = PROD KSol (PROD KSol B x) (trace y)
+  trace (x :<∙ y) = PROD KSol (PROD KSol C (trace x)) y
 
   |]
 
@@ -133,58 +133,58 @@ infixr 3 :∙, :%∙
 infixr 7 :→, :%→
 infixl 7 :←, :%←
 
-type    x  :∙ y =  PROD  Solid  x y
-pattern x  :∙ y =  PROD  Solid  x y
-pattern x :%∙ y = SPROD SSolid  x y
-type    x  :→ y =  ImpR  Solid  x y
-pattern x  :→ y =  ImpR  Solid  x y
-pattern x :%→ y = SImpR SSolid  x y
-type    y  :← x =  ImpL  Solid  y x
-pattern y  :← x =  ImpL  Solid  y x
-pattern y :%← x = SImpL SSolid  y x
+type    x  :∙ y =  PROD  KSol  x y
+pattern x  :∙ y =  PROD  KSol  x y
+pattern x :%∙ y = SPROD SKSol  x y
+type    x  :→ y =  ImpR  KSol  x y
+pattern x  :→ y =  ImpR  KSol  x y
+pattern x :%→ y = SImpR SKSol  x y
+type    y  :← x =  ImpL  KSol  y x
+pattern y  :← x =  ImpL  KSol  y x
+pattern y :%← x = SImpL SKSol  y x
 
-type     QR x =  UnitR  Hollow x
-pattern  QR x =  UnitR  Hollow x
-pattern SQR x = SUnitR SHollow x
+type     QR x =  UnitR  KHol x
+pattern  QR x =  UnitR  KHol x
+pattern SQR x = SUnitR SKHol x
 
-type     I =  UNIT  Hollow
-pattern  I =  UNIT  Hollow
-pattern SI = SUNIT SHollow
+type     I =  UNIT  KHol
+pattern  I =  UNIT  KHol
+pattern SI = SUNIT SKHol
 
-type    x  :∘ y =  PROD  Hollow x y
-pattern x  :∘ y =  PROD  Hollow x y
-pattern x :%∘ y = SPROD SHollow x y
-type    x  :⇨ y =  ImpR  Hollow x y
-pattern x  :⇨ y =  ImpR  Hollow x y
-pattern x :%⇨ y = SImpR SHollow x y
-type    y  :⇦ x =  ImpL  Hollow y x
-pattern y  :⇦ x =  ImpL  Hollow y x
-pattern y :%⇦ x = SImpL SHollow y x
+type    x  :∘ y =  PROD  KHol x y
+pattern x  :∘ y =  PROD  KHol x y
+pattern x :%∘ y = SPROD SKHol x y
+type    x  :⇨ y =  ImpR  KHol x y
+pattern x  :⇨ y =  ImpR  KHol x y
+pattern x :%⇨ y = SImpR SKHol x y
+type    y  :⇦ x =  ImpL  KHol y x
+pattern y  :⇦ x =  ImpL  KHol y x
+pattern y :%⇦ x = SImpL SKHol y x
 
 type     Q a b c =  QR (c  :⇦ (a  :⇨ b))
 pattern  Q a b c =  QR (c  :⇦ (a  :⇨ b))
 pattern SQ a b c = SQR (c :%⇦ (a :%⇨ b))
 
-type     Res a =  Dia  Reset a
-pattern  Res a =  Dia  Reset a
-pattern SRes a = SDia SReset a
-type     RES x =  DIA  Reset x
-pattern  RES x =  DIA  Reset x
-pattern SRES x = SDIA SReset x
+type     Res a =  Dia  KRes a
+pattern  Res a =  Dia  KRes a
+pattern SRes a = SDia SKRes a
+type     RES x =  DIA  KRes x
+pattern  RES x =  DIA  KRes x
+pattern SRES x = SDIA SKRes x
 
-type     Ifx a =  Dia  Infixate ( Box  Infixate a)
-pattern  Ifx a =  Dia  Infixate ( Box  Infixate a)
-pattern SIfx a = SDia SInfixate (SBox SInfixate a)
-type     IFX x =  DIA  Infixate x
-pattern  IFX x =  DIA  Infixate x
-pattern SIFX x = SDIA SInfixate x
+type     Ifx a =  Dia  KIfx ( Box  KIfx a)
+pattern  Ifx a =  Dia  KIfx ( Box  KIfx a)
+pattern SIfx a = SDia SKIfx (SBox SKIfx a)
+type     IFX x =  DIA  KIfx x
+pattern  IFX x =  DIA  KIfx x
+pattern SIFX x = SDIA SKIfx x
 
-type     Ext a =  Dia  Extract ( Box  Extract a)
-pattern  Ext a =  Dia  Extract ( Box  Extract a)
-pattern SExt a = SDia SExtract (SBox SExtract a)
-type     EXT x =  DIA  Extract x
-pattern  EXT x =  DIA  Extract x
-pattern SEXT x = SDIA SExtract x
+type     Ext a =  Dia  KExt ( Box  KExt a)
+pattern  Ext a =  Dia  KExt ( Box  KExt a)
+pattern SExt a = SDia SKExt (SBox SKExt a)
+type     EXT x =  DIA  KExt x
+pattern  EXT x =  DIA  KExt x
+pattern SEXT x = SDIA SKExt x
 
 type    a  :⇃ b = ( Ext a)  :→ b
 pattern a  :⇃ b = ( Ext a)  :→ b
@@ -212,13 +212,13 @@ data Trail (z :: StructI) :: * where
 
 sPlug :: SContext x -> SStructI z -> SStructI (Plug x z)
 sPlug SHOLE      z = z
-sPlug (x :%<∙ y) z = SPROD SSolid (sPlug x z) y
-sPlug (x :%∙> y) z = SPROD SSolid x (sPlug y z)
+sPlug (x :%<∙ y) z = SPROD SKSol (sPlug x z) y
+sPlug (x :%∙> y) z = SPROD SKSol x (sPlug y z)
 
 sTrace :: SContext x -> SStructI (Trace x)
 sTrace SHOLE      = SI
-sTrace (x :%∙> y) = SPROD SSolid (SPROD SSolid SB x) (sTrace y)
-sTrace (x :%<∙ y) = SPROD SSolid (SPROD SSolid SC (sTrace x)) y
+sTrace (x :%∙> y) = SPROD SKSol (SPROD SKSol SB x) (sTrace y)
+sTrace (x :%<∙ y) = SPROD SKSol (SPROD SKSol SC (sTrace x)) y
 
 sFocus :: SStructI x -> [Focus x]
 sFocus x = Focus SHOLE x Refl : sFocus' x
@@ -297,7 +297,6 @@ sToList   (SPROD k x y) = (%:++) <$> sToList x <*> sToList y
 sToList   _             = Nothing
 
 
-
 -- * Proofs
 
 data Syn :: Sequent -> * where
@@ -369,7 +368,7 @@ up SHOLE      f = UnitRI f
 up (x :%<∙ y) f = DnC (Res13 (unsafeCoerce (up x (Res14 (unsafeCoerce f)))))
 up (x :%∙> y) f = DnB (Res11 (unsafeCoerce (up y (Res12 (unsafeCoerce f)))))
 
-down :: SContext x -> Syn (y :∘ Trace x :⊢ z) -> Syn (Plug x y :⊢ z)
+down :: SContext x -> Syn (StI a :∘ Trace x :⊢ z) -> Syn (Plug x (StI (QR a)) :⊢ z)
 down x f = unsafeCoerce (init x (unsafeCoerce (move x f)))
   where
     init :: SContext x -> Syn (Plug x (StI a :∘ I) :⊢ y) -> Syn (Plug x (StI (QR a)) :⊢ y)

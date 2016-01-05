@@ -99,20 +99,20 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
   infixr 9 ■_; pattern ■_ x = BOX Res x
 
   -- *** Infixation
-  infixr 9 ◇↓_; pattern ◇↓_ a   = Dia Ifx a
-  infixr 9 □↓_; pattern □↓_ a   = Box Ifx a
-  infixr 9 ◆↓_; pattern ◆↓_ x   = DIA Ifx x
-  infixr 9 ■↓_; pattern ■↓_ x   = BOX Ifx x
-  infix  7 _⇃_; pattern _⇃_ a b = ◇↓ □↓ (a ⇒ b)
-  infix  7 _⇂_; pattern _⇂_ b a = ◇↓ □↓ (b ⇐ a)
+  infixr 9 ◇↑_; pattern ◇↑_ a   = Dia Ifx a
+  infixr 9 □↑_; pattern □↑_ a   = Box Ifx a
+  infixr 9 ◆↑_; pattern ◆↑_ x   = DIA Ifx x
+  infixr 9 ■↑_; pattern ■↑_ x   = BOX Ifx x
+  infix  7 _↿_; pattern _↿_ a b = ◇↑ □↑ (a ⇒ b)
+  infix  7 _↾_; pattern _↾_ b a = ◇↑ □↑ (b ⇐ a)
 
   -- *** Extraction
-  infixr 9 ◇↑_; pattern ◇↑_ a   = Dia Ext a
-  infixr 9 □↑_; pattern □↑_ a   = Box Ext a
-  infixr 9 ◆↑_; pattern ◆↑_ x   = DIA Ext x
-  infixr 9 ■↑_; pattern ■↑_ x   = BOX Ext x
-  infix  7 _↿_; pattern _↿_ a b = (◇↑ □↑ a) ⇒ b
-  infix  7 _↾_; pattern _↾_ b a = b ⇐ (◇↑ □↑ a)
+  infixr 9 ◇↓_; pattern ◇↓_ a   = Dia Ext a
+  infixr 9 □↓_; pattern □↓_ a   = Box Ext a
+  infixr 9 ◆↓_; pattern ◆↓_ x   = DIA Ext x
+  infixr 9 ■↓_; pattern ■↓_ x   = BOX Ext x
+  infix  7 _⇃_; pattern _⇃_ a b = (◇↓ □↓ a) ⇒ b
+  infix  7 _⇂_; pattern _⇂_ b a = b ⇐ (◇↓ □↓ a)
 
 
 
@@ -216,15 +216,15 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
     dnB    : ∀ {x y z w}   → NL y ∘ ((B ∙ x) ∙ z) ⊢ w → NL x ∙ (y ∘ z) ⊢ w
     dnC    : ∀ {x y z w}   → NL x ∘ ((C ∙ y) ∙ z) ⊢ w → NL (x ∘ y) ∙ z ⊢ w
 
-    ifxRR  : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↓ z ⊢ w) → NL (x ∙ (y ∙ ◆↓ z) ⊢ w)
-    ifxLR  : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↓ z ⊢ w) → NL ((x ∙ ◆↓ z) ∙ y ⊢ w)
-    ifxLL  : ∀ {x y z w}   → NL (◆↓ z ∙ (y ∙ x) ⊢ w) → NL ((◆↓ z ∙ y) ∙ x ⊢ w)
-    ifxRL  : ∀ {x y z w}   → NL (◆↓ z ∙ (y ∙ x) ⊢ w) → NL (y ∙ (◆↓ z ∙ x) ⊢ w)
+    ifxRR  : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↑ z ⊢ w) → NL (x ∙ (y ∙ ◆↑ z) ⊢ w)
+    ifxLR  : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↑ z ⊢ w) → NL ((x ∙ ◆↑ z) ∙ y ⊢ w)
+    ifxLL  : ∀ {x y z w}   → NL (◆↑ z ∙ (y ∙ x) ⊢ w) → NL ((◆↑ z ∙ y) ∙ x ⊢ w)
+    ifxRL  : ∀ {x y z w}   → NL (◆↑ z ∙ (y ∙ x) ⊢ w) → NL (y ∙ (◆↑ z ∙ x) ⊢ w)
 
-    extRR  : ∀ {x y z w}   → NL (x ∙ (y ∙ ◆↑ z) ⊢ w) → NL ((x ∙ y) ∙ ◆↑ z ⊢ w)
-    extLR  : ∀ {x y z w}   → NL ((x ∙ ◆↑ z) ∙ y ⊢ w) → NL ((x ∙ y) ∙ ◆↑ z ⊢ w)
-    extLL  : ∀ {x y z w}   → NL ((◆↑ z ∙ y) ∙ x ⊢ w) → NL (◆↑ z ∙ (y ∙ x) ⊢ w)
-    extRL  : ∀ {x y z w}   → NL (y ∙ (◆↑ z ∙ x) ⊢ w) → NL (◆↑ z ∙ (y ∙ x) ⊢ w)
+    extRR  : ∀ {x y z w}   → NL (x ∙ (y ∙ ◆↓ z) ⊢ w) → NL ((x ∙ y) ∙ ◆↓ z ⊢ w)
+    extLR  : ∀ {x y z w}   → NL ((x ∙ ◆↓ z) ∙ y ⊢ w) → NL ((x ∙ y) ∙ ◆↓ z ⊢ w)
+    extLL  : ∀ {x y z w}   → NL ((◆↓ z ∙ y) ∙ x ⊢ w) → NL (◆↓ z ∙ (y ∙ x) ⊢ w)
+    extRL  : ∀ {x y z w}   → NL (y ∙ (◆↓ z ∙ x) ⊢ w) → NL (◆↓ z ∙ (y ∙ x) ⊢ w)
 
   resRL : ∀ {k x y z} → NL y ⊢ IMPR k x z → NL x ⊢ IMPL k z y
   resRL f = resPL (resRP f)
@@ -351,6 +351,7 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
 
 
   -- ** Identity Expansion
+
   mutual
     axR : ∀ {b} → NL St b ⊢[ b ]
     axR {b} with Pol(b) | inspect Pol(b)
@@ -384,6 +385,118 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
   ... | - | P.[ n ] rewrite lem-Neg-St a n = stR (focL n (axL' n))
 
 
+
+  -- ** Quantifier Raising
+
+  -- *** Contexts for Quantifier Raising
+
+  data QRContext (p : Polarity) : Polarity → Set where
+    HOLE  : QRContext p p
+    PROD1 : QRContext p + → Struct      + → QRContext p +
+    PROD2 : Struct      + → QRContext p + → QRContext p +
+
+  instance
+    Pluggable-QR : Pluggable (flip QRContext +) Struct (Struct +)
+    Pluggable-QR = record { _[_] = _[_]′ }
+      where
+        _[_]′ : ∀ {p1 p2} → QRContext p1 p2 → Struct p1 → Struct p2
+        (HOLE     ) [ z ]′ = z
+        (PROD1 x y) [ z ]′ = PROD Sol   (x [ z ]′) y
+        (PROD2 x y) [ z ]′ = PROD Sol x (y [ z ]′)
+
+  Trace : QRContext + + → Struct +
+  Trace HOLE        = UNIT Hol
+  Trace (PROD1 x y) = PROD Sol (PROD Sol C (Trace x)) y
+  Trace (PROD2 x y) = PROD Sol (PROD Sol B x) (Trace y)
+
+  up : ∀ x {y z} → NL x [ y ] ⊢ z → NL y ∘ Trace x ⊢ z
+  up HOLE        f = unitRI f
+  up (PROD1 x y) f = upC (resLP (up x (resPL f)))
+  up (PROD2 x y) f = upB (resRP (up y (resPR f)))
+
+  down : ∀ x {a z} → NL · a · ∘ Trace x ⊢ z → NL x [ · Q a · ] ⊢ z
+  down x f = init x (move x f)
+    where
+    init : ∀ (x : QRContext + +) {a z} → NL x [ · a · ∘ I ] ⊢ z → NL x [ · Q a · ] ⊢ z
+    init HOLE        f = unitRL f
+    init (PROD1 x y) f = resLP (init x (resPL f))
+    init (PROD2 x y) f = resRP (init y (resPR f))
+    move : ∀ (x : QRContext + +) {y z} → NL y ∘ Trace x ⊢ z → NL x [ y ∘ I ] ⊢ z
+    move HOLE        f = f
+    move (PROD1 x y) f = resLP (move x (resPL (dnC f)))
+    move (PROD2 x y) f = resRP (move y (resPR (dnB f)))
+
+  qrL : ∀ x {y b c} → NL Trace x ⊢[ b ] → NL [ c ]⊢ y → NL x [ · Q (c ⇦ b) · ] ⊢ y
+  qrL x f g = down x (resLP (focL refl (impLL f g)))
+
+  qrR : ∀ x {a b} → NL x [ · a · ] ⊢ · b · → NL Trace x ⊢ · a ⇨ b ·
+  qrR x f = impRR (resPR (up x f))
+
+
+module Example where
+
+  open import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
+
+  module Atom where
+  {- -}
+    data Atom : Set where
+      S  : Atom
+      N  : Atom
+      NP : Atom
+  {- -}
+  open Atom using (Atom)
+
+  PolarisedAtom : Polarised Atom
+  PolarisedAtom = record { Pol = λ{ _ → - } }
+
+  open Syn Atom PolarisedAtom
+
+  pattern S  = El Atom.S
+  pattern N  = El Atom.N
+  pattern NP = El Atom.NP
+
+  mary   = ·_· {+} (NP)
+  reads  = ·_· {+} ((NP ⇒ S) ⇐ NP)
+  a      = ·_· {+} (Q (S ⇦ (NP ⇨ S)) ⇐ N)
+  book   = ·_· {+} (N)
+  the    = ·_· {+} (NP ⇐ N)
+  author = ·_· {+} (N)
+  of     = ·_· {+} ((N ⇒ N) ⇐ NP)
+  which  = ·_· {+} (Q (((N ⇒ N) ⇐ (S ⇂ NP)) ⇦ (NP ⇨ NP)))
+  john   = ·_· {+} (NP)
+  likes  = ·_· {+} ((NP ⇒ S) ⇐ NP)
+
+  prf : NL (mary ∙ reads ∙ a ∙ book ∙ (the ∙ author ∙ of ∙ which) ∙ john ∙ likes ⊢ · S ·)
+  prf =
+    (resRP (resRP (resLP (focL refl (impLL
+    (unfR refl (resRP (resLP
+    (qrL (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (unfR refl
+    (qrR (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (resLP (focL refl
+    (impLL (unfR refl (resRP (resLP (focL refl axL)))) axL)))))
+    (impLL (unfR refl (impLR (resPL (resRP (diaL (resPR (extRR
+    (resRP (resLP (focL refl (impLL (unfR refl (resBD (focL refl
+    (boxL axL)))) axL))))))))))) axL)))))
+    (unfL refl (resPR (resPR
+    (qrL (PROD2 _ (PROD2 _ HOLE)) (unfR refl
+    (qrR (PROD2 _ (PROD2 _ HOLE)) (resRP (resLP (focL refl axL))))) axL))))
+    )))))
+
+  {-
+  (resRP (resRP (resLP (focL refl (impLL
+      (unfR refl (resRP (resLP
+        (qrL (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (unfR refl
+        (qrR (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (resLP (focL refl
+          (impLL (unfR refl (resRP (resLP (focL refl axL)))) axL)))))
+        (impLL (unfR refl (impLR (resPL (resRP (diaL (resPR (ifxRR
+        (resRP (resLP (focL refl (impLL (unfR refl (resBD (focL refl
+        (boxL axL)))) axL))))))))))) axL)))))
+      (unfL refl (resPR (resPR
+        (qrL (PROD2 _ (PROD2 _ HOLE)) (unfR refl
+        (qrR (PROD2 _ (PROD2 _ HOLE)) (resRP (resLP (focL refl axL))))) axL))))
+    )))))
+  -}
+
+{-
 module SynToAgda
   (Atom : Set)
   (PolarisedAtom : Polarised Atom)
