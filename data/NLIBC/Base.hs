@@ -11,16 +11,17 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module NLIBC.Base
-       (Entry(..),(-:),(~:),(<$),($>),lam,forAll,exists
+       (Entry(..),(-:),(~:),(<$),($>)
+       ,prim,not,lam,pair,forall,exists
        ,module X,S,N,NP,PP,INF,IV,TV,Q,NS
        ,(*),parseBwd) where
 
 
-import           Prelude hiding ((*),($),(<$),($>))
+import           Prelude hiding (not,(*),($),(<$),($>))
 import           NLIBC.Syntax.Base     as X hiding (Q,Atom(..))
 import qualified NLIBC.Syntax.Base     as Syn (Atom(..))
 import qualified NLIBC.Syntax.Backward as Bwd
-import           NLIBC.Semantics       as X hiding (($?))
+import           NLIBC.Semantics       as X hiding (Sem(pair))
 import qualified NLIBC.Semantics       as Sem
 
 
@@ -30,22 +31,32 @@ type N       = El 'Syn.N
 type NP      = El 'Syn.NP
 type PP      = El 'Syn.PP
 type INF     = El 'Syn.INF
+type A       = N  :← N
 type IV      = NP :→ S
 type TV      = IV :← NP
-type Q a b c = UnitR Hollow (c :⇦ (a :⇨ b))
-type NS      = Q N S S
+type Q a b c = UnitR KHol (c :⇦ (a :⇨ b))
+type NS      = Q NP S S
 
 
 -- * Type and DSL for lexicon entries
 
-lam :: UnivI t => EXPR t -> Expr t
+prim :: Univ t -> Name -> Expr t
+prim t n = PRIM(Prim t n)
+
+not :: Expr T -> Expr T
+not x = Not x
+
+lam :: (UnivI a, UnivI b) => EXPR (a -> b) -> Expr (a -> b)
 lam = EXPR
+
+pair :: (UnivI a, UnivI b) => EXPR (a , b) -> Expr (a , b)
+pair = EXPR
 
 exists :: UnivI t => Univ t -> EXPR (t -> T) -> Expr T
 exists t x = Exists t x
 
-forAll :: UnivI t => Univ t -> EXPR (t -> T) -> Expr T
-forAll t x = ForAll t x
+forall :: UnivI t => Univ t -> EXPR (t -> T) -> Expr T
+forall t x = ForAll t x
 
 data Entry x = Entry (SStructI x) (Expr (HI x))
 
@@ -77,8 +88,8 @@ class Combine a b | a -> b where
 instance Combine (Entry t) (Entry t) where
   combine = id
 
-instance (Combine x (Entry a)) => Combine [x] (Entry (DIA Reset a)) where
-  combine [x] = case combine x of (Entry a r) -> Entry (SDIA SReset a) r
+instance (Combine x (Entry a)) => Combine [x] (Entry (DIA KRes a)) where
+  combine [x] = case combine x of (Entry a r) -> Entry (SDIA SKRes a) r
 
 instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
          => Combine (x1,x2) (Entry (a1 :∙ a2)) where
