@@ -77,9 +77,16 @@ syntactic types -- they cannot be directly applied to one another.
 For this reason, we provide the functions `<$` and `$>`, which are
 directional variations of function applications.
 
+Just as a reminder, the syntactic types are:
+
     Type A, B :=
         S | N | NP | INF | PP |
-        A :→ B | B :← A | A :⇨ B | B :⇦ A | A :& B | Q A B C | Res A
+        A :→ B | B :← A |
+        A :& B |
+        A :⇨ B | B :⇦ A | Q A B C | Res A
+        A :⇃ B | B :⇂ A | A :↿ B | B :↾ A |
+
+With the following aliases:
 
     A  := N  :← N
     IV := NP :→ S
