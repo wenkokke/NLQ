@@ -12,7 +12,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UndecidableInstances #-}
 module NLIBC.Semantics
-       (Sem,eta,HS,HI,HO,H,withHI,withHO,withH,hi,ho,h
+       (Sem,eta,HS,HI,HO,H,withHS,withHI,withHO,withH,hs,hi,ho,h
        ) where
 
 
@@ -79,10 +79,10 @@ class Sem repr where
 
 instance Sem Hask where
   var    n                  = Hask (\env -> lookup n env)
-  abs    (Hask f)           = Hask (\env -> P.lam(\x -> f (Cons x env)))
+  abs    (Hask f)           = Hask (\env -> EXPR(\x -> f (Cons x env)))
   app    (Hask f)  (Hask x) = Hask (\env -> f env $ x env)
-  unit                      = Hask (\env -> P.unit)
-  pair   (Hask x)  (Hask y) = Hask (\env -> P.pair(x env, y env))
+  unit                      = Hask (\env -> EXPR())
+  pair   (Hask x)  (Hask y) = Hask (\env -> EXPR(x env, y env))
   caseof (Hask xy)       f  =
     case abs (abs f) of Hask f' -> Hask (\env -> P.caseof (xy env) (f' env))
 
@@ -149,6 +149,11 @@ withHO (SBOX  _ x)   k = withHO x k
 withHO (SIMPR _ x y) k = withHI x (withHO y k)
 withHO (SIMPL _ y x) k = withHI x (withHO y k)
 
+withHS :: SSequent s -> (UnivI (HS s) => a) -> a
+withHS (x :%⊢  y)    k = withHI x (withHO y k)
+withHS (x :%⊢> b)    k = withHI x (withH  b k)
+withHS (a :%<⊢ y)    k = withH  a (withHO y k)
+
 h :: SType t -> Univ (H t)
 h t = withH t univ
 
@@ -157,6 +162,9 @@ hi x = withHI x univ
 
 ho :: SStructO y -> Univ (HO y)
 ho y = withHO y univ
+
+hs :: SSequent s -> Univ (HS s)
+hs s = withHS s univ
 
 eta :: Sem repr => SSequent s -> Syn s -> repr ts (HS s)
 
@@ -202,7 +210,6 @@ eta (y :%⊢ SIMPR k x z) (Res12 f) =
 eta (x :%⊢ SIMPL k z y) (Res14 f) =
   withHI x (withHI y (withHO z (
     abs (abs (eta (SPROD k x y :%⊢ z) f `app` (pair v1 v0))))))
-
 
 -- Diamond and box
 eta (SStI (SDia k a) :%⊢ y)  (DiaL  f) = eta (SDIA k (SStI a) :%⊢ y) f
@@ -273,8 +280,6 @@ eta ((x :%∘ y) :%∙ z :%⊢ w)          (UpC f) =
   withHI x (withHI y (withHI z (withHO w (
     abs (caseof v0 (caseof v0 (
       eta (x :%∘ ((SC :%∙ y) :%∙ z) :%⊢ w) f `app` pair v0 (pair (pair unit v1) v3))))))))
-
--- -}
 
 
 -- -}

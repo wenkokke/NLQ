@@ -14,19 +14,19 @@
 {-# LANGUAGE UndecidableInstances   #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
 {-# LANGUAGE FunctionalDependencies #-}
-module NLIBC.Base
-       (Entry(..),(-:),(~:),(<$),($>)
-       ,S,N,NP,PP,INF,IV,TV,Q,NS
-       ,module X
-       ,bwd,allBwd,parseBwd) where
+module NLIBC.Prelude
+       (Word,(∷),(<$),($>),lex,lex_,id
+       ,S,N,NP,PP,INF,A,IV,TV,Q,NS
+       ,bwd,allBwd,parseBwd,module X) where
 
 
-import           Prelude hiding (abs,not,(*),($),(<$),($>))
+import           Prelude hiding (Word,abs,lex,not,(*),($),(<$),($>))
 import           Control.Arrow (first)
 import           Control.Monad (when)
 import           Data.Char (isSpace)
 import           Data.Maybe (isJust,fromJust)
 import           Data.Singletons.Decide ((:~:)(..))
+import           Data.Singletons.Prelude (SingI(..))
 import           Data.Singletons.Prelude.List ((:++))
 import qualified Data.Singletons.Prelude.List as SL
 import           NLIBC.Syntax.Base            as X hiding (Q,Atom(..))
@@ -44,7 +44,6 @@ import qualified Language.Haskell.TH as TH
 import           Language.Haskell.TH.Quote (QuasiQuoter(..))
 
 
-
 type S       = El 'Syn.S
 type N       = El 'Syn.N
 type NP      = El 'Syn.NP
@@ -57,26 +56,28 @@ type Q a b c = UnitR KHol (c :⇦ (a :⇨ b))
 type NS      = Q NP S S
 
 
--- * Type and DSL for lexicon entries
+type Word  a = Entry (StI a)
+data Entry x = Entry (SStructI x) (Extern (HI x))
 
-data Entry x = Entry (SStructI x) (Expr (HI x))
+infix 1 ∷
 
-infix 1 -:, ~:
+(∷) :: Name -> Univ a -> Extern a
+n ∷ a = extern a (PRIM(Prim a n))
 
-(-:) :: Expr (H t) -> SType t -> Entry (StI t)
-x -: t = Entry (SStI t) x
+lex_ :: SingI a => Extern (H a) -> Entry (StI a)
+lex_ f = Entry (SStI sing) f
 
-(~:) :: Name -> SType t -> Entry (StI t)
-n ~: t = Entry (SStI t) (n ::: h t)
+lex :: SingI a => Name -> Entry (StI a)
+lex n = let x = sing in Entry (SStI x) (n ∷ (h x))
 
-instance Show (Entry t) where
-  show (Entry _ f) = show f
+instance Show (Entry x) where
+  show (Entry x f) = show (intern (hi x) f)
 
 (<$) :: Entry (StI (b :← a)) -> Entry (StI a) -> Entry (StI b)
-(Entry (SStI (b :%← _)) f) <$ (Entry (SStI _) x) = Entry (SStI b) (f $ x)
+(Entry (SStI (b :%← _)) f) <$ (Entry (SStI _) x) = Entry (SStI b) (f x)
 
 ($>) :: Entry (StI a) -> Entry (StI (a :→ b)) -> Entry (StI b)
-(Entry (SStI _) x) $> (Entry (SStI (_ :%→ b)) f) = Entry (SStI b) (f $ x)
+(Entry (SStI _) x) $> (Entry (SStI (_ :%→ b)) f) = Entry (SStI b) (f x)
 
 
 -- ** Backward-Chaining Proof Search
@@ -93,28 +94,31 @@ instance (Combine x (Entry a)) => Combine [x] (Entry (DIA KRes a)) where
 instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
          => Combine (x1,x2) (Entry (a1 :∙ a2)) where
   combine (x1,x2) = case (combine x1,combine x2) of
-    (Entry x f, Entry y g) -> withHI x (withHI y (Entry (x :%∙ y) (EXPR (f, g))))
+    (Entry x f, Entry y g) -> withHI x (withHI y (Entry (x :%∙ y) (f, g)))
 
+
+-- ** Type and DSL for lexicon entries
 
 parseBwd :: Combine x (Entry a) => String -> SType b -> x -> IO ()
-parseBwd s b e = do
+parseBwd str b e1 = do
   let
-    (Entry x r) = combine e
-    synSeq      = x :%⊢ SStO b
-    synPrfs     = Bwd.findAll synSeq
-    semPrfs     = ($ r) . flip runHask Nil . eta synSeq <$> synPrfs
-  if null synPrfs
+    Entry x e2 = combine e1
+    seq        = x :%⊢ SStO b
+    exprsNL    = Bwd.findAll seq
+    exprsHS    = map (\f -> runHask (eta seq f) Nil $ intern (hi x) e2) exprsNL
+  if null exprsNL
     then putStr "\x1b[31m"
     else putStr "\x1b[32m"
-  putStrLn s
-  print (length synPrfs)
-  mapM_ print  semPrfs
+  putStrLn str
+  print (length exprsNL)
+  mapM_ print exprsHS
   putStrLn "\x1b[0m"
+
 
 -- ** QuasiQuoter for Backward-Chaining Proof Search
 
-pTree :: Parser (TH.Q Exp)
-pTree = whiteSpace *> pTree1
+parseTree :: String -> Either ParseError (TH.Q Exp)
+parseTree = parse (whiteSpace *> pTree1) ""
   where
     TokenParser{whiteSpace,identifier,parens,angles} = makeTokenParser haskellStyle
     LanguageDef{reservedNames} = haskellDef
@@ -134,7 +138,7 @@ pTree = whiteSpace *> pTree1
 
     pWord  :: Parser (TH.Q Exp)
     pWord  = do x <- identifier
-                let x' = if x `elem` reservedNames then x++"'" else x
+                let x' = if x `elem` reservedNames then x++"_" else x
                 let xn = lookupValueName x'
                     go :: Maybe TH.Name -> TH.Q Exp
                     go (Just xn) = return (VarE xn)
@@ -143,19 +147,18 @@ pTree = whiteSpace *> pTree1
 
 
 bwd :: QuasiQuoter
-bwd = QuasiQuoter { quoteExp  = bwd
-                  , quotePat  = undefined
-                  , quoteType = undefined
-                  , quoteDec  = undefined }
+bwd = QuasiQuoter
+  { quoteExp = bwd, quotePat = undefined, quoteType = undefined, quoteDec = undefined }
   where
-    pTr str = case parse pTree "" str of
-      Left  err -> fail (show err)
-      Right exp -> exp
-
-    bwd str = AppE (AppE (AppE bwdExp strExp) typExp) <$> pTr str
+    -- generate `parseBwd $(strExp) S $(treeExp)`
+    bwd str =
+      AppE (AppE (AppE (VarE 'parseBwd) strExp)
+            (AppE (ConE 'SEl) (ConE 'SS))) <$> treeExp
       where
-      bwdExp = VarE 'parseBwd
-      typExp = AppE (ConE 'SEl) (ConE 'SS)
+      treeExp = case parseTree str of
+        Left  err -> fail (show err)
+        Right exp -> exp
+
       strExp = LitE (StringL (fixWS (dropWhile isSpace str)))
         where
         fixWS :: String -> String
@@ -177,7 +180,6 @@ allBwd = do
 
 -- ** Forward-Chaining Proof Search (Experimental)
 {-
-
 parseFwd :: SType b -> Entries xs ->  IO ()
 parseFwd (b :: SType b) (xs :: Entries xs) = do
   let
