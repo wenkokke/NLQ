@@ -60,12 +60,12 @@ In principle, the lexicon is made up out of Haskell functions,
 wrapped up in the `Word` type, and typed with syntactic types.
 
 There are, however, some notable differences with plain Haskell:
-First off, there is the infix construct (∷) -- a stylised version
+First off, there is the infix construct `∷` -- a stylised version
 of the typing construct found in Haskell. This construct creates a
 meaning postulate; a primitive function, which cannot reduce.
 
-Secondly, there are the logical constructs: the operators (:∧),
-(:⊃), (:≡) and (:≢) and the quantifiers `forall` and `exists`.
+Secondly, there are the logical constructs: the operators `:∧`,
+`:⊃`, `:≡` and `:≢` and the quantifiers `forall` and `exists`.
 
 These Haskell functions can be wrapped as lexical entries, of type
 `Word a`, using the function `lex_`. If you wish to write lexical
@@ -74,7 +74,7 @@ using the function `lex`.
 
 Lastly, because lexical entries are directionally typed -- using
 syntactic types -- they cannot be directly applied to one another.
-For this reason, we provide the functions (<$) and ($>), which are
+For this reason, we provide the functions `<$` and `$>`, which are
 directional variations of function applications.
 
     Type A, B :=
