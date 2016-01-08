@@ -155,8 +155,8 @@ different = lex_ diff1
 ~~~
 
 ~~~{.haskell}
-type WHICH1 = Q NP NP ((N :→ N) :← (S :⇂ NP))
-type WHICH2 = Q NP NP ((N :→ N) :← (NP :⇃ S))
+type WHICH1 = Q NP NP ((N :→ N) :← (NP :⇃ S))
+type WHICH2 = Q NP NP ((N :→ N) :← (S :⇂ NP))
 
 which :: Word (WHICH1 :& WHICH2)
 which = lex_ (which',which')
