@@ -25,6 +25,7 @@ import qualified Data.Set as Set
 import           Data.Singletons.Decide
 import           Data.Singletons.Prelude
 import           Data.Singletons.TH (promote,singletons)
+import           Data.Proxy (Proxy(..))
 import           Text.Printf (printf)
 import           Unsafe.Coerce (unsafeCoerce)
 
@@ -57,6 +58,13 @@ data Univ (t :: *) where
   Unit  :: Univ ()
   (:->) :: Univ a -> Univ b -> Univ (a -> b)
   (:*)  :: Univ a -> Univ b -> Univ (a  , b)
+
+
+pattern ET  = E :-> T
+pattern EET = E :-> ET
+pattern TT  = T :-> T
+pattern TTT = T :-> TT
+pattern TET = T :-> ET
 
 
 class    UnivI t  where univ :: Univ t
@@ -258,6 +266,13 @@ type family Extern t where
   Extern E        = Expr E
   Extern T        = Expr T
 
+type family Lift m t where
+  Lift m (a -> b) = (Lift m a -> Lift m b)
+  Lift m (a  , b) = (Lift m a  , Lift m b)
+  Lift m ()       = m (Expr ())
+  Lift m E        = m (Expr E)
+  Lift m T        = m (Expr T)
+
 intern :: Univ a -> Extern a -> Intern a
 intern E          x    = x
 intern T          x    = x
@@ -268,14 +283,20 @@ intern (a :-> b)  f    =
   withUnivI a (withUnivI b (EXPR(\x -> intern b (f (extern a x)))))
 
 extern :: Univ a -> Intern a -> Extern a
-extern E         e = e
-extern T         e = e
-extern Unit      e = e
-extern (a :*  b) e =
-  withUnivI a (withUnivI b (extern a (fst e) , extern b (snd e)))
+extern E         x = x
+extern T         x = x
+extern Unit      x = x
+extern (a :*  b) x =
+  withUnivI a (withUnivI b (extern a (fst x) , extern b (snd x)))
 extern (a :-> b) f =
   \x -> extern b (f $ intern a x)
 
+-- lift :: (Monad m) => Proxy m -> Univ a -> Extern a -> Lift m a
+-- lift m E          x    = return x
+-- lift m T          x    = return x
+-- lift m Unit       x    = return x
+-- lift m (a :*  b) (x,y) = (lift m a x , lift m b y)
+-- lift m (a :-> b)  f    = \x -> _
 
 -- -}
 -- -}

@@ -81,10 +81,11 @@ Just as a reminder, the syntactic types are:
 
     Type A, B :=
         S | N | NP | INF | PP |
-        A :→ B | B :← A |
-        A :& B |
-        A :⇨ B | B :⇦ A | Q A B C | Res A
-        A :⇃ B | B :⇂ A | A :↿ B | B :↾ A |
+        A :→ B | B :← A |                     -- direct composition
+        A :& B |                              -- ambiguity
+        A :⇨ B | B :⇦ A | Q A B C | Res A |   -- quantifier raising, scope islands
+        A :⇃ B | B :⇂ A |                     -- extraction
+        A :↿ B | B :↾ A                       -- infixation
 
 With the following aliases:
 
@@ -143,7 +144,7 @@ the       = lex  "the" :: Word (NP :← N)
 want     :: Word ((IV :← INF) :& ((IV :← INF) :← NP))
 want      = lex_ (want1 , want2)
   where
-  wantP       = "want" ∷ T :-> E :-> T
+  wantP       = "want" ∷ TET
   want1   f x = wantP (f x) x
   want2 y f x = wantP (f y) x
 wants     = want
@@ -157,8 +158,8 @@ same      = lex_ same'
 
 different = lex_ diff1
   where
-  diff1 k = exists (E :-> E :-> T) (\f -> diff2 f :∧ k (\k x -> k (\g y -> g y :∧ f x y) x))
-  diff2 f = forall E (\x -> forall E (\y -> not (exists E (\z -> f z x :∧ f z y))))
+  diff1 k = exists EET (\f -> diff2 f :∧ k (\k x -> k (\g y -> g y :∧ f x y) x))
+  diff2 f = forall E   (\x -> forall E (\y -> not (exists E (\z -> f z x :∧ f z y))))
 ~~~
 
 ~~~{.haskell}
@@ -185,5 +186,5 @@ plural :: Word (NS :← N)
 plural = lex_ plural'
   where
     plural' f g =
-      exists (E :-> T) (\h -> moreThanOne h :∧ forall E (\x -> h x :⊃ (f x :∧ g x)))
+      exists ET (\h -> moreThanOne h :∧ forall E (\x -> h x :⊃ (f x :∧ g x)))
 ~~~
