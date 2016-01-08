@@ -10,12 +10,13 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 module NLIBC.Semantics.Postulate where
 
 
-import           Prelude hiding (($),(!!),abs,lookup)
+import           Prelude hiding (($),(!!),fst,snd,abs,lookup)
 import           Control.Monad.Supply
 import qualified NLIBC.Syntax.Base as NL
 import           NLIBC.Syntax.Base
@@ -26,6 +27,20 @@ import           Data.Singletons.Prelude
 import           Data.Singletons.TH (promote,singletons)
 import           Text.Printf (printf)
 import           Unsafe.Coerce (unsafeCoerce)
+
+-- ** Natural Numbers
+
+singletons [d|
+  data Nat = Zero | Suc Nat
+     deriving (Eq,Show,Ord)
+  |]
+
+promote [d|
+  (!!) :: [a] -> Nat -> a
+  []     !! _     = error "!!: index out of bounds"
+  (x:_ ) !! Zero  = x
+  (x:xs) !! Suc n = xs !! n
+  |]
 
 
 -- ** Semantic Types
@@ -51,6 +66,13 @@ instance UnivI () where univ = Unit
 
 instance (UnivI a, UnivI b) => UnivI (a -> b) where univ = univ :-> univ
 instance (UnivI a, UnivI b) => UnivI (a  , b) where univ = univ :*  univ
+
+withUnivI :: Univ a -> (UnivI a => k) -> k
+withUnivI (a :-> b) e = withUnivI a (withUnivI b e)
+withUnivI (a :*  b) e = withUnivI a (withUnivI b e)
+withUnivI Unit      e = e
+withUnivI E         e = e
+withUnivI T         e = e
 
 -- ** Semantic Expressions
 
@@ -86,6 +108,12 @@ caseof :: Expr (a  , b) -> Expr (b -> a -> c) -> Expr c
 caseof (EXPR (x, y)) (EXPR f) = case f y of { EXPR g -> g x ; PRIM g -> PRIM (g :$ x) }
 caseof xy            f        = PRIM (CaseOf xy f)
 
+fst :: (UnivI a, UnivI b) => Expr (a , b) -> Expr a
+fst xy = caseof xy (EXPR(\y -> EXPR(\x -> x)))
+
+snd :: (UnivI a, UnivI b) => Expr (a , b) -> Expr b
+snd xy = caseof xy (EXPR(\y -> EXPR(\x -> y)))
+
 
 -- ** Type Reconstruction
 
@@ -110,11 +138,6 @@ data Env (ts :: [*]) where
   Nil  :: Env '[]
   Cons :: Expr t -> Env ts -> Env (t ': ts)
 
-singletons [d|
-  data Nat = Zero | Suc Nat
-     deriving (Eq,Show,Ord)
-  |]
-
 n0 = SZero
 n1 = SSuc n0
 n2 = SSuc n1
@@ -126,41 +149,23 @@ n7 = SSuc n6
 n8 = SSuc n7
 n9 = SSuc n8
 
-promote [d|
-  (!!) :: [a] -> Nat -> a
-  []     !! _     = error "!!: index out of bounds"
-  (x:_ ) !! Zero  = x
-  (x:xs) !! Suc n = xs !! n
-  |]
-
 lookup :: SNat n -> Env ts -> Expr (ts :!! n)
 lookup  _        Nil        = error "%!!: index out of bounds"
 lookup  SZero   (Cons x _ ) = x
 lookup (SSuc n) (Cons x xs) = lookup n xs
 
 
--- * "Smart" constructors
+-- **
 
---(:::) :: Name -> Univ t -> Expr t
-pattern n ::: t = PRIM(Prim t n)
-
-not :: Expr T -> Expr T
+not :: Extern T -> Extern T
 not x = Not x
 
-lam :: (UnivI a, UnivI b) => EXPR (a -> b) -> Expr (a -> b)
-lam = EXPR
+exists :: Univ a -> (Extern a -> Extern T) -> Extern T
+exists a f = withUnivI a (Exists a (\x -> f (extern a x)))
 
-unit :: Expr ()
-unit = EXPR ()
+forall :: Univ a -> (Extern a -> Extern T) -> Extern T
+forall a f = withUnivI a (ForAll a (\x -> f (extern a x)))
 
-pair :: (UnivI a, UnivI b) => EXPR (a , b) -> Expr (a , b)
-pair = EXPR
-
-exists :: UnivI t => Univ t -> EXPR (t -> T) -> Expr T
-exists t x = Exists t x
-
-forall :: UnivI t => Univ t -> EXPR (t -> T) -> Expr T
-forall t x = ForAll t x
 
 -- ** Pretty-Printing Expressions
 
@@ -239,3 +244,41 @@ instance Show (Expr t) where
     where
       ns :: [Name]
       ns = [ x | n <- [0..], let x = 'x':show n ]
+
+
+
+-- ** Internalising and externalising expressions
+
+type Intern t = Expr t
+
+type family Extern t where
+  Extern (a -> b) = (Extern a -> Extern b)
+  Extern (a  , b) = (Extern a  , Extern b)
+  Extern ()       = Expr ()
+  Extern E        = Expr E
+  Extern T        = Expr T
+
+intern :: Univ a -> Extern a -> Intern a
+intern E          x    = x
+intern T          x    = x
+intern Unit       x    = x
+intern (a :*  b) (x,y) =
+  withUnivI a (withUnivI b (EXPR(intern a x , intern b y)))
+intern (a :-> b)  f    =
+  withUnivI a (withUnivI b (EXPR(\x -> intern b (f (extern a x)))))
+
+extern :: Univ a -> Intern a -> Extern a
+extern E         e = e
+extern T         e = e
+extern Unit      e = e
+extern (a :*  b) e =
+  withUnivI a (withUnivI b (extern a (fst e) , extern b (snd e)))
+extern (a :-> b) f =
+  \x -> extern b (f $ intern a x)
+
+
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}

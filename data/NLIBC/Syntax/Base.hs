@@ -69,7 +69,6 @@ singletons [d|
 
   |]
 
-
 infix  1 :⊢, :⊢>, :<⊢, :%⊢, :%⊢>, :%<⊢
 infixr 3 :<∙, :∙>
 infixr 5 :&, :%&
