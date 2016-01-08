@@ -11,7 +11,9 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UndecidableInstances #-}
-module NLIBC.Semantics where
+module NLIBC.Semantics
+       (Sem,eta,HS,HI,HO,H,withHI,withHO,withH,hi,ho,h
+       ) where
 
 
 import           Prelude hiding (($),(!!),abs,lookup)
@@ -25,107 +27,11 @@ import           Data.Singletons.Prelude
 import           Data.Singletons.TH (promote,singletons)
 import           Text.Printf (printf)
 import           Unsafe.Coerce (unsafeCoerce)
-
-
--- ** Semantic Types
-
-infixr 4 :*
-infixr 2 :->
-
-data E
-data T
-
-data Univ (t :: *) where
-  E      :: Univ E
-  T      :: Univ T
-  Unit   :: Univ ()
-  (:->) :: Univ a -> Univ b -> Univ (a -> b)
-  (:*)  :: Univ a -> Univ b -> Univ (a  , b)
-
-
-class    UnivI t  where univ :: Univ t
-instance UnivI E  where univ = E
-instance UnivI T  where univ = T
-instance UnivI () where univ = Unit
-
-instance (UnivI a, UnivI b) => UnivI (a -> b) where univ = univ :-> univ
-instance (UnivI a, UnivI b) => UnivI (a  , b) where univ = univ :*  univ
-
--- ** Semantic Expressions
-
-infixl 9 :$, $
-
-type Name = String
-
-data Prim a where
-  Prim   :: Univ a -> Name -> Prim a
-  (:$)   :: Prim (a -> b) -> Expr a -> Prim b
-  CaseOf :: Expr (a  , b) -> Expr (b -> a -> c) -> Prim c
-
-type family EXPR a where
-  EXPR (a -> b) = (Expr a -> Expr b)
-  EXPR (a  , b) = (Expr a  , Expr b)
-  EXPR ()       = ()
-  EXPR E        = Prim E
-  EXPR T        = Prim T
-
-data Expr a where
-  PRIM :: Prim a -> Expr a
-  EXPR :: UnivI a => EXPR a -> Expr a
-
-
--- |Function application, normalising whenif possible.
-($) :: Expr (a -> b) -> Expr a -> Expr b
-EXPR f $ x = f x
-PRIM f $ x = PRIM (f :$ x)
-
-
--- |Case analysis, normalising if possible.
-caseOf :: Expr (a  , b) -> Expr (b -> a -> c) -> Expr c
-caseOf (EXPR (x, y)) (EXPR f) = case f y of { EXPR g -> g x ; PRIM g -> PRIM (g :$ x) }
-caseOf xy            f        = PRIM (CaseOf xy f)
-
-
--- ** Type Reconstruction
-
-class TypeOf (f :: * -> *) where
-  typeof :: f a -> Univ a
-
-instance TypeOf Prim where
-  typeof (Prim t _)   = t
-  typeof (f :$ _)     = case typeof f of (_ :-> b)       -> b
-  typeof (CaseOf _ f) = case typeof f of (_ :-> _ :-> c) -> c
-
-instance TypeOf Expr where
-  typeof (PRIM p) = typeof p
-  typeof (EXPR e) = univ
-
-
--- ** Haskell Expressions with Environments
-
-newtype Hask ts t = Hask { runHask :: Env ts -> Expr t }
-
-data Env (ts :: [*]) where
-  Nil  :: Env '[]
-  Cons :: Expr t -> Env ts -> Env (t ': ts)
-
-singletons [d|
-  data Nat = Zero | Suc Nat
-     deriving (Eq,Show,Ord)
-  |]
-
-promote [d|
-  (!!) :: [a] -> Nat -> a
-  []     !! _     = error "!!: index out of bounds"
-  (x:_ ) !! Zero  = x
-  (x:xs) !! Suc n = xs !! n
-  |]
-
-lookup :: SNat n -> Env ts -> Expr (ts :!! n)
-lookup  _        Nil        = error "%!!: index out of bounds"
-lookup  SZero   (Cons x _ ) = x
-lookup (SSuc n) (Cons x xs) = lookup n xs
-
+import           NLIBC.Semantics.Postulate (E,T,Name,Prim(..),Expr(..),EXPR
+                                           ,Env(..),SNat,(:!!),UnivI(..),Univ(..)
+                                           ,Hask(..),TypeOf(..),($),lookup
+                                           ,n0,n1,n2,n3,n4,n5,n6,n7,n8,n9)
+import qualified NLIBC.Semantics.Postulate as P
 
 
 -- ** Abstract Semantic Expressions
@@ -150,105 +56,35 @@ class Sem repr where
   proj2  x = caseof x v1
 
   v0  :: UnivI t0 => repr (t0 ': ts) t0
-  v0   = var SZero
+  v0   = var n0
   v1  :: UnivI t1 => repr (t0 ': t1 ': ts) t1
-  v1   = var (SSuc SZero)
+  v1   = var n1
   v2  :: UnivI t2 => repr (t0 ': t1 ': t2 ': ts) t2
-  v2   = var (SSuc (SSuc SZero))
+  v2   = var n2
   v3  :: UnivI t3 => repr (t0 ': t1 ': t2 ': t3 ': ts) t3
-  v3   = var (SSuc (SSuc (SSuc SZero)))
+  v3   = var n3
   v4  :: UnivI t4 => repr (t0 ': t1 ': t2 ': t3 ': t4 ': ts) t4
-  v4   = var (SSuc (SSuc (SSuc (SSuc SZero))))
+  v4   = var n4
   v5  :: UnivI t5 => repr (t0 ': t1 ': t2 ': t3 ': t4 ': t5 ': ts) t5
-  v5   = var (SSuc (SSuc (SSuc (SSuc (SSuc SZero)))))
+  v5   = var n5
   v6  :: UnivI t6 => repr (t0 ': t1 ': t2 ': t3 ': t4 ': t5 ': t6 ': ts) t6
-  v6   = var (SSuc (SSuc (SSuc (SSuc (SSuc (SSuc SZero))))))
+  v6   = var n6
   v7  :: UnivI t7 => repr (t0 ': t1 ': t2 ': t3 ': t4 ': t5 ': t6 ': t7 ': ts) t7
-  v7   = var (SSuc (SSuc (SSuc (SSuc (SSuc (SSuc (SSuc SZero)))))))
+  v7   = var n7
   v8  :: UnivI t8 => repr (t0 ': t1 ': t2 ': t3 ': t4 ': t5 ': t6 ': t7 ': t8 ': ts) t8
-  v8   = var (SSuc (SSuc (SSuc (SSuc (SSuc (SSuc (SSuc (SSuc SZero))))))))
+  v8   = var n8
   v9  :: UnivI t9 => repr (t0 ': t1 ': t2 ': t3 ': t4 ': t5 ': t6 ': t7 ': t8 ': t9 ': ts) t9
-  v9   = var (SSuc (SSuc (SSuc (SSuc (SSuc (SSuc (SSuc (SSuc (SSuc SZero)))))))))
+  v9   = var n9
 
 
 instance Sem Hask where
   var    n                  = Hask (\env -> lookup n env)
-  abs    (Hask f)           = Hask (\env -> EXPR (\x -> f (Cons x env)))
+  abs    (Hask f)           = Hask (\env -> P.lam(\x -> f (Cons x env)))
   app    (Hask f)  (Hask x) = Hask (\env -> f env $ x env)
-  unit                      = Hask (\env -> EXPR ())
-  pair   (Hask x)  (Hask y) = Hask (\env -> EXPR (x env, y env))
+  unit                      = Hask (\env -> P.unit)
+  pair   (Hask x)  (Hask y) = Hask (\env -> P.pair(x env, y env))
   caseof (Hask xy)       f  =
-    case abs (abs f) of Hask f' -> Hask (\env -> caseOf (xy env) (f' env))
-
-
--- ** Pretty-Printing Expressions
-
-infix  6 :≢, :≡
-infixr 4 :∧
-infixr 2 :⊃
-
-pattern x :≢ y     = Not (x :≡ y)
-pattern x :≡ y     = PRIM (Prim (E :-> E :-> T)   "≡" :$ x :$ y)
-pattern Not  x     = PRIM (Prim (T :-> T)          "¬" :$ x)
-pattern x :∧ y     = PRIM (Prim (T :-> T :-> T)   "∧" :$ x :$ y)
-pattern x :⊃ y     = PRIM (Prim (T :-> T :-> T)   "⊃" :$ x :$ y)
-pattern ForAll t f = PRIM (Prim ((t :-> T) :-> T) "∀" :$ EXPR f)
-pattern Exists t f = PRIM (Prim ((t :-> T) :-> T) "∃" :$ EXPR f)
-
-
-ppPrim :: Int -> Prim a -> Supply Name String
-ppPrim d (Prim _ n)    = return n
-ppPrim d (f :$ x)      = parens (d > 10) (printf "%s %s" <$> ppPrim 10 f <*> ppExpr 11 x)
-ppPrim d (CaseOf xy f) = do x <- supply
-                            y <- supply
-                            case typeof xy of
-                              (a :* b) -> do
-                                let x' = PRIM (Prim a x)
-                                let y' = PRIM (Prim b y)
-                                let f' = (f $ y') $ x'
-                                parens (d > 1)
-                                  (printf "case %s of (%s,%s) -> %s" <$>
-                                    ppExpr 0 xy <*> pure x <*> pure y <*> ppExpr 2 f')
-
-ppExpr :: Int -> Expr a -> Supply Name String
-ppExpr d (ForAll t f)       = do x <- supply
-                                 parens (d > 1)
-                                   (printf "∀%s.%s" x <$> ppExpr 2 (f (PRIM (Prim t x))))
-ppExpr d (Exists t f)       = do x <- supply
-                                 parens (d > 1)
-                                   (printf "∃%s.%s" x <$> ppExpr 2 (f (PRIM (Prim t x))))
-ppExpr d (u :≢ v)           = parens (d > 6)  (printf "%s ≢ %s" <$> ppExpr 7 u <*> ppExpr 7 v)
-ppExpr d (Not  u)           = parens (d > 8)  (printf    "¬ %s" <$> ppExpr 8 u)
-ppExpr d (u :≡ v)           = parens (d > 6)  (printf "%s ≡ %s" <$> ppExpr 7 u <*> ppExpr 7 v)
-ppExpr d (u :∧ v)           = parens (d > 2)  (printf "%s ∧ %s" <$> ppExpr 3 u <*> ppExpr 2 v)
-ppExpr d (u :⊃ v)           = parens (d > 4)  (printf "%s ⊃ %s" <$> ppExpr 5 u <*> ppExpr 4 v)
-ppExpr d (PRIM f)           = ppPrim d f
-ppExpr d (EXPR f :: Expr a) = ppEXPR d (univ :: Univ a) f
-  where
-    ppEXPR :: Int -> Univ a -> EXPR a -> Supply Name String
-    ppEXPR d (a :-> b) f       = do x <- supply
-                                    parens (d > 1)
-                                      (printf "λ%s.%s" x <$> ppExpr d (f (PRIM (Prim a x))))
-    ppEXPR d (a :*  b) (x , y) = do printf "(%s,%s)" <$> ppExpr 0 x <*> ppExpr 0 y
-    ppEXPR d Unit      ()      = return "()"
-    ppEXPR d E         x       = ppPrim d x
-    ppEXPR d T         x       = ppPrim d x
-
-
--- |Wrap parenthesis around an expression under a functor, if a
---  Boolean flag is true.
-parens :: (Functor f) => Bool -> f String -> f String
-parens b s = if b then printf "(%s)" <$> s else s
-
-
-instance Show (Prim t) where
-  show = show . PRIM
-
-instance Show (Expr t) where
-  show x = evalSupply (ppExpr 0 x) ns
-    where
-      ns :: [Name]
-      ns = [ x | n <- [0..], let x = 'x':show n ]
+    case abs (abs f) of Hask f' -> Hask (\env -> P.caseof (xy env) (f' env))
 
 
 -- ** Translation from Syntactic Types into Semantic Types

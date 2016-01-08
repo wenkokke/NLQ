@@ -131,11 +131,11 @@ findAll sxs sb = case setup sxs sb of
 
       impRL,impLL :: Typed -> Typed -> [([Type],Typed)]
       impRL (Typed (x :%⊢> a) f) (Typed (b :%<⊢ y) g) =
-        forEach [Solid,Hollow] $ \k ->
+        forEach [KSol,KHol] $ \k ->
         let t = SImpR k a b in ([fromSing t],Typed (t :%<⊢ SIMPR k x y) (ImpRL f g))
       impRL _ _ = empty
       impLL (Typed (x :%⊢> a) f) (Typed (b :%<⊢ y) g) =
-        forEach [Solid,Hollow] $ \k ->
+        forEach [KSol,KHol] $ \k ->
         let t = SImpL k b a in ([fromSing t],Typed (t :%<⊢ SIMPL k y x) (ImpLL f g))
       impLL _ _ = empty
 
@@ -188,11 +188,11 @@ findAll sxs sb = case setup sxs sb of
         let t = SDia k a in return ([fromSing t],Typed (SStI t :%⊢ y) (DiaL f))
       diaL _                                 = empty
       diaR (Typed (x :%⊢> b) f)              =
-        forEach [Reset,Infixate,Extract] $ \k ->
+        forEach [KRes,KIfx,KExt] $ \k ->
         let t = SDia k b in ([fromSing t],Typed (SDIA k x :%⊢> t) (DiaR f))
       diaR _                                 = empty
       boxL (Typed (a :%<⊢ y) f)              =
-        forEach [Reset,Infixate,Extract] $ \k ->
+        forEach [KRes,KIfx,KExt] $ \k ->
         let t = SBox k a in ([fromSing t],Typed (t :%<⊢ SBOX k y) (BoxL f))
       boxL _                                 = empty
       boxR (Typed (x :%⊢ SBOX k (SStO b)) f) =
@@ -244,11 +244,11 @@ forEach :: [Kind] -> (forall k. SKind k -> a) -> [a]
 forEach ks f = map (\k -> withKind k f) ks
   where
     withKind :: Kind -> (forall k. SKind k -> a) -> a
-    withKind Solid    f = f SSolid
-    withKind Hollow   f = f SHollow
-    withKind Reset    f = f SReset
-    withKind Infixate f = f SInfixate
-    withKind Extract  f = f SExtract
+    withKind KSol f = f SKSol
+    withKind KHol f = f SKHol
+    withKind KRes f = f SKRes
+    withKind KIfx f = f SKIfx
+    withKind KExt f = f SKExt
 
 -- |Concatenate a pair of lists pointwise.
 pconcat :: ([a],[b]) -> ([a],[b]) -> ([a],[b])
