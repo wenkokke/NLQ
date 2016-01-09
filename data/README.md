@@ -22,14 +22,6 @@ import NLIBC.Prelude
 Examples -- Backward-Chaining Search
 ====================================
 
-In the examples below, `[bwd| ... |]` is a template Haskell script,
-but it doesn't do a whole lot. What it does is the following: 1) it
-parses the string as a right associative tree of pairs, so that "john
-likes mary" becomes `(john , (likes , mary))`; 2) it interprets `<
-... >` as a scope island; and 3) it generates an application of the
-function `parseBwd S ...`, with the tree as a second argument. The
-rest of the parsing and interpretation is then done in Haskell.
-
 ~~~{.haskell}
 bwd0  = [bwd| john runs |]
 
@@ -65,8 +57,20 @@ bwd22 = [bwd| mary sees the fox |]
 bwd23 = [bwd| mary sees a   fox |]
 ~~~
 
+In the examples above, `[bwd| ... |]` is a template Haskell script,
+but it doesn't do a whole lot. What it does is the following: 1) it
+parses the string as a right associative tree of pairs, so that "john
+likes mary" becomes `(john , (likes , mary))`; 2) it interprets `<
+... >` as a scope island; and 3) it generates an application of the
+function `parseBwd S ...`, with the tree as a second argument. The
+rest of the parsing and interpretation is then done in Haskell.
+
+Below, another template Haskell script is used to collect all
+functions called "bwd*" and run them, assuming each is of type `IO
+()`.
+
 ~~~{.haskell}
-main = $(allBwd) -- ^ collect all functions called 'bwd*' and run them
+main = $(allBwd) -- ^
 ~~~
 
 Lexicon
