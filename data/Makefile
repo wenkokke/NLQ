@@ -1,6 +1,7 @@
 MARKDOWN_UNLIT := $(shell which markdown-unlit 2>/dev/null)
 
 default: README
+	@./README
 
 README: README.lhs
 ifndef MARKDOWN_UNLIT
@@ -11,7 +12,8 @@ endif
 .PHONY: clean clobber
 
 clean:
-	find . -name "*.hi" -or -name "*.o" -or -name "*.dyn_hi" -or -name "*.dyn_o" -or -name "*.agdai" | xargs rm
+	@find . -name "*.hi" -or -name "*.o" -or -name "*.dyn_hi" \
+            -or -name "*.dyn_o" -or -name "*.agdai" | xargs rm
 
 clobber: clean
-	rm "README"
+	@rm -f "README"
