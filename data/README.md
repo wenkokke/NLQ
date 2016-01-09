@@ -62,22 +62,34 @@ wrapped up in the `Word` type, and typed with syntactic types.
 There are, however, some notable differences with plain Haskell:
 First off, there is the infix construct `∷` -- a stylised version
 of the typing construct found in Haskell. This construct creates a
-meaning postulate; a primitive function, which cannot reduce.
-
+meaning postulate; a primitive function, which will not reduce.
 Secondly, there are the logical constructs: the operators `:∧`,
 `:⊃`, `:≡` and `:≢` and the quantifiers `forall` and `exists`.
+It should be noted that this is higher-order logic, and therefore
+the quantifiers take a *semantic* type as their first argument.
+The semantic types are written as follows:
 
-These Haskell functions can be wrapped as lexical entries, of type
-`Word a`, using the function `lex_`. If you wish to write lexical
-entries which are meaning postulates, you can simply define them
-using the function `lex`.
+    Type A, B :=
+        E | T | A :-> B | A :* B
+
+In addition, we define the following abbreviations:
+
+    ET  := E :-> T
+    EET := E :-> E :-> T
+    TT  := T :-> T
+    TTT := T :-> T :-> T
+    TET := T :-> E :-> T
+
+Haskell functions written with these constructs can be wrapped as
+lexical entries, of type `Word a`, using the function `lex_`. If
+you wish to write lexical entries which are meaning postulates,
+you can simply define them using the function `lex`.
 
 Lastly, because lexical entries are directionally typed -- using
 syntactic types -- they cannot be directly applied to one another.
 For this reason, we provide the functions `<$` and `$>`, which are
-directional variations of function applications.
-
-Just as a reminder, the syntactic types are:
+directional variations of function applications. The syntactic types
+are:
 
     Type A, B :=
         S | N | NP | INF | PP |
@@ -87,7 +99,7 @@ Just as a reminder, the syntactic types are:
         A :⇃ B | B :⇂ A |                     -- extraction
         A :↿ B | B :↾ A                       -- infixation
 
-With the following aliases:
+In addition, we define the following aliases:
 
     A  := N  :← N
     IV := NP :→ S
@@ -177,14 +189,14 @@ Utility Functions
 
 ~~~{.haskell}
 notEmpty :: (Expr E -> Expr T)  -> Expr T
-notEmpty f = exists E (\x -> f x)
+notEmpty =
+  (\f -> exists E (\x -> f x))
 
 moreThanOne :: (Expr E -> Expr T)  -> Expr T
-moreThanOne f = exists E (\x -> exists E (\y -> f x :∧ f y :∧ x :≢ y))
+moreThanOne =
+  (\f -> exists E (\x -> exists E (\y -> f x :∧ f y :∧ x :≢ y)))
 
 plural :: Word (NS :← N)
-plural = lex_ plural'
-  where
-    plural' f g =
-      exists ET (\h -> moreThanOne h :∧ forall E (\x -> h x :⊃ (f x :∧ g x)))
+plural = lex_
+  (\f g -> exists ET (\h -> moreThanOne h :∧ forall E (\x -> h x :⊃ (f x :∧ g x))))
 ~~~
