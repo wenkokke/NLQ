@@ -66,11 +66,11 @@ function `parseBwd S ...`, with the tree as a second argument. The
 rest of the parsing and interpretation is then done in Haskell.
 
 Below, another template Haskell script is used to collect all
-functions called "bwd*" and run them, assuming each is of type `IO
+functions called "bwd*" and run them. This assumes each is of type `IO
 ()`.
 
 ~~~{.haskell}
-main = $(allBwd) -- ^
+main = $(allBwd)
 ~~~
 
 Lexicon
