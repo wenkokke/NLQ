@@ -142,6 +142,7 @@ search ss = do
     extRL (SEXT z :%∙ (y :%∙ x) :%⊢ w) = ExtRL <$> loop (y :%∙ (SEXT z :%∙ x) :%⊢ w)
     extRL _                            = empty
 
+    -- no need to search with these rules, since qrL and qrR are complete
     {-
     unitL,unitR,unitI :: SSequent s -> Search m (Syn s)
     unitL (SStI (SUnitR k a) :%⊢ y)                = UnitRL <$> prog (SPROD k (SStI a) (SUNIT k) :%⊢ y)
@@ -155,7 +156,6 @@ search ss = do
           _                                       -> empty
     unitI _                                        = empty
     -}
-
     {-
     dnB, dnC, upB, upC :: SSequent s -> Search m (Syn s)
     upB (x :%∙ (y :%∘ z) :%⊢ w)          = UpB <$> loop (y :%∘ ((SB :%∙ x) :%∙ z) :%⊢ w)

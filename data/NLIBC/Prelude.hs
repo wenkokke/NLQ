@@ -99,6 +99,24 @@ instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
 
 -- ** Type and DSL for lexicon entries
 
+red   str = "\x1b[31m" ++ str ++ "\x1b[0m"
+green str = "\x1b[32m" ++ str ++ "\x1b[0m"
+
+printLength :: Int -> IO ()
+printLength 0 = do putStrLn (red "0")
+printLength n = do putStrLn (show n)
+
+  -- putStr "\x1b[32m"
+
+printAll :: [Expr a] -> IO ()
+printAll = go []
+  where
+    go _  [    ] = return ()
+    go vs (x:xs) = do
+      let v = show x
+      putStrLn ((if v `elem` vs then red else green) v)
+      go (v:vs) xs
+
 parseBwd :: Combine x (Entry a) => String -> SType b -> x -> IO ()
 parseBwd str b e1 = do
   let
@@ -106,13 +124,9 @@ parseBwd str b e1 = do
     seq        = x :%⊢ SStO b
     exprsNL    = Bwd.findAll seq
     exprsHS    = map (\f -> runHask (eta seq f) Nil $ intern (hi x) e2) exprsNL
-  if null exprsNL
-    then putStr "\x1b[31m"
-    else putStr "\x1b[32m"
   putStrLn str
-  print (length exprsNL)
-  mapM_ print exprsHS
-  putStrLn "\x1b[0m"
+  printLength (length exprsNL)
+  printAll exprsHS
 
 
 -- ** QuasiQuoter for Backward-Chaining Proof Search

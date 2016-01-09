@@ -292,27 +292,26 @@ extern (a :-> b) f =
   \x -> extern b (f $ intern a x)
 
 
-lower :: (Monad m) => Proxy m -> Univ a -> m (Extern a) -> Lift m a
-lower m E         e = e
-lower m T         e = e
-lower m Unit      e = e
-lower m (a :*  b) e = (e >>=(\(x,_) -> lift m a x) , e >>=(\(_,y) -> lift m b y))
-lower m (a :-> b) e = _
+--lower :: (Monad m) => Proxy m -> Univ a -> m (Extern a) -> Lift m a
+--lower m E         e = e
+--lower m T         e = e
+--lower m Unit      e = e
+--lower m (a :*  b) e = (e >>=(\(x,_) -> lift m a x) , e >>=(\(_,y) -> lift m b y))
+--lower m (a :-> b) e = _
 
-lift :: (Monad m) => Proxy m -> Univ a -> Extern a -> Lift m a
-lift m E          x    = return x
-lift m T          x    = return x
-lift m Unit       x    = return x
-lift m (a :*  b) (x,y) = (lift m a x , lift m b y)
-lift m (a :-> b)  f    = \x -> _
+--lift :: (Monad m) => Proxy m -> Univ a -> Extern a -> Lift m a
+--lift m E          x    = return x
+--lift m T          x    = return x
+--lift m Unit       x    = return x
+--lift m (a :*  b) (x,y) = (lift m a x , lift m b y)
+--lift m (a :-> b)  f    = \x -> _
 
-{-
-map :: (Monad m) => Proxy m -> Univ a -> Univ b -> Extern (a -> b) -> Lift m a -> Lift m b
-map m E         c f x = f <$> x
-map m T         c f x = undefined
-map m Unit      c f x = undefined
-map m (a :*  b) c f x = undefined
-map m (a :-> b) c f x = undefined
+--map :: (Monad m) => Proxy m -> Univ a -> Univ b -> Extern (a -> b) -> Lift m a -> Lift m b
+--map m E         c f x = f <$> x
+--map m T         c f x = undefined
+--map m Unit      c f x = undefined
+--map m (a :*  b) c f x = undefined
+--map m (a :-> b) c f x = undefined
 
 
 -- -}
