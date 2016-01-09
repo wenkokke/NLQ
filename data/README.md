@@ -68,8 +68,9 @@ but it doesn't do a whole lot. It
      with the tree as the argument.
 
 One small quirk of the parser is that if some word it finds conflicts
-with a reserved keyword in Haskell, it adds an underscore at the
-end. So 'of' in `bwd20` is interpreted as the Haskell function `of_`.
+with a reserved keyword in Haskell, it adds an underscore to the
+end -- so, for instance, 'of' in `bwd20` is interpreted as the Haskell
+function `of_`.
 
 There is no objection to simply writing a tree of pairs of values by
 hand -- it just looks slightly nicer using template Haskell. However,
@@ -79,7 +80,7 @@ with *square* brackets instead.
 All of the parsing and interpretation is done in plain Haskell, and is
 described in my thesis.
 
-Below, another template Haskell script constructs the `main` function,
+Below, another tempalte Haskell script constructs the `main` function,
 by collecting all functions called 'bwd*' and running them. This
 assumes each is of these functions type `IO ()`.
 
