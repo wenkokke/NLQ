@@ -67,14 +67,21 @@ but it doesn't do a whole lot. It
   3. generates an application of the function `parseBwd S`,
      with the tree as the argument.
 
-The rest of the parsing and interpretation is then done in Haskell.
 One small quirk of the parser is that if some word it finds conflicts
 with a reserved keyword in Haskell, it adds an underscore at the
 end. So 'of' in `bwd20` is interpreted as the Haskell function `of_`.
 
-Below, another template Haskell script is used to collect all
-functions called 'bwd*' and run them. This assumes each is of type `IO
-()`.
+There is no objection to simply writing a tree of pairs of values by
+hand -- it just looks slightly nicer using template Haskell. However,
+if you write these trees by hand, note that scope islands are written
+with *square* brackets instead.
+
+All of the parsing and interpretation is done in plain Haskell, and is
+described in my thesis.
+
+Below, another template Haskell script constructs the `main` function,
+by collecting all functions called 'bwd*' and running them. This
+assumes each is of these functions type `IO ()`.
 
 ~~~{.haskell}
 main = $(allBwd)
