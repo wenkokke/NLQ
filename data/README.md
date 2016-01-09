@@ -64,9 +64,12 @@ likes mary" becomes `(john , (likes , mary))`; 2) it interprets `<
 ... >` as a scope island; and 3) it generates an application of the
 function `parseBwd S ...`, with the tree as a second argument. The
 rest of the parsing and interpretation is then done in Haskell.
+One small quirk of the parser is that if some word it finds conflicts
+with a reserved keyword in Haskell, it adds an underscore at the
+end. So 'of' in `bwd20` is interpreted as the Haskell function `of_`.
 
 Below, another template Haskell script is used to collect all
-functions called "bwd*" and run them. This assumes each is of type `IO
+functions called 'bwd*' and run them. This assumes each is of type `IO
 ()`.
 
 ~~~{.haskell}
