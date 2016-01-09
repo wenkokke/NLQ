@@ -59,12 +59,14 @@ bwd23 = [bwd| mary sees a   fox |]
 
 In the examples above, `[bwd| ... |]` is a template Haskell script,
 but it doesn't do a whole lot. What it does is the following:
+
   1. it parses the string as a right associative tree of pairs, so
      that "john likes mary" becomes `(john , (likes , mary))`, but "(a
      man) ran" becomes `((a , man) , ran)`;
   2. it interprets `<...>` as scope islands; and
   3. it generates an application of the function `parseBwd S`,
      with the tree as the argument.
+
 The rest of the parsing and interpretation is then done in Haskell.
 One small quirk of the parser is that if some word it finds conflicts
 with a reserved keyword in Haskell, it adds an underscore at the
