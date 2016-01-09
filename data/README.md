@@ -22,28 +22,44 @@ import NLIBC.Prelude
 Examples -- Backward-Chaining Search
 ====================================
 
+In the examples below, `[bwd| ... |]` is a template Haskell script,
+but it doesn't do a whole lot. What it does is the following: 1) it
+parses the string as a right associative tree of pairs, so that "john
+likes mary" becomes `(john , (likes , mary))`; 2) it interprets `<
+... >` as a scope island; and 3) it generates an application of the
+function `parseBwd S ...`, with the tree as a second argument. The
+rest of the parsing and interpretation is then done in Haskell.
+
 ~~~{.haskell}
 bwd0  = [bwd| john runs |]
+
 bwd1  = [bwd| john    likes mary     |]
 bwd2  = [bwd| someone likes mary     |]
 bwd3  = [bwd| john    likes everyone |]
 bwd4  = [bwd| someone likes everyone |]
+
 bwd5  = [bwd| (the           waiter) serves everyone |]
 bwd6  = [bwd| (the same      waiter) serves everyone |]
 bwd7  = [bwd| (a   different waiter) serves everyone |]
+
 bwd8  = [bwd| mary  wants           to leave |]
 bwd9  = [bwd| mary (wants john)     to leave |]
 bwd10 = [bwd| mary (wants everyone) to leave |]
+
 bwd11 = [bwd| mary  wants           to like bill |]
 bwd12 = [bwd| mary (wants john)     to like bill |]
 bwd13 = [bwd| mary (wants everyone) to like bill |]
+
 bwd14 = [bwd| mary  wants           to like someone |]
 bwd15 = [bwd| mary (wants john)     to like someone |]
 bwd16 = [bwd| mary (wants everyone) to like someone |]
+
 bwd17 = [bwd| mary says <john     likes bill> |]
 bwd18 = [bwd| mary says <everyone likes bill> |]
+
 bwd19 = [bwd| mary reads a book                which  john likes |]
 bwd20 = [bwd| mary reads a book (the author of which) john likes |]
+
 bwd21 = [bwd| mary sees foxes   |]
 bwd22 = [bwd| mary sees the fox |]
 bwd23 = [bwd| mary sees a   fox |]
