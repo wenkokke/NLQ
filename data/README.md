@@ -58,9 +58,9 @@ bwd23 = [bwd| mary sees a   fox |]
 ~~~
 
 In the examples above, `[bwd| ... |]` is a template Haskell script,
-but it doesn't do a whole lot. What it does is the following:
+but it doesn't do a whole lot.
 
-  1. it parses the string as a right associative tree of pairs, so
+  1. It parses the string as a right associative tree of pairs, so
      that "john likes mary" becomes `(john , (likes , mary))`, but "(a
      man) ran" becomes `((a , man) , ran)`;
   2. it interprets `<...>` as scope islands; and
