@@ -88,6 +88,25 @@ main = $(allBwd)
 All of the parsing and interpretation is done in plain Haskell, and is
 described in my thesis.
 
+---
+
+Examples using nested quantification -- i.e. same and different --
+have spurious ambiguity. The reason for this is that there is a
+choice. For instance, in `bwd6`, one can choose to between the
+following sequences of quantifier raisings and lowerings:
+
+    [↑everyone, ↑same, ↓same, ↑same, ↓same, ↓everyone]
+    [↑same, ↓same, ↑everyone, ↑same, ↓same, ↓everyone]
+
+The crucial point is that the *second* time `same` takes scope, it
+takes scope parasitically, so `everyone` *must* be raised by
+then. However, the first time, it doesn't matter whether everyone
+has been raised yet.
+
+Examples using choice also exhibit spurious ambiguity, since there
+are often two places where the choice can be made. Removing this
+ambiguity is a work in progress.
+
 Lexicon
 =======
 
@@ -202,7 +221,6 @@ same, different :: Word (Q (Q A (NP :⇨ S) (NP :⇨ S)) S S)
 same      = lex_ same'
   where
   same' k = exists E (\z -> k (\k' x -> k' (\f y -> f y :∧ y :≡ z) x))
-
 different = lex_ diff1
   where
   diff1 k = exists EET (\f -> diff2 f :∧ k (\k x -> k (\g y -> g y :∧ f x y) x))
