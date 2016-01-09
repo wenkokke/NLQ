@@ -77,9 +77,6 @@ hand -- it just looks slightly nicer using template Haskell. However,
 if you write these trees by hand, note that scope islands are written
 with *square* brackets instead.
 
-All of the parsing and interpretation is done in plain Haskell, and is
-described in my thesis.
-
 Below, another tempalte Haskell script constructs the `main` function,
 by collecting all functions called 'bwd*' and running them. This
 assumes each is of these functions type `IO ()`.
@@ -87,6 +84,9 @@ assumes each is of these functions type `IO ()`.
 ~~~{.haskell}
 main = $(allBwd)
 ~~~
+
+All of the parsing and interpretation is done in plain Haskell, and is
+described in my thesis.
 
 Lexicon
 =======
