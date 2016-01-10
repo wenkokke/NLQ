@@ -246,17 +246,17 @@ sFollow _                  = Nothing
 data Pos :: Type -> * where
   Pos_Dia    :: Pos (Dia k a)
   Pos_UnitR  :: Pos (UnitR k a)
+  Pos_With   :: Pos (a1 :& a2)
 
 data Neg :: Type -> * where
   Neg_El     :: Neg (El a)
   Neg_Box    :: Neg (Box k a)
-  Neg_With   :: Neg (a1 :& a2)
   Neg_ImpR   :: Neg (ImpR k a b)
   Neg_ImpL   :: Neg (ImpL k b a)
 
 pol :: SType a -> Either (Pos a) (Neg a)
 pol (SEl a)       = Right Neg_El
-pol (_ :%& _)     = Right Neg_With
+pol (_ :%& _)     = Left  Pos_With
 pol (SDia _ _)    = Left  Pos_Dia
 pol (SBox _ _)    = Right Neg_Box
 pol (SUnitR _ _)  = Left  Pos_UnitR

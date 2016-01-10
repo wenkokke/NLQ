@@ -40,7 +40,7 @@ search ss = do
   msum (fmap ($ ss) nl)
   where
     nl = concat
-          [ [axR,axL,unfR,unfL,focR,focL]
+          [ [axL,unfR,unfL,focR,focL]
           , [withL1,withL2,withR]
           , [impRL,impRR,impLL,impLR,resRP,resPR,resLP,resPL]
           , [diaL,diaR,boxL,boxR,resBD,resDB]
@@ -60,18 +60,21 @@ search ss = do
     prog :: SSequent s -> Search m (Syn s)
     prog ss = do put (S.empty); search ss
 
-    axR, axL, unfR, unfL, focR, focL :: SSequent s -> Search m (Syn s)
-    axR  (SStI a :%⊢> b) = case (b %~ a, pol b) of { (Proved Refl, Left  p) -> pure (AxR p); _ -> empty }
-    axR  _               = empty
-    axL  (a :%<⊢ SStO b) = case (a %~ b, pol a) of { (Proved Refl, Right p) -> pure (AxL p); _ -> empty }
+    axL, unfR, unfL, focR, focL :: SSequent s -> Search m (Syn s)
+    axL  (SEl a :%<⊢ SStO (SEl b)) = case a %~ b of
+       { Proved Refl -> pure (AxL Neg_El); _ -> empty }
     axL  _               = empty
-    unfR (x :%⊢> b)      = case pol b of { Right p -> UnfR p <$> loop (x :%⊢ SStO b); _ -> empty }
+    unfR (x :%⊢> b)      = case pol b of
+       { Right p -> UnfR p <$> loop (x :%⊢ SStO b); _ -> empty }
     unfR  _              = empty
-    unfL (a :%<⊢ y)      = case pol a of { Left  p -> UnfL p <$> loop (SStI a :%⊢ y); _ -> empty }
+    unfL (a :%<⊢ y)      = case pol a of
+       { Left  p -> UnfL p <$> loop (SStI a :%⊢ y); _ -> empty }
     unfL  _              = empty
-    focR (x :%⊢ SStO b)  = case pol b of { Left  p -> FocR p <$> loop (x :%⊢> b); _ -> empty }
+    focR (x :%⊢ SStO b)  = case pol b of
+       { Left  p -> FocR p <$> loop (x :%⊢> b); _ -> empty }
     focR  _              = empty
-    focL (SStI a :%⊢ y)  = case pol a of { Right p -> FocL p <$> loop (a :%<⊢ y); _ -> empty }
+    focL (SStI a :%⊢ y)  = case pol a of
+       { Right p -> FocL p <$> loop (a :%<⊢ y); _ -> empty }
     focL  _              = empty
 
     withL1,withL2,withR :: SSequent s -> Search m (Syn s)

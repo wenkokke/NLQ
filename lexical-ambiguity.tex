@@ -67,29 +67,29 @@ behaviour are words such as `to wash' and `to shave'.
 Using our new connective, we can give a single definition for such
 words, which takes this ambiguity into account:
 \begin{alignat*}{3}
-  &\wants\;&:\;&\tr[((\TV\impl\INF))\&(\IV\impl\INF)]\\
-  &\wants\;&=\;&((\lambda p\;y\;x.\WANT(x,p\;y)),(\lambda p\;x.\WANT(x,p\;x)))
+  &\wants\;&:\;&\tr[(((\IV\impl\INF\impl\NP))\&(\IV\impl\INF))]\\
+  &\wants\;&=\;&((\lambda y\;f\;x.\WANT(x,f\;y)),(\lambda f\;x.\WANT(x,f\;x)))
 \end{alignat*}
 
 How much of an advantage does this method have over allowing multiple
 lexical entries for a word? It is a more elegant solution for words
-like `want', which are ambiguous, but where all options encode a
-similar concept---in both cases, the subject wants something to
-happen. However, the similarity between the two definitions, and the
+such as `want', where there is an ambiguity, but where all options
+encode a similar concept---in the case of `want', in both
+interpretations, the subject wants something to be true.
+However, the similarity between the two definitions, and the
 fact that implicit reflexive objects occur with numerous transitive
 verbs, might be an indication that this is a quirk of grammar, instead
 of lexical ambiguity.\todo{Reference? Proper linguistic terminology?}
 
-Using `\&' is a lot less elegant for true lexical ambiguity. For
-homonyms like `bow'---which have many different meanings, some of
-them radically different---all of its meanings would have to be
-encoded in a single definition.
-However, this is easily remedied, as it is not hard to imagine a
-procedure which encodes ambiguity in the style of
-\citeauthor{lambek1958} using `\&'.
+Additionally, `\&' is slightly more elegant in its formalisation.
+Where \citeauthor{lambek1958}'s solution involves computing all
+possible sequents, given all possible definitions of each word, and
+attempting to find a proof for all of them. The solution using `\&'
+elegantly absorbs this traversal into the proof search.
 
-On the other hand, `\&' is more elegant in its formalisation.
-\citeauthor{lambek1958}'s solution involves computing all possible
-trees, given all possible definitions of each word, and attempting to
-find a proof for all of them. The solution using `\&' elegantly
-absorbs this traversal into the proof search.
+On the other hand, using `\&' is a lot less elegant for true lexical
+ambiguity. For homonyms like `bow'---which have many different
+meanings, some of them radically different---all of its meanings would
+have to be encoded in a single definition. However, this is easily
+remedied, as it is not hard to imagine a procedure which encodes
+ambiguity in the style of \citeauthor{lambek1958} using `\&'.

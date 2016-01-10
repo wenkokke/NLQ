@@ -186,56 +186,56 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
   infix 2 _⊢_
 
   data NL_ : Sequent -> Set where
-    axElR  : ∀ {b}         → Pol(b) ≡ + → NL · El b · ⊢[ El b ]
-    axElL  : ∀ {a}         → Pol(a) ≡ - → NL [ El a ]⊢ · El a ·
-    unfR   : ∀ {x b}       → Pol(b) ≡ - → NL x ⊢ · b · → NL x ⊢[ b ]
-    unfL   : ∀ {a y}       → Pol(a) ≡ + → NL · a · ⊢ y → NL [ a ]⊢ y
-    focR   : ∀ {x b}       → Pol(b) ≡ + → NL x ⊢[ b ] → NL x ⊢ · b ·
-    focL   : ∀ {a y}       → Pol(a) ≡ - → NL [ a ]⊢ y → NL · a · ⊢ y
+    AxElR  : ∀ {b}         → Pol(b) ≡ + → NL · El b · ⊢[ El b ]
+    AxElL  : ∀ {a}         → Pol(a) ≡ - → NL [ El a ]⊢ · El a ·
+    UnfR   : ∀ {x b}       → Pol(b) ≡ - → NL x ⊢ · b · → NL x ⊢[ b ]
+    UnfL   : ∀ {a y}       → Pol(a) ≡ + → NL · a · ⊢ y → NL [ a ]⊢ y
+    FocR   : ∀ {x b}       → Pol(b) ≡ + → NL x ⊢[ b ] → NL x ⊢ · b ·
+    FocL   : ∀ {a y}       → Pol(a) ≡ - → NL [ a ]⊢ y → NL · a · ⊢ y
 
-    impRL  : ∀ {k x y a b} → NL x ⊢[ a ] → NL [ b ]⊢ y → NL [ ImpR k a b ]⊢ IMPR k x y
-    impRR  : ∀ {k x a b}   → NL x ⊢ IMPR k · a · · b · → NL x ⊢ · ImpR k a b ·
-    impLL  : ∀ {k x y a b} → NL x ⊢[ a ] → NL [ b ]⊢ y → NL [ ImpL k b a ]⊢ IMPL k y x
-    impLR  : ∀ {k x a b}   → NL x ⊢ IMPL k · b · · a · → NL x ⊢ · ImpL k b a ·
-    resRP  : ∀ {k x y z}   → NL y ⊢ IMPR k x z → NL PROD k x y ⊢ z
-    resPR  : ∀ {k x y z}   → NL PROD k x y ⊢ z → NL y ⊢ IMPR k x z
-    resLP  : ∀ {k x y z}   → NL x ⊢ IMPL k z y → NL PROD k x y ⊢ z
-    resPL  : ∀ {k x y z}   → NL PROD k x y ⊢ z → NL x ⊢ IMPL k z y
+    ImpRL  : ∀ {k x y a b} → NL x ⊢[ a ] → NL [ b ]⊢ y → NL [ ImpR k a b ]⊢ IMPR k x y
+    ImpRR  : ∀ {k x a b}   → NL x ⊢ IMPR k · a · · b · → NL x ⊢ · ImpR k a b ·
+    ImpLL  : ∀ {k x y a b} → NL x ⊢[ a ] → NL [ b ]⊢ y → NL [ ImpL k b a ]⊢ IMPL k y x
+    ImpLR  : ∀ {k x a b}   → NL x ⊢ IMPL k · b · · a · → NL x ⊢ · ImpL k b a ·
+    ResRP  : ∀ {k x y z}   → NL y ⊢ IMPR k x z → NL PROD k x y ⊢ z
+    ResPR  : ∀ {k x y z}   → NL PROD k x y ⊢ z → NL y ⊢ IMPR k x z
+    ResLP  : ∀ {k x y z}   → NL x ⊢ IMPL k z y → NL PROD k x y ⊢ z
+    ResPL  : ∀ {k x y z}   → NL PROD k x y ⊢ z → NL x ⊢ IMPL k z y
 
-    withL1 : ∀ {a1 a2 y}   → NL [ a1 ]⊢ y  → NL · a1 & a2 · ⊢ y
-    withL2 : ∀ {a1 a2 y}   → NL [ a2 ]⊢ y  → NL · a1 & a2 · ⊢ y
-    withR  : ∀ {b1 b2 x}   → NL x ⊢ · b1 · → NL x ⊢ · b2 · → NL x ⊢[ b1 & b2 ]
+    WithL1 : ∀ {a1 a2 y}   → NL [ a1 ]⊢ y  → NL · a1 & a2 · ⊢ y
+    WithL2 : ∀ {a1 a2 y}   → NL [ a2 ]⊢ y  → NL · a1 & a2 · ⊢ y
+    WithR  : ∀ {b1 b2 x}   → NL x ⊢ · b1 · → NL x ⊢ · b2 · → NL x ⊢[ b1 & b2 ]
 
-    unitRL : ∀ {k y a}     → NL PROD k · a · (UNIT k) ⊢ y → NL · UnitR k a · ⊢ y
-    unitRR : ∀ {k x b}     → NL x ⊢[ b ] → NL PROD k x (UNIT k) ⊢[ UnitR k b ]
-    unitRI : ∀ {k x y}     → NL x ⊢ y → NL PROD k x (UNIT k) ⊢ y
+    UnitRL : ∀ {k y a}     → NL PROD k · a · (UNIT k) ⊢ y → NL · UnitR k a · ⊢ y
+    UnitRR : ∀ {k x b}     → NL x ⊢[ b ] → NL PROD k x (UNIT k) ⊢[ UnitR k b ]
+    UnitRI : ∀ {k x y}     → NL x ⊢ y → NL PROD k x (UNIT k) ⊢ y
 
-    diaL   : ∀ {k a y}     → NL DIA k · a · ⊢ y → NL · Dia k a · ⊢ y
-    diaR   : ∀ {k x b}     → NL x ⊢[ b ] → NL DIA k x ⊢[ Dia k b ]
-    boxL   : ∀ {k a y}     → NL [ a ]⊢ y → NL [ Box k a ]⊢ BOX k y
-    boxR   : ∀ {k x b}     → NL x ⊢ BOX k · b · → NL x ⊢ · Box k b ·
-    resBD  : ∀ {k x y}     → NL x ⊢ BOX k y → NL DIA k x ⊢ y
-    resDB  : ∀ {k x y}     → NL DIA k x ⊢ y → NL x ⊢ BOX k y
+    DiaL   : ∀ {k a y}     → NL DIA k · a · ⊢ y → NL · Dia k a · ⊢ y
+    DiaR   : ∀ {k x b}     → NL x ⊢[ b ] → NL DIA k x ⊢[ Dia k b ]
+    BoxL   : ∀ {k a y}     → NL [ a ]⊢ y → NL [ Box k a ]⊢ BOX k y
+    BoxR   : ∀ {k x b}     → NL x ⊢ BOX k · b · → NL x ⊢ · Box k b ·
+    ResBD  : ∀ {k x y}     → NL x ⊢ BOX k y → NL DIA k x ⊢ y
+    ResDB  : ∀ {k x y}     → NL DIA k x ⊢ y → NL x ⊢ BOX k y
 
-    upB    : ∀ {x y z w}   → NL x ∙ (y ∘ z) ⊢ w       → NL y ∘ ((B ∙ x) ∙ z) ⊢ w
-    upC    : ∀ {x y z w}   → NL (x ∘ y) ∙ z ⊢ w       → NL x ∘ ((C ∙ y) ∙ z) ⊢ w
-    dnB    : ∀ {x y z w}   → NL y ∘ ((B ∙ x) ∙ z) ⊢ w → NL x ∙ (y ∘ z) ⊢ w
-    dnC    : ∀ {x y z w}   → NL x ∘ ((C ∙ y) ∙ z) ⊢ w → NL (x ∘ y) ∙ z ⊢ w
+    UpB    : ∀ {x y z w}   → NL x ∙ (y ∘ z) ⊢ w       → NL y ∘ ((B ∙ x) ∙ z) ⊢ w
+    UpC    : ∀ {x y z w}   → NL (x ∘ y) ∙ z ⊢ w       → NL x ∘ ((C ∙ y) ∙ z) ⊢ w
+    DnB    : ∀ {x y z w}   → NL y ∘ ((B ∙ x) ∙ z) ⊢ w → NL x ∙ (y ∘ z) ⊢ w
+    DnC    : ∀ {x y z w}   → NL x ∘ ((C ∙ y) ∙ z) ⊢ w → NL (x ∘ y) ∙ z ⊢ w
 
-    ifxRR  : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↑ z ⊢ w) → NL (x ∙ (y ∙ ◆↑ z) ⊢ w)
-    ifxLR  : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↑ z ⊢ w) → NL ((x ∙ ◆↑ z) ∙ y ⊢ w)
-    ifxLL  : ∀ {x y z w}   → NL (◆↑ z ∙ (y ∙ x) ⊢ w) → NL ((◆↑ z ∙ y) ∙ x ⊢ w)
-    ifxRL  : ∀ {x y z w}   → NL (◆↑ z ∙ (y ∙ x) ⊢ w) → NL (y ∙ (◆↑ z ∙ x) ⊢ w)
+    IfxRR  : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↑ z ⊢ w) → NL (x ∙ (y ∙ ◆↑ z) ⊢ w)
+    IfxLR  : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↑ z ⊢ w) → NL ((x ∙ ◆↑ z) ∙ y ⊢ w)
+    IfxLL  : ∀ {x y z w}   → NL (◆↑ z ∙ (y ∙ x) ⊢ w) → NL ((◆↑ z ∙ y) ∙ x ⊢ w)
+    IfxRL  : ∀ {x y z w}   → NL (◆↑ z ∙ (y ∙ x) ⊢ w) → NL (y ∙ (◆↑ z ∙ x) ⊢ w)
 
-    extRR  : ∀ {x y z w}   → NL (x ∙ (y ∙ ◆↓ z) ⊢ w) → NL ((x ∙ y) ∙ ◆↓ z ⊢ w)
-    extLR  : ∀ {x y z w}   → NL ((x ∙ ◆↓ z) ∙ y ⊢ w) → NL ((x ∙ y) ∙ ◆↓ z ⊢ w)
-    extLL  : ∀ {x y z w}   → NL ((◆↓ z ∙ y) ∙ x ⊢ w) → NL (◆↓ z ∙ (y ∙ x) ⊢ w)
-    extRL  : ∀ {x y z w}   → NL (y ∙ (◆↓ z ∙ x) ⊢ w) → NL (◆↓ z ∙ (y ∙ x) ⊢ w)
+    ExtRR  : ∀ {x y z w}   → NL (x ∙ (y ∙ ◆↓ z) ⊢ w) → NL ((x ∙ y) ∙ ◆↓ z ⊢ w)
+    ExtLR  : ∀ {x y z w}   → NL ((x ∙ ◆↓ z) ∙ y ⊢ w) → NL ((x ∙ y) ∙ ◆↓ z ⊢ w)
+    ExtLL  : ∀ {x y z w}   → NL ((◆↓ z ∙ y) ∙ x ⊢ w) → NL (◆↓ z ∙ (y ∙ x) ⊢ w)
+    ExtRL  : ∀ {x y z w}   → NL (y ∙ (◆↓ z ∙ x) ⊢ w) → NL (◆↓ z ∙ (y ∙ x) ⊢ w)
 
   resRL : ∀ {k x y z} → NL y ⊢ IMPR k x z → NL x ⊢ IMPL k z y
-  resRL f = resPL (resRP f)
+  resRL f = ResPL (ResRP f)
   resLR : ∀ {k x y z} → NL x ⊢ IMPL k z y → NL y ⊢ IMPR k x z
-  resLR f = resPR (resLP f)
+  resLR f = ResPR (ResLP f)
 
 
 
@@ -278,17 +278,17 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
     dpL : ∀ {p} (x : StructContext p +) (y : Struct -) (w : Struct p)
         → (NL x [ w ] ⊢ y) ⇔ (NL DPL x y [ w ])
     dpL  HOLE         z w = F.id
-    dpL (DIA1  k x)   z w = dpL x (BOX  k z)   w F.∘ F.equivalence resDB resBD
-    dpL (PROD1 k x y) z w = dpL x (IMPL k z y) w F.∘ F.equivalence resPL resLP
-    dpL (PROD2 k x y) z w = dpL y (IMPR k x z) w F.∘ F.equivalence resPR resRP
+    dpL (DIA1  k x)   z w = dpL x (BOX  k z)   w F.∘ F.equivalence ResDB ResBD
+    dpL (PROD1 k x y) z w = dpL x (IMPL k z y) w F.∘ F.equivalence ResPL ResLP
+    dpL (PROD2 k x y) z w = dpL y (IMPR k x z) w F.∘ F.equivalence ResPR ResRP
 
     dpR : ∀ {p} (x : Struct +) (y : StructContext p -) (w : Struct p)
         → (NL x ⊢ y [ w ]) ⇔ (NL DPR x y [ w ])
     dpR x (HOLE       ) w = F.id
-    dpR x (BOX1  k y  ) w = dpR   (DIA  k x)   y w F.∘ F.equivalence resBD resDB
+    dpR x (BOX1  k y  ) w = dpR   (DIA  k x)   y w F.∘ F.equivalence ResBD ResDB
     dpR x (IMPR1 k y z) w = dpL y (IMPL k z x)   w F.∘ F.equivalence resRL resLR
-    dpR x (IMPR2 k y z) w = dpR   (PROD k y x) z w F.∘ F.equivalence resRP resPR
-    dpR x (IMPL1 k z y) w = dpR   (PROD k x y) z w F.∘ F.equivalence resLP resPL
+    dpR x (IMPR2 k y z) w = dpR   (PROD k y x) z w F.∘ F.equivalence ResRP ResPR
+    dpR x (IMPL1 k z y) w = dpR   (PROD k x y) z w F.∘ F.equivalence ResLP ResPL
     dpR x (IMPL2 k z y) w = dpL y (IMPR k x z)   w F.∘ F.equivalence resLR resRL
 
   -- `dp1` and `dp2` are helper functions, which allow you to access
@@ -337,64 +337,61 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
   lem-Pos-St (ImpL  k b a) ()
 
   mutual
-    st : ∀ {a b} → NL St a ⊢ St b → NL · a · ⊢ · b ·
-    st f = stL (stR f)
-
     stL : ∀ {a y} → NL St a ⊢ y → NL · a · ⊢ y
     stL {a = El      a  } f = f
-    stL {a = Dia   k a  } f = diaL (resBD (stL (resDB f)))
+    stL {a = Dia   k a  } f = DiaL (ResBD (stL (ResDB f)))
     stL {a = Box   k a  } f = f
     stL {a = a & b}       f = f
-    stL {a = UnitR k a  } f = unitRL (resLP (stL (resPL f)))
+    stL {a = UnitR k a  } f = UnitRL (ResLP (stL (ResPL f)))
     stL {a = ImpR  k a b} f = f
     stL {a = ImpL  k b a} f = f
 
     stR : ∀ {x b} → NL x ⊢ St b → NL x ⊢ · b ·
     stR {b = El      a  } f = f
     stR {b = Dia   k a  } f = f
-    stR {b = Box   k a  } f = boxR (resDB (stR (resBD f)))
+    stR {b = Box   k a  } f = BoxR (ResDB (stR (ResBD f)))
     stR {b = a & b}       f = f
     stR {b = UnitR k a  } f = f
-    stR {b = ImpR  k a b} f = impRR (resPR (stR (resLP (stL (resPL (resRP f))))))
-    stR {b = ImpL  k b a} f = impLR (resPL (stR (resRP (stL (resPR (resLP f))))))
+    stR {b = ImpR  k a b} f = ImpRR (ResPR (stR (ResLP (stL (ResPL (ResRP f))))))
+    stR {b = ImpL  k b a} f = ImpLR (ResPL (stR (ResRP (stL (ResPR (ResLP f))))))
 
 
 
   -- ** Identity Expansion
 
   mutual
-    axR : ∀ {b} → NL St b ⊢[ b ]
-    axR {b} with Pol(b) | inspect Pol(b)
-    ... | + | P.[ p ] = axR' p
-    ... | - | P.[ n ] rewrite lem-Neg-St b n = unfR n (stR (focL n (axL' n)))
+    AxR′ : ∀ {b} → NL St b ⊢[ b ]
+    AxR′ {b} with Pol(b) | inspect Pol(b)
+    ... | + | P.[ p ] = AxR p
+    ... | - | P.[ n ] rewrite lem-Neg-St b n = UnfR n (stR (FocL n (AxL n)))
 
-    axL : ∀ {a} → NL [ a ]⊢ St a
-    axL {a} with Pol(a) | inspect Pol(a)
-    ... | + | P.[ p ] rewrite lem-Pos-St a p = unfL p (stL (focR p (axR' p)))
-    ... | - | P.[ n ] = axL' n
+    AxL′ : ∀ {a} → NL [ a ]⊢ St a
+    AxL′ {a} with Pol(a) | inspect Pol(a)
+    ... | + | P.[ p ] rewrite lem-Pos-St a p = UnfL p (stL (FocR p (AxR p)))
+    ... | - | P.[ n ] = AxL n
 
-    axR' : ∀ {b} → Pol(b) ≡ + → NL St b ⊢[ b ]
-    axR' {El      a}   p = axElR p
-    axR' {Dia   x a}   _ = diaR axR
-    axR' {Box   x a}   ()
-    axR' {a & b}       _ = withR (stR (withL1 axL)) (stR (withL2 axL))
-    axR' {UnitR x a}   _ = unitRR axR
-    axR' {ImpR  x a b} ()
-    axR' {ImpL  x b a} ()
+    AxR : ∀ {b} → Pol(b) ≡ + → NL St b ⊢[ b ]
+    AxR {El      a}   p = AxElR p
+    AxR {Dia   x a}   _ = DiaR AxR′
+    AxR {Box   x a}   ()
+    AxR {a & b}       _ = WithR (stR (WithL1 AxL′)) (stR (WithL2 AxL′))
+    AxR {UnitR x a}   _ = UnitRR AxR′
+    AxR {ImpR  x a b} ()
+    AxR {ImpL  x b a} ()
 
-    axL' : ∀ {a} → Pol(a) ≡ - → NL [ a ]⊢ St a
-    axL' {El      a}   n = axElL n
-    axL' {Dia   x a}   ()
-    axL' {Box   x a}   _ = boxL axL
-    axL' {a & b}       ()
-    axL' {UnitR x a}   ()
-    axL' {ImpR  x a b} _ = impRL axR axL
-    axL' {ImpL  x b a} _ = impLL axR axL
+    AxL : ∀ {a} → Pol(a) ≡ - → NL [ a ]⊢ St a
+    AxL {El      a}   n = AxElL n
+    AxL {Dia   x a}   ()
+    AxL {Box   x a}   _ = BoxL AxL′
+    AxL {a & b}       ()
+    AxL {UnitR x a}   ()
+    AxL {ImpR  x a b} _ = ImpRL AxR′ AxL′
+    AxL {ImpL  x b a} _ = ImpLL AxR′ AxL′
 
-  ax : ∀ {a} → NL · a · ⊢ · a ·
-  ax {a} with Pol(a) | inspect Pol(a)
-  ... | + | P.[ p ] rewrite lem-Pos-St a p = stL (focR p (axR' p))
-  ... | - | P.[ n ] rewrite lem-Neg-St a n = stR (focL n (axL' n))
+  Ax : ∀ {a} → NL · a · ⊢ · a ·
+  Ax {a} with Pol(a) | inspect Pol(a)
+  ... | + | P.[ p ] rewrite lem-Pos-St a p = stL (FocR p (AxR p))
+  ... | - | P.[ n ] rewrite lem-Neg-St a n = stR (FocL n (AxL n))
 
 
 
@@ -422,27 +419,27 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
   Trace (PROD2 x y) = PROD Sol (PROD Sol B x) (Trace y)
 
   up : ∀ x {y z} → NL x [ y ] ⊢ z → NL y ∘ Trace x ⊢ z
-  up HOLE        f = unitRI f
-  up (PROD1 x y) f = upC (resLP (up x (resPL f)))
-  up (PROD2 x y) f = upB (resRP (up y (resPR f)))
+  up HOLE        f = UnitRI f
+  up (PROD1 x y) f = UpC (ResLP (up x (ResPL f)))
+  up (PROD2 x y) f = UpB (ResRP (up y (ResPR f)))
 
   down : ∀ x {a z} → NL · a · ∘ Trace x ⊢ z → NL x [ · Q a · ] ⊢ z
   down x f = init x (move x f)
     where
     init : ∀ (x : QRContext + +) {a z} → NL x [ · a · ∘ I ] ⊢ z → NL x [ · Q a · ] ⊢ z
-    init HOLE        f = unitRL f
-    init (PROD1 x y) f = resLP (init x (resPL f))
-    init (PROD2 x y) f = resRP (init y (resPR f))
+    init HOLE        f = UnitRL f
+    init (PROD1 x y) f = ResLP (init x (ResPL f))
+    init (PROD2 x y) f = ResRP (init y (ResPR f))
     move : ∀ (x : QRContext + +) {y z} → NL y ∘ Trace x ⊢ z → NL x [ y ∘ I ] ⊢ z
     move HOLE        f = f
-    move (PROD1 x y) f = resLP (move x (resPL (dnC f)))
-    move (PROD2 x y) f = resRP (move y (resPR (dnB f)))
+    move (PROD1 x y) f = ResLP (move x (ResPL (DnC f)))
+    move (PROD2 x y) f = ResRP (move y (ResPR (DnB f)))
 
   qrL : ∀ x {y b c} → NL Trace x ⊢[ b ] → NL [ c ]⊢ y → NL x [ · Q (c ⇦ b) · ] ⊢ y
-  qrL x f g = down x (resLP (focL refl (impLL f g)))
+  qrL x f g = down x (ResLP (FocL refl (ImpLL f g)))
 
   qrR : ∀ x {a b} → NL x [ · a · ] ⊢ · b · → NL Trace x ⊢ · a ⇨ b ·
-  qrR x f = impRR (resPR (up x f))
+  qrR x f = ImpRR (ResPR (up x f))
 
 
 module Example where
@@ -463,6 +460,21 @@ module Example where
   PolarisedAtom = record { Pol = λ{ _ → - } }
 
   open Syn Atom PolarisedAtom
+
+  Pos_Dia    : ∀ {k a}   → Pol(Dia k a) ≡ +
+  Pos_Dia    = refl
+  Pos_UnitR  : ∀ {k a}   → Pol(UnitR k a) ≡ +
+  Pos_UnitR  = refl
+  Pos_With   : ∀ {a1 a2} → Pol(a1 & a2) ≡ +
+  Pos_With   = refl
+  Neg_El     : ∀ {a}     → Pol(El a) ≡ -
+  Neg_El     = refl
+  Neg_Box    : ∀ {k a}   → Pol(Box k a) ≡ -
+  Neg_Box    = refl
+  Neg_ImpR   : ∀ {k a b} → Pol(ImpR k a b) ≡ -
+  Neg_ImpR   = refl
+  Neg_ImpL   : ∀ {k a b} → Pol(ImpL k b a) ≡ -
+  Neg_ImpL   = refl
 
   pattern S   = El Atom.S
   pattern N   = El Atom.N
@@ -486,24 +498,20 @@ module Example where
   john   = ·_· {+} (NP)
   likes  = ·_· {+} (TV)
 
-
-  prf1 : NL (mary ∙ reads ∙ a ∙ book ∙ (the ∙ author ∙ of ∙ which) ∙ john ∙ likes ⊢ · S ·)
-  prf1 =
-    (resRP (resRP (resLP (focL refl (impLL
-    (unfR refl (resRP (resLP
-    (qrL (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (unfR refl
-    (qrR (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (resLP (focL refl
-    (impLL (unfR refl (resRP (resLP (focL refl axL)))) axL)))))
-    (impLL (unfR refl (impLR (resPL (resRP (diaL (resPR (extRR
-    (resRP (resLP (focL refl (impLL (unfR refl (resBD (focL refl
-    (boxL axL)))) axL))))))))))) axL)))))
-    (unfL refl (resPR (resPR
-    (qrL (PROD2 _ (PROD2 _ HOLE)) (unfR refl
-    (qrR (PROD2 _ (PROD2 _ HOLE)) (resRP (resLP (focL refl axL))))) axL))))
+  man1 : NL (mary ∙ reads ∙ a ∙ book ∙ (the ∙ author ∙ of ∙ which) ∙ john ∙ likes ⊢ · S ·)
+  man1 =
+    (ResRP (ResRP (ResLP (FocL refl (ImpLL
+    (UnfR refl (ResRP (ResLP
+    (qrL (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (UnfR refl
+    (qrR (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (ResLP (FocL refl
+    (ImpLL (UnfR refl (ResRP (ResLP (FocL refl AxL′)))) AxL′)))))
+    (ImpLL (UnfR refl (ImpLR (ResPL (ResRP (DiaL (ResPR (ExtRR
+    (ResRP (ResLP (FocL refl (ImpLL (UnfR refl (ResBD (FocL refl
+    (BoxL AxL′)))) AxL′))))))))))) AxL′)))))
+    (UnfL refl (ResPR (ResPR
+    (qrL (PROD2 _ (PROD2 _ HOLE)) (UnfR refl
+    (qrR (PROD2 _ (PROD2 _ HOLE)) (ResRP (ResLP (FocL refl AxL′))))) AxL′))))
     )))))
-
-  prf2A : NL (mary ∙ wants ∙ to ∙ leave ⊢ · S ·)
-  prf2A = resRP {!!}
 
 -- -}
 -- -}
