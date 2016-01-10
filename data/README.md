@@ -89,24 +89,6 @@ main = $(allBwd)
 All of the parsing and interpretation is done in plain Haskell, and is
 described in my thesis.
 
----
-
-Examples using nested quantification -- i.e. same and different --
-have spurious ambiguity. The reason for this is that there is a
-choice. For instance, in `bwd6`, one can choose to between the
-following sequences of quantifier raisings and lowerings:
-
-    [↑everyone, ↑same, ↓same, ↑same, ↓same, ↓everyone]
-    [↑same, ↓same, ↑everyone, ↑same, ↓same, ↓everyone]
-
-The crucial point is that the *second* time `same` takes scope, it
-takes scope parasitically, so `everyone` *must* be raised by
-then. However, the first time, it doesn't matter whether everyone
-has been raised yet.
-
-Examples using choice also exhibit spurious ambiguity, since there
-are often two places where the choice can be made. Removing this
-ambiguity is a work in progress.
 
 Lexicon
 =======
@@ -254,3 +236,126 @@ plural :: Word (NS :← N)
 plural = lex_
   (\f g -> exists ET (\h -> moreThanOne h ∧ forall E (\x -> h x ⊃ (f x ∧ g x))))
 ~~~
+
+
+Output
+======
+
+The code in this file will attempt to parse the sentences in
+`bwd0`...`bwd23`, and for each sentence print: 1) the input sentence;
+2) the number of parses; and 3) the meaning associated with each
+parts, in lambda calculus. Spurious ambiguity will be highlighted in
+red. At the moment, the only spurious ambiguity is irrelevant
+structural ambiguity.
+
+As an example of this, in `bwd20` -- "mary reads a book (the author of
+which) john likes" -- there is `which`, which behaves like a
+quantifier, and scopes up to the top of the noun phrase "the author of
+which". Because it scope up to the top of an embedded phrase, there is
+a choice of things to do first: resolve the scoping behaviour of
+`which`, or resolve the main phrase "mary reads X."
+
+Below, I've included the output of the program, minus the colouring --
+due to restrictions on GitHub Markdown.
+
+    john runs
+    1
+    run john
+
+    john likes mary
+    1
+    like mary john
+
+    someone likes mary
+    1
+    ∃x0.person x0 ∧ like mary x0
+
+    john likes everyone
+    1
+    ∀x0.person x0 ⊃ like x0 john
+
+    someone likes everyone
+    2
+    ∃x0.person x0 ∧ (∀x1.person x1 ⊃ like x1 x0)
+    ∀x0.person x0 ⊃ (∃x1.person x1 ∧ like x0 x1)
+    the waiter serves everyone
+    1
+    ∀x0.person x0 ⊃ serve x0 (the (λx1.(waiter x1)))
+
+    the same waiter serves everyone
+    1
+    ∃x0.(∀x1.person x1 ⊃ serve x1 (the (λx2.(waiter x2 ∧ x2 ≡ x0))))
+
+    a different waiter serves everyone
+    2
+    ∃x0.(∀x1.(∀x2.¬ (∃x3.x0 x3 x1 ∧ x0 x3 x2))) ∧ (∀x4.person x4 ⊃ (∃x5.(waiter x5 ∧ x0 x4 x5) ∧ s erve x4 x5))
+    ∃x0.(∀x1.(∀x2.¬ (∃x3.x0 x3 x1 ∧ x0 x3 x2))) ∧ (∀x4.person x4 ⊃ (∃x5.(waiter x5 ∧ x0 x4 x5) ∧ s erve x4 x5))
+
+    mary wants to leave
+    1
+    want (leave mary) mary
+    mary wants john to leave
+    1
+    want (leave john) mary
+
+    mary wants everyone to leave
+    1
+    ∀x0.person x0 ⊃ want (leave x0) mary
+
+    mary wants to like bill
+    1
+    want (like bill mary) mary
+
+    mary wants john to like bill
+    1
+    want (like bill john) mary
+
+    mary wants everyone to like bill
+    1
+    ∀x0.person x0 ⊃ want (like bill x0) mary
+
+    mary wants to like someone
+    2
+    want (∃x0.person x0 ∧ like x0 mary) mary
+    ∃x0.person x0 ∧ want (like x0 mary) mary
+
+    mary wants john to like someone
+    2
+    want (∃x0.person x0 ∧ like x0 john) mary
+
+    ∃x0.person x0 ∧ want (like x0 john) mary
+    mary wants everyone to like someone
+    3
+    ∀x0.person x0 ⊃ want (∃x1.person x1 ∧ like x1 x0) mary
+    ∀x0.person x0 ⊃ (∃x1.person x1 ∧ want (like x1 x0) mary)
+    ∃x0.person x0 ∧ (∀x1.person x1 ⊃ want (like x0 x1) mary)
+
+    mary says john likes bill
+    1
+    say (like bill john) mary
+
+    mary says everyone likes bill
+    1
+    say (∀x0.person x0 ⊃ like bill x0) mary
+
+    mary reads a book which john likes
+    2
+    ∃x0.(book x0 ∧ like x0 john) ∧ read x0 mary
+    ∃x0.(book x0 ∧ like x0 john) ∧ read x0 mary
+
+    mary reads a book the author of which john likes
+    2
+    ∃x0.(book x0 ∧ like (the (λx1.(of x0 (λx2.(author x2)) x1))) john) ∧ read x0 mary
+    ∃x0.(book x0 ∧ like (the (λx1.(of x0 (λx2.(author x2)) x1))) john) ∧ read x0 mary
+
+    mary sees foxes
+    1
+    ∃x0.(∃x1.(∃x2.x0 x1 ∧ x0 x2 ∧ x1 ≢ x2)) ∧ (∀x3.x0 x3 ⊃ (fox x3 ∧ see x3 mary))
+
+    mary sees the fox
+    1
+    see (the (λx0.(fox x0))) mary
+
+    mary sees a fox
+    1
+    ∃x0.fox x0 ∧ see x0 mary
