@@ -12,18 +12,18 @@
     \end{minipage}
     \\[1\baselineskip]
     \begin{pfbox}
-      \AXC{$\struct{A}\fCenter Δ$}
+      \AXC{$\focus{A}\fCenter Δ$}
       \RightLabel{L\&$_1$}
       \UIC{$\struct{A\& B}\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
-      \AXC{$\struct{B}\fCenter Δ$}
+      \AXC{$\focus{B}\fCenter Δ$}
       \RightLabel{L\&$_2$}
       \UIC{$\struct{A\& B}\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
-      \AXC{$Γ\fCenter\focus{A}$}
-      \AXC{$Γ\fCenter\focus{B}$}
+      \AXC{$Γ\fCenter\struct{A}$}
+      \AXC{$Γ\fCenter\struct{B}$}
       \RightLabel{R\&}
       \BIC{$Γ\fCenter\focus{A\& B}$}
     \end{pfbox}
@@ -33,18 +33,18 @@
       \tr[(A\& B)] \mapsto \tr[A]\times\tr[B]
     \]
     \begin{pfblock}
-      \AXC{$x:\struct{A}\fCenter M:Δ$}
+      \AXC{$x:\focus{A}\fCenter M:Δ$}
       \RightLabel{L\&$_1$}
       \UIC{$z:\struct{A\& B}\fCenter \case{z}{x}{\_}{M}:Δ$}
     \end{pfblock}
     \begin{pfblock}
-      \AXC{$y:\struct{B}\fCenter M:Δ$}
+      \AXC{$y:\focus{B}\fCenter M:Δ$}
       \RightLabel{L\&$_2$}
       \UIC{$z:\struct{A\& B}\fCenter \case{z}{\_}{y}{M}:Δ$}
     \end{pfblock}
     \begin{pfblock}
-      \AXC{$x:Γ\fCenter\focus{M:A}$}
-      \AXC{$x:Γ\fCenter\focus{N:B}$}
+      \AXC{$x:Γ\fCenter\struct{M:A}$}
+      \AXC{$x:Γ\fCenter\struct{N:B}$}
       \RightLabel{R\&}
       \BIC{$x:Γ\fCenter\focus{(M,N):A\& B}$}
     \end{pfblock}

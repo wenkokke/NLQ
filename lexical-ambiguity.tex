@@ -15,15 +15,15 @@ type.
 
 We introduce `\&' in \autoref{fig:extension-lexical-ambiguity}, with
 the associated inference rules, and term labelling in \lamET. You may
-notice that the left rules seem to \emph{forget} either the left- or
+notice that the left rules seem to \textit{forget} either the left- or
 the right-hand argument, and that in the right rule the context $Γ$ is
-\emph{shared} between the two branches. While this looks like it uses
-weakening and contraction, it is perfectly benign. What it encodes is a
-\emph{choice}.
-The right rule says that if you can construct $A$ from $Γ$, and you
-can construct $B$ from $Γ$, and you have \emph{one} $Γ$, then you have
-a choice between constructing either an $A$ or a $B$.
-The left rules make this choice.
+\textit{shared} between the two branches. While these look like
+applications of weakening and contraction, it is perfectly
+benign. What `\&' encodes is a \textit{choice}: The right rule says
+that if you can construct $A$ from $Γ$, and you can construct $B$ from
+$Γ$, and you have \textit{one} $Γ$, then you have a choice between
+constructing either an $A$ or a $B$. The left rules commit to
+\textit{one} of these options.
 
 Again, we have to prove condition \textbf{C8}, in order to show that
 this extension is compatible with display calculus. This time, the

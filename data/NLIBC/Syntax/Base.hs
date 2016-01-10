@@ -306,25 +306,25 @@ data Syn :: Sequent -> * where
   FocR   :: Pos b -> Syn (x :⊢> b) -> Syn (x :⊢ StO b)
   FocL   :: Neg a -> Syn (a :<⊢ y) -> Syn (StI a :⊢ y)
 
-  WithL1 :: Syn (a1 :<⊢ y) -> Syn (a1 :& a2 :<⊢ y)
-  WithL2 :: Syn (a2 :<⊢ y) -> Syn (a1 :& a2 :<⊢ y)
-  WithR  :: Syn (x :⊢> b1) -> Syn (x :⊢> b2) -> Syn (x :⊢> b1 :& b2)
+  WithL1 :: Syn (a1 :<⊢ y) -> Syn (StI (a1 :& a2) :⊢ y)
+  WithL2 :: Syn (a2 :<⊢ y) -> Syn (StI (a1 :& a2) :⊢ y)
+  WithR  :: Syn (x :⊢ StO b1) -> Syn (x :⊢ StO b2) -> Syn (x :⊢> b1 :& b2)
 
   ImpRL  :: Syn (x :⊢> a) -> Syn (b :<⊢ y) -> Syn (ImpR k a b :<⊢ IMPR k x y)
   ImpRR  :: Syn (x :⊢ IMPR k (StI a) (StO b)) -> Syn (x :⊢ StO (ImpR k a b))
   ImpLL  :: Syn (x :⊢> a) -> Syn (b :<⊢ y) -> Syn (ImpL k b a :<⊢ IMPL k y x)
   ImpLR  :: Syn (x :⊢ IMPL k (StO b) (StI a)) -> Syn (x :⊢ StO (ImpL k b a))
-  Res11  :: Syn (y :⊢ IMPR k x z) -> Syn (PROD k x y :⊢ z)
-  Res12  :: Syn (PROD k x y :⊢ z) -> Syn (y :⊢ IMPR k x z)
-  Res13  :: Syn (x :⊢ IMPL k z y) -> Syn (PROD k x y :⊢ z)
-  Res14  :: Syn (PROD k x y :⊢ z) -> Syn (x :⊢ IMPL k z y)
+  ResRP  :: Syn (y :⊢ IMPR k x z) -> Syn (PROD k x y :⊢ z)
+  ResPR  :: Syn (PROD k x y :⊢ z) -> Syn (y :⊢ IMPR k x z)
+  ResLP  :: Syn (x :⊢ IMPL k z y) -> Syn (PROD k x y :⊢ z)
+  ResPL  :: Syn (PROD k x y :⊢ z) -> Syn (x :⊢ IMPL k z y)
 
   DiaL   :: Syn (DIA k (StI a) :⊢ y) -> Syn (StI (Dia k a) :⊢ y)
   DiaR   :: Syn (x :⊢> b) -> Syn (DIA k x :⊢> Dia k b)
   BoxL   :: Syn (a :<⊢ y) -> Syn (Box k a :<⊢ BOX k y)
   BoxR   :: Syn (x :⊢ BOX k (StO b)) -> Syn (x :⊢ StO (Box k b))
-  Res21  :: Syn (x :⊢ BOX k y) -> Syn (DIA k x :⊢ y)
-  Res22  :: Syn (DIA k x :⊢ y) -> Syn (x :⊢ BOX k y)
+  ResBD  :: Syn (x :⊢ BOX k y) -> Syn (DIA k x :⊢ y)
+  ResDB  :: Syn (DIA k x :⊢ y) -> Syn (x :⊢ BOX k y)
 
   IfxRR   :: Syn ((x :∙ y) :∙ IFX z :⊢ w) -> Syn (x :∙ (y :∙ IFX z) :⊢ w)
   IfxLR   :: Syn ((x :∙ y) :∙ IFX z :⊢ w) -> Syn ((x :∙ IFX z) :∙ y :⊢ w)
@@ -364,31 +364,31 @@ deriving instance Show (Syn s)
 
 up :: SContext x -> Syn (Plug x y :⊢ z) -> Syn (y :∘ Trace x :⊢ z)
 up SHOLE      f = UnitRI f
-up (x :%<∙ y) f = DnC (Res13 (unsafeCoerce (up x (Res14 (unsafeCoerce f)))))
-up (x :%∙> y) f = DnB (Res11 (unsafeCoerce (up y (Res12 (unsafeCoerce f)))))
+up (x :%<∙ y) f = DnC (ResLP (unsafeCoerce (up x (ResPL (unsafeCoerce f)))))
+up (x :%∙> y) f = DnB (ResRP (unsafeCoerce (up y (ResPR (unsafeCoerce f)))))
 
 down :: SContext x -> Syn (StI a :∘ Trace x :⊢ z) -> Syn (Plug x (StI (QR a)) :⊢ z)
 down x f = unsafeCoerce (init x (unsafeCoerce (move x f)))
   where
     init :: SContext x -> Syn (Plug x (StI a :∘ I) :⊢ y) -> Syn (Plug x (StI (QR a)) :⊢ y)
     init SHOLE      f = UnitRL f
-    init (x :%<∙ y) f = Res13 (unsafeCoerce (init x (Res14 (unsafeCoerce f))))
-    init (x :%∙> y) f = Res11 (unsafeCoerce (init y (Res12 (unsafeCoerce f))))
+    init (x :%<∙ y) f = ResLP (unsafeCoerce (init x (ResPL (unsafeCoerce f))))
+    init (x :%∙> y) f = ResRP (unsafeCoerce (init y (ResPR (unsafeCoerce f))))
     move :: SContext x -> Syn (y :∘ Trace x :⊢ z) -> Syn (Plug x (y :∘ I) :⊢ z)
     move SHOLE      f = f
-    move (x :%<∙ y) f = Res13 (unsafeCoerce (move x (Res14 (UpC (unsafeCoerce f)))))
-    move (x :%∙> y) f = Res11 (unsafeCoerce (move y (Res12 (UpB (unsafeCoerce f)))))
+    move (x :%<∙ y) f = ResLP (unsafeCoerce (move x (ResPL (UpC (unsafeCoerce f)))))
+    move (x :%∙> y) f = ResRP (unsafeCoerce (move y (ResPR (UpB (unsafeCoerce f)))))
 
 qrL :: SContext x
     -> Syn (Trace x :⊢> b)
     -> Syn (c :<⊢ y)
     -> Syn (Plug x (StI (QR (c :⇦ b))) :⊢ y)
-qrL x f g = unsafeCoerce (down x (Res13 (FocL Neg_ImpL (ImpLL f g))))
+qrL x f g = unsafeCoerce (down x (ResLP (FocL Neg_ImpL (ImpLL f g))))
 
 qrR :: SContext x
     -> Syn (Plug x (StI a) :⊢ StO b)
     -> Syn (Trace x :⊢ StO (a :⇨ b))
-qrR x f = ImpRR (Res12 (up x f))
+qrR x f = ImpRR (ResPR (up x f))
 
 
 -- * Forgetful version of `Syn` type for easy deriving of Ord
@@ -403,9 +403,9 @@ data USyn
    | UUnfR   USyn      | UUnfL   USyn | UFocR   USyn      | UFocL USyn
    | UWithL1 USyn      | UWithL2 USyn | UWithR  USyn USyn
    | UImpRL  USyn USyn | UImpRR  USyn | UImpLL  USyn USyn | UImpLR USyn
-   | URes11  USyn      | URes12  USyn | URes13  USyn      | URes14 USyn
+   | UResRP  USyn      | UResPR  USyn | UResLP  USyn      | UResPL USyn
    | UDiaL   USyn      | UDiaR   USyn | UBoxL   USyn      | UBoxR USyn
-   | URes21  USyn      | URes22  USyn
+   | UResBD  USyn      | UResDB  USyn
    | UIfxRR  USyn      | UIfxLR  USyn | UIfxLL  USyn      | UIfxRL USyn
    | UExtRR  USyn      | UExtLR  USyn | UExtLL  USyn      | UExtRL USyn
    | UUnitRL USyn      | UUnitRR USyn | UUnitRI USyn
@@ -426,16 +426,16 @@ forget (ImpRL  f g) = UImpRL  (forget f) (forget g)
 forget (ImpRR  f)   = UImpRR  (forget f)
 forget (ImpLL  f g) = UImpLL  (forget f) (forget g)
 forget (ImpLR  f)   = UImpLR  (forget f)
-forget (Res11  f)   = URes11  (forget f)
-forget (Res12  f)   = URes12  (forget f)
-forget (Res13  f)   = URes13  (forget f)
-forget (Res14  f)   = URes14  (forget f)
+forget (ResRP  f)   = UResRP  (forget f)
+forget (ResPR  f)   = UResPR  (forget f)
+forget (ResLP  f)   = UResLP  (forget f)
+forget (ResPL  f)   = UResPL  (forget f)
 forget (DiaL   f)   = UDiaL   (forget f)
 forget (DiaR   f)   = UDiaR   (forget f)
 forget (BoxL   f)   = UBoxL   (forget f)
 forget (BoxR   f)   = UBoxR   (forget f)
-forget (Res21  f)   = URes21  (forget f)
-forget (Res22  f)   = URes22  (forget f)
+forget (ResBD  f)   = UResBD  (forget f)
+forget (ResDB  f)   = UResDB  (forget f)
 forget (IfxRR  f)   = UIfxRR  (forget f)
 forget (IfxLR  f)   = UIfxLR  (forget f)
 forget (IfxLL  f)   = UIfxLL  (forget f)

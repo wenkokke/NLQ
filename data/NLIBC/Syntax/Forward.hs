@@ -91,8 +91,8 @@ findAll sxs sb = case setup sxs sb of
       fun1 :: PartialProof -> [PartialProof]
       fun1 (ts0,xs0) = do
         f                   <- [unfR,unfL,focR,focL,impRR,impLR
-                               ,res11,res12,res13,res14,qrR'
-                               ,diaL,diaR,boxL,boxR,res21,res22
+                               ,resRP,resPR,resLP,resPL,qrR'
+                               ,diaL,diaR,boxL,boxR,resBD,resDB
                                ,ifxRR,ifxLR,ifxLL,ifxRL
                                ,extRR,extLR,extLL,extRL]
         x1                  <- xs0     ; let xs1 = xs0 `minus` [x1]
@@ -149,23 +149,23 @@ findAll sxs sb = case setup sxs sb of
         return ([fromSing t],Typed (x :%⊢ SStO t) (ImpLR f))
       impLR _ = empty
 
-      res11,res12,res13,res14 :: Typed -> [([Type],Typed)]
-      res11 (Typed (y :%⊢ SIMPR k x z) (Res12 _)) = empty
-      res11 (Typed (y :%⊢ SIMPR k x z) f)         =
-        return ([],Typed (SPROD k x y :%⊢ z) (Res11 f))
-      res11 _                                     = empty
-      res12 (Typed (SPROD k x y :%⊢ z) (Res11 _)) = empty
-      res12 (Typed (SPROD k x y :%⊢ z) f)         =
-        return ([],Typed (y :%⊢ SIMPR k x z) (Res12 f))
-      res12 _                                     = empty
-      res13 (Typed (x :%⊢ SIMPL k z y) (Res14 _)) = empty
-      res13 (Typed (x :%⊢ SIMPL k z y) f)         =
-        return ([],Typed (SPROD k x y :%⊢ z) (Res13 f))
-      res13 _                                     = empty
-      res14 (Typed (SPROD k x y :%⊢ z) (Res13 _)) = empty
-      res14 (Typed (SPROD k x y :%⊢ z) f)         =
-        return ([],Typed (x :%⊢ SIMPL k z y) (Res14 f))
-      res14 _                                     = empty
+      resRP,resPR,resLP,resPL :: Typed -> [([Type],Typed)]
+      resRP (Typed (y :%⊢ SIMPR k x z) (ResPR _)) = empty
+      resRP (Typed (y :%⊢ SIMPR k x z) f)         =
+        return ([],Typed (SPROD k x y :%⊢ z) (ResRP f))
+      resRP _                                     = empty
+      resPR (Typed (SPROD k x y :%⊢ z) (ResRP _)) = empty
+      resPR (Typed (SPROD k x y :%⊢ z) f)         =
+        return ([],Typed (y :%⊢ SIMPR k x z) (ResPR f))
+      resPR _                                     = empty
+      resLP (Typed (x :%⊢ SIMPL k z y) (ResPL _)) = empty
+      resLP (Typed (x :%⊢ SIMPL k z y) f)         =
+        return ([],Typed (SPROD k x y :%⊢ z) (ResLP f))
+      resLP _                                     = empty
+      resPL (Typed (SPROD k x y :%⊢ z) (ResLP _)) = empty
+      resPL (Typed (SPROD k x y :%⊢ z) f)         =
+        return ([],Typed (x :%⊢ SIMPL k z y) (ResPL f))
+      resPL _                                     = empty
 
       qrL' :: Typed -> Typed -> [([Type],Typed)]
       qrL' (Typed (sig :%⊢> b) f) (Typed (c :%<⊢ y) g) = case sFollow sig of
@@ -199,15 +199,15 @@ findAll sxs sb = case setup sxs sb of
         let t = SBox k b in return ([fromSing t],Typed (x :%⊢ SStO t) (BoxR f))
       boxR _                                 = empty
 
-      res21,res22 :: Typed -> [([Type],Typed)]
-      res21 (Typed (x :%⊢ SBOX k y) (Res22 _)) = empty
-      res21 (Typed (x :%⊢ SBOX k y) f)         =
-        return ([],Typed (SDIA k x :%⊢ y) (Res21 f))
-      res21 _                                  = empty
-      res22 (Typed (SDIA k x :%⊢ y) (Res21 _)) = empty
-      res22 (Typed (SDIA k x :%⊢ y) f)         =
-        return ([],Typed (x :%⊢ SBOX k y) (Res22 f))
-      res22 _                                  = empty
+      resBD,resDB :: Typed -> [([Type],Typed)]
+      resBD (Typed (x :%⊢ SBOX k y) (ResDB _)) = empty
+      resBD (Typed (x :%⊢ SBOX k y) f)         =
+        return ([],Typed (SDIA k x :%⊢ y) (ResBD f))
+      resBD _                                  = empty
+      resDB (Typed (SDIA k x :%⊢ y) (ResBD _)) = empty
+      resDB (Typed (SDIA k x :%⊢ y) f)         =
+        return ([],Typed (x :%⊢ SBOX k y) (ResDB f))
+      resDB _                                  = empty
 
       ifxRR,ifxLR,ifxLL,ifxRL :: Typed -> [([Type],Typed)]
       ifxRR (Typed ((x :%∙ y) :%∙ SIFX z :%⊢ w) f) =

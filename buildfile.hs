@@ -100,7 +100,7 @@ main =
         ["--latex"
         ,"--latex-dir=_build"
         ,"-i."
-        ,"-i/usr/local/Cellar/agda/2.4.2.4_2/agda-stdlib/src"
+        ,"-i/usr/local/lib/agda/src"
         ,"NLPlus.lagda"
         ]
 
