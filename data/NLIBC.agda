@@ -40,6 +40,7 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
     El    : Atom → Type
     Dia   : Kind → Type → Type
     Box   : Kind → Type → Type
+    _&_   : Type → Type → Type
     UnitR : Kind → Type → Type
     ImpR  : Kind → Type → Type → Type
     ImpL  : Kind → Type → Type → Type
@@ -71,6 +72,7 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
         Pol' (El    a)     = Pol(a)
         Pol' (Dia   _ _)   = +
         Pol' (Box   _ _)   = -
+        Pol' (a & b)       = +
         Pol' (UnitR _ _)   = +
         Pol' (ImpR  _ _ _) = -
         Pol' (ImpL  _ _ _) = -
@@ -200,6 +202,10 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
     resLP  : ∀ {k x y z}   → NL x ⊢ IMPL k z y → NL PROD k x y ⊢ z
     resPL  : ∀ {k x y z}   → NL PROD k x y ⊢ z → NL x ⊢ IMPL k z y
 
+    withL1 : ∀ {a1 a2 y}   → NL [ a1 ]⊢ y  → NL · a1 & a2 · ⊢ y
+    withL2 : ∀ {a1 a2 y}   → NL [ a2 ]⊢ y  → NL · a1 & a2 · ⊢ y
+    withR  : ∀ {b1 b2 x}   → NL x ⊢ · b1 · → NL x ⊢ · b2 · → NL x ⊢[ b1 & b2 ]
+
     unitRL : ∀ {k y a}     → NL PROD k · a · (UNIT k) ⊢ y → NL · UnitR k a · ⊢ y
     unitRR : ∀ {k x b}     → NL x ⊢[ b ] → NL PROD k x (UNIT k) ⊢[ UnitR k b ]
     unitRI : ∀ {k x y}     → NL x ⊢ y → NL PROD k x (UNIT k) ⊢ y
@@ -316,6 +322,7 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
   lem-Neg-St (El      a)   n = refl
   lem-Neg-St (Dia   k a)   ()
   lem-Neg-St (Box   k a)   n = refl
+  lem-Neg-St (a & b)       ()
   lem-Neg-St (UnitR k a)   ()
   lem-Neg-St (ImpR  k a b) n = refl
   lem-Neg-St (ImpL  k b a) n = refl
@@ -324,6 +331,7 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
   lem-Pos-St (El      a)   p = refl
   lem-Pos-St (Dia   k a)   p = refl
   lem-Pos-St (Box   k a)   ()
+  lem-Pos-St (a & b)       p = refl
   lem-Pos-St (UnitR k a)   p = refl
   lem-Pos-St (ImpR  k a b) ()
   lem-Pos-St (ImpL  k b a) ()
@@ -336,6 +344,7 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
     stL {a = El      a  } f = f
     stL {a = Dia   k a  } f = diaL (resBD (stL (resDB f)))
     stL {a = Box   k a  } f = f
+    stL {a = a & b}       f = f
     stL {a = UnitR k a  } f = unitRL (resLP (stL (resPL f)))
     stL {a = ImpR  k a b} f = f
     stL {a = ImpL  k b a} f = f
@@ -344,6 +353,7 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
     stR {b = El      a  } f = f
     stR {b = Dia   k a  } f = f
     stR {b = Box   k a  } f = boxR (resDB (stR (resBD f)))
+    stR {b = a & b}       f = f
     stR {b = UnitR k a  } f = f
     stR {b = ImpR  k a b} f = impRR (resPR (stR (resLP (stL (resPL (resRP f))))))
     stR {b = ImpL  k b a} f = impLR (resPL (stR (resRP (stL (resPR (resLP f))))))
@@ -365,19 +375,21 @@ module Syn (Atom : Set) (PolarisedAtom : Polarised Atom) where
 
     axR' : ∀ {b} → Pol(b) ≡ + → NL St b ⊢[ b ]
     axR' {El      a}   p = axElR p
-    axR' {Dia   x a}   p = diaR axR
+    axR' {Dia   x a}   _ = diaR axR
     axR' {Box   x a}   ()
-    axR' {UnitR x a}   p = unitRR axR
+    axR' {a & b}       _ = withR (stR (withL1 axL)) (stR (withL2 axL))
+    axR' {UnitR x a}   _ = unitRR axR
     axR' {ImpR  x a b} ()
     axR' {ImpL  x b a} ()
 
     axL' : ∀ {a} → Pol(a) ≡ - → NL [ a ]⊢ St a
     axL' {El      a}   n = axElL n
     axL' {Dia   x a}   ()
-    axL' {Box   x a}   n = boxL axL
+    axL' {Box   x a}   _ = boxL axL
+    axL' {a & b}       ()
     axL' {UnitR x a}   ()
-    axL' {ImpR  x a b} n = impRL axR axL
-    axL' {ImpL  x b a} n = impLL axR axL
+    axL' {ImpR  x a b} _ = impRL axR axL
+    axL' {ImpL  x b a} _ = impLL axR axL
 
   ax : ∀ {a} → NL · a · ⊢ · a ·
   ax {a} with Pol(a) | inspect Pol(a)
@@ -440,9 +452,10 @@ module Example where
   module Atom where
   {- -}
     data Atom : Set where
-      S  : Atom
-      N  : Atom
-      NP : Atom
+      S   : Atom
+      N   : Atom
+      NP  : Atom
+      INF : Atom
   {- -}
   open Atom using (Atom)
 
@@ -451,12 +464,19 @@ module Example where
 
   open Syn Atom PolarisedAtom
 
-  pattern S  = El Atom.S
-  pattern N  = El Atom.N
-  pattern NP = El Atom.NP
+  pattern S   = El Atom.S
+  pattern N   = El Atom.N
+  pattern NP  = El Atom.NP
+  pattern INF = El Atom.INF
+  pattern IV  = NP ⇒ S
+  pattern TV  = IV ⇐ NP
 
   mary   = ·_· {+} (NP)
-  reads  = ·_· {+} ((NP ⇒ S) ⇐ NP)
+  bill   = ·_· {+} (NP)
+  wants  = ·_· {+} ((IV ⇐ INF) & ((IV ⇐ INF) ⇐ NP))
+  to     = ·_· {+} (INF ⇐ IV)
+  leave  = ·_· {+} (IV)
+  reads  = ·_· {+} (TV)
   a      = ·_· {+} (Q (S ⇦ (NP ⇨ S)) ⇐ N)
   book   = ·_· {+} (N)
   the    = ·_· {+} (NP ⇐ N)
@@ -464,10 +484,11 @@ module Example where
   of     = ·_· {+} ((N ⇒ N) ⇐ NP)
   which  = ·_· {+} (Q (((N ⇒ N) ⇐ (S ⇂ NP)) ⇦ (NP ⇨ NP)))
   john   = ·_· {+} (NP)
-  likes  = ·_· {+} ((NP ⇒ S) ⇐ NP)
+  likes  = ·_· {+} (TV)
 
-  prf : NL (mary ∙ reads ∙ a ∙ book ∙ (the ∙ author ∙ of ∙ which) ∙ john ∙ likes ⊢ · S ·)
-  prf =
+
+  prf1 : NL (mary ∙ reads ∙ a ∙ book ∙ (the ∙ author ∙ of ∙ which) ∙ john ∙ likes ⊢ · S ·)
+  prf1 =
     (resRP (resRP (resLP (focL refl (impLL
     (unfR refl (resRP (resLP
     (qrL (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (unfR refl
@@ -481,358 +502,8 @@ module Example where
     (qrR (PROD2 _ (PROD2 _ HOLE)) (resRP (resLP (focL refl axL))))) axL))))
     )))))
 
-  {-
-  (resRP (resRP (resLP (focL refl (impLL
-      (unfR refl (resRP (resLP
-        (qrL (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (unfR refl
-        (qrR (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (resLP (focL refl
-          (impLL (unfR refl (resRP (resLP (focL refl axL)))) axL)))))
-        (impLL (unfR refl (impLR (resPL (resRP (diaL (resPR (ifxRR
-        (resRP (resLP (focL refl (impLL (unfR refl (resBD (focL refl
-        (boxL axL)))) axL))))))))))) axL)))))
-      (unfL refl (resPR (resPR
-        (qrL (PROD2 _ (PROD2 _ HOLE)) (unfR refl
-        (qrR (PROD2 _ (PROD2 _ HOLE)) (resRP (resLP (focL refl axL))))) axL))))
-    )))))
-  -}
-
-{-
-module SynToAgda
-  (Atom : Set)
-  (PolarisedAtom : Polarised Atom)
-  (TranslateAtom : Translate Atom Set)
-  where
-
-
-  open import Function     using (id; flip; _∘_)
-  open import Data.Unit    using (⊤; tt)
-  open import Data.Product using (_×_; _,_)
-  open module ISyn = Syn Atom PolarisedAtom hiding (_∘_)
-
-
-  instance
-    TranslateType : Translate NL.Type Set
-    TranslateType = record { _* = _*′ }
-      where
-        _*′ : NL.Type → Set
-        El      a   *′ = a *
-        Dia   _ a   *′ = a *′
-        Box   _ a   *′ = a *′
-        UnitR _ a   *′ = a *′
-        ImpR  _ a b *′ = a *′ → b *′
-        ImpL  _ b a *′ = a *′ → b *′
-
-    TranslateStruct : ∀ {p} → Translate (NL.Struct p) Set
-    TranslateStruct = record { _* = _*′ }
-      where
-        _*′ : ∀ {p} → NL.Struct p → Set
-        · a ·      *′ = a *
-        B          *′ = ⊤
-        C          *′ = ⊤
-        DIA  _ x   *′ = x *′
-        UNIT _     *′ = ⊤
-        PROD _ x y *′ = x *′ × y *′
-        BOX  _ x   *′ = x *′
-        IMPR _ x y *′ = x *′ → y *′
-        IMPL _ y x *′ = x *′ → y *′
-
-    TranslateSequent : Translate NL.Sequent Set
-    TranslateSequent = record { _* = _*′ }
-      where
-        _*′ : NL.Sequent → Set
-        (  x  ⊢  y  ) *′ = x * → y *
-        ([ a ]⊢  y  ) *′ = a * → y *
-        (  x  ⊢[ b ]) *′ = x * → b *
-
-    TranslateProof : ∀ {s} → Translate (NL s) (s *)
-    TranslateProof = record { _* = _*′ }
-      where
-        _*′ : ∀ {s} → NL s → s *
-        axElR _     *′ = id
-        axElL _     *′ = id
-        unfR  _ f   *′ = f *′
-        unfL  _ f   *′ = f *′
-        focR  _ f   *′ = f *′
-        focL  _ f   *′ = f *′
-        impRL   f g *′ = λ h → g *′ ∘ h ∘ f *′
-        impRR   f   *′ = f *′
-        impLL   f g *′ = λ h → g *′ ∘ h ∘ f *′
-        impLR   f   *′ = f *′
-        resRP   f   *′ = λ{(x , y) → (f *′)  y   x }
-        resLP   f   *′ = λ{(x , y) → (f *′)  x   y }
-        resPR   f   *′ = λ{ y   x  → (f *′) (x , y)}
-        resPL   f   *′ = λ{ x   y  → (f *′) (x , y)}
-        unitRL  f   *′ = λ{ x      → (f *′) (x , _)}
-        unitRR  f   *′ = λ{(x , _) → (f *′)  x     }
-        unitRI  f   *′ = λ{(x , _) → (f *′)  x     }
-        diaL    f   *′ = f *′
-        diaR    f   *′ = f *′
-        boxL    f   *′ = f *′
-        boxR    f   *′ = f *′
-        resBD   f   *′ = f *′
-        resDB   f   *′ = f *′
-        upB     f   *′ = λ{( y , (_ , x) , z) → (f *′) ( x ,      y  , z)}
-        upC     f   *′ = λ{( x , (_ , y) , z) → (f *′) ((x ,      y) , z)}
-        dnB     f   *′ = λ{( x ,      y  , z) → (f *′) ( y , (_ , x) , z)}
-        dnC     f   *′ = λ{((x ,      y) , z) → (f *′) ( x , (_ , y) , z)}
-        ifxRR   f   *′ = λ{( x , y  , z) → (f *′) ((x , y) , z)}
-        ifxLR   f   *′ = λ{((x , z) , y) → (f *′) ((x , y) , z)}
-        ifxLL   f   *′ = λ{((z , y) , x) → (f *′) ( z , y  , x)}
-        ifxRL   f   *′ = λ{( y , z  , x) → (f *′) ( z , y  , x)}
-        extRR   f   *′ = λ{((x , y) , z) → (f *′) ( x , y  , z)}
-        extLR   f   *′ = λ{((x , y) , z) → (f *′) ((x , z) , y)}
-        extLL   f   *′ = λ{( z , y ,  x) → (f *′) ((z , y) , x)}
-        extRL   f   *′ = λ{( z , y ,  x) → (f *′) ( y , z  , x)}
-
-
-module Sem (Atom : Set) where
-
-  open import Function                                   using (_$_)
-  open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym; cong)
-
-  infixr 7 _⊗_
-  infixr 6 _⇒_
-  infixr 5 _∙_ _∙>_
-  infixl 5 _<∙_
-  infix  6 _[_] _<_>
-  infix  2 _⊢_
-  infix  1 ILL_
-
-  data Type : Set where
-    𝟙   : Type
-    El  : Atom → Type
-    _⇒_ : Type → Type → Type
-    _⊗_ : Type → Type → Type
-
-  data Struct : Set where
-    ∅   : Struct
-    ·_· : Type   → Struct
-    _∙_ : Struct → Struct → Struct
-
-  data Context : Set where
-    []   : Context
-    _<∙_ : Context → Struct  → Context
-    _∙>_ : Struct  → Context → Context
-
-  _[_] : Context → Struct → Struct
-  []       [ z ] = z
-  (x <∙ y) [ z ] = (x [ z ]) ∙ y
-  (x ∙> y) [ z ] = x ∙ (y [ z ])
-
-  _<_> : Context → Context → Context
-  []       < z > = z
-  (x <∙ y) < z > = (x < z >) <∙ y
-  (x ∙> y) < z > = x ∙> (y < z >)
-
-  <>-def : ∀ x y {z} → (x < y >) [ z ] ≡ x [ y [ z ] ]
-  <>-def []       y {z}                        = refl
-  <>-def (x <∙ _) y {z} rewrite <>-def x y {z} = refl
-  <>-def (_ ∙> x) y {z} rewrite <>-def x y {z} = refl
-
-  data Sequent : Set where
-    _⊢_ : Struct → Type → Sequent
-
-  data ILL_ : Sequent → Set where
-    ax : ∀ {a}         → ILL · a · ⊢ a
-
-    ⇒I : ∀ {x a b}     → ILL x ∙ · a · ⊢ b → ILL x ⊢ a ⇒ b
-    ⇒E : ∀ {x y a b}   → ILL x ⊢ a ⇒ b → ILL y ⊢ a → ILL x ∙ y ⊢ b
-    ⊗I : ∀ {x y a b}   → ILL x ⊢ a → ILL y ⊢ b → ILL x ∙ y ⊢ a ⊗ b
-    ⊗E : ∀ {x y a b c} → ILL x ⊢ a ⊗ b → ILL (· a · ∙ · b ·) ∙ y ⊢ c → ILL x ∙ y ⊢ c
-    𝟙I :                 ILL ∅ ⊢ 𝟙
-    𝟙E : ∀ {x y c}     → ILL x ⊢ 𝟙 → ILL y ⊢ c → ILL x ∙ y ⊢ c
-
-    ui : ∀ {x c}       → ILL x ∙ ∅ ⊢ c → ILL x ⊢ c
-    cm : ∀ {x y c}   w → ILL w [ x ∙ y ] ⊢ c → ILL w [ y ∙ x ] ⊢ c
-    a1 : ∀ {x y z c} w → ILL w [ x ∙ (y ∙ z) ] ⊢ c → ILL w [ (x ∙ y) ∙ z ] ⊢ c
-    a2 : ∀ {x y z c} w → ILL w [ (x ∙ y) ∙ z ] ⊢ c → ILL w [ x ∙ (y ∙ z) ] ⊢ c
-
-  ue : ∀ {x c} → ILL x ⊢ c → ILL x ∙ ∅ ⊢ c
-  ue f = cm [] (𝟙E 𝟙I f)
-
-  ap : ∀ {x a b} → ILL · a · ⊢ b → ILL x ⊢ a → ILL x ⊢ b
-  ap f x = ui (cm [] (⇒E (⇒I (cm [] (ue f))) x))
-
-  cf : ∀ {a b c} → ILL · a · ∙ · b · ⊢ c → ILL · a ⊗ b · ⊢ c
-  cf f = ui (⊗E ax (ue f))
-
-
-  -- ** Movement
-
-  data FinalStep : Context → Set where
-    []       : FinalStep []
-    _<[]<∙_> : ∀ v x → FinalStep (v < [] <∙ x >)
-    _<_∙>[]> : ∀ v x → FinalStep (v < x ∙> [] >)
-
-  finalStep : ∀ w → FinalStep w
-  finalStep []       = []
-  finalStep (w <∙ x) with finalStep w
-  finalStep (.[]              <∙ x) | []          = []       <[]<∙ x >
-  finalStep (.(v < [] <∙ y >) <∙ x) | v <[]<∙ y > = (v <∙ x) <[]<∙ y >
-  finalStep (.(v < y ∙> [] >) <∙ x) | v < y ∙>[]> = (v <∙ x) < y ∙>[]>
-  finalStep (x ∙> w) with finalStep w
-  finalStep (x ∙> .[])              | []          = []       < x ∙>[]>
-  finalStep (x ∙> .(v < [] <∙ y >)) | v <[]<∙ y > = (x ∙> v) <[]<∙ y >
-  finalStep (x ∙> .(v < y ∙> [] >)) | v < y ∙>[]> = (x ∙> v) < y ∙>[]>
-
-  rewr : ∀ {x y b} → x ≡ y → ILL x ⊢ b → ILL y ⊢ b
-  rewr = P.subst (λ x → ILL x ⊢ _)
-
-  up : ∀ v w {x y a} → ILL v [ x ∙ w [ y ] ] ⊢ a → ILL v [ w [ x ∙ y ] ] ⊢ a
-  up v []       {x} {y} {a} f = f
-  up v (w <∙ z) {x} {y} {a} f
-    = rewr       (<>-def v ([] <∙ z))       $ up (v < [] <∙ z >) w
-    $ rewr  (sym (<>-def v ([] <∙ z)))      $ a1 v f
-  up v (z ∙> w) {x} {y} {a} f
-    = rewr      (<>-def v (z ∙> []))        $ up (v < z ∙> [] >) w
-    $ rewr (sym (<>-def v (z ∙> [])))       $ a2 v
-    $ rewr      (<>-def v ([] <∙ w [ y ]))  $ cm (v < [] <∙ w [ y ] >)
-    $ rewr (sym (<>-def v ([] <∙ w [ y ]))) $ a1 v f
-
-  dn : ∀ v w {x y a} → ILL v [ w [ x ∙ y ] ] ⊢ a → ILL v [ x ∙ w [ y ] ] ⊢ a
-  dn v []       {x} {y} {a} f = f
-  dn v (w <∙ z) {x} {y} {a} f
-    = a2 v                     $ rewr      (<>-def v ([] <∙ z))
-    $ dn (v < [] <∙ z >) w     $ rewr (sym (<>-def v ([] <∙ z))) f
-  dn v (z ∙> w) {x} {y} {a} f
-    = a2 v                     $ rewr      (<>-def v ([] <∙ w [ y ]))
-    $ cm (v < [] <∙ w [ y ] >) $ rewr (sym (<>-def v ([] <∙ w [ y ])))
-    $ a1 v                     $ rewr      (<>-def v (z ∙> []))
-    $ dn (v < z ∙> [] >) w     $ rewr (sym (<>-def v (z ∙> []))) f
-
-  St : Type → Struct
-  St (a ⊗ b) = St a ∙ St b
-  St    𝟙    = ∅
-  St    a    = · a ·
-
-  StAll : Struct → Struct
-  StAll (x ∙ y) = StAll x ∙ StAll y
-  StAll    ∅    = ∅
-  StAll  · a ·  = St a
-
-  mutual
-    st : ∀ {a b} w → ILL w [ · a · ] ⊢ b → ILL w [ St a ] ⊢ b
-    st {a} w f with finalStep w
-    st {a} .[]              f | []
-      = ui (stPrv (ue f))
-    st {a} .(v < [] <∙ x >) f | v <[]<∙ x >
-      = rewr (sym (<>-def v ([] <∙ x)))
-      $        up [] v $ stPrv $ dn [] v
-      $ rewr (<>-def v ([] <∙ x)) f
-    st {a} .(v < x ∙> [] >) f | v < x ∙>[]>
-      = rewr (sym (<>-def v (x ∙> [])))
-      $ cm v $ up [] v $ stPrv $ dn [] v
-      $ cm v $ rewr (<>-def v (x ∙> [])) f
-
-    private
-      stPrv : ∀ {a x b} → ILL · a · ∙ x ⊢ b → ILL St a ∙ x ⊢ b
-      stPrv {a ⊗ b} f
-        = st (([] <∙ _) <∙ _) $ st ((_ ∙> []) <∙ _)
-        $ cm [] (⇒E (⇒I (cm [] f)) (⊗I ax ax))
-      stPrv {  𝟙  } f = 𝟙E 𝟙I (ui (⇒E (⇒I (cm [] f)) 𝟙I))
-      stPrv {El  a} f = f
-      stPrv {a ⇒ b} f = f
-
-  stAll : ∀ {x b} w → ILL w [ x ] ⊢ b → ILL w [ StAll x ] ⊢ b
-  stAll {  ∅  } w f = f
-  stAll {· x ·} w f = st w f
-  stAll {x ∙ y} w f
-    = rewr (<>-def w ([] <∙ _)) $ stAll (w < [] <∙ _ >) $ rewr (sym (<>-def w ([] <∙ _)))
-    $ rewr (<>-def w (_ ∙> [])) $ stAll (w < _ ∙> [] >) $ rewr (sym (<>-def w (_ ∙> []))) f
-
-module SynToSem
-  (Atom1 : Set) (PolarisedAtom1 : Polarised Atom1)
-  (Atom2 : Set) (Translate-Atom : Translate Atom1 Atom2)
-  where
-
-
-  open module NL = Syn Atom1 PolarisedAtom1 hiding (_∙_; _⇒_; ax)
-  open module ISem = Sem Atom2
-
-
-  instance
-    Translate-Type : Translate NL.Type ISem.Type
-    Translate-Type = record { _* = _*′ }
-      where
-        _*′ : NL.Type → ISem.Type
-        El      a   *′ = El (a *)
-        Dia   _ a   *′ = a *′
-        Box   _ a   *′ = a *′
-        UnitR _ a   *′ = a *′
-        ImpR  _ a b *′ = a *′ ⇒ b *′
-        ImpL  _ b a *′ = a *′ ⇒ b *′
-
-    Translate-Struct : ∀ {p} → Translate (NL.Struct p) ISem.Type
-    Translate-Struct = record { _* = _*′ }
-      where
-        _*′ : ∀ {p} → NL.Struct p → ISem.Type
-        · a ·      *′ = a *
-        B          *′ = 𝟙
-        C          *′ = 𝟙
-        DIA  _ x   *′ = x *′
-        UNIT _     *′ = 𝟙
-        PROD _ x y *′ = x *′ ⊗ y *′
-        BOX  _ x   *′ = x *′
-        IMPR _ x y *′ = x *′ ⇒ y *′
-        IMPL _ y x *′ = x *′ ⇒ y *′
-
-    Translate-Sequent : Translate NL.Sequent ISem.Sequent
-    Translate-Sequent = record { _* = _*′ }
-      where
-        _*′ : NL.Sequent → ISem.Sequent
-        (  x  ⊢  y  ) *′ = · x * · ⊢ y *
-        ([ a ]⊢  y  ) *′ = · a * · ⊢ y *
-        (  x  ⊢[ b ]) *′ = · x * · ⊢ b *
-
-    Translate-Proof : ∀ {s} → Translate (NL s) (ILL s *)
-    Translate-Proof = record { _* = _*′ }
-      where
-        _*′ : ∀ {s} → NL s → ILL s *
-        axElR _     *′ = ax
-        axElL _     *′ = ax
-        unfR  _ f   *′ = f *′
-        unfL  _ f   *′ = f *′
-        focR  _ f   *′ = f *′
-        focL  _ f   *′ = f *′
-
-        impRL   f g *′ = ⇒I (ap (g *′) (⇒E ax (f *′)))
-        impRR   f   *′ = f *′
-        impLL   f g *′ = ⇒I (ap (g *′) (⇒E ax (f *′)))
-        impLR   f   *′ = f *′
-        resRP   f   *′ = cf (cm [] (⇒E (f *′) ax))
-        resLP   f   *′ = cf (      (⇒E (f *′) ax))
-        resPR   f   *′ = ⇒I (cm [] (ap (f *′) (⊗I ax ax)))
-        resPL   f   *′ = ⇒I (      (ap (f *′) (⊗I ax ax)))
-
-        unitRL  f   *′ = ap (f *′) (ui (⊗I ax 𝟙I))
-        unitRR  f   *′ = cf (cm [] (𝟙E ax (f *′)))
-        unitRI  f   *′ = cf (cm [] (𝟙E ax (f *′)))
-
-        diaL    f   *′ = f *′
-        diaR    f   *′ = f *′
-        boxL    f   *′ = f *′
-        boxR    f   *′ = f *′
-        resBD   f   *′ = f *′
-        resDB   f   *′ = f *′
-
-        ifxRR   f   *′ = cf (cm [] (⊗E ax (cm [] (             (a2 [] (ap (f *′) (⊗I (⊗I ax ax) ax)))))))
-        ifxLR   f   *′ = cf (      (⊗E ax (a1 [] (cm (_ ∙> []) (a2 [] (ap (f *′) (⊗I (⊗I ax ax) ax)))))))
-        ifxLL   f   *′ = cf (      (⊗E ax (a1 [] (             (      (ap (f *′) (⊗I ax (⊗I ax ax))))))))
-        ifxRL   f   *′ = cf (cm [] (⊗E ax (a1 [] (cm (_ ∙> []) (      (ap (f *′) (⊗I ax (⊗I ax ax))))))))
-
-        extRR   f   *′ = cf (      (⊗E ax (a1 [] (             (      (ap (f *′) (⊗I ax (⊗I ax ax))))))))
-        extLR   f   *′ = cf (      (⊗E ax (a1 [] (cm (_ ∙> []) (a2 [] (ap (f *′) (⊗I (⊗I ax ax) ax)))))))
-        extLL   f   *′ = cf (cm [] (⊗E ax (      (cm       []  (a2 [] (ap (f *′) (⊗I (⊗I ax ax) ax)))))))
-        extRL   f   *′ = cf (cm [] (⊗E ax (a1 [] (cm (_ ∙> []) (      (ap (f *′) (⊗I ax (⊗I ax ax))))))))
-
-        upB     f   *′ = cf (cm [] (⊗E ax (a1 [] (⊗E ax (a1 [] (𝟙E ax (cm (_ ∙> [])
-                         (ap (f *′) (⊗I ax (⊗I ax ax))))))))))
-        upC     f   *′ = cf (cm [] (⊗E ax (a1 [] (⊗E ax (a1 [] (𝟙E ax (a2 [] (cm []
-                         (a2 [] (ap (f *′) (⊗I (⊗I ax ax) ax)))))))))))
-        dnB     f   *′ = cf (cm [] (⊗E ax (a1 [] (ui (a1 [] (a1 (_ ∙> []) (cm (_ ∙> (_ ∙> []))
-                         (cm (_ ∙> []) (ap (f *′) (⊗I ax (⊗I (⊗I 𝟙I ax) ax)))))))))))
-        dnC     f   *′ = cf (⊗E ax (a1 [] (cm (_ ∙> []) (ui (a1 [] (a1 (_ ∙> [])
-                         (cm (_ ∙> (_ ∙> [])) (cm (_ ∙> []) (ap (f *′) (⊗I ax (⊗I (⊗I 𝟙I ax) ax)))))))))))
+  prf2A : NL (mary ∙ wants ∙ to ∙ leave ⊢ · S ·)
+  prf2A = resRP {!!}
 
 -- -}
 -- -}

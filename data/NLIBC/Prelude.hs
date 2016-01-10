@@ -1,7 +1,9 @@
 {-# LANGUAGE GADTs                  #-}
 {-# LANGUAGE DataKinds              #-}
 {-# LANGUAGE RankNTypes             #-}
+{-# LANGUAGE TypeFamilies           #-}
 {-# LANGUAGE TypeOperators          #-}
+{-# LANGUAGE ImplicitParams         #-}
 {-# LANGUAGE KindSignatures         #-}
 {-# LANGUAGE NamedFieldPuns         #-}
 {-# LANGUAGE RecordWildCards        #-}
@@ -25,6 +27,7 @@ import           Control.Arrow (first)
 import           Control.Monad (when)
 import           Data.Char (isSpace)
 import           Data.Maybe (isJust,fromJust)
+import           Data.Proxy (Proxy(..))
 import           Data.Singletons.Decide ((:~:)(..))
 import           Data.Singletons.Prelude (SingI(..))
 import           Data.Singletons.Prelude.List ((:++))
@@ -64,11 +67,11 @@ infix 1 ∷
 (∷) :: Name -> Univ a -> Extern a
 n ∷ a = extern a (PRIM(Prim a n))
 
-lex_ :: SingI a => Extern (H a) -> Entry (StI a)
+lex_ :: (SingI a) => Extern (H a) -> Word a
 lex_ f = Entry (SStI sing) f
 
-lex :: SingI a => Name -> Entry (StI a)
-lex n = let x = sing in Entry (SStI x) (n ∷ (h x))
+lex  :: (SingI a) => Name -> Word a
+lex  n = let a = sing in Entry (SStI a) (n ∷ (h a))
 
 instance Show (Entry x) where
   show (Entry x f) = show (intern (hi x) f)
@@ -89,7 +92,8 @@ instance Combine (Entry t) (Entry t) where
   combine = id
 
 instance (Combine x (Entry a)) => Combine [x] (Entry (DIA KRes a)) where
-  combine [x] = case combine x of (Entry a r) -> Entry (SDIA SKRes a) r
+  combine [x] = case combine x of
+    (Entry a r) -> Entry (SDIA SKRes a) r
 
 instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
          => Combine (x1,x2) (Entry (a1 :∙ a2)) where
@@ -106,8 +110,6 @@ printLength :: Int -> IO ()
 printLength 0 = do putStrLn (red "0")
 printLength n = do putStrLn (show n)
 
-  -- putStr "\x1b[32m"
-
 printAll :: [Expr a] -> IO ()
 printAll = go []
   where
@@ -123,7 +125,7 @@ parseBwd str b e1 = do
     Entry x e2 = combine e1
     seq        = x :%⊢ SStO b
     exprsNL    = Bwd.findAll seq
-    exprsHS    = map (\f -> runHask (eta seq f) Nil $ intern (hi x) e2) exprsNL
+    exprsHS    = map (\f -> app' (runHask (eta seq f) Nil) (intern (hi x) e2)) exprsNL
   putStrLn str
   printLength (length exprsNL)
   printAll exprsHS

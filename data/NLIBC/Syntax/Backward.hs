@@ -42,8 +42,8 @@ search ss = do
     nl = concat
           [ [axR,axL,unfR,unfL,focR,focL]
           , [withL1,withL2,withR]
-          , [impRL,impRR,impLL,impLR,res11,res12,res13,res14]
-          , [diaL,diaR,boxL,boxR,res21,res22]
+          , [impRL,impRR,impLL,impLR,resRP,resPR,resLP,resPL]
+          , [diaL,diaR,boxL,boxR,resBD,resDB]
           , [extLL,extLR,extRL,extRR]
           , [ifxLL,ifxLR,ifxRL,ifxRR]
           , [qrR',qrL']
@@ -75,14 +75,14 @@ search ss = do
     focL  _              = empty
 
     withL1,withL2,withR :: SSequent s -> Search m (Syn s)
-    withL1 (a1 :%& a2 :%<⊢ y) = WithL1 <$> prog (a1 :%<⊢ y)
-    withL1 _                  = empty
-    withL2 (a1 :%& a2 :%<⊢ y) = WithL2 <$> prog (a2 :%<⊢ y)
-    withL2 _                  = empty
-    withR  (x :%⊢> b1 :%& b2) = WithR  <$> prog (x :%⊢> b1) <*> prog (x :%⊢> b2)
-    withR  _                  = empty
+    withL1 (SStI (a1 :%& a2) :%⊢ y) = WithL1 <$> prog (a1 :%<⊢ y)
+    withL1 _                        = empty
+    withL2 (SStI (a1 :%& a2) :%⊢ y) = WithL2 <$> prog (a2 :%<⊢ y)
+    withL2 _                        = empty
+    withR  (x :%⊢> b1 :%& b2)       = WithR  <$> prog (x :%⊢ SStO b1) <*> prog (x :%⊢ SStO b2)
+    withR  _                        = empty
 
-    impRL,impRR,impLL,impLR,res11,res12,res13,res14 :: SSequent s -> Search m (Syn s)
+    impRL,impRR,impLL,impLR,resRP,resPR,resLP,resPL :: SSequent s -> Search m (Syn s)
     impRL (SImpR k1 a b :%<⊢ SIMPR k2 x y) = case k1 %~ k2 of
           Proved Refl                     -> ImpRL <$> prog (x :%⊢> a) <*> prog (b :%<⊢ y)
           _                               -> empty
@@ -95,16 +95,16 @@ search ss = do
     impLL _                                = empty
     impLR (x :%⊢ SStO (SImpL k b a))       = ImpLR <$> prog (x :%⊢ SIMPL k (SStO b) (SStI a))
     impLR _                                = empty
-    res11 (SPROD k x y :%⊢ z)              = Res11 <$> loop (y :%⊢ SIMPR k x z)
-    res11 _                                = empty
-    res12 (y :%⊢ SIMPR k x z)              = Res12 <$> loop (SPROD k x y :%⊢ z)
-    res12 _                                = empty
-    res13 (SPROD k x y :%⊢ z)              = Res13 <$> loop (x :%⊢ SIMPL k z y)
-    res13 _                                = empty
-    res14 (x :%⊢ SIMPL k z y)              = Res14 <$> loop (SPROD k x y :%⊢ z)
-    res14 _                                = empty
+    resRP (SPROD k x y :%⊢ z)              = ResRP <$> loop (y :%⊢ SIMPR k x z)
+    resRP _                                = empty
+    resPR (y :%⊢ SIMPR k x z)              = ResPR <$> loop (SPROD k x y :%⊢ z)
+    resPR _                                = empty
+    resLP (SPROD k x y :%⊢ z)              = ResLP <$> loop (x :%⊢ SIMPL k z y)
+    resLP _                                = empty
+    resPL (x :%⊢ SIMPL k z y)              = ResPL <$> loop (SPROD k x y :%⊢ z)
+    resPL _                                = empty
 
-    diaL, diaR, boxL, boxR, res21, res22 :: SSequent s -> Search m (Syn s)
+    diaL, diaR, boxL, boxR, resBD, resDB :: SSequent s -> Search m (Syn s)
     diaL  (SStI (SDia k a) :%⊢ y)    = DiaL <$> prog (SDIA k (SStI a) :%⊢ y)
     diaL  _                          = empty
     diaR  (SDIA k1 x :%⊢> SDia k2 b) = case k1 %~ k2 of
@@ -117,10 +117,10 @@ search ss = do
     boxL  _                          = empty
     boxR  (x :%⊢ SStO (SBox k a))    = BoxR <$> prog (x :%⊢ SBOX k (SStO a))
     boxR  _                          = empty
-    res21 (SDIA k x :%⊢ y)           = Res21 <$> loop (x :%⊢ SBOX k y)
-    res21 _                          = empty
-    res22 (x :%⊢ SBOX k y)           = Res22 <$> loop (SDIA k x :%⊢ y)
-    res22 _                          = empty
+    resBD (SDIA k x :%⊢ y)           = ResBD <$> loop (x :%⊢ SBOX k y)
+    resBD _                          = empty
+    resDB (x :%⊢ SBOX k y)           = ResDB <$> loop (SDIA k x :%⊢ y)
+    resDB _                          = empty
 
     ifxRR,ifxLR,ifxLL,ifxRL :: SSequent s -> Search m (Syn s)
     ifxRR (x :%∙ (y :%∙ SIFX z) :%⊢ w) = IfxRR <$> loop ((x :%∙ y) :%∙ SIFX z :%⊢ w)

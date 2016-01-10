@@ -1,22 +1,24 @@
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE PatternSynonyms #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE GADTs                #-}
+{-# LANGUAGE DataKinds            #-}
+{-# LANGUAGE PolyKinds            #-}
+{-# LANGUAGE RankNTypes           #-}
+{-# LANGUAGE QuasiQuotes          #-}
+{-# LANGUAGE InstanceSigs         #-}
+{-# LANGUAGE TypeFamilies         #-}
+{-# LANGUAGE TypeOperators        #-}
+{-# LANGUAGE ImplicitParams         #-}
+{-# LANGUAGE PatternSynonyms      #-}
+{-# LANGUAGE TemplateHaskell      #-}
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE ScopedTypeVariables  #-}
+{-# LANGUAGE AllowAmbiguousTypes  #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 module NLIBC.Semantics.Postulate where
 
 
-import           Prelude hiding (($),(!!),fst,snd,abs,lookup)
+import           Prelude hiding ((!!),abs,lookup)
+import           Control.Monad (join)
 import           Control.Monad.Supply
 import qualified NLIBC.Syntax.Base as NL
 import           NLIBC.Syntax.Base
@@ -26,6 +28,7 @@ import           Data.Singletons.Decide
 import           Data.Singletons.Prelude
 import           Data.Singletons.TH (promote,singletons)
 import           Data.Proxy (Proxy(..))
+import           Data.Void (Void)
 import           Text.Printf (printf)
 import           Unsafe.Coerce (unsafeCoerce)
 
@@ -84,7 +87,7 @@ withUnivI T         e = e
 
 -- ** Semantic Expressions
 
-infixl 9 :$, $
+infixl 9 :$
 
 type Name = String
 
@@ -97,30 +100,27 @@ type family EXPR (a :: *) where
   EXPR (a -> b) = (Expr a -> Expr b)
   EXPR (a  , b) = (Expr a  , Expr b)
   EXPR ()       = ()
-  EXPR E        = E
-  EXPR T        = T
+  EXPR E        = Void
+  EXPR T        = Bool
 
 data Expr (a :: *) where
   PRIM :: Prim a -> Expr a
   EXPR :: UnivI a => EXPR a -> Expr a
 
 
--- |Function application, normalising if possible.
-($) :: Expr (a -> b) -> Expr a -> Expr b
-EXPR f $ x =      (f    x)
-PRIM f $ x = PRIM (f :$ x)
+app' :: Expr (a -> b) -> Expr a -> Expr b
+EXPR f `app'` x =      (f    x)
+PRIM f `app'` x = PRIM (f :$ x)
 
+caseof' :: Expr (a  , b) -> Expr (b -> a -> c) -> Expr c
+caseof' (EXPR (x, y)) (EXPR f) = case f y of { EXPR g -> g x ; PRIM g -> PRIM (g :$ x) }
+caseof' xy            f        = PRIM (CaseOf xy f)
 
--- |Case analysis, normalising if possible.
-caseof :: Expr (a  , b) -> Expr (b -> a -> c) -> Expr c
-caseof (EXPR (x, y)) (EXPR f) = case f y of { EXPR g -> g x ; PRIM g -> PRIM (g :$ x) }
-caseof xy            f        = PRIM (CaseOf xy f)
+fst' :: (UnivI a, UnivI b) => Expr (a , b) -> Expr a
+fst' xy = caseof' xy (EXPR(\y -> EXPR(\x -> x)))
 
-fst :: (UnivI a, UnivI b) => Expr (a , b) -> Expr a
-fst xy = caseof xy (EXPR(\y -> EXPR(\x -> x)))
-
-snd :: (UnivI a, UnivI b) => Expr (a , b) -> Expr b
-snd xy = caseof xy (EXPR(\y -> EXPR(\x -> y)))
+snd' :: (UnivI a, UnivI b) => Expr (a , b) -> Expr b
+snd' xy = caseof' xy (EXPR(\y -> EXPR(\x -> y)))
 
 
 -- ** Type Reconstruction
@@ -166,7 +166,9 @@ lookup (SSuc n) (Cons x xs) = lookup n xs
 -- **
 
 not :: Extern T -> Extern T
-not x = Not x
+not (EXPR(True))  = EXPR(False)
+not (EXPR(False)) = EXPR(True)
+not x             = Not x
 
 exists :: Univ a -> (Extern a -> Extern T) -> Extern T
 exists a f = withUnivI a (Exists a (\x -> f (extern a x)))
@@ -175,17 +177,28 @@ forall :: Univ a -> (Extern a -> Extern T) -> Extern T
 forall a f = withUnivI a (ForAll a (\x -> f (extern a x)))
 
 
+infix  6 ≢, ≡
+infixr 4 ∧
+infixr 2 ⊃
+
+(∧) :: Extern T -> Extern T -> Extern T
+EXPR(False) ∧ _           = EXPR(False)
+_           ∧ EXPR(False) = EXPR(False)
+EXPR(True)  ∧ y           = y
+x           ∧ EXPR(True)  = x
+x           ∧ y           = x :∧ y
+
+(⊃) :: Extern T -> Extern T -> Extern T
+EXPR(False) ⊃ _           = EXPR(True)
+EXPR(True)  ⊃ EXPR(True)  = EXPR(True)
+EXPR(True)  ⊃ EXPR(False) = EXPR(False)
+x           ⊃ y           = x :⊃ y
+
+(≡), (≢) :: Extern E -> Extern E -> Extern T
+x ≡ y = x :≡ y
+x ≢ y = x :≢ y
+
 -- ** Pretty-Printing Expressions
-
-infix  6 :/=, :==
-infixr 4 :/\
-infixr 2 :=>
-
-pattern x :/= y = x :≢ y
-pattern x :== y = x :≡ y
-pattern x :/\ y = x :∧ y
-pattern x :=> y = x :⊃ y
-
 
 infix  6 :≢, :≡
 infixr 4 :∧
@@ -209,7 +222,7 @@ ppPrim d (CaseOf xy f) = do x <- supply
                               (a :* b) -> do
                                 let x' = PRIM (Prim a x)
                                 let y' = PRIM (Prim b y)
-                                let f' = (f $ y') $ x'
+                                let f' = app' (app' f y') x'
                                 parens (d > 1)
                                   (printf "case %s of (%s,%s) -> %s" <$>
                                     ppExpr 0 xy <*> pure x <*> pure y <*> ppExpr 2 f')
@@ -266,12 +279,6 @@ type family Extern t where
   Extern E        = Expr E
   Extern T        = Expr T
 
-type family Lift m t where
-  Lift m (a -> b) = (Lift m a -> Lift m b)
-  Lift m (a  , b) = (Lift m a  , Lift m b)
-  Lift m ()       = m (Expr ())
-  Lift m E        = m (Expr E)
-  Lift m T        = m (Expr T)
 
 intern :: Univ a -> Extern a -> Intern a
 intern E          x    = x
@@ -282,36 +289,39 @@ intern (a :*  b) (x,y) =
 intern (a :-> b)  f    =
   withUnivI a (withUnivI b (EXPR(\x -> intern b (f (extern a x)))))
 
+
 extern :: Univ a -> Intern a -> Extern a
-extern E         x = x
-extern T         x = x
-extern Unit      x = x
-extern (a :*  b) x =
-  withUnivI a (withUnivI b (extern a (fst x) , extern b (snd x)))
-extern (a :-> b) f =
-  \x -> extern b (f $ intern a x)
+extern E         x     = x
+extern T         x     = x
+extern Unit      x     = x
+extern (a :*  b) xy    =
+  withUnivI a (withUnivI b (extern a (fst' xy) , extern b (snd' xy)))
+extern (a :-> b) f     =
+  \x -> extern b (app' f (intern a x))
 
 
---lower :: (Monad m) => Proxy m -> Univ a -> m (Extern a) -> Lift m a
---lower m E         e = e
---lower m T         e = e
---lower m Unit      e = e
---lower m (a :*  b) e = (e >>=(\(x,_) -> lift m a x) , e >>=(\(_,y) -> lift m b y))
---lower m (a :-> b) e = _
+type family Lift m a where
+  Lift m (a -> b) = m (Extern a) -> Lift m b
+  Lift m (a  , b) = (Lift m a , Lift m b)
+  Lift m ()       = m (Expr ())
+  Lift m E        = m (Expr E)
+  Lift m T        = m (Expr T)
 
---lift :: (Monad m) => Proxy m -> Univ a -> Extern a -> Lift m a
---lift m E          x    = return x
---lift m T          x    = return x
---lift m Unit       x    = return x
---lift m (a :*  b) (x,y) = (lift m a x , lift m b y)
---lift m (a :-> b)  f    = \x -> _
+joinLift :: (Monad m) => Univ a -> m (Lift m a) -> Lift m a
+joinLift E         x  = join x
+joinLift T         x  = join x
+joinLift Unit      x  = join x
+joinLift (a :*  b) xy =
+  (joinLift a (do (x,y) <- xy; return x) , joinLift b (do (x,y) <- xy; return y))
+joinLift (a :-> b) f  =
+  \x -> joinLift b (do f <- f; return (f x))
 
---map :: (Monad m) => Proxy m -> Univ a -> Univ b -> Extern (a -> b) -> Lift m a -> Lift m b
---map m E         c f x = f <$> x
---map m T         c f x = undefined
---map m Unit      c f x = undefined
---map m (a :*  b) c f x = undefined
---map m (a :-> b) c f x = undefined
+lift :: (Monad m, ?m :: Proxy m) => Univ a -> Extern a -> Lift m a
+lift E          x    = return x
+lift T          x    = return x
+lift Unit       x    = return x
+lift (a :*  b) (x,y) = (lift a x , lift b y)
+lift (a :-> b)  f    = \x -> joinLift b (do x <- x; return (lift b (f x)))
 
 
 -- -}

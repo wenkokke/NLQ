@@ -16,6 +16,7 @@
 ~~~
 
 ~~~{.haskell}
+import Prelude (Monad(..))
 import NLIBC.Prelude
 ~~~
 
@@ -193,8 +194,8 @@ author    = lex "author" ; authors = plural <$ author
 
 ~~~{.haskell}
 some, every :: Word (Q NP S S :← N)
-some      = lex_ (\f g -> exists E (\x -> f x :∧ g x))
-every     = lex_ (\f g -> forall E (\x -> f x :⊃ g x))
+some      = lex_ (\f g -> exists E (\x -> f x ∧ g x))
+every     = lex_ (\f g -> forall E (\x -> f x ⊃ g x))
 a         = some
 someone   = some  <$ person
 everyone  = every <$ person
@@ -220,11 +221,11 @@ wants     = want
 same, different :: Word (Q (Q A (NP :⇨ S) (NP :⇨ S)) S S)
 same      = lex_ same'
   where
-  same' k = exists E (\z -> k (\k' x -> k' (\f y -> f y :∧ y :≡ z) x))
+  same' k = exists E (\z -> k (\k' x -> k' (\f y -> f y :∧ y ≡ z) x))
 different = lex_ diff1
   where
-  diff1 k = exists EET (\f -> diff2 f :∧ k (\k x -> k (\g y -> g y :∧ f x y) x))
-  diff2 f = forall E   (\x -> forall E (\y -> not (exists E (\z -> f z x :∧ f z y))))
+  diff1 k = exists EET (\f -> diff2 f ∧ k (\k x -> k (\g y -> g y ∧ f x y) x))
+  diff2 f = forall E   (\x -> forall E (\y -> not (exists E (\z -> f z x ∧ f z y))))
 ~~~
 
 ~~~{.haskell}
@@ -232,9 +233,9 @@ type WHICH1 = Q NP NP ((N :→ N) :← (NP :⇃ S))
 type WHICH2 = Q NP NP ((N :→ N) :← (S :⇂ NP))
 
 which :: Word (WHICH1 :& WHICH2)
-which = lex_ (which',which')
+which = lex_ (which' , which')
   where
-    which' f g h x = h x :∧ (g (f x))
+    which' f g h x = h x ∧ (g (f x))
 ~~~
 
 Utility Functions
@@ -247,9 +248,9 @@ notEmpty =
 
 moreThanOne :: (Expr E -> Expr T)  -> Expr T
 moreThanOne =
-  (\f -> exists E (\x -> exists E (\y -> f x :∧ f y :∧ x :≢ y)))
+  (\f -> exists E (\x -> exists E (\y -> f x ∧ f y ∧ x ≢ y)))
 
 plural :: Word (NS :← N)
 plural = lex_
-  (\f g -> exists ET (\h -> moreThanOne h :∧ forall E (\x -> h x :⊃ (f x :∧ g x))))
+  (\f g -> exists ET (\h -> moreThanOne h ∧ forall E (\x -> h x ⊃ (f x ∧ g x))))
 ~~~

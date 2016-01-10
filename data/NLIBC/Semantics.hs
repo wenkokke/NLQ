@@ -12,11 +12,10 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UndecidableInstances #-}
 module NLIBC.Semantics
-       (Sem,eta,HS,HI,HO,H,withHS,withHI,withHO,withH,hs,hi,ho,h
-       ) where
+       (Sem,eta,HS,HI,HO,H,withHS,withHI,withHO,withH,hs,hi,ho,h) where
 
 
-import           Prelude hiding (($),(!!),abs,lookup)
+import           Prelude hiding ((!!),abs,lookup)
 import           Control.Monad.Supply
 import qualified NLIBC.Syntax.Base as NL
 import           NLIBC.Syntax.Base
@@ -29,7 +28,7 @@ import           Text.Printf (printf)
 import           Unsafe.Coerce (unsafeCoerce)
 import           NLIBC.Semantics.Postulate (E,T,Name,Prim(..),Expr(..),EXPR
                                            ,Env(..),SNat,(:!!),UnivI(..),Univ(..)
-                                           ,Hask(..),TypeOf(..),($),lookup
+                                           ,Hask(..),TypeOf(..),lookup
                                            ,n0,n1,n2,n3,n4,n5,n6,n7,n8,n9)
 import qualified NLIBC.Semantics.Postulate as P
 
@@ -80,11 +79,11 @@ class Sem repr where
 instance Sem Hask where
   var    n                  = Hask (\env -> lookup n env)
   abs    (Hask f)           = Hask (\env -> EXPR(\x -> f (Cons x env)))
-  app    (Hask f)  (Hask x) = Hask (\env -> f env $ x env)
+  app    (Hask f)  (Hask x) = Hask (\env -> f env `P.app'` x env)
   unit                      = Hask (\env -> EXPR())
   pair   (Hask x)  (Hask y) = Hask (\env -> EXPR(x env, y env))
   caseof (Hask xy)       f  =
-    case abs (abs f) of Hask f' -> Hask (\env -> P.caseof (xy env) (f' env))
+    case abs (abs f) of Hask f' -> Hask (\env -> P.caseof' (xy env) (f' env))
 
 
 -- ** Translation from Syntactic Types into Semantic Types
@@ -177,15 +176,15 @@ eta (x :%⊢ SStO b)    (FocR  _ f) = eta (x :%⊢> b) f
 eta (SStI a :%⊢ y)    (FocL  _ f) = eta (a :%<⊢ y) f
 
 -- With
-eta (a :%& b :%<⊢ y) (WithL1  f)  =
-  withH a (withH b (withHO y (
-    abs (eta (a :%<⊢ y) f `app` proj1 v0))))
-eta (a :%& b :%<⊢ y) (WithL2  f)  =
-  withH a (withH b (withHO y (
-    abs (eta (b :%<⊢ y) f `app` proj2 v0))))
-eta (x :%⊢> a :%& b) (WithR f g)  =
-  withH a (withH b (withHI x (
-    abs (pair (eta (x :%⊢> a) f `app` v0) (eta (x :%⊢> b) g `app` v0)))))
+eta (SStI (a1 :%& a2) :%⊢ y) (WithL1  f)  =
+  withH a1 (withH a2 (withHO y (
+    abs (eta (a1 :%<⊢ y) f `app` proj1 v0))))
+eta (SStI (a1 :%& a2) :%⊢ y) (WithL2  f)  =
+  withH a1 (withH a2 (withHO y (
+    abs (eta (a2 :%<⊢ y) f `app` proj2 v0))))
+eta (x :%⊢> b1 :%& b2) (WithR f g)  =
+  withH b1 (withH b2 (withHI x (
+    abs (pair (eta (x :%⊢ SStO b1) f `app` v0) (eta (x :%⊢ SStO b2) g `app` v0)))))
 
 -- Left and right implication, and products
 eta (SImpR _ a b :%<⊢ SIMPR _ x y) (ImpRL f g) =
@@ -198,16 +197,16 @@ eta (SImpL _ b a :%<⊢ SIMPL _ y x) (ImpLL f g) =
 eta (x :%⊢ SStO (SImpR k a b)) (ImpRR f) = eta (x :%⊢ SIMPR k (SStI a) (SStO b)) f
 eta (x :%⊢ SStO (SImpL k b a)) (ImpLR f) = eta (x :%⊢ SIMPL k (SStO b) (SStI a)) f
 
-eta (SPROD k x y :%⊢ z) (Res11 f) =
+eta (SPROD k x y :%⊢ z) (ResRP f) =
   withHI x (withHI y (withHO z (
     abs (caseof v0 ((eta (y :%⊢ SIMPR k x z) f `app` v1) `app` v0)))))
-eta (SPROD k x y :%⊢ z) (Res13 f) =
+eta (SPROD k x y :%⊢ z) (ResLP f) =
   withHI x (withHI y (withHO z (
     abs (caseof v0 ((eta (x :%⊢ SIMPL k z y) f `app` v0) `app` v1)))))
-eta (y :%⊢ SIMPR k x z) (Res12 f) =
+eta (y :%⊢ SIMPR k x z) (ResPR f) =
   withHI x (withHI y (withHO z (
     abs (abs (eta (SPROD k x y :%⊢ z) f `app` (pair v0 v1))))))
-eta (x :%⊢ SIMPL k z y) (Res14 f) =
+eta (x :%⊢ SIMPL k z y) (ResPL f) =
   withHI x (withHI y (withHO z (
     abs (abs (eta (SPROD k x y :%⊢ z) f `app` (pair v1 v0))))))
 
@@ -216,8 +215,8 @@ eta (SStI (SDia k a) :%⊢ y)  (DiaL  f) = eta (SDIA k (SStI a) :%⊢ y) f
 eta (SDIA _ x :%⊢> SDia _ b) (DiaR  f) = eta (x :%⊢> b) f
 eta (SBox _ a :%<⊢ SBOX _ y) (BoxL  f) = eta (a :%<⊢ y) f
 eta (x :%⊢ SStO (SBox k b))  (BoxR  f) = eta (x :%⊢ SBOX k (SStO b)) f
-eta (SDIA k x :%⊢ y)         (Res21 f) = eta (x :%⊢ SBOX k y) f
-eta (x :%⊢ SBOX k y)         (Res22 f) = eta (SDIA k x :%⊢ y) f
+eta (SDIA k x :%⊢ y)         (ResBD f) = eta (x :%⊢ SBOX k y) f
+eta (x :%⊢ SBOX k y)         (ResDB f) = eta (SDIA k x :%⊢ y) f
 
 -- Extraction
 eta ((x :%∙ y) :%∙ SEXT z :%⊢ w) (ExtRR f) =
