@@ -288,8 +288,10 @@ due to restrictions on GitHub Markdown.
 
     a different waiter serves everyone
     2
-    ∃x0.(∀x1.(∀x2.¬ (∃x3.x0 x3 x1 ∧ x0 x3 x2))) ∧ (∀x4.person x4 ⊃ (∃x5.(waiter x5 ∧ x0 x4 x5) ∧ s erve x4 x5))
-    ∃x0.(∀x1.(∀x2.¬ (∃x3.x0 x3 x1 ∧ x0 x3 x2))) ∧ (∀x4.person x4 ⊃ (∃x5.(waiter x5 ∧ x0 x4 x5) ∧ s erve x4 x5))
+    ∃x0.(∀x1.(∀x2.¬ (∃x3.x0 x3 x1 ∧ x0 x3 x2))) ∧
+        (∀x4.person x4 ⊃ (∃x5.(waiter x5 ∧ x0 x4 x5) ∧ serve x4 x5))
+    ∃x0.(∀x1.(∀x2.¬ (∃x3.x0 x3 x1 ∧ x0 x3 x2))) ∧
+        (∀x4.person x4 ⊃ (∃x5.(waiter x5 ∧ x0 x4 x5) ∧ serve x4 x5))
 
     mary wants to leave
     1
