@@ -8,146 +8,6 @@
 % want features in our logic for which we can demonstrate a motivating
 % example from natural language.''
 
-\include{introduction}
-\include{display-calculus}
-\include{lexical-ambiguity}
-
-\section{Natural Language, Effects, and Movement}
-
-In sections \autoref{sec:introduction} and
-\autoref{sec:display-calculus} we presented a simple type-logical
-grammar, and its encoding as a display calculus. In this section, we
-will study extensions of the syntactic and semantic calculi, which
-will allow us to analyse more linguistic phenomena.
-
-Since its original formulation by \citet{lambek1961}, many variants of
-the Lambek calculus have been proposed
-\citep{steedman1988,moortgat2012,morrill2011,kubota2012,barker2015}.
-However, none have yet become truly canonical.
-Recently, \citet{moot2015} has begun comparing these extended calculi,
-as fragments of first-order linear logic. In time, this may yield a
-canonically agreed-upon extension to NL.
-
-\lamET, too, has been extended and revisited many times. Many of its
-extensions were created to deal with complex semantic phenomena, such
-as intensionality~\citep{winter2009},
-expressives~\citep{potts2003,mccready2010,gutzmann2011}, dynamic
-semantics~\citep{groenendijk1995}, and quantifier
-raising~\citep{barker2015}. \todo{Other important work?}
-In \citeyear{shan2002}, \citeauthor{shan2002} proposed an interesting
-paradigm to unify these extensions: by implementing them using
-techniques for effectful functional programming in \lamET.
-
-Below, we will briefly discuss \citeauthor{shan2002}'s proposed
-extensions to \lamET and its limitations. We will then turn our
-attention to the extensions made to NL, and see how they can remedy
-the limitations of the extended \lamET. We will conclude this section
-by giving our own extensions to NL, and showing that they preserve the
-properties we expect of a grammar logic (i.e. admissibility of cut,
-and a decidable and complete proof search procedure).
-
-\subsection{Monads and Extensible Effects}
-In \citeyear{shan2002}, \citeauthor{shan2002} proposed to analyse a
-wide range of linguistic phenomena using monads. He defines several
-monads which deal with interrogatives, focus, intensionality, binding,
-and quantification. \citet{bumford2013}, \citet{charlow2014} and
-\citet{barker2015} continued this line of research, defining monads to
-deal with a large range of linguistic phenomena.
-
-Formally, a monad is
-\begin{enumerate*}[label=(\arabic*)]
-\item a type-level constructor, $\mathbb{M}$, mapping each type A
-  to a corresponding type $\mathbb{M}A$; and
-\item a pair of functions, η and $\star$ (pronounced ``unit'' and
-  ``bind''), with the following types\footnote{
-    In addition, these functions have to obey the monad laws: left
-    identity ($\eta N\star M\equiv M\;N$); right identity
-    ($M\star\eta\equiv M$); and associativity ($(M\star\lambda
-    x.N\;x)\star O \equiv M\star(\lambda x.N\;x\star O)$).
-  }:
-\end{enumerate*}
-\[
-  η:A\ra\mathbb{M}A
-  \qquad
-  \star:\mathbb{M}A\ra(A\ra\mathbb{M}B)\ra\mathbb{M}B
-\]
-The idea of monadic semantics is make one small change the translation
-from syntactic to semantic types, as defined in
-\autoref{fig:syntactic-calculus-to-explicit-lamET}: instead of using
-the direct mapping on atoms, we insert the monad constructor
-$\mathbb{M}$. For instance,
-\[
-  \tr[\S]\mapsto\mathbb{M}\t
-  \quad\text{,}\quad
-  \tr[\N]\mapsto\mathbb{M}(\e\ra\t)
-  \quad\text{and}\quad
-  \tr[\NP]\mapsto\mathbb{M}\e
-  \text{.}
-\]
-The term labelling remains the same. However, due to the insertion of
-the monad constructor $\mathbb{M}$ in our types, we now have the
-possibility to implement any sort of ``plumbing'' we need, as long as
-it forms a monad.
-
-\vspace*{1\baselineskip}
-
-As an example, we can use monads analyse expressive content. This is
-content that is present in the sentence meaning, but does not directly
-affect the truth-conditional meaning. It is information present on a
-sort-of side channel. For instance, in ``I walked the damn dog,'' the
-word `damn' does not seem to contribute to the truth-conditional
-meaning, as the utterance would still be considered truthful if the
-dog is well-liked.
-
-We can implement this using a variant of the writer monad: we
-represent values of the type $\mathbb{M}A$ as a tuple of
-truth-conditional (or ``at-issue'') content, and expressive content:
-\begin{align*}
-  \mathbb{M}A&\coloneqq A\times\t       \\
-  \eta\;M     &\coloneqq (M,\text{true}) \\
-  M\star N   &\coloneqq \case{M}{x}{y}{(\case{N\;x}{z}{w}{(z,y\land w)})}
-\end{align*}
-Using this monad, we can define a small lexicon. We lift our regular
-entries into monadic entries---a process which can be automated:
-\begin{align*}
-  \text{john}  &\coloneqq \eta(\JOHN)\\
-  \text{walks} &\coloneqq \lambda y.\lambda x.
-                 y\star(\lambda y'.x\star(\lambda x'.\eta(\WALK(x',y'))))\\
-  \text{the}   &\coloneqq \lambda x.x\star(\lambda x'.\eta(\iota(x')))\footnotemark\\
-  \text{dog}   &\coloneqq \eta(\DOG)
-  \intertext{%
-    We treat `damn' as an identity function in its at-issue
-    content---it binds $x'$, then returns it. However, we also define
-    `damn' as expressing some sort of displeasure, represented as the
-    proposition $\DAMN$ in its expressive content:
-  }
-  \text{damn} &\coloneqq \lambda x.x\star(\lambda x'.(x',\DAMN))
-\end{align*}
-\footnotetext{%
-  The semantics for `the' are commonly given in terms of function
-  `$\iota$'. This is known as the ``definite description
-  operator.'' Given a set, this operator returns its unique
-  inhabitant. Depending on the exact semantics you want for this
-  operator, it can either be implemented as its own monad, or using
-  quantification. However, for this example it suffices to think of it
-  as a function of the type $(\e\t)\e$.
-}%
-The entire utterance ``I walked the damn dog'' then reduces as follows:
-\[
-  (\text{walks}\;(\text{the}\;(\text{damn}\;\text{dog}))\;\text{john})
-  \mapsto
-  (\WALK(\JOHN,\iota(\DOG)), \DAMN)
-\]
-The above analysis is rather coarse, as it does not capture any
-displeasure towards the \emph{specific} dog, or even towards dogs in
-general. We \emph{can} get a more precise meaning, but doing so
-complicates the example too much.
-
-%\input{fig-extension-quantifier-raising}
-%\input{fig-extension-scope-islands}
-%\input{fig-extension-infixation}
-%\input{fig-extension-extraction}
-
 % - implicit semantic calculus;
 % - explicit semantic calculus;
 % - syntactic calculus;
@@ -163,40 +23,30 @@ complicates the example too much.
 %   * treatment of plurals;
 % - extension: scope islands;
 
-\section{Future work}
+\include{introduction}
+\include{display-calculus}
+\include{lexical-ambiguity}
+\include{natural-language-effects-and-movement}
 
-\paragraph*{Integrate Focusing and Display Logic}
 
-\paragraph*{Deep Inference Sequent Calculus}
-In \autoref{sec:why-use-display-calculus}, we discussed that in order
-to use backward-chaining proof search, we have to ensure that our
-structural rules have the sub-structure property, or at very least
-only cause predictable loops. \citet{gore2014} demonstrate a
-methodology for constructing a deep inference sequent calculus from a
-display calculus. Deep inference calculi have the advantage that they
-naturally have the sub-structure property, which means that they are
-suitable for naive backward-chaining search. It would be interesting
-to employ this methodology, and construct a deep inference sequent
-calculus for the system constructed in this thesis.
+\subsection{Movement and Structural Ambiguity}
 
-\paragraph*{Forward-Chaining Proof Search}
-In \autoref{sec:what-is-type-logical-grammar} it was mentioned that
-most research focuses on implementing what I call the `semantic
-function' (i.e.\ interpreting). This is a good approach for research:
-we can limit ourselves to sequent calculus, which has pleasant
-properties, refer to the huge body of work on generative grammar to
-inform our choice for sentence structure, and simply focus on making
-these known structures derivable. However, in order to be feasible in
-a practical system, one must also implement what I call the `syntactic
-function' (i.e.\ parsing).
+The framework of monadic semantics and extensible effects, as
+described in the previous section is extremely powerful.
+One natural question is whether or not there are any processes in
+natural language syntax and semantics which cannot be analysed as an
+effect.
 
-One way to include parsing is by switching to forward-chaining proof
-search. In principle, we can do this by constructing all possible
-sentences based on the given words, and filtering on those which are
-both pronounceable and maintain the correct word-order. Ideally,
-though, we would also have an efficient implementation, for instance
-one based on the technique of magic sets as developed by
-\citet{bancilhon1985}.
+
+
+%\input{fig-extension-quantifier-raising}
+%\input{fig-extension-scope-islands}
+%\input{fig-extension-infixation}
+%\input{fig-extension-extraction}
+
+
+\include{future-work}
+
 
 \bibliographystyle{apalike}%
 \bibliography{main}%

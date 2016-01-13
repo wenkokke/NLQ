@@ -1,0 +1,39 @@
+\section{Future work}
+
+\paragraph*{Integrate Focusing and Display Logic}
+
+\paragraph*{Deep Inference Sequent Calculus}
+In \autoref{sec:why-use-display-calculus}, we discussed that in order
+to use backward-chaining proof search, we have to ensure that our
+structural rules have the sub-structure property, or at very least
+only cause predictable loops. \citet{gore2014} demonstrate a
+methodology for constructing a deep inference sequent calculus from a
+display calculus. Deep inference calculi have the advantage that they
+naturally have the sub-structure property, which means that they are
+suitable for naive backward-chaining search. It would be interesting
+to employ this methodology, and construct a deep inference sequent
+calculus for the system constructed in this thesis.
+
+\paragraph*{Forward-Chaining Proof Search}
+In \autoref{sec:what-is-type-logical-grammar} it was mentioned that
+most research focuses on implementing what I call the `semantic
+function' (i.e.\ interpreting). This is a good approach for research:
+we can limit ourselves to sequent calculus, which has pleasant
+properties, refer to the huge body of work on generative grammar to
+inform our choice for sentence structure, and simply focus on making
+these known structures derivable. However, in order to be feasible in
+a practical system, one must also implement what I call the `syntactic
+function' (i.e.\ parsing).
+
+One way to include parsing is by switching to forward-chaining proof
+search. In principle, we can do this by constructing all possible
+sentences based on the given words, and filtering on those which are
+both pronounceable and maintain the correct word-order. Ideally,
+though, we would also have an efficient implementation, for instance
+one based on the technique of magic sets as developed by
+\citet{bancilhon1985}.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
