@@ -60,21 +60,21 @@ type NS      = Q NP S S
 
 
 type Word  a = Entry (StI a)
-data Entry x = Entry (SStructI x) (Extern (HI x))
+data Entry x = Entry (SStructI x) (Hask (HI x))
 
 infix 1 ∷
 
-(∷) :: Name -> Univ a -> Extern a
-n ∷ a = extern a (PRIM(Prim a n))
+(∷) :: Name -> Univ a -> Hask a
+n ∷ a = toHask a (PRIM(Prim a n))
 
-lex_ :: (SingI a) => Extern (H a) -> Word a
+lex_ :: (SingI a) => Hask (H a) -> Word a
 lex_ f = Entry (SStI sing) f
 
 lex  :: (SingI a) => Name -> Word a
 lex  n = let a = sing in Entry (SStI a) (n ∷ (h a))
 
 instance Show (Entry x) where
-  show (Entry x f) = show (intern (hi x) f)
+  show (Entry x f) = show (fromHask (hi x) f)
 
 (<$) :: Entry (StI (b :← a)) -> Entry (StI a) -> Entry (StI b)
 (Entry (SStI (b :%← _)) f) <$ (Entry (SStI _) x) = Entry (SStI b) (f x)
@@ -106,32 +106,59 @@ instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
 red   str = "\x1b[31m" ++ str ++ "\x1b[0m"
 green str = "\x1b[32m" ++ str ++ "\x1b[0m"
 
-printLength :: Int -> IO ()
-printLength 0 = do putStrLn (red "0")
-printLength n = do putStrLn (show n)
+parseBwd :: Combine x (Entry a) => String -> SType b -> x -> IO ()
+parseBwd str b arg = do
+  let
+    Entry x arg' = combine arg
+    terms_NL     = Bwd.findAll (x :%⊢ SStO b)
+    terms_HS     = map (\f -> fromHask (h b) (eta f arg')) terms_NL
+  putStrLn str
 
-printAll :: [Expr a] -> IO ()
-printAll = go []
-  where
-    go _  [    ] = return ()
-    go vs (x:xs) = do
+  let
+    putLength 0 = do putStrLn (red "0")
+    putLength n = do putStrLn (show n)
+  putLength (length terms_NL)
+
+  let
+    putAll _  [    ] = return ()
+    putAll vs (x:xs) = do
       let v = show x
       putStrLn ((if v `elem` vs then red else green) v)
-      go (v:vs) xs
-
-parseBwd :: Combine x (Entry a) => String -> SType b -> x -> IO ()
-parseBwd str b e1 = do
-  let
-    Entry x e2 = combine e1
-    seq        = x :%⊢ SStO b
-    exprsNL    = Bwd.findAll seq
-    exprsHS    = map (\f -> app' (runHask (eta seq f) Nil) (intern (hi x) e2)) exprsNL
-  putStrLn str
-  printLength (length exprsNL)
-  printAll exprsHS
+      putAll (v:vs) xs
+  putAll [] terms_HS
 
 
 -- ** QuasiQuoter for Backward-Chaining Proof Search
+
+bwd :: QuasiQuoter
+bwd = QuasiQuoter
+  { quoteExp = bwd, quotePat = undefined, quoteType = undefined, quoteDec = undefined }
+  where
+    -- generate `parseBwd $(strExp) S $(treeExp)`
+    bwd str =
+      AppE (AppE (AppE (VarE 'parseBwd) strExp)
+            (AppE (ConE 'SEl) (ConE 'SS))) <$> treeExp
+      where
+      treeExp = case parseTree str of
+        Left  err -> fail (show err)
+        Right exp -> exp
+
+      strExp = LitE (StringL (fixWS (dropWhile isSpace str)))
+        where
+        fixWS :: String -> String
+        fixWS [] = []
+        fixWS (' ':' ':xs) = fixWS (' ':xs)
+        fixWS ('(':    xs) = fixWS xs
+        fixWS (')':    xs) = fixWS xs
+        fixWS ('<':    xs) = fixWS xs
+        fixWS ('>':    xs) = fixWS xs
+        fixWS ( x :    xs) = x : fixWS xs
+
+allBwd :: TH.Q Exp
+allBwd = do
+  bwds1 <- traverse lookupValueName (map (("bwd"++).show) [0..23])
+  let bwds2 = map (VarE . fromJust) (takeWhile isJust bwds1)
+  return (AppE (VarE 'sequence_) (ListE bwds2))
 
 parseTree :: String -> Either ParseError (TH.Q Exp)
 parseTree = parse (whiteSpace *> pTree1) ""
@@ -160,38 +187,6 @@ parseTree = parse (whiteSpace *> pTree1) ""
                     go (Just xn) = return (VarE xn)
                     go  Nothing  = fail ("unknown name '"++x'++"'")
                 return (xn >>= go)
-
-
-bwd :: QuasiQuoter
-bwd = QuasiQuoter
-  { quoteExp = bwd, quotePat = undefined, quoteType = undefined, quoteDec = undefined }
-  where
-    -- generate `parseBwd $(strExp) S $(treeExp)`
-    bwd str =
-      AppE (AppE (AppE (VarE 'parseBwd) strExp)
-            (AppE (ConE 'SEl) (ConE 'SS))) <$> treeExp
-      where
-      treeExp = case parseTree str of
-        Left  err -> fail (show err)
-        Right exp -> exp
-
-      strExp = LitE (StringL (fixWS (dropWhile isSpace str)))
-        where
-        fixWS :: String -> String
-        fixWS [] = []
-        fixWS (' ':' ':xs) = fixWS (' ':xs)
-        fixWS ('(':    xs) = fixWS xs
-        fixWS (')':    xs) = fixWS xs
-        fixWS ('<':    xs) = fixWS xs
-        fixWS ('>':    xs) = fixWS xs
-        fixWS ( x :    xs) = x : fixWS xs
-
-
-allBwd :: TH.Q Exp
-allBwd = do
-  bwds1 <- traverse lookupValueName (map (("bwd"++).show) [0..23])
-  let bwds2 = map (VarE . fromJust) (takeWhile isJust bwds1)
-  return (AppE (VarE 'sequence_) (ListE bwds2))
 
 
 -- ** Forward-Chaining Proof Search (Experimental)

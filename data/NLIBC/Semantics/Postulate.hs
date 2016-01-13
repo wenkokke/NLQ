@@ -1,50 +1,16 @@
 {-# LANGUAGE GADTs                #-}
 {-# LANGUAGE DataKinds            #-}
-{-# LANGUAGE PolyKinds            #-}
-{-# LANGUAGE RankNTypes           #-}
-{-# LANGUAGE QuasiQuotes          #-}
-{-# LANGUAGE InstanceSigs         #-}
 {-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE TypeOperators        #-}
-{-# LANGUAGE ImplicitParams         #-}
+{-# LANGUAGE RankNTypes           #-}
 {-# LANGUAGE PatternSynonyms      #-}
-{-# LANGUAGE TemplateHaskell      #-}
-{-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE ScopedTypeVariables  #-}
-{-# LANGUAGE AllowAmbiguousTypes  #-}
-{-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 module NLIBC.Semantics.Postulate where
 
 
-import           Prelude hiding ((!!),abs,lookup)
-import           Control.Monad (join)
-import           Control.Monad.Supply
-import qualified NLIBC.Syntax.Base as NL
-import           NLIBC.Syntax.Base
-import           Data.Set (Set)
-import qualified Data.Set as Set
-import           Data.Singletons.Decide
-import           Data.Singletons.Prelude
-import           Data.Singletons.TH (promote,singletons)
-import           Data.Proxy (Proxy(..))
-import           Data.Void (Void)
-import           Text.Printf (printf)
-import           Unsafe.Coerce (unsafeCoerce)
-
--- ** Natural Numbers
-
-singletons [d|
-  data Nat = Zero | Suc Nat
-     deriving (Eq,Show,Ord)
-  |]
-
-promote [d|
-  (!!) :: [a] -> Nat -> a
-  []     !! _     = error "!!: index out of bounds"
-  (x:_ ) !! Zero  = x
-  (x:xs) !! Suc n = xs !! n
-  |]
+import Control.Monad.Supply (Supply,supply,evalSupply)
+import Data.Void (Void)
+import Text.Printf (printf)
 
 
 -- ** Semantic Types
@@ -58,7 +24,7 @@ data T
 data Univ (t :: *) where
   E     :: Univ E
   T     :: Univ T
-  Unit  :: Univ ()
+  U     :: Univ ()
   (:->) :: Univ a -> Univ b -> Univ (a -> b)
   (:*)  :: Univ a -> Univ b -> Univ (a  , b)
 
@@ -73,19 +39,20 @@ pattern TET = T :-> ET
 class    UnivI t  where univ :: Univ t
 instance UnivI E  where univ = E
 instance UnivI T  where univ = T
-instance UnivI () where univ = Unit
-
+instance UnivI () where univ = U
 instance (UnivI a, UnivI b) => UnivI (a -> b) where univ = univ :-> univ
 instance (UnivI a, UnivI b) => UnivI (a  , b) where univ = univ :*  univ
 
-withUnivI :: Univ a -> (UnivI a => k) -> k
-withUnivI (a :-> b) e = withUnivI a (withUnivI b e)
-withUnivI (a :*  b) e = withUnivI a (withUnivI b e)
-withUnivI Unit      e = e
-withUnivI E         e = e
-withUnivI T         e = e
 
--- ** Semantic Expressions
+withUniv :: Univ a -> (UnivI a => k) -> k
+withUniv (a :-> b) e = withUniv a (withUniv b e)
+withUniv (a :*  b) e = withUniv a (withUniv b e)
+withUniv U         e = e
+withUniv E         e = e
+withUniv T         e = e
+
+
+-- ** Semantic expressions with meaning postulates
 
 infixl 9 :$
 
@@ -108,19 +75,19 @@ data Expr (a :: *) where
   EXPR :: UnivI a => EXPR a -> Expr a
 
 
-app' :: Expr (a -> b) -> Expr a -> Expr b
-EXPR f `app'` x =      (f    x)
-PRIM f `app'` x = PRIM (f :$ x)
+apply :: Expr (a -> b) -> Expr a -> Expr b
+EXPR f `apply` x =      (f    x)
+PRIM f `apply` x = PRIM (f :$ x)
 
-caseof' :: Expr (a  , b) -> Expr (b -> a -> c) -> Expr c
-caseof' (EXPR (x, y)) (EXPR f) = case f y of { EXPR g -> g x ; PRIM g -> PRIM (g :$ x) }
-caseof' xy            f        = PRIM (CaseOf xy f)
+caseof :: Expr (a  , b) -> Expr (b -> a -> c) -> Expr c
+caseof (EXPR (x, y)) (EXPR f) = case f y of { EXPR g -> g x ; PRIM g -> PRIM (g :$ x) }
+caseof xy            f        = PRIM (CaseOf xy f)
 
-fst' :: (UnivI a, UnivI b) => Expr (a , b) -> Expr a
-fst' xy = caseof' xy (EXPR(\y -> EXPR(\x -> x)))
+proj1 :: (UnivI a, UnivI b) => Expr (a , b) -> Expr a
+proj1 xy = caseof xy (EXPR(\y -> EXPR(\x -> x)))
 
-snd' :: (UnivI a, UnivI b) => Expr (a , b) -> Expr b
-snd' xy = caseof' xy (EXPR(\y -> EXPR(\x -> y)))
+proj2 :: (UnivI a, UnivI b) => Expr (a , b) -> Expr b
+proj2 xy = caseof xy (EXPR(\y -> EXPR(\x -> y)))
 
 
 -- ** Type Reconstruction
@@ -128,75 +95,53 @@ snd' xy = caseof' xy (EXPR(\y -> EXPR(\x -> y)))
 class TypeOf (f :: * -> *) where
   typeof :: f a -> Univ a
 
-instance TypeOf (Prim) where
+instance TypeOf Prim where
   typeof (Prim t _)   = t
   typeof (f :$ _)     = case typeof f of (_ :-> b)       -> b
   typeof (CaseOf _ f) = case typeof f of (_ :-> _ :-> c) -> c
 
-instance TypeOf (Expr) where
+instance TypeOf Expr where
   typeof (PRIM p) = typeof p
   typeof (EXPR e) = univ
 
 
--- ** Haskell Expressions with Environments
 
-newtype Hask ts t = Hask { runHask :: Env ts -> Expr t }
+-- * Smart constructors
 
-data Env (ts :: [*]) where
-  Nil  :: Env '[]
-  Cons :: Expr t -> Env ts -> Env (t ': ts)
-
-n0 = SZero
-n1 = SSuc n0
-n2 = SSuc n1
-n3 = SSuc n2
-n4 = SSuc n3
-n5 = SSuc n4
-n6 = SSuc n5
-n7 = SSuc n6
-n8 = SSuc n7
-n9 = SSuc n8
-
-lookup :: SNat n -> Env ts -> Expr (ts :!! n)
-lookup  _        Nil        = error "%!!: index out of bounds"
-lookup  SZero   (Cons x _ ) = x
-lookup (SSuc n) (Cons x xs) = lookup n xs
-
-
--- **
-
-not :: Extern T -> Extern T
+not :: Hask T -> Hask T
 not (EXPR(True))  = EXPR(False)
 not (EXPR(False)) = EXPR(True)
 not x             = Not x
 
-exists :: Univ a -> (Extern a -> Extern T) -> Extern T
-exists a f = withUnivI a (Exists a (\x -> f (extern a x)))
+exists :: Univ a -> (Hask a -> Hask T) -> Hask T
+exists a f = withUniv a (Exists a (\x -> f (toHask a x)))
 
-forall :: Univ a -> (Extern a -> Extern T) -> Extern T
-forall a f = withUnivI a (ForAll a (\x -> f (extern a x)))
+forall :: Univ a -> (Hask a -> Hask T) -> Hask T
+forall a f = withUniv a (ForAll a (\x -> f (toHask a x)))
+
 
 
 infix  6 ≢, ≡
 infixr 4 ∧
 infixr 2 ⊃
 
-(∧) :: Extern T -> Extern T -> Extern T
+(∧) :: Hask T -> Hask T -> Hask T
 EXPR(False) ∧ _           = EXPR(False)
 _           ∧ EXPR(False) = EXPR(False)
 EXPR(True)  ∧ y           = y
 x           ∧ EXPR(True)  = x
 x           ∧ y           = x :∧ y
 
-(⊃) :: Extern T -> Extern T -> Extern T
+(⊃) :: Hask T -> Hask T -> Hask T
 EXPR(False) ⊃ _           = EXPR(True)
 EXPR(True)  ⊃ EXPR(True)  = EXPR(True)
 EXPR(True)  ⊃ EXPR(False) = EXPR(False)
 x           ⊃ y           = x :⊃ y
 
-(≡), (≢) :: Extern E -> Extern E -> Extern T
+(≡), (≢) :: Hask E -> Hask E -> Hask T
 x ≡ y = x :≡ y
 x ≢ y = x :≢ y
+
 
 -- ** Pretty-Printing Expressions
 
@@ -213,116 +158,88 @@ pattern ForAll t f = PRIM (Prim ((t :-> T) :-> T) "∀" :$ EXPR f)
 pattern Exists t f = PRIM (Prim ((t :-> T) :-> T) "∃" :$ EXPR f)
 
 
-ppPrim :: Int -> Prim a -> Supply Name String
-ppPrim d (Prim _ n)    = return n
-ppPrim d (f :$ x)      = parens (d > 10) (printf "%s %s" <$> ppPrim 10 f <*> ppExpr 11 x)
-ppPrim d (CaseOf xy f) = do x <- supply
-                            y <- supply
-                            case typeof xy of
-                              (a :* b) -> do
-                                let x' = PRIM (Prim a x)
-                                let y' = PRIM (Prim b y)
-                                let f' = app' (app' f y') x'
-                                parens (d > 1)
-                                  (printf "case %s of (%s,%s) -> %s" <$>
-                                    ppExpr 0 xy <*> pure x <*> pure y <*> ppExpr 2 f')
-
-
-ppExpr :: Int -> Expr a -> Supply Name String
-ppExpr d (ForAll t f)         = do x <- supply
-                                   parens (d > 1)
-                                     (printf "∀%s.%s" x <$> ppExpr 2 (f (PRIM (Prim t x))))
-ppExpr d (Exists t f)         = do x <- supply
-                                   parens (d > 1)
-                                     (printf "∃%s.%s" x <$> ppExpr 2 (f (PRIM (Prim t x))))
-ppExpr d (u :≢ v)             = parens (d > 6)  (printf "%s ≢ %s" <$> ppExpr 7 u <*> ppExpr 7 v)
-ppExpr d (Not  u)             = parens (d > 8)  (printf    "¬ %s" <$> ppExpr 8 u)
-ppExpr d (u :≡ v)             = parens (d > 6)  (printf "%s ≡ %s" <$> ppExpr 7 u <*> ppExpr 7 v)
-ppExpr d (u :∧ v)             = parens (d > 2)  (printf "%s ∧ %s" <$> ppExpr 3 u <*> ppExpr 2 v)
-ppExpr d (u :⊃ v)             = parens (d > 4)  (printf "%s ⊃ %s" <$> ppExpr 5 u <*> ppExpr 4 v)
-ppExpr d (PRIM f)             = ppPrim d f
-ppExpr d (EXPR f :: Expr a) = ppEXPR d (univ :: Univ a) f
-  where
-    ppEXPR :: Int -> Univ a -> EXPR a -> Supply Name String
-    ppEXPR d (a :-> b) f       = do x <- supply
-                                    parens (d > 1)
-                                      (printf "λ%s.%s" x <$> ppExpr d (f (PRIM (Prim a x))))
-    ppEXPR d (a :*  b) (x , y) = do printf "(%s,%s)" <$> ppExpr 0 x <*> ppExpr 0 y
-    ppEXPR d Unit      ()      = return "()"
-
-
--- |Wrap parenthesis around an expression under a functor, if a
---  Boolean flag is true.
-parens :: (Functor f) => Bool -> f String -> f String
-parens b s = if b then printf "(%s)" <$> s else s
-
-
-instance Show (Prim t) where
-  show = show . PRIM
-
-instance Show (Expr t) where
-  show x = evalSupply (ppExpr 0 x) ns
-    where
-      ns :: [Name]
-      ns = [ x | n <- [0..], let x = 'x':show n ]
-
-
-
 -- ** Internalising and externalising expressions
 
-type Intern t = Expr t
-
-type family Extern t where
-  Extern (a -> b) = (Extern a -> Extern b)
-  Extern (a  , b) = (Extern a  , Extern b)
-  Extern ()       = Expr ()
-  Extern E        = Expr E
-  Extern T        = Expr T
+type family Hask t where
+  Hask (a -> b) = (Hask a -> Hask b)
+  Hask (a  , b) = (Hask a  , Hask b)
+  Hask ()       = Expr ()
+  Hask E        = Expr E
+  Hask T        = Expr T
 
 
-intern :: Univ a -> Extern a -> Intern a
-intern E          x    = x
-intern T          x    = x
-intern Unit       x    = x
-intern (a :*  b) (x,y) =
-  withUnivI a (withUnivI b (EXPR(intern a x , intern b y)))
-intern (a :-> b)  f    =
-  withUnivI a (withUnivI b (EXPR(\x -> intern b (f (extern a x)))))
+fromHask :: Univ a -> Hask a -> Expr a
+fromHask E          x    = x
+fromHask T          x    = x
+fromHask U          x    = x
+fromHask (a :*  b) (x,y) =
+  withUniv a (withUniv b (EXPR(fromHask a x , fromHask b y)))
+fromHask (a :-> b)  f    =
+  withUniv a (withUniv b (EXPR(\x -> fromHask b (f (toHask a x)))))
 
 
-extern :: Univ a -> Intern a -> Extern a
-extern E         x     = x
-extern T         x     = x
-extern Unit      x     = x
-extern (a :*  b) xy    =
-  withUnivI a (withUnivI b (extern a (fst' xy) , extern b (snd' xy)))
-extern (a :-> b) f     =
-  \x -> extern b (app' f (intern a x))
+toHask :: Univ a -> Expr a -> Hask a
+toHask E         x     = x
+toHask T         x     = x
+toHask U         x     = x
+toHask (a :*  b) xy    =
+  withUniv a (withUniv b (toHask a (proj1 xy) , toHask b (proj2 xy)))
+toHask (a :-> b) f     =
+  \x -> toHask b (apply f (fromHask a x))
 
 
-type family Lift m a where
-  Lift m (a -> b) = m (Extern a) -> Lift m b
-  Lift m (a  , b) = (Lift m a , Lift m b)
-  Lift m ()       = m (Expr ())
-  Lift m E        = m (Expr E)
-  Lift m T        = m (Expr T)
+-- ** Showing expressions
 
-joinLift :: (Monad m) => Univ a -> m (Lift m a) -> Lift m a
-joinLift E         x  = join x
-joinLift T         x  = join x
-joinLift Unit      x  = join x
-joinLift (a :*  b) xy =
-  (joinLift a (do (x,y) <- xy; return x) , joinLift b (do (x,y) <- xy; return y))
-joinLift (a :-> b) f  =
-  \x -> joinLift b (do f <- f; return (f x))
+instance Show (Expr t) where
+  showsPrec d x = evalSupply (pp2 d x) ns
+    where
+    ns :: [Name]
+    ns = [ x | n <- [0..], let x = 'x':show n ]
 
-lift :: (Monad m, ?m :: Proxy m) => Univ a -> Extern a -> Lift m a
-lift E          x    = return x
-lift T          x    = return x
-lift Unit       x    = return x
-lift (a :*  b) (x,y) = (lift a x , lift b y)
-lift (a :-> b)  f    = \x -> joinLift b (do x <- x; return (lift b (f x)))
+    infixr 9 <.>
 
+    (<.>) :: Supply Name ShowS -> Supply Name ShowS -> Supply Name ShowS
+    s1 <.> s2 = do s1' <- s1; s2' <- s2; return (s1' . s2')
+
+    showStr :: String -> Supply Name ShowS
+    showStr str = return (showString str)
+
+    showChr :: Char -> Supply Name ShowS
+    showChr chr = return (showChar chr)
+
+    pp1 :: Int -> Prim a -> Supply Name ShowS
+    pp1 d (Prim _ n)    = showStr n
+    pp1 d (f :$ x)      = showParen (d > 10) <$> pp1 10 f <.> showChr ' ' <.> pp2 11 x
+    pp1 d (CaseOf xy f) = do
+      x <- supply
+      y <- supply
+      case typeof xy of
+        (a :* b) -> do
+          let fxy = (f `apply` (PRIM(Prim b y))) `apply` (PRIM(Prim a x))
+          showParen (d > 1) <$>
+            showStr "case " <.> pp2 0 xy <.> showStr (printf "of (%s,%s) → " x y) <.> pp2 2 fxy
+
+    pp2 :: Int -> Expr a -> Supply Name ShowS
+    pp2 d (ForAll a f)       = do
+      x <- supply
+      showParen (d > 1) <$> showStr (printf "∀%s." x) <.> pp2 2 (f (PRIM(Prim a x)))
+    pp2 d (Exists a f)       = do
+      x <- supply
+      showParen (d > 1) <$> showStr (printf "∃%s." x) <.> pp2 2 (f (PRIM(Prim a x)))
+    pp2 d (u :≢ v) = showParen (d > 6) <$> pp2 7 u <.> showStr " ≢ " <.> pp2 7 v
+    pp2 d (u :≡ v) = showParen (d > 6) <$> pp2 7 u <.> showStr " ≡ " <.> pp2 7 v
+    pp2 d (u :∧ v) = showParen (d > 2) <$> pp2 3 u <.> showStr " ∧ " <.> pp2 2 v
+    pp2 d (u :⊃ v) = showParen (d > 4) <$> pp2 5 u <.> showStr " ⊃ " <.> pp2 4 v
+    pp2 d (Not  u) = showParen (d > 8) <$> showStr "¬ " <.> pp2 4 u
+    pp2 d (PRIM f) = pp1 d f
+    pp2 d (EXPR f :: Expr a) = pp3 d (univ :: Univ a) f
+
+    pp3 :: Int -> Univ a -> EXPR a -> Supply Name ShowS
+    pp3 d (a :-> b) f       = do
+      x <- supply
+      showParen (d > 1) <$> showStr (printf "λ%s." x) <.> pp2 d (f (PRIM (Prim a x)))
+    pp3 d (a :*  b) (x , y) = showParen True <$> pp2 0 x <.> showChr ',' <.> pp2 0 y
+    pp3 d U         ()      = showStr "()"
 
 -- -}
 -- -}
