@@ -17,14 +17,14 @@
 {-# LANGUAGE MultiParamTypeClasses  #-}
 {-# LANGUAGE FunctionalDependencies #-}
 module NLIBC.Prelude
-       (Word,(∷),(<$),($>),lex,lex_,id
-       ,S,N,NP,PP,INF,A,IV,TV,Q,NS
-       ,bwd,allBwd,parseBwd,module X) where
+     (Word,(∷),(<$),($>),lex
+     ,S,N,NP,PP,INF,A,IV,TV,Q,NS
+     ,bwd,allBwd,parseBwd,module X) where
 
 
 import           Prelude hiding (Word,abs,lex,not,(*),($),(<$),($>))
 import           Control.Arrow (first)
-import           Control.Monad (when)
+import           Control.Monad (when,join)
 import           Data.Char (isSpace)
 import           Data.Maybe (isJust,fromJust)
 import           Data.Proxy (Proxy(..))
@@ -59,28 +59,24 @@ type Q a b c = UnitR KHol (c :⇦ (a :⇨ b))
 type NS      = Q NP S S
 
 
-type Word  a = Entry (StI a)
-data Entry x = Entry (SStructI x) (Extern (HI x))
+type Word  m a = Entry m (StI a)
+data Entry m x = Entry (SStructI x) (m (SeM m (HI x)))
 
-infix 1 ∷
+
+lex :: (SingI a) => m (Lift m (Extern (H a))) -> Word m a
+lex f = Entry (SStI sing) f
+
+
+infix 9 ∷
 
 (∷) :: Name -> Univ a -> Extern a
 n ∷ a = extern a (PRIM(Prim a n))
 
-lex_ :: (SingI a) => Extern (H a) -> Word a
-lex_ f = Entry (SStI sing) f
+(<$) :: (Monad m) => Entry m (StI (b :← a)) -> Entry m (StI a) -> Entry m (StI b)
+(Entry (SStI (b :%← _)) f) <$ (Entry (SStI _) x) = Entry (SStI b) (do f <- f; x <- x; f x)
 
-lex  :: (SingI a) => Name -> Word a
-lex  n = let a = sing in Entry (SStI a) (n ∷ (h a))
-
-instance Show (Entry x) where
-  show (Entry x f) = show (intern (hi x) f)
-
-(<$) :: Entry (StI (b :← a)) -> Entry (StI a) -> Entry (StI b)
-(Entry (SStI (b :%← _)) f) <$ (Entry (SStI _) x) = Entry (SStI b) (f x)
-
-($>) :: Entry (StI a) -> Entry (StI (a :→ b)) -> Entry (StI b)
-(Entry (SStI _) x) $> (Entry (SStI (_ :%→ b)) f) = Entry (SStI b) (f x)
+($>) :: (Monad m) => Entry m (StI a) -> Entry m (StI (a :→ b)) -> Entry m (StI b)
+(Entry (SStI _) x) $> (Entry (SStI (_ :%→ b)) f) = Entry (SStI b) (do f <- f; x <- x; f x)
 
 
 -- ** Backward-Chaining Proof Search
@@ -88,17 +84,17 @@ instance Show (Entry x) where
 class Combine a b | a -> b where
   combine :: a -> b
 
-instance Combine (Entry t) (Entry t) where
+instance Combine (Entry m t) (Entry m t) where
   combine = id
 
-instance (Combine x (Entry a)) => Combine [x] (Entry (DIA KRes a)) where
+instance (Combine x (Entry m a)) => Combine [x] (Entry m (DIA KRes a)) where
   combine [x] = case combine x of
     (Entry a r) -> Entry (SDIA SKRes a) r
 
-instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
-         => Combine (x1,x2) (Entry (a1 :∙ a2)) where
+instance (Applicative m, Combine x1 (Entry m a1), Combine x2 (Entry m a2))
+         => Combine (x1,x2) (Entry m (a1 :∙ a2)) where
   combine (x1,x2) = case (combine x1,combine x2) of
-    (Entry x f, Entry y g) -> withHI x (withHI y (Entry (x :%∙ y) (f, g)))
+    (Entry x f, Entry y g) -> Entry (x :%∙ y) ((,) <$> f <*> g)
 
 
 -- ** Type and DSL for lexicon entries
@@ -106,29 +102,29 @@ instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
 red   str = "\x1b[31m" ++ str ++ "\x1b[0m"
 green str = "\x1b[32m" ++ str ++ "\x1b[0m"
 
-printLength :: Int -> IO ()
-printLength 0 = do putStrLn (red "0")
-printLength n = do putStrLn (show n)
 
-printAll :: [Expr a] -> IO ()
-printAll = go []
-  where
-    go _  [    ] = return ()
-    go vs (x:xs) = do
+parseBwd :: (Monad m, Show (m (SeM m (H b))), Combine x (Entry m a))
+         => Proxy m -> String -> SType b -> x -> IO ()
+parseBwd m str b arg = do
+
+  putStrLn str
+  let
+    Entry x arg' = combine arg
+    termsNL      = Bwd.findAll (x :%⊢ SStO b)
+    termsHS      = let ?m = m in map (\f -> etaM f =<< arg') termsNL
+    putLength 0  = putStrLn (red "0")
+    putLength n  = putStrLn (show n)
+
+  putLength (length termsNL)
+  let
+    putAll :: (Show a) => [String] -> [a] -> IO ()
+    putAll _  [    ] = return ()
+    putAll vs (x:xs) = do
       let v = show x
       putStrLn ((if v `elem` vs then red else green) v)
-      go (v:vs) xs
+      putAll (v:vs) xs
 
-parseBwd :: Combine x (Entry a) => String -> SType b -> x -> IO ()
-parseBwd str b e1 = do
-  let
-    Entry x e2 = combine e1
-    seq        = x :%⊢ SStO b
-    exprsNL    = Bwd.findAll seq
-    exprsHS    = map (\f -> app' (runHask (eta seq f) Nil) (intern (hi x) e2)) exprsNL
-  putStrLn str
-  printLength (length exprsNL)
-  printAll exprsHS
+  putAll [] termsHS
 
 
 -- ** QuasiQuoter for Backward-Chaining Proof Search
@@ -166,14 +162,23 @@ bwd :: QuasiQuoter
 bwd = QuasiQuoter
   { quoteExp = bwd, quotePat = undefined, quoteType = undefined, quoteDec = undefined }
   where
-    -- generate `parseBwd $(strExp) S $(treeExp)`
-    bwd str =
-      AppE (AppE (AppE (VarE 'parseBwd) strExp)
-            (AppE (ConE 'SEl) (ConE 'SS))) <$> treeExp
+    -- generate `parseBwd $(monad) $(strExp) S $(treeExp)`
+    bwd str = do
+      monExp'  <- monExp
+      treeExp' <- treeExp
+      return (AppE (AppE (AppE (AppE (VarE 'parseBwd) (VarE monExp')) strExp)
+                    (AppE (ConE 'SEl) (ConE 'SS))) treeExp')
       where
       treeExp = case parseTree str of
         Left  err -> fail (show err)
         Right exp -> exp
+
+      monExp =
+        do m <- lookupValueName "monad_proxy"
+           case m of
+             Just  m -> return m
+             Nothing -> fail
+               "Could not find value for `monad_proxy'; did you forget to set one?"
 
       strExp = LitE (StringL (fixWS (dropWhile isSpace str)))
         where
@@ -206,7 +211,7 @@ parseFwd (b :: SType b) (xs :: Entries xs) = do
 
     go (Fwd.TypedBy x Refl f) =
       case joinTree x xs of
-      Entry _ g -> show (runHask (abs (eta (x :%⊢ SStO b) f)) (Cons g Nil))
+      Entry _ g -> show (runHask (abs (etaM (x :%⊢ SStO b) f)) (Cons g Nil))
 
   print (length prfs2)
   mapM_ putStrLn prfs2
