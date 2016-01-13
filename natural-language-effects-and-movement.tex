@@ -1,0 +1,35 @@
+\section{Natural Language, Effects, and Movement}
+
+In sections \autoref{sec:introduction} and
+\autoref{sec:display-calculus} we presented a simple type-logical
+grammar, and its encoding as a display calculus. In this section, we
+will study extensions of the syntactic and semantic calculi, which
+will allow us to analyse more linguistic phenomena.
+
+Since its original formulation by \citet{lambek1961}, many variants of
+the Lambek calculus have been proposed
+\citep{steedman1988,moortgat2012,morrill2011,kubota2012,barker2015}.
+However, none have yet become truly canonical.
+Recently, \citet{moot2015} has begun comparing these extended calculi,
+as fragments of first-order linear logic. In time, this may yield a
+canonically agreed-upon extension to NL.
+
+\lamET, too, has been extended and revisited many times. Many of its
+extensions were created to deal with complex semantic phenomena, such
+as intensionality~\citep{winter2009},
+expressives~\citep{potts2003,mccready2010,gutzmann2011}, dynamic
+semantics~\citep{groenendijk1995}, and quantifier
+raising~\citep{barker2015}. \todo{Other important work?}
+In \citeyear{shan2002}, \citeauthor{shan2002} proposed an interesting
+paradigm to unify these extensions: by implementing them using
+techniques for effectful functional programming in \lamET.
+
+Below, we will briefly discuss \citeauthor{shan2002}'s proposed
+extensions to \lamET and its limitations. We will then turn our
+attention to the extensions made to NL, and see how they can remedy
+the limitations of the extended \lamET. We will conclude this section
+by giving our own extensions to NL, and showing that they preserve the
+properties we expect of a grammar logic (i.e. admissibility of cut,
+and a decidable and complete proof search procedure).
+
+\input{monads-and-extensible-effects}

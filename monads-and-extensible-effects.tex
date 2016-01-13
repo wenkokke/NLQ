@@ -1,0 +1,190 @@
+\subsection{Monads and Extensible Effects}
+In \citeyear{shan2002}, \citeauthor{shan2002} proposed to analyse a
+wide range of linguistic phenomena using monads. He defines several
+monads which deal with interrogatives, focus, intensionality, binding,
+and quantification. \citet{bumford2013}, \citet{charlow2014} and
+\citet{barker2015} continued this line of research, defining monads to
+deal with a large range of linguistic phenomena.
+
+Formally, a monad is
+\begin{enumerate*}[label=(\arabic*)]
+\item a type-level constructor, $\mathbb{M}$, mapping each type A
+  to a corresponding type $\mathbb{M}A$; and
+\item a pair of functions, η and $\star$ (pronounced ``unit'' and
+  ``bind''), with the following types\footnote{
+    In addition, these functions have to obey the monad laws: left
+    identity ($\eta N\star M\equiv M\;N$); right identity
+    ($M\star\eta\equiv M$); and associativity ($(M\star\lambda
+    x.N\;x)\star O \equiv M\star(\lambda x.N\;x\star O)$).
+  }:
+\end{enumerate*}
+\[
+  η:A\ra\mathbb{M}A
+  \qquad
+  \star:\mathbb{M}A\ra(A\ra\mathbb{M}B)\ra\mathbb{M}B
+\]
+The idea of monadic semantics is make one small change the translation
+from syntactic to semantic types, as defined in
+\autoref{fig:syntactic-calculus-to-explicit-lamET}: instead of using
+the direct mapping on atoms, we insert the monad constructor
+$\mathbb{M}$. For instance,
+\[
+  \tr[\S]\mapsto\mathbb{M}\t
+  \quad\text{,}\quad
+  \tr[\N]\mapsto\mathbb{M}(\e\ra\t)
+  \quad\text{and}\quad
+  \tr[\NP]\mapsto\mathbb{M}\e
+  \text{.}
+\]
+The term labelling remains the same. However, due to the insertion of
+the monad constructor $\mathbb{M}$ in our types, we now have the
+possibility to implement any sort of ``plumbing'' we need, as long as
+it forms a monad.
+
+\vspace*{1\baselineskip}
+
+As an example, we can use monads analyse expressive content. This is
+content that is present in the sentence meaning, but does not directly
+affect the truth-conditional meaning. It is information present on a
+sort-of side channel. For instance, in ``I walked the damn dog,'' the
+word `damn' does not seem to contribute to the truth-conditional
+meaning, as the utterance would still be considered truthful if the
+dog is well-liked.
+
+We can implement this using a variant of the writer monad: we
+represent values of the type $\mathbb{M}A$ as a tuple of
+truth-conditional (or ``at-issue'') content, and expressive content:
+\begin{align*}
+  \mathbb{M}A    &\coloneqq A\times\t                                         \\
+  \eta\;M        &\coloneqq (M,\text{true})                                   \\
+  M\star N       &\coloneqq \case{M}{x}{y}{(\case{N\;x}{z}{w}{(z,y\land w)})} \\
+  \text{tell}(M) &\coloneqq ((),M)
+  \intertext{%
+  Using this monad, we can define a small lexicon. We lift our regular
+  entries into monadic entries---a process which can be automated:
+  }
+  \text{john}  &\coloneqq \eta(\JOHN)\\
+  \text{walks} &\coloneqq \lambda y.\lambda x.
+                 y\star(\lambda y'.x\star(\lambda x'.\eta(\WALK(x',y'))))\\
+  \text{the}   &\coloneqq \lambda x.x\star(\lambda x'.\eta(\iota(x')))\footnotemark\\
+  \text{dog}   &\coloneqq \eta(\DOG)
+  \intertext{%
+    We treat `damn' as an identity function in its at-issue
+    content---it binds $x'$, then returns it. However, we also define
+    `damn' as expressing some sort of displeasure, represented as the
+    proposition $\DAMN$ in its expressive content:
+  }
+  \text{damn} &\coloneqq \lambda x.x\star(\lambda x'.\text{tell}(\DAMN)\star(\lambda ().\eta(x')))
+\end{align*}
+\footnotetext{%
+  The semantics for `the' are commonly given in terms of a function
+  called `$\iota$', known as the ``definite description operator.''
+  Given a set, this operator returns its unique inhabitant. Depending
+  on the exact semantics you want for this operator, it can either be
+  implemented monadically, as a side-effect, or using quantification. However,
+  for this example it suffices to think of it as a function of the
+  type $(\e\t)\e$.
+}%
+The entire utterance ``I walked the damn dog'' then reduces as follows:
+\[
+  (\text{walks}\;(\text{the}\;(\text{damn}\;\text{dog}))\;\text{john})
+  \mapsto
+  (\WALK(\JOHN,\iota(\DOG)), \DAMN)
+\]
+The above analysis is rather coarse, as it does not capture any
+displeasure towards the \emph{specific} dog, or even towards dogs in
+general. We \emph{can} get a more precise meaning, but doing so
+complicates the example too much.
+
+\vspace*{\baselineskip}
+
+Monads have one big problem: modularity. There is no general procedure
+which can compose two arbitrary monads $\mathbb{M}_1$ and
+$\mathbb{M}_2$ into a new monad $\mathbb{M}_3 = \mathbb{M}_1 \circ
+\mathbb{M}_2$. This means that it is not trivial to separate different
+types of effects---\emph{all} side-effects have to be implemented in
+one single, monolithic monad.
+
+\citet{shan2002} mentions monad morphisms or transformers as a
+solution to mitigate---but not solve---the problem.
+Monad transformers were introduced by \citet{liang1995}. In short,
+they are functions $\mathbb{T}$ from monads to monads. Transformers
+can be chained together, to create combined monads consisting of
+``layers'' of elementary monads. Because different monads combine in
+different ways, the programmer has to manually define these
+transformers, and has to to specify how effectful operations `lift'
+through each monad transformer.
+One problem with monad transformers is that the order of the
+``layers'' is determined statically, and cannot easily be changed in
+various parts of the program. In addition, every effectful operation
+has to be lifted into this layercake of side-effects. This means that
+that every effectful function, or lexical entry, has access to
+\emph{all} side-effects, and every effectful function has to be
+altered if a new layer is added. It is clear that monad transformers
+offer a sub-par solution to the problem.\footnote{%
+  The Haskell community is split over whether or not monad
+  transformers are useful in practice, but many people---including the
+  GHC developers---prefer ``rolling'' their own monolithic monad,
+  which includes all required effects, over using monad transformers
+  (see \url{http://stackoverflow.com/a/2760709}).
+}
+
+\citet{cartwright1994}, \citet{kiselyov2013} and \citet{kiselyov2015}
+offer a solution to the problem of modularity, in the form of
+\emph{extensible effects}. An in-depth discussion of extensible
+effects is beyond the scope of this thesis, so we will simply give an
+outline of the interface presented by the \citeyear{kiselyov2015}
+implementation of extensible effects.
+
+In short, this implementation a type constructor $\mathbb{E}_X$ which
+is indexed by a union of effects. This constructor forms a monad for
+arbitrary unions $X$, so we can keep using the style of lexical
+definitions we saw above.
+%
+What sets extensible effects apart from monad transformers is that
+with extensible effects, instead of defining a transformer and a
+lifting operator, the programmer defines an `effect', and defines it
+separate from every other effect. For instance, in the case of
+expressive content, the effect is defined as follows---because the
+type of the effect is a truth-value:\footnote{%
+  The usage of $\top$ in the definition of Exp means that Exp is
+  \emph{only} defined for the $\top$ type---this, in turn, forces the
+  output type of `tell' to be $\top$.
+}
+\[
+  \text{Exp}\;\top\coloneqq\t
+\]
+Once we have this definition, we can recover the `tell' function using
+one of the primitives offered by extensible effects---the `send'
+function. In fact, `tell' is exactly the `send' function, with `$F$'
+instantiated to the expressive effect:
+\[
+  \text{send} : FA\ra\mathbb{E}_{\{F\}\cup X}A
+  \quad
+  \textit{specialises to}
+  \quad
+  \text{tell} : \t\ra\mathbb{E}_{\{Exp\}\cup X}\top
+\]
+What we have gained at this point is the parameter $X$---the `tell'
+function is now polymorphic in the union of effects. This additionally
+means that a word with only expressive content---such as `damn'---only
+has access to the effects associated with expressive content, and
+not---as was the case with monad transformers---to the entire stack of
+effects.
+
+Another part of defining an effect is defining a handler for the
+effect. This means defining a function which takes a value which
+includes the effect, and returns a value without it. For expressives,
+our handler will have the following type:
+\[
+  \text{run}_{\text{Exp}} : \mathbb{E}_{\{Exp\}\cup X}A\ra\mathbb{E}_{X}(A\times\t)
+\]
+This handler will remove the expressive effect, and tuple the
+expressive content with the at-issue content. In general, the handlers
+allow us to remove effects from the open union until we once again end
+up with an effect-free value.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
