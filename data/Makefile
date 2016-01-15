@@ -2,7 +2,7 @@ MARKDOWN_UNLIT := $(shell which markdown-unlit 2>/dev/null)
 SOURCES := $(wildcard *.hs)
 
 default: README
-	@./README
+	@time ./README
 
 
 .PHONY: README

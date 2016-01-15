@@ -13,37 +13,52 @@ Formally, a monad is
 \item a pair of functions, η and $\star$ (pronounced ``unit'' and
   ``bind''), with the following types\footnote{
     In addition, these functions have to obey the monad laws: left
-    identity ($\eta N\star M\equiv M\;N$); right identity
-    ($M\star\eta\equiv M$); and associativity ($(M\star\lambda
-    x.N\;x)\star O \equiv M\star(\lambda x.N\;x\star O)$).
+    identity ($M\star\eta N\equiv M\;N$); right identity
+    ($\eta\star M\equiv M$); and associativity ($M\star(\lambda
+    x.N\;x\star O) \equiv (M\star\lambda x.N\;x)\star O$).
   }:
 \end{enumerate*}
 \[
   η:A\ra\mathbb{M}A
   \qquad
-  \star:\mathbb{M}A\ra(A\ra\mathbb{M}B)\ra\mathbb{M}B
+  \star:(A\ra\mathbb{M}B)\ra\mathbb{M}A\ra\mathbb{M}B
 \]
-The idea of monadic semantics is make one small change the translation
-from syntactic to semantic types, as defined in
-\autoref{fig:syntactic-calculus-to-explicit-lamET}: instead of using
-the direct mapping on atoms, we insert the monad constructor
-$\mathbb{M}$. For instance,
+There are many ways to implement monadic semantics. The most
+conventional of these is to apply the monadic translation, as
+described by \citet{moggi1991}:
+\[
+  \begin{aligned}
+    &(A\ra B)^\text{M} &&\coloneqq A^M\ra\mathbb{M}B^M\\
+    &A^\text{M}        &&\coloneqq A
+  \end{aligned}
+  \qquad
+  \begin{aligned}
+    &\text{lift}\;x           &&\mapsto \eta\;x\\
+    &\text{lift}(\lambda x.M) &&\mapsto \eta(\lambda x.\text{lift}\;M)\\
+    &\text{lift}(M\;N)        &&\mapsto (\lambda f.f\star(\text{lift}\;N))\star\text{lift}\;M
+  \end{aligned}
+\]
+Another possibility is to modify our translation to semantic calculus
+to insert the monadic operators. If we choose to do this, we can use
+the information present in out syntactic calculus to guide our
+translation. For instance, we could simply choose to modify our
+translation on types to insert an `$\mathbb{M}$' over every atomic
+type:
 \[
   \tr[\S]\mapsto\mathbb{M}\t
-  \quad\text{,}\quad
+  \quad
   \tr[\N]\mapsto\mathbb{M}(\e\ra\t)
-  \quad\text{and}\quad
+  \quad
   \tr[\NP]\mapsto\mathbb{M}\e
-  \text{.}
 \]
-The term labelling remains the same. However, due to the insertion of
-the monad constructor $\mathbb{M}$ in our types, we now have the
-possibility to implement any sort of ``plumbing'' we need, as long as
-it forms a monad.
+Whichever choice we make, the important point is that the insertion of
+the monad constructor $\mathbb{M}$ in our types gives us the
+possibility to implement any sort of ``plumbing'' we need in our
+lexical entries, as long as it forms a monad.
 
 \vspace*{1\baselineskip}
 
-As an example, we can use monads analyse expressive content. This is
+As an example, we can use monads to analyse expressive content. This is
 content that is present in the sentence meaning, but does not directly
 affect the truth-conditional meaning. It is information present on a
 sort-of side channel. For instance, in ``I walked the damn dog,'' the
@@ -58,43 +73,41 @@ truth-conditional (or ``at-issue'') content, and expressive content:
   \mathbb{M}A    &\coloneqq A\times\t                                         \\
   \eta\;M        &\coloneqq (M,\text{true})                                   \\
   M\star N       &\coloneqq \case{M}{x}{y}{(\case{N\;x}{z}{w}{(z,y\land w)})} \\
-  \text{tell}(M) &\coloneqq ((),M)
+  \text{tell}(M) &\coloneqq ((),M)                                            \\
   \intertext{%
   Using this monad, we can define a small lexicon. We lift our regular
-  entries into monadic entries---a process which can be automated:
+  entries into monadic entries:
   }
-  \text{john}  &\coloneqq \eta(\JOHN)\\
-  \text{walks} &\coloneqq \lambda y.\lambda x.
-                 y\star(\lambda y'.x\star(\lambda x'.\eta(\WALK(x',y'))))\\
-  \text{the}   &\coloneqq \lambda x.x\star(\lambda x'.\eta(\iota(x')))\footnotemark\\
-  \text{dog}   &\coloneqq \eta(\DOG)
+  \text{john}  &\coloneqq \eta\;\JOHN\\
+  \text{walks} &\coloneqq \lambda y\;x.(\lambda x'.(\lambda y'.\eta(\WALK(x,y)))\star y)\star x\\
+  \text{the}   &\coloneqq \lambda f.(\lambda f'.\iota(f'))\star f\footnotemark\\
+  \text{dog}   &\coloneqq \eta\;\DOG\\
   \intertext{%
     We treat `damn' as an identity function in its at-issue
     content---it binds $x'$, then returns it. However, we also define
     `damn' as expressing some sort of displeasure, represented as the
     proposition $\DAMN$ in its expressive content:
   }
-  \text{damn} &\coloneqq \lambda x.x\star(\lambda x'.\text{tell}(\DAMN)\star(\lambda ().\eta(x')))
+  \text{damn} &\coloneqq \lambda f.(\lambda f'.(\lambda().\eta\;f')\star\text{tell}(\DAMN(f')))\star f
 \end{align*}
 \footnotetext{%
   The semantics for `the' are commonly given in terms of a function
   called `$\iota$', known as the ``definite description operator.''
   Given a set, this operator returns its unique inhabitant. Depending
   on the exact semantics you want for this operator, it can either be
-  implemented monadically, as a side-effect, or using quantification. However,
-  for this example it suffices to think of it as a function of the
-  type $(\e\t)\e$.
+  implemented monadically, as a side-effect, or using
+  quantification. For this example, it is best to think of `$\iota$'
+  as a function of the type $(\e\t)\e$.
 }%
 The entire utterance ``I walked the damn dog'' then reduces as follows:
 \[
   (\text{walks}\;(\text{the}\;(\text{damn}\;\text{dog}))\;\text{john})
   \mapsto
-  (\WALK(\JOHN,\iota(\DOG)), \DAMN)
+  (\WALK(\JOHN,\iota(\DOG)), \DAMN(\DOG))
 \]
 The above analysis is rather coarse, as it does not capture any
-displeasure towards the \emph{specific} dog, or even towards dogs in
-general. We \emph{can} get a more precise meaning, but doing so
-complicates the example too much.
+displeasure towards the \emph{specific} dog. We \emph{can} get a more
+precise meaning, but doing so complicates the example too much.
 
 \vspace*{\baselineskip}
 
@@ -137,16 +150,22 @@ outline of the interface presented by the \citeyear{kiselyov2015}
 implementation of extensible effects.
 
 In short, this implementation a type constructor $\mathbb{E}_X$ which
-is indexed by a union of effects. This constructor forms a monad for
-arbitrary unions $X$, so we can keep using the style of lexical
+is indexed by a ``set'' of effects. This constructor forms a monad for
+arbitrary sets $X$, so we can keep using the style of lexical
 definitions we saw above.
-%
 What sets extensible effects apart from monad transformers is that
 with extensible effects, instead of defining a transformer and a
-lifting operator, the programmer defines an `effect', and defines it
-separate from every other effect. For instance, in the case of
-expressive content, the effect is defined as follows---because the
-type of the effect is a truth-value:\footnote{%
+lifting operator, the programmer defines an `effect' in isolation from
+every other effect. An effect is defined by three things:
+\begin{enumerate*}[label=\arabic*)]
+\item a type constructor, which links the type of effectful values to
+  the type of the effect;
+\item primitive effectful functions, such as `tell';
+\item a handler, which removes the effect from the set of effects,
+  optionally consuming or producing additional input or output.
+\end{enumerate*}
+In the case of expressive content, the effect is
+defined as follows:\footnote{%
   The usage of $\top$ in the definition of Exp means that Exp is
   \emph{only} defined for the $\top$ type---this, in turn, forces the
   output type of `tell' to be $\top$.
@@ -166,23 +185,21 @@ instantiated to the expressive effect:
   \text{tell} : \t\ra\mathbb{E}_{\{Exp\}\cup X}\top
 \]
 What we have gained at this point is the parameter $X$---the `tell'
-function is now polymorphic in the union of effects. This additionally
-means that a word with only expressive content---such as `damn'---only
-has access to the effects associated with expressive content, and
-not---as was the case with monad transformers---to the entire stack of
-effects.
-
-Another part of defining an effect is defining a handler for the
-effect. This means defining a function which takes a value which
-includes the effect, and returns a value without it. For expressives,
-our handler will have the following type:
+function is now polymorphic in the set of effects. This means that a
+word with only expressive content---such as `damn'---only has access
+to the effects associated with expressive content, and not---as was
+the case with monad transformers---to the entire stack of effects.
+Last, we have to define a handler for the effect. This means defining
+a function which takes a value which includes the effect, and returns
+a value without it. For expressives, our handler will have the
+following type:
 \[
   \text{run}_{\text{Exp}} : \mathbb{E}_{\{Exp\}\cup X}A\ra\mathbb{E}_{X}(A\times\t)
 \]
-This handler will remove the expressive effect, and tuple the
-expressive content with the at-issue content. In general, the handlers
-allow us to remove effects from the open union until we once again end
-up with an effect-free value.
+This handler will remove the expressive effect, and tuples the
+expressive content with the at-issue content. In general, handlers
+allow us to remove effects from the set of effects step-by-step until
+we once again end up with an effect-free value.
 
 %%% Local Variables:
 %%% mode: latex
