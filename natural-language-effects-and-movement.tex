@@ -1,4 +1,4 @@
-\section{Natural Language, Effects, and Movement}
+\section{Natural Language, Effects, and Quantification}
 
 In sections \autoref{sec:introduction} and
 \autoref{sec:display-calculus} we presented a simple type-logical
@@ -32,4 +32,348 @@ by giving our own extensions to NL, and showing that they preserve the
 properties we expect of a grammar logic (i.e. admissibility of cut,
 and a decidable and complete proof search procedure).
 
-\input{monads-and-extensible-effects}
+\subsection{Monads and Extensible Effects}
+In \citeyear{shan2002}, \citeauthor{shan2002} proposed to analyse a
+wide range of linguistic phenomena using monads. He defines several
+monads which deal with interrogatives, focus, intensionality, binding,
+and quantification. \citet{bumford2013}, \citet{charlow2014} and
+\citet{barker2015} continued this line of research, defining monads to
+deal with a large range of linguistic phenomena.
+
+Formally, a monad is
+\begin{enumerate*}[label=(\arabic*)]
+\item a type-level constructor, $\mathbb{M}$, mapping each type A
+  to a corresponding type $\mathbb{M}A$; and
+\item a pair of functions, η and $\star$ (pronounced ``unit'' and
+  ``bind''), with the following types\footnote{
+    In addition, these functions have to obey the monad laws: left
+    identity ($M\star\eta N\equiv M\;N$); right identity
+    ($\eta\star M\equiv M$); and associativity ($M\star(\lambda
+    x.N\;x\star O) \equiv (M\star\lambda x.N\;x)\star O$).
+  }:
+\end{enumerate*}
+\[
+  η:A\ra\mathbb{M}A
+  \qquad
+  \star:(A\ra\mathbb{M}B)\ra\mathbb{M}A\ra\mathbb{M}B
+\]
+There are many ways to implement monadic semantics. The most
+conventional of these is to apply the monadic translation, as
+described by \citet{moggi1991}:
+\[
+  \begin{aligned}
+    &(A\ra B)^\text{M} &&\coloneqq A^M\ra\mathbb{M}B^M\\
+    &A^\text{M}        &&\coloneqq A
+  \end{aligned}
+  \qquad
+  \begin{aligned}
+    &\text{lift}\;x           &&\mapsto \eta\;x\\
+    &\text{lift}(\lambda x.M) &&\mapsto \eta(\lambda x.\text{lift}\;M)\\
+    &\text{lift}(M\;N)        &&\mapsto (\lambda f.f\star(\text{lift}\;N))\star\text{lift}\;M
+  \end{aligned}
+\]
+Another possibility is to modify our translation to semantic calculus
+to insert the monadic operators. If we choose to do this, we can use
+the information present in out syntactic calculus to guide our
+translation. For instance, we could simply choose to modify our
+translation on types to insert an `$\mathbb{M}$' over every atomic
+type:
+\[
+  \tr[\S]\mapsto\mathbb{M}\t
+  \quad
+  \tr[\N]\mapsto\mathbb{M}(\e\ra\t)
+  \quad
+  \tr[\NP]\mapsto\mathbb{M}\e
+\]
+Whichever choice we make, the important point is that the insertion of
+the monad constructor $\mathbb{M}$ in our types gives us the
+possibility to implement any sort of ``plumbing'' we need in our
+lexical entries, as long as it forms a monad.
+
+\vspace*{1\baselineskip}
+
+As an example, we can use monads to analyse expressive content. This is
+content that is present in the sentence meaning, but does not directly
+affect the truth-conditional meaning. It is information present on a
+sort-of side channel. For instance, in ``I walked the damn dog,'' the
+word `damn' does not seem to contribute to the truth-conditional
+meaning, as the utterance would still be considered truthful if the
+dog is well-liked.
+
+We can implement this using a variant of the writer monad: we
+represent values of the type $\mathbb{M}A$ as a tuple of
+truth-conditional (or ``at-issue'') content, and expressive content:
+\begin{align*}
+  \mathbb{M}A    &\coloneqq A\times\t                                         \\
+  \eta\;M        &\coloneqq (M,\text{true})                                   \\
+  M\star N       &\coloneqq \case{M}{x}{y}{(\case{N\;x}{z}{w}{(z,y\land w)})} \\
+  \text{tell}(M) &\coloneqq ((),M)                                            \\
+  \intertext{%
+  Using this monad, we can define a small lexicon. We lift our regular
+  entries into monadic entries:
+  }
+  \text{john}  &\coloneqq \eta\;\JOHN\\
+  \text{walks} &\coloneqq \lambda y\;x.(\lambda x'.(\lambda y'.\eta(\WALK(x,y)))\star y)\star x\\
+  \text{the}   &\coloneqq \lambda f.(\lambda f'.\iota(f'))\star f\footnotemark\\
+  \text{dog}   &\coloneqq \eta\;\DOG\\
+  \intertext{%
+    We treat `damn' as an identity function in its at-issue
+    content---it binds $x'$, then returns it. However, we also define
+    `damn' as expressing some sort of displeasure, represented as the
+    proposition $\DAMN$ in its expressive content:
+  }
+  \text{damn} &\coloneqq \lambda f.(\lambda f'.(\lambda().\eta\;f')\star\text{tell}(\DAMN(f')))\star f
+\end{align*}
+\footnotetext{%
+  The semantics for `the' are commonly given in terms of a function
+  called `$\iota$', known as the ``definite description operator.''
+  Given a set, this operator returns its unique inhabitant. Depending
+  on the exact semantics you want for this operator, it can either be
+  implemented monadically, as a side-effect, or using
+  quantification. For this example, it is best to think of `$\iota$'
+  as a function of the type $(\e\t)\e$.
+}%
+The entire utterance ``I walked the damn dog'' then reduces as follows:
+\[
+  (\text{walks}\;(\text{the}\;(\text{damn}\;\text{dog}))\;\text{john})
+  \mapsto
+  (\WALK(\JOHN,\iota(\DOG)), \DAMN(\DOG))
+\]
+The above analysis is rather coarse, as it does not capture any
+displeasure towards the \emph{specific} dog. We \emph{can} get a more
+precise meaning, but doing so complicates the example too much.
+
+\vspace*{\baselineskip}
+
+Monads have one big problem: modularity. There is no general procedure
+which can compose two arbitrary monads $\mathbb{M}_1$ and
+$\mathbb{M}_2$ into a new monad $\mathbb{M}_3 = \mathbb{M}_1 \circ
+\mathbb{M}_2$. This means that it is not trivial to separate different
+types of effects---\emph{all} side-effects have to be implemented in
+one single, monolithic monad.
+
+\citet{shan2002} mentions monad morphisms or transformers as a
+solution to mitigate---but not solve---the problem.
+Monad transformers were introduced by \citet{liang1995}. In short,
+they are functions $\mathbb{T}$ from monads to monads. Transformers
+can be chained together, to create combined monads consisting of
+``layers'' of elementary monads. Because different monads combine in
+different ways, the programmer has to manually define these
+transformers, and has to to specify how effectful operations `lift'
+through each monad transformer.
+One problem with monad transformers is that the order of the
+``layers'' is determined statically, and cannot easily be changed in
+various parts of the program. In addition, every effectful operation
+has to be lifted into this layercake of side-effects. This means that
+that every effectful function, or lexical entry, has access to
+\emph{all} side-effects, and every effectful function has to be
+altered if a new layer is added. It is clear that monad transformers
+offer a sub-par solution to the problem.\footnote{%
+  The Haskell community is split over whether or not monad
+  transformers are useful in practice, but many people---including the
+  GHC developers---prefer ``rolling'' their own monolithic monad,
+  which includes all required effects, over using monad transformers
+  (see \url{http://stackoverflow.com/a/2760709}).
+}
+
+\citet{cartwright1994}, \citet{kiselyov2013} and \citet{kiselyov2015}
+offer a solution to the problem of modularity, in the form of
+\emph{extensible effects}. An in-depth discussion of extensible
+effects is beyond the scope of this thesis, so we will simply give an
+outline of the interface presented by the \citeyear{kiselyov2015}
+implementation of extensible effects.
+
+In short, this implementation a type constructor $\mathbb{E}_X$ which
+is indexed by a ``set'' of effects. This constructor forms a monad for
+arbitrary sets $X$, so we can keep using the style of lexical
+definitions we saw above.
+What sets extensible effects apart from monad transformers is that
+with extensible effects, instead of defining a transformer and a
+lifting operator, the programmer defines an `effect' in isolation from
+every other effect. An effect is defined by three things:
+\begin{enumerate*}[label=\arabic*)]
+\item a type constructor, which links the type of effectful values to
+  the type of the effect;
+\item primitive effectful functions, such as `tell';
+\item a handler, which removes the effect from the set of effects,
+  optionally consuming or producing additional input or output.
+\end{enumerate*}
+In the case of expressive content, the effect is
+defined as follows:\footnote{%
+  The usage of $\top$ in the definition of Exp means that Exp is
+  \emph{only} defined for the $\top$ type---this, in turn, forces the
+  output type of `tell' to be $\top$.
+}
+\[
+  \text{Exp}\;\top\coloneqq\t
+\]
+Once we have this definition, we can recover the `tell' function using
+one of the primitives offered by extensible effects---the `send'
+function. In fact, `tell' is exactly the `send' function, with `$F$'
+instantiated to the expressive effect:
+\[
+  \text{send} : FA\ra\mathbb{E}_{\{F\}\cup X}A
+  \quad
+  \textit{specialises to}
+  \quad
+  \text{tell} : \t\ra\mathbb{E}_{\{Exp\}\cup X}\top
+\]
+What we have gained at this point is the parameter $X$---the `tell'
+function is now polymorphic in the set of effects. This means that a
+word with only expressive content---such as `damn'---only has access
+to the effects associated with expressive content, and not---as was
+the case with monad transformers---to the entire stack of effects.
+Last, we have to define a handler for the effect. This means defining
+a function which takes a value which includes the effect, and returns
+a value without it. For expressives, our handler will have the
+following type:
+\[
+  \text{run}_{\text{Exp}} : \mathbb{E}_{\{Exp\}\cup X}A\ra\mathbb{E}_{X}(A\times\t)
+\]
+This handler will remove the expressive effect, and tuples the
+expressive content with the at-issue content. In general, handlers
+allow us to remove effects from the set of effects step-by-step until
+we once again end up with an effect-free value.
+
+
+\subsection{Quantifier Raising and Structural Ambiguity}
+
+The framework of monadic semantics and extensible effects, as
+described in the previous section is extremely powerful. As mentioned,
+it provides a flexible and powerful framework for a large spectrum of
+complex natural language phenomena such as context, intensionality,
+expressives and quantification. In this section, we will discuss some
+of the limitations of monadic semantics---specifically, those relating
+to quantification.
+
+\vspace*{1\baselineskip}
+
+\citet{barker2002,barker2004} advocates the use of continuations in
+natural language semantics. He does this with several case studies,
+one of which is quantification. The gist of this is as follows:
+
+For the utterance ``John saw everyone,'' the function-argument
+structure is `$(\sees\;\everyone)\;\john$', but we associate it with
+the meaning $\forall x.\PERSON(x)\supset\SEE(\JOHN,x)$. This means
+that the expression `everyone,' which is deeply nested in the parse
+tree, somehow takes scope over the entire expression.
+\citeauthor{barker2004} proposes to solve this problem by applying a
+(nonstandard) continuation-passing style (CPS) translation to the
+lexicon, lifting expressions of type $A$ into the type $(A\ra R)\ra R$
+for some answer type $R$:
+\begin{alignat*}{3}
+  &\john           &&\coloneqq \lambda k. k\;\JOHN\\
+  &\sees           &&\coloneqq \lambda k. k\;\SEE
+  \intertext{%
+    He then uses this freedom to define `everyone' as a lifted expression
+    of type `\e', with $R$ instantiated to `\t':
+  }
+  &\everyone       &&\coloneqq \lambda k. \forall x.\PERSON(x)\supset k\;x
+\end{alignat*}
+Lastly, he defines a translation on terms, replacing function
+application with a method of combining CPS-translated
+terms:\footnote{%
+  It should be noted that \citeauthor{barker2004}'s initial solution
+  uses some directional information to ensure that scope-takers are
+  always processed in a left-to-right order, instead of always
+  processing the argument first, as it is presented here.
+  This distinction, however, becomes irrelevant once he introduces the
+  ambiguous translation, and therefore I have chosen not to include it.
+}
+\[
+  \overline{M\;N} \mapsto \lambda k. \overline{N}\;(\lambda
+  n.\overline{M}\;(\lambda m.k\;(m\;n)))\\
+\]
+As CPS-translations and monadic translations are closely related
+\citep{filinski1994}, it is rather easy to implement this approach as
+a monad or an effect---in fact, \citet{shan2002} already provides such
+an implementation.
+
+However, the analysis of quantification as a side-effect has several
+major issues. The first of these is already mentioned by
+\citet{barker2004}: scope ambiguity. Sentences containing two or
+more quantifiers, such as ``Everyone likes someone,'' are ambiguous:
+\begin{alignat*}{3}
+  &\forall x.\PERSON(x) \,&\supset \,&\exists y.\PERSON(y) \,&\wedge  \,&\LIKE(x,y)\\
+  &\exists y.\PERSON(y) \,&\wedge  \,&\forall x.\PERSON(x) \,&\supset \,&\LIKE(x,y)
+\end{alignat*}
+The solution provided above will only derive the first of these
+meanings. Barker solves this problem by adding another possible
+translation for function application, thereby making the
+CPS-translation ambiguous:
+\begin{alignat*}{3}
+  &\overline{M\;N} &&\mapsto \lambda k. \overline{N}\;(\lambda
+  n.\overline{M}\;(\lambda m.k\;(m\;n)))\\
+  &\overline{M\;N} &&\mapsto \lambda k. \overline{M}\;(\lambda
+  m.\overline{N}\;(\lambda n.k\;(m\;n)))
+\end{alignat*}
+There are several problems with this solution. First of all, this
+results in a huge amount of spurious ambiguity. A sentence with $n$
+words has $n-1$ function applications, and will therefore have
+$2^{(n-1)}$ ``different'' interpretations. However, the ambiguity is
+only relevant for scope-takers. In the motivating example, ``likes''
+is not a scope taker. Nevertheless, there are two possible
+translations for ``likes someone'', resulting in \emph{four}
+interpretations for the sentence where we only want two.
+
+Secondly, using an ambiguous translation clearly makes our
+CPS-translation incompatible with our monadic translation, unless we
+are willing to ambiguously translate all our effects. But doing so is
+risky, as a right-to-left interpretation may not be desirable for
+effects other than quantification. For instance, a right-to-left
+interpretation of the state monad for anaphora resolution will allow
+sentences such as ``He$_i$ gave a book to John$_i$.''
+
+\vspace*{1\baselineskip}
+
+In more recent work, \citet{moortgat2012} integrate CPS-semantics into
+the syntactic calculus. The result is the Lambek-Grishin (LG)
+calculus, a classical variant of NL, with semantics inspired on
+\citeauthor{parigot1992}'s $\lambda\mu$-calculus
+(\citeyear{parigot1992}). LG is a beautifully symmetric calculus, and
+display NL, as used in this thesis is, is directly based from it. The
+integrated CPS-semantics give some interesting opportunities, for
+instance the ability to give quantifiers such as `everyone' the type
+$(NP\oslash N)\otimes N$---a pair of a determiner and a noun---and
+give them the desired scope-taking semantics.
+
+\vspace*{1\baselineskip}
+
+\citeauthor{barker2004}'s CPS-translation and
+\citeauthor{moortgat2012}'s CPS-semantics both suffer from two related
+problems:
+\begin{enumerate}
+\item Both require a \emph{static} choice of answer type. This
+  means that the answer type cannot change throughout the
+  program. However, there are examples which demonstrate the need for
+  allowing dynamic answer types.
+\item Both cannot encode \emph{delimiters} past which a nested
+  expression cannot take scope. However, in natural language we find
+  evidence for scope islands, from which quantifiers cannot escape.
+\end{enumerate}
+These are the hallmark of \emph{delimited} or \emph{composable}
+continuations \citep{danvy1990}. However, while delimited
+continuations seem extremely promising, they are still not entirely
+without problems. They still suffer from the problem of ambiguity, as
+described above for CPS- and monadic translations. Additionally, they
+do not form a monad. Instead, they form something known as an indexed
+monad, which has two additional type-level parameters, meaning $\eta$
+and $\star$ get the following types:
+\[
+  \eta : A\ra\mathbb{M}\;i\;i\;A
+  \qquad
+  \star: (A\ra\mathbb{M}\;j\;k\;B)\ra\mathbb{M}\;i\;j\;A\ra\mathbb{M}\;i\;k\;B
+\]
+This makes sense: since we now allow the answer type of the
+continuation to change, we need to add indices to keep track of the
+input and output answer type. However, the downside of this is that
+since we need these additional parameters, we cannot simply
+CPS-translate to delimited continuations---if we use a delimited
+continuation indexed monad in our semantics, this will have to be
+reflected in our syntactic calculus.
+
+While such a solution for delimited continuations may still be
+interesting to examine, we will choose to keep our solution entirely
+syntactic. In the next section we will present quantifier movement and
+scope islands in the syntactic calculus, based on work by
+\citet{moortgat1996} and \citet{barker2015}.

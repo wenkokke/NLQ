@@ -23,103 +23,15 @@
 %   * treatment of plurals;
 % - extension: scope islands;
 
-%\include{introduction}
-%\include{display-calculus}
-%\include{lexical-ambiguity}
-\input{natural-language-effects-and-movement}
-
-\subsection{Movement and Structural Ambiguity}
-
-The framework of monadic semantics and extensible effects, as
-described in the previous section is extremely powerful. As mentioned,
-it provides a flexible and powerful framework for a large spectrum of
-complex natural language phenomena such as context, intensionality,
-expressives and quantification. In this section, we will discuss some
-of the limitations of monadic semantics---specifically, those relating
-to quantification.
-
-\citet{barker2002,barker2004} advocates the use of continuations in
-natural language semantics. He does this with several case studies,
-one of which is quantification. The gist of this is as follows:
-
-For the utterance ``John saw everyone,'' the function-argument
-structure is `$(\sees\;\everyone)\;\john$', but we associate it with
-the meaning $\forall x.\PERSON(x)\supset\SEE(\JOHN,x)$. This means
-that the expression `everyone,' which is deeply nested in the parse
-tree, somehow takes scope over the entire expression.
-\citeauthor{barker2004} proposes to solve this problem by applying a
-(nonstandard) continuation-passing style (CPS) translation to the
-lexicon, lifting expressions of type $A$ into the type $(A\ra R)\ra R$
-for some answer type $R$:
-\begin{alignat*}{3}
-  &\john           &&\coloneqq \lambda k. k\;\JOHN\\
-  &\sees           &&\coloneqq \lambda k. k\;\SEE
-  \intertext{%
-    He then uses this freedom to define `everyone' as a lifted expression
-    of type `\e', with $R$ instantiated to `\t':
-  }
-  &\everyone       &&\coloneqq \lambda k. \forall x.\PERSON(x)\supset k\;x
-\end{alignat*}
-Lastly, he defines a translation on terms, replacing function
-application with a method of combining CPS-translated
-terms:\footnote{%
-  It should be noted that \citeauthor{barker2004}'s initial solution
-  uses some directional information to ensure that scope-takers are
-  always processed in a left-to-right order, instead of always
-  processing the function first, as it is presented here.
-  This distinction, however, becomes irrelevant once he introduces the
-  ambiguous translation, and therefore I have chosen not to include it.
-}
-\[
-  \overline{M\;N} \mapsto \lambda k. \overline{M}\;(\lambda
-  m.\overline{N}\;(\lambda n.k\;(m\;n)))
-\]
-As CPS-translations and monadic translations are closely related
-\citep{filinski1994}, it is rather easy to implement this approach as
-a monad or an effect---in fact, \citet{shan2002} already provides such
-an implementation.
-
-However, the analysis of quantification as a side-effect has several
-major issues. The first of these is already mentioned by
-\citet{barker2004}: scope ambiguity. Sentences containing two or
-more quantifiers, such as ``Everyone likes someone,'' are ambiguous:
-\begin{alignat*}{3}
-  &\forall x.\PERSON(x) \,&\supset \,&\exists y.\PERSON(y) \,&\wedge  \,&\LIKE(x,y)\\
-  &\exists y.\PERSON(y) \,&\wedge  \,&\forall x.\PERSON(x) \,&\supset \,&\LIKE(x,y)
-\end{alignat*}
-The solution provided above will only derive the first of these
-meanings. Barker solves this problem by adding another possible
-translation for function application, thereby making the
-CPS-translation ambiguous:
-\begin{alignat*}{3}
-  &\overline{M\;N} &&\mapsto \lambda k. \overline{N}\;(\lambda
-  n.\overline{M}\;(\lambda m.k\;(m\;n)))\\
-  &\overline{M\;N} &&\mapsto \lambda k. \overline{M}\;(\lambda
-  m.\overline{N}\;(\lambda n.k\;(m\;n)))
-\end{alignat*}
-There are several problems with this solution. First of all, this
-results in a huge amount of spurious ambiguity. A sentence with $n$
-words has $n-1$ function applications, and will therefore have
-$2^{(n-1)}$ ``different'' interpretations. However, the ambiguity is
-only relevant for scope-takers. In the motivating example, ``likes''
-is not a scope taker. Nevertheless, there are two possible
-translations for ``likes someone'', resulting in \emph{four}
-interpretations for the sentence where we only want two.
-
-Secondly, using an ambiguous translation clearly makes our
-CPS-translation incompatible with our monadic translation, unless we
-are willing to ambiguously translate all our effects. But doing so is
-risky, as a right-to-left interpretation may not be desirable for
-effects other than quantification. For instance, a right-to-left
-interpretation of the state monad for anaphora resolution will allow
-sentences such as ``He$_i$ gave a book to John$_i$.''
-
+\include{introduction}
+\include{display-calculus}
+\include{lexical-ambiguity}
+\include{natural-language-effects-and-movement}
 
 %\input{fig-extension-quantifier-raising}
 %\input{fig-extension-scope-islands}
 %\input{fig-extension-infixation}
 %\input{fig-extension-extraction}
-
 
 \include{future-work}
 
