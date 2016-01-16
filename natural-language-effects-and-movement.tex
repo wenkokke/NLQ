@@ -3,8 +3,9 @@
 In sections \autoref{sec:introduction} and
 \autoref{sec:display-calculus} we presented a simple type-logical
 grammar, and its encoding as a display calculus. In this section, we
-will study extensions of the syntactic and semantic calculi, which
-will allow us to analyse more linguistic phenomena.
+will study extensions of the semantic calculus, which will allow us to
+analyse a wider range of linguistic phenomena. In the next section, we
+will discuss extensions of the syntactic calculus.
 
 Since its original formulation by \citet{lambek1961}, many variants of
 the Lambek calculus have been proposed
@@ -24,13 +25,14 @@ In \citeyear{shan2002}, \citeauthor{shan2002} proposed an interesting
 paradigm to unify these extensions: by implementing them using
 techniques for effectful functional programming in \lamET.
 
-Below, we will briefly discuss \citeauthor{shan2002}'s proposed
-extensions to \lamET and its limitations. We will then turn our
-attention to the extensions made to NL, and see how they can remedy
-the limitations of the extended \lamET. We will conclude this section
-by giving our own extensions to NL, and showing that they preserve the
-properties we expect of a grammar logic (i.e. admissibility of cut,
-and a decidable and complete proof search procedure).
+In this section, we will discuss \citeauthor{shan2002}'s proposed
+extensions to \lamET and its limitations. In the next section, we will
+then turn our attention to the extensions made to NL, and see how they
+can remedy the limitations of the extended \lamET. We will conclude
+the thesis by giving our own extensions to NL, and showing that they
+preserve the properties we expect of a grammar logic
+(i.e. admissibility of cut, and a decidable and complete proof search
+procedure).
 
 \subsection{Monads and Extensible Effects}
 In \citeyear{shan2002}, \citeauthor{shan2002} proposed to analyse a
@@ -349,7 +351,10 @@ problems:
   allowing dynamic answer types.
 \item Both cannot encode \emph{delimiters} past which a nested
   expression cannot take scope. However, in natural language we find
-  evidence for scope islands, from which quantifiers cannot escape.
+  evidence for scope islands\footnote{%
+    We will discuss scope islands in
+    \autoref{sec:movement-and-quantifier-raising}.
+  }, from which quantifiers cannot escape.
 \end{enumerate}
 These are the hallmark of \emph{delimited} or \emph{composable}
 continuations \citep{danvy1990}. However, while delimited

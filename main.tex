@@ -28,10 +28,258 @@
 \include{lexical-ambiguity}
 \include{natural-language-effects-and-movement}
 
-\section{Movement and Quantifier Raising}
+\section{Movement and Quantifier Raising}%
+\label{sec:movement-and-quantifier-raising}
 
+In the previous section, we discussed the framework of monadic
+semantics and extensible effects, and explained the limitations of
+this framework for analysing quantification. In this section, we will
+discuss the extensions made to the syntactic calculus NL, and see how
+they can be used to analyse quantification. We will then giving our
+own extensions, implemented in display NL, and show that they preserve
+the properties we expect of a grammar logic (i.e. admissibility of
+cut, and a decidable and complete proof search procedure).
 
-%\input{fig-extension-quantifier-raising}
+In their \citeyear{barker2015} book, \citeauthor{barker2015} describe
+an extension of NL which they call NL$_\lambda$. The main insight in
+the formulation of this calculus was this: in type-logical grammar,
+the antecedent encodes a constituency tree, therefore we can simply
+encode quantifier raising in our logic.
+\begin{center}
+  \vspace*{0.5\baselineskip}
+  \begin{minipage}{0.3\linewidth}
+    \begin{tikzpicture}
+      \Tree [ john [ likes everyone ] ]
+    \end{tikzpicture}
+  \end{minipage}%
+  \begin{minipage}{0.02\linewidth}
+    $\equiv$
+  \end{minipage}%
+  \begin{minipage}{0.4\linewidth}
+    \begin{tikzpicture}
+      \Tree [ everyone [ $\lambda x.$ [ john [ likes x ] ] ] ]
+    \end{tikzpicture}
+  \end{minipage}
+\end{center}
+To achieve this, they add a new mode to NL---that is to say, a copy of
+the rules for $\{\impr,\prod,\impl\}$ applying to three new connectives
+$\{\himpr,\hprod,\himpl\}$---and the following (somewhat controversial)
+equivalence on structures:
+\[
+  \Sigma[\Delta]\equiv\Delta\circ\lambda x.\Sigma[x]
+\]
+This equivalence is intuitive, and works as expected. For instance,
+using display NL extended with this equivalence, we can easily give a
+derivation for ``John likes everyone,'' using the type
+$\S\himpl(\NP\himpr\S)$ for quantifiers:
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{\NP}
+    \fCenter\struct{\S}$}
+  \RightLabel{$\lambda$}
+  \UIC{$\struct{\NP}\hprod\lambda{x}.
+    (\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod x)\fCenter\struct{\S}$}
+  \RightLabel{Res$\hprod\himpr$}
+  \UIC{$\lambda{x}.(\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x})
+    \fCenter\struct{\NP}\himpr\struct{\S}$}
+  \RightLabel{R$\himpr$}
+  \UIC{$\lambda{x}.(\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x})
+    \fCenter\struct{\NP\himpr\S}$}
+  \AXC{}\RightLabel{Ax}\UIC{$\struct{S}\fCenter\struct{S}$}
+  \BIC{$\struct{\S\himpl(\NP\himpr\S)}\fCenter\struct{\S}\himpl\lambda{x}.
+    (\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod x)$}
+  \RightLabel{Res$\himpl\:\hprod$}
+  \UIC{$\struct{\S\himpl(\NP\himpr\S)}\hprod\lambda{x}.
+    (\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod x)\fCenter\struct{\S}$}
+  \RightLabel{$\lambda$}
+  \UIC{$\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{\S\himpl
+      (\NP\himpr\S)}\fCenter\struct{\S}$}
+\end{pfblock}
+However, the use of a binding construct in the syntax for structures
+makes this equivalence quite difficult to formalise.
+
+If we were to take the equivalence at face value, we would end up with
+a logic in which we could do all kinds of unpleasant things. For
+instance, since contexts are defined as structures with a hole, we
+could raise quantifiers past one another, indefinitely:
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$
+    \struct{{\S\impl(\NP\impr\S)}}\hprod
+    \lambda{z}.
+    (
+    \struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{y}.
+    ({z}\hprod\lambda{x}.({y}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x}))
+    )
+    \fCenter\struct{\S}$}
+  \RightLabel{$\lambda$}
+  \UIC{$
+    \struct{{\S\impl(\NP\impr\S)}}\hprod
+    \lambda{y}.
+    (
+    \struct{{\S\impl(\NP\impr\S)}}\hprod
+    \lambda{x}.({y}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x})
+    )
+    \fCenter\struct{\S}$}
+  \RightLabel{$\lambda$}
+  \UIC{$
+    \struct{{\S\impl(\NP\impr\S)}}\hprod
+    \lambda{x}.
+    (
+    \struct{{\S\impl(\NP\impr\S)}}\prod
+    \struct{(\NP\impr\S)\impl\NP}\prod{x}
+    )
+    \fCenter\struct{\S}$}
+  \RightLabel{$\lambda$}
+  \UIC{$
+    \struct{{\S\impl(\NP\impr\S)}}\prod
+    \struct{(\NP\impr\S)\impl\NP}\prod
+    \struct{{\S\impl(\NP\impr\S)}}
+    \fCenter\struct{\S}$}
+\end{pfblock}
+Needless to say, any logic extended with this equivalence loses the
+decidability of proof search. In chapter 17 of their book,
+\citeauthor{barker2015} do a great job of capturing the essence of the
+$\lambda$-rule in a logical manner; while their system is not yet
+decidable, it is very nearly so. They extend NL by a second modality
+$\{\himpr,\hprod,\himpl\}$, add three primitive structural constants
+$\{\I,\B,\C\}$, and add the following structural rules:
+\begin{center}
+  \begin{pfbox}
+    \AXC{$X\fCenter Y$}
+    \doubleLine\RightLabel{\I}
+    \UIC{$X\hprod\I\fCenter Y$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$X\prod(Y\hprod Z)\fCenter W$}
+    \doubleLine\RightLabel{\B}
+    \UIC{$Y\hprod((\B\prod X)\prod Z)\fCenter W$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$(X\prod Y)\hprod Z\fCenter W$}
+    \doubleLine\RightLabel{\C}
+    \UIC{$X\hprod((\C\prod Y)\prod Z)\fCenter W$}
+  \end{pfbox}
+\end{center}
+With this extension, quantifier raising can be done in much the same
+way as before---although the new version is ever so slightly more
+verbose:\footnote{%
+  Inverted applications of the \I, \B\ and \C\ rules are marked with a prime.
+}
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{{\NP}}\fCenter\struct{{\S}}$}
+  \RightLabel{Res$\prod\impr$}
+  \UIC{$\struct{(\NP\impr\S)\impl\NP}\prod\struct{{\NP}}\fCenter\struct{\NP}\impr\struct{{\S}}$}
+  \RightLabel{Res$\prod\impr$}
+  \UIC{$\struct{{\NP}}\fCenter\struct{(\NP\impr\S)\impl\NP}\impr\struct{\NP}\impr\struct{{\S}}$}
+  \RightLabel{\I}
+  \UIC{$\struct{{\NP}}\hprod\I\fCenter\struct{(\NP\impr\S)\impl\NP}\impr\struct{\NP}\impr\struct{{\S}}$}
+  \RightLabel{Res$\impr\prod$}
+  \UIC{$\struct{(\NP\impr\S)\impl\NP}\prod(\struct{{\NP}}\hprod\I)\fCenter\struct{\NP}\impr\struct{{\S}}$}
+  \RightLabel{\B}
+  \UIC{$\struct{{\NP}}\prod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I)\fCenter\struct{\NP}\impr\struct{{\S}}$}
+  \RightLabel{Res$\prod\impr$}
+  \UIC{$\struct{\NP}\prod(\struct{{\NP}}\hprod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))\fCenter\struct{{\S}}$}
+  \RightLabel{\B}
+  \UIC{$\struct{{\NP}}\hprod((\B\prod\struct{\NP})\prod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))\fCenter\struct{{\S}}$}
+  \RightLabel{Res$\hprod\himpr$}
+  \UIC{$((\B\prod\struct{\NP})\prod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))\fCenter\struct{{\NP}}\himpr\struct{{\S}}$}
+  \RightLabel{R$\himpr$}
+  \UIC{$((\B\prod\struct{\NP})\prod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))\fCenter\struct{{\NP\himpr\S}}$}
+  \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{{\S}}$}
+  \RightLabel{L$\himpl$}
+  \BIC{$\struct{{\S\himpl(\NP\himpr\S)}}\fCenter\struct{\S}\himpl((\B\prod\struct{\NP})\prod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))$}
+  \RightLabel{Res$\himpl\:\hprod$}
+  \UIC{$\struct{{\S\himpl(\NP\himpr\S)}}\hprod((\B\prod\struct{\NP})\prod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))\fCenter\struct{\S}$}
+  \RightLabel{$\B'$}
+  \UIC{$\struct{\NP}\prod(\struct{{\S\himpl(\NP\himpr\S)}}\hprod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))\fCenter\struct{\S}$}
+  \RightLabel{Res$\prod\impr$}
+  \UIC{$\struct{{\S\himpl(\NP\himpr\S)}}\hprod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I)\fCenter\struct{\NP}\impr\struct{\S}$}
+  \RightLabel{$\B'$}
+  \UIC{$\struct{(\NP\impr\S)\impl\NP}\prod(\struct{{\S\himpl(\NP\himpr\S)}}\hprod\I)\fCenter\struct{\NP}\impr\struct{\S}$}
+  \RightLabel{Res$\impr\prod$}
+  \UIC{$\struct{{\S\himpl(\NP\himpr\S)}}\hprod\I\fCenter\struct{(\NP\impr\S)\impl\NP}\impr\struct{\NP}\impr\struct{\S}$}
+  \RightLabel{$\I'$}
+  \UIC{$\struct{{\S\himpl(\NP\himpr\S)}}\fCenter\struct{(\NP\impr\S)\impl\NP}\impr\struct{\NP}\impr\struct{\S}$}
+  \RightLabel{Res$\prod\impr$}
+  \UIC{$\struct{(\NP\impr\S)\impl\NP}\prod\struct{{\S\himpl(\NP\himpr\S)}}\fCenter\struct{\NP}\impr\struct{\S}$}
+  \RightLabel{Res$\prod\impr$}
+  \UIC{$\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{{\S\himpl(\NP\himpr\S)}}\fCenter\struct{\S}$}
+\end{pfblock}
+One of the advantages of this formalisation is that it gets rid of the
+awkward binding construct in the structure syntax. In addition, it
+makes it clear that quantifiers can only move past \emph{solid}
+products. However, it is not entirely free of problems. One of the
+more glaring problems is that using this encoding, any expression can
+be the subject of quantifier raising. For instance, in ``John likes
+Mary,'' we could choose to raise the verb:
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$\struct{{(\NP\impr\S)\impl\NP}}\hprod(\B\prod\struct{\NP})
+    \prod((\C\prod\I)\prod\struct{\NP})\fCenter\struct{\S}$}\noLine
+  \UIC{$\vdots$}\noLine
+  \UIC{$\struct{\NP}\prod\struct{{(\NP\impr\S)\impl\NP}}\prod\struct{\NP}\fCenter\struct{\S}$}
+\end{pfblock}
+Since verbs are usually not considered scope-takers, it is unlikely
+that raising the verb would lead to anything other then lowering it
+again. However, the fact that we leave it open as an opportunity is
+wasted computational effort; while all futile attempts at raising and
+lowering will lead to a loop, and therefore spare us the spurious
+ambiguity, there are still a great deal of futile attempts to
+\emph{attempt}.
+
+Another problem is the $\I'$-rule. It allows us to introduce an
+arbitrary amount of \I's, which causes a \emph{growing} loop in our
+proof search procedure:
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$((\struct{\NP}\prod\struct{\NP\impr\S})\hprod\I)\hprod\I\fCenter\struct{\S}$}
+  \RightLabel{$\I'$}
+  \UIC{$(\struct{\NP}\prod\struct{\NP\impr\S})\hprod\I\fCenter\struct{\S}$}
+  \RightLabel{$\I'$}
+  \UIC{$\struct{\NP}\prod\struct{\NP\impr\S}\fCenter\struct{\S}$}
+\end{pfblock}
+I propose to handle both of these issues with one simple addition. The
+idea is to add a new unary connective, $\qr[A]$, which represents a
+license to perform quantifier raising. Since we want to replace the
+problematic $\I'$-rule, product with a right-hand unit on the
+structural level. However, since we do not want logical products, we
+will maintain that it is an atomic logical connective. This gives us
+the following logical left rule:
+\begin{pfblock}
+  \AXC{$\struct{A}\hprod\I\fCenter Δ$}
+  \RightLabel{L\I}
+  \UIC{$\struct{\qr[A]}\fCenter Δ$}
+\end{pfblock}
+The appropriate right rule is easily derived from the conventional
+display calculus rules for products and units---though I do not imagine
+we will generally want to see quantifying licenses in our output type:
+\begin{pfblock}
+  \AXC{$Γ\fCenter\struct{B}$}
+  \RightLabel{R\I}
+  \UIC{$Γ\hprod\I\fCenter\struct{\qr[B]}$}
+\end{pfblock}
+And indeed, the pair obeys all constraints imposed by display
+calculus, including a valid proof for \textbf{C8}:
+\begin{pfblock}
+  \AXC{$Γ\fCenter\struct{A}$}
+  \AXC{$\struct{A}\hprod\I\fCenter Δ$}
+  \RightLabel{Res$\hprod\himpl$}
+  \UIC{$\struct{A}\fCenter Δ\himpl\I$}
+  \RightLabel{Cut}
+  \BIC{$Γ\fCenter Δ\himpl\I$}
+  \RightLabel{Res$\himpl\hprod$}
+  \UIC{$Γ\hprod\I\fCenter Δ$}
+\end{pfblock}
+Note that we keep the $\I$-rule, though we rename it $\I^-$ to
+emphasise that it can now only \emph{remove} $\I$s. The full
+extension, including semantics, and focused rules, can be found in
+\autoref{fig:extension-quantifier-raising}. The semantics are rather
+trivial: we simply translate all constants as units, and translate
+$\qr[A]$ as $A$, inserting and removing the right unit as needed.
+
+\input{fig-extension-quantifier-raising}
 %\input{fig-extension-scope-islands}
 %\input{fig-extension-infixation}
 %\input{fig-extension-extraction}
@@ -39,7 +287,7 @@
 \include{future-work}
 
 
-\bibliographystyle{apalike}%
+\bibliographystyle{apalike}
 \bibliography{main}%
 
 \end{document}
