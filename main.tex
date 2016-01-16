@@ -386,55 +386,47 @@ manner. The following, for instance, is a proof for ``Everyone likes
 someone.''
 \begin{pfblock}
   \AXC{$\vdots$}\noLine
-  \UIC{$\struct{\NP}
-    \prod\struct{\TV}
-    \prod\struct{\NP}
-    \fCenter\struct{\S}$}
+  \UIC{$\struct{\NP}\prod\struct{\TV}\prod\struct{\NP}\fCenter\struct{\S}$}
   \RightLabel{$\mathbf{Q}{\downarrow}$}
-  \UIC{$(\C\prod\I)
-    \prod\struct{\TV}
-    \prod\struct{\NP}\fCenter\struct{{\NP\himpr\S}}$}
+  \UIC{$\trace(\Box\prod\struct{\TV}\prod\struct{\NP})\fCenter\struct{{\NP\himpr\S}}$}
   \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
   \RightLabel{$\mathbf{Q}{\uparrow}$}
-  \BIC{$\struct{{\S\himpl(\NP\himpr\S)}}
-    \prod\struct{\TV}
-    \prod\struct{\NP}
-    \fCenter\struct{\S}$}
+  \BIC{$\struct{{\S\himpl(\NP\himpr\S)}}\prod\struct{\TV}\prod\struct{\NP}\fCenter\struct{\S}$}
   \RightLabel{$\mathbf{Q}{\downarrow}$}
-  \UIC{$
-    (\B\prod\struct{{\S\himpl(\NP\himpr\S)}})
-    \prod(\B\prod\struct{\TV})
-    \prod\I
-    \fCenter\struct{{\NP\himpr\S}}$}
+  \UIC{$\trace(\struct{{\S\himpl(\NP\himpr\S)}}\prod\struct{\TV}\prod\Box)\fCenter\struct{{\NP\himpr\S}}$}
   \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
   \RightLabel{$\mathbf{Q}{\uparrow}$}
-  \BIC{$\struct{{\S\himpl(\NP\himpr\S)}}
-    \prod\struct{\TV}
-    \prod\struct{{\S\himpl(\NP\himpr\S)}}
-    \fCenter\struct{\S}$}
+  \BIC{$\struct{{\S\himpl(\NP\himpr\S)}}\prod\struct{\TV}\prod\struct{{\S\himpl(\NP\himpr\S)}}\fCenter\struct{\S}$}
 \end{pfblock}
-The above proof results in the following function-argument structure:
-\[
+\vspace*{-1\baselineskip}
+\begin{gather*}
+  \Downarrow
+  \\
   (\someone\;(\lambda y. \everyone\;(\lambda x.\likes\;y\;x)))
-\]
-Which in turn reduces to give the following semantics:
-\[
+  \\
+  \Downarrow
+  \\
   \exists y.\PERSON(y)\wedge\forall x.\PERSON(x)\supset\LIKE(x,y)
-\]
+\end{gather*}
 And, since this maintains the decomposition of the quantifier movement
 into two separate functions---raising and lowering---we can still use
-it to analyse parasitic scope \citep{barker2007}. For example, below
-we show a classic example of parasitic scope for \emph{different},
-albeit with a small changes, in order to obtain the semantics
-described by \citet{kiselyov2015b}:
-
-
-% a         \qr[\S\himpl(\NP\himpr\S)]
-% different \qr[\S\himpl(\qr[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\himpr\S)]
-% waiter    N
-% served    TV
-% everyone  \qr[\S\himpl(\NP\himpr\S)]
-
+it to analyse parasitic scope \citep{barker2007}. For example, in
+\autoref{fig:parasitic-scope}, we show a classic example of parasitic
+scope for \emph{different}, albeit with a small changes, in order to
+obtain the semantics described by \citet{kiselyov2015b}, using the
+lexicon described below:
+\begin{alignat*}{3}
+    &\a         \ &:&\ \tr[{(\qr[\S\himpl(\NP\himpr\S)]\impl\N)}]
+  \\&\a         \ &=&\ \lambda n. \lambda k. \exists x. n\;x\wedge k\;x
+  \\&\different \ &:&\ \tr[{(\qr[\S\himpl(\qr[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\himpr\S)])}]
+  \\&\different \ &=&\ \lambda k. \exists f. (\forall x.\forall y.\nexists z.f\;z\;x\wedge f\;z\;y)\;\wedge k\;(\lambda k'.\lambda x.k'\;(\lambda g.\lambda y.g\;y\wedge f\;x\;y)\;x)
+  \\&\waiter    \ &:&\ \tr[\N]
+  \\&\waiter    \ &=&\ \lambda x.\WAITER(x)
+  \\&\served    \ &:&\ \tr[\TV]
+  \\&\served    \ &=&\ \lambda y.\lambda x.\PAST(\SERVE(x,y))
+  \\&\everyone  \ &:&\ \tr[{(\qr[\S\himpl(\NP\himpr\S)])}]
+  \\&\everyone  \ &=&\ \lambda k.\forall x.\PERSON(x)\supset k\;x
+\end{alignat*}
 \begin{landscape}
   \begin{figure}
     \begin{mdframed}
@@ -497,13 +489,35 @@ described by \citet{kiselyov2015b}:
         \exists f.
         (\forall x.\forall y.\nexists z.f\;z\;x\wedge f\;z\;y)
         \wedge
-        (\forall y.\PERSON(y)\supset(\exists x.\WAITER(x)\wedge f\;y\;x\wedge\SERVE(y,x)))
+        (\forall y.\PERSON(y)\supset(\exists x.\WAITER(x)\wedge f\;y\;x\wedge\PAST(\SERVE(y,x))))
       \end{gather*}
       \vspace*{0.001\baselineskip}
     \end{mdframed}
     \caption{An example of parasitic scope.}
+    \label{fig:parasitic-scope}
   \end{figure}
 \end{landscape}
+It may be worthwhile to have a closer look at the type for
+`different.' It is a quantifier taking scope at the sentence
+level ${\qr[\S\himpl(\ldots\himpr\S)]}$, which becomes a quantifier
+taking scope parasitically ${\qr[(\NP\himpr\S)\himpl(\ldots
+\himpr(\NP\himpr\S))]}$, and finally becomes an adjective $\A$.
+
+The double quantification has some very interesting effects. First of
+all, because it takes scope normally and then parasitically the
+sentence ``A different waiter served everyone'' is unambiguous, even
+though it contains \emph{no fewer than three} quantifiers. This is
+because `a' cannot take scope until it receives its noun argument,
+which is modified by `different', and `different' must take scope once
+before `everyone', and once parasitically while `everyone' is taking
+scope.
+Secondly, this combination of normal and parasitic scope taking allows
+a quantifier to take scope \emph{over} another quantifier, while still
+getting access to this quantifier.
+
+
+
+
 
 
 
