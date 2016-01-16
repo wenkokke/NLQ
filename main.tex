@@ -161,9 +161,9 @@ $\{\I,\B,\C\}$, and add the following structural rules:
     \UIC{$X\hprod((\C\prod Y)\prod Z)\fCenter W$}
   \end{pfbox}
 \end{center}
-With this extension, quantifier raising can be done in much the same
-way as before---although the new version is ever so slightly more
-verbose:\footnote{%
+They call the result NL$_{CL}$. In this calculus, quantifier raising
+can be done in much the same way as in NL$_\lambda$---though the new
+version is ever so slightly more verbose:\footnote{%
   Inverted applications of the \I, \B\ and \C\ rules are marked with a prime.
 }
 \begin{pfblock}
@@ -280,6 +280,233 @@ trivial: we simply translate all constants as units, and translate
 $\qr[A]$ as $A$, inserting and removing the right unit as needed.
 
 \input{fig-extension-quantifier-raising}
+
+The extension presented so far for quantifier raising is pretty good:
+because we have removed all growing loops in structural rules, it now
+has a decidable and complete procedure for proof search, and it neatly
+captures quantifier movement---i.e. moving upwards, taking scope,
+binding a variable, and moving that variable back down. However, it
+still has one problem: spurious ambiguity. Imagine a sentence with two
+quantifiers $P$ and $Q$, respectively \emph{one} and \emph{two} places
+removed from the top of the syntax tree. The ambiguity that we want is
+``do we raise $P$ first, or do we raise $Q$ first?'' However, in
+addition to these possibilities, we now also have to possibility to
+raise $Q$ one step, then raise $P$, and then raise $Q$ a second
+step---semantically, this is equivalent to raising $P$, then
+$Q$. NL$_\lambda$---if you only allow quantifier raising past solid
+products---does not have this problem.
+
+\citet[][chapter 17.6]{barker2015} examine the restrictions that need
+to be put on the $\lambda$-rule in order to be able to translate
+NL$_\lambda$ to NL$_{CL}$. In order to keep our structural rules
+simple, and our calculus free of structural lambdas, I opt to go the
+other way around, and see how close we can get to defining the
+$\lambda$-rule in our calculus in
+\autoref{fig:extension-quantifier-raising}. I will assume the
+following definitions for contexts, the plugging operator
+`$\cdot\:[\:\cdot\:]$', and a function I call `trace':
+\begin{center}
+  $\text{Context}\;Σ\coloneqq\Box\vsep Σ\prodl Γ\vsep Γ\prodr Σ$\\
+  \begin{minipage}{0.45\linewidth}
+    \begin{alignat*}{2}
+      &\Box       \;&&[Γ']\mapsto Γ'\\
+      &(Σ\prodl Γ)\;&&[Γ']\mapsto (Σ[Γ']\prod Γ)\\
+      &(Γ\prodr Σ)\;&&[Γ']\mapsto (Γ\prod Σ[Γ'])
+    \end{alignat*}
+  \end{minipage}
+  \begin{minipage}{0.45\linewidth}
+    \begin{alignat*}{2}
+      &\trace(\Box)     \;&&\mapsto \mathbf{I}\\
+      &\trace(Σ\prodl Γ)\;&&\mapsto ((\mathbf{C}\prod \trace(Σ))\prod Γ)\\
+      &\trace(Γ\prodr Σ)\;&&\mapsto ((\mathbf{B}\prod Γ)\prod
+      \trace(Σ))
+    \end{alignat*}
+  \end{minipage}
+\end{center}
+Contexts encode structures with a single hole, where the nodes leading
+up to the hole are all solid products---exactly the type of structure
+that quantifiers can move up through. The plugging function inserts
+some structure into the single hole in a context. The `trace' function
+computes, from a context, exactly the trace of $\B$s and $\C$s that
+would be left after something quantifies out of that context.
+
+Given these definitions, we can show that the following rule for
+quantifier movement is admissible, by induction on the structure of
+the context:
+\begin{pfblock}
+  \AXC{$\struct{A}\hprod\trace(Σ)\fCenter Δ$}
+  \doubleLine\RightLabel{$\uparrow\downarrow$}
+  \UIC{$Σ[\struct{\qr[A]}]\fCenter Δ$}
+\end{pfblock}
+Which is very close to the equivalence we had before, with the
+quantifying license built in:
+\[
+  \Sigma[\Delta]\equiv\Delta\circ\lambda x.\Sigma[x]
+  \qquad
+  Σ[\struct{\qr[A]}]\equiv\struct{A}\hprod\trace(Σ)
+\]
+In fact, if you read products as function applications, and the
+$\{\I,\B,\C\}$ constants as the combinators, the way
+\citet{barker2015} intended, then the right-hand side expressions are
+equivalent.\footnote{%
+  As an aside: what we set out to encode were contexts with holes that
+  are unique---plugging should never duplicate or forget
+  information. So the $\lambda$-terms in NL$_\lambda$ were implicitly
+  linear. The combinators $\I$, $\B$ and $\C$ correspond precisely to
+  the linear lambda calculus. However, the combinator language is far
+  easier to encode than linear binding constructs.
+}
+Proof search with this derived rule is still complete; it merely
+enforces that the entire quantifier raising or lowering is done in one
+go.
+
+In their discussion of decidability, \citet{barker2015} derive the
+`expansion' and `reduction' rules which more-or-less correspond to
+the two directions of the equivalence. They then combine these rules
+with L$\himpl$ and R$\himpr$, respectively, yielding the
+$\himpl\,\text{L}_\lambda$ and $\himpr\text{R}_\lambda$ rules. The
+advantage of these combined rules is that they obey the sub-formula
+property, and are therefore suited to naive backward-chaining proof
+search. We can do a similar thing using our $\uparrow\downarrow$ rule:
+\begin{center}
+  \begin{pfbox}
+    \AXC{$\trace(Σ)\fCenter\struct{A\himpr B}$} \AXC{$\struct{C}\fCenter Δ$}
+    \RightLabel{$\mathbf{Q}{\uparrow}$}
+    \BIC{$Σ[\struct{\qr[C\himpl(A\himpr B)]}]\fCenter Δ$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$Σ[\struct{A}]\fCenter\struct{B}$}
+    \RightLabel{$\mathbf{Q}{\downarrow}$}
+    \UIC{$\trace(Σ)\fCenter\struct{A\himpr B}$}
+  \end{pfbox}
+\end{center}
+Using these admissible and derived rules, we can once again write
+proofs involving quantifier movement in a much more succinct
+manner. The following, for instance, is a proof for ``Everyone likes
+someone.''
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$\struct{\NP}
+    \prod\struct{\TV}
+    \prod\struct{\NP}
+    \fCenter\struct{\S}$}
+  \RightLabel{$\mathbf{Q}{\downarrow}$}
+  \UIC{$(\C\prod\I)
+    \prod\struct{\TV}
+    \prod\struct{\NP}\fCenter\struct{{\NP\himpr\S}}$}
+  \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+  \RightLabel{$\mathbf{Q}{\uparrow}$}
+  \BIC{$\struct{{\S\himpl(\NP\himpr\S)}}
+    \prod\struct{\TV}
+    \prod\struct{\NP}
+    \fCenter\struct{\S}$}
+  \RightLabel{$\mathbf{Q}{\downarrow}$}
+  \UIC{$
+    (\B\prod\struct{{\S\himpl(\NP\himpr\S)}})
+    \prod(\B\prod\struct{\TV})
+    \prod\I
+    \fCenter\struct{{\NP\himpr\S}}$}
+  \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+  \RightLabel{$\mathbf{Q}{\uparrow}$}
+  \BIC{$\struct{{\S\himpl(\NP\himpr\S)}}
+    \prod\struct{\TV}
+    \prod\struct{{\S\himpl(\NP\himpr\S)}}
+    \fCenter\struct{\S}$}
+\end{pfblock}
+The above proof results in the following function-argument structure:
+\[
+  (\someone\;(\lambda y. \everyone\;(\lambda x.\likes\;y\;x)))
+\]
+Which in turn reduces to give the following semantics:
+\[
+  \exists y.\PERSON(y)\wedge\forall x.\PERSON(x)\supset\LIKE(x,y)
+\]
+And, since this maintains the decomposition of the quantifier movement
+into two separate functions---raising and lowering---we can still use
+it to analyse parasitic scope \citep{barker2007}. For example, below
+we show a classic example of parasitic scope for \emph{different},
+albeit with a small changes, in order to obtain the semantics
+described by \citet{kiselyov2015b}:
+
+
+% a         \qr[\S\himpl(\NP\himpr\S)]
+% different \qr[\S\himpl(\qr[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\himpr\S)]
+% waiter    N
+% served    TV
+% everyone  \qr[\S\himpl(\NP\himpr\S)]
+
+\begin{landscape}
+  \begin{figure}
+    \begin{mdframed}
+      \vspace*{0.5\baselineskip}
+      \begin{pfblock}[0.85]
+        \AXC{}\RightLabel{Ax}\UIC{$\textsc{waiter}\fCenter\struct{\N}$}
+        \AXC{}\RightLabel{Ax}\UIC{$\struct{\N}\fCenter\struct{\N}$}
+        \AXC{$\vdots$}\noLine
+        \UIC{$\struct{\NP}\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
+        \RightLabel{$\mathbf{Q}{\downarrow}$}
+        \UIC{$\trace(\Box\prodl\textsc{served}\prod\struct{\NP})\fCenter\struct{\NP\himpr\S}$}
+        \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+        \RightLabel{$\mathbf{Q}{\uparrow}$}
+        \BIC{$\struct{\qr[\S\himpl(\NP\himpr\S)]}\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
+        \RightLabel{Res$\prod\impl$}
+        \UIC{$\struct{\qr[\S\himpl(\NP\himpr\S)]}\fCenter\struct{\S}\impl(\textsc{served}\prod\struct{\NP})$}
+        \RightLabel{L$\impl$}
+        \BIC{$\textsc{a}\fCenter(\struct{\S}\impl(\textsc{served}\prod\struct{\NP}))\impl\struct{\N}$}
+        \RightLabel{Res$\impl\prod$}
+        \UIC{$\textsc{a}\prod\struct{\N}\fCenter\struct{\S}\impl(\textsc{served}\prod\struct{\NP})$}
+        \RightLabel{Res$\prod\impr$}
+        \UIC{$\struct{\N}\fCenter\textsc{a}\impr(\struct{\S}\impl(\textsc{served}\prod\struct{\NP}))$}
+        \RightLabel{L$\impl$}
+        \BIC{$\struct{\A}\fCenter(\textsc{a}\impr(\struct{\S}\impl(\textsc{served}\prod\struct{\NP})))\impl\textsc{waiter}$}
+        \RightLabel{Res$\impl\prod$}
+        \UIC{$\struct{\A}\prod\textsc{waiter}\fCenter\textsc{a}\impr(\struct{\S}\impl(\textsc{served}\prod\struct{\NP}))$}
+        \RightLabel{Res$\impr\prod$}
+        \UIC{$\textsc{a}\prod\struct{\A}\prod\textsc{waiter}\fCenter\struct{\S}\impl(\textsc{served}\prod\struct{\NP})$}
+        \RightLabel{Res$\impl\prod$}
+        \UIC{$(\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
+        \RightLabel{$\mathbf{Q}{\downarrow}$}
+        \UIC{$\trace((\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box)\fCenter\struct{\NP\himpr\S}$}
+        \RightLabel{$\beta$}
+        \UIC{$(\B\prod\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prod(\B\prod\textsc{served})\prod\I)\fCenter\struct{\NP\himpr\S}$}
+        \RightLabel{$\mathbf{Q}{\downarrow}$}
+        \UIC{$\trace((\B\prodr\textsc{a}\prodr\Box\prodl\textsc{waiter})\prodl(\B\prod\textsc{served})\prod\I)\fCenter\struct{\A\himpr(\NP\himpr\S)}$}
+        \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+        \RightLabel{$\mathbf{Q}{\uparrow}$}
+        \BIC{$(\B\prod\textsc{a}\prod\qr[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\prod\textsc{waiter})\prod(\B\prod\textsc{served})\prod\I\fCenter\struct{\NP\himpr\S}$}
+        \RightLabel{$\beta$}
+        \UIC{$\trace((\textsc{a}\prod\qr[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box)\fCenter\struct{\NP\himpr\S}$}
+        \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+        \RightLabel{$\mathbf{Q}{\uparrow}$}
+        \BIC{$(\textsc{a}\prod\qr[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\prod\textsc{waiter})\prod\textsc{served}\prod\textsc{everyone}\fCenter\struct{\S}$}
+        \RightLabel{$\mathbf{Q}{\downarrow}$}
+        \UIC{$\trace((\textsc{a}\prodr\Box\prodl\textsc{waiter})\prodl\textsc{served}\prod\textsc{everyone})\fCenter\qr[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\himpr\S$}
+        \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+        \RightLabel{$\mathbf{Q}{\uparrow}$}
+        \BIC{$(\textsc{a}\prod\textsc{different}\prod\textsc{waiter})\prod\textsc{served}\prod\textsc{everyone}\fCenter\struct{\S}$}
+      \end{pfblock}
+      \vspace*{-1\baselineskip}
+      \begin{gather*}
+        \Downarrow
+        \\
+        \different\;(\lambda k.(\everyone (k\;(\lambda k'.(\lambda
+        x.(\a\;(k'\;\waiter)\;(\lambda y.\served\;x\;y)))))))
+        \\
+        \Downarrow
+        \\
+        \exists f.
+        (\forall x.\forall y.\nexists z.f\;z\;x\wedge f\;z\;y)
+        \wedge
+        (\forall y.\PERSON(y)\supset(\exists x.\WAITER(x)\wedge f\;y\;x\wedge\SERVE(y,x)))
+      \end{gather*}
+      \vspace*{0.001\baselineskip}
+    \end{mdframed}
+    \caption{An example of parasitic scope.}
+  \end{figure}
+\end{landscape}
+
+
+
 %\input{fig-extension-scope-islands}
 %\input{fig-extension-infixation}
 %\input{fig-extension-extraction}

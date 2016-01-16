@@ -175,12 +175,13 @@ author    = lex "author" ; authors = plural <$ author
 ~~~
 
 ~~~{.haskell}
-some, every :: Word (Q NP S S :← N)
-some      = lex_ (\f g -> exists E (\x -> f x ∧ g x))
+some, every, a :: Word (Q NP S S :← N)
+some      = lex "some" -- _ (\f g -> exists E (\x -> f x ∧ g x))
 every     = lex_ (\f g -> forall E (\x -> f x ⊃ g x))
 a         = some
+someone, everyone :: Word (Q NP S S)
 someone   = some  <$ person
-everyone  = every <$ person
+everyone  = lex "everyone" -- every <$ person
 ~~~
 
 ~~~{.haskell}
@@ -204,7 +205,7 @@ same, different :: Word (Q (Q A (NP :⇨ S) (NP :⇨ S)) S S)
 same      = lex_ same'
   where
   same' k = exists E (\z -> k (\k' x -> k' (\f y -> f y :∧ y ≡ z) x))
-different = lex_ diff1
+different = lex "different" -- _ diff1
   where
   diff1 k = exists EET (\f -> diff2 f ∧ k (\k x -> k (\g y -> g y ∧ f x y) x))
   diff2 f = forall E   (\x -> forall E (\y -> not (exists E (\z -> f z x ∧ f z y))))

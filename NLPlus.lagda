@@ -74,7 +74,7 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
 \begin{comment}
 \begin{code}
   open import Data.Product                               using (∃; _,_)
-  open import Function                                   using (flip)
+  open import Function                                   using (flip; const)
   open import Function.Equality                          using (_⟨$⟩_)
   open import Function.Equivalence                  as I using (_⇔_) renaming (equivalence to mkISO)
   open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; inspect)
@@ -206,10 +206,10 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
     resBD   : ∀ {k x y}     → NL x ⊢ BOX k y      → NL DIA k x ⊢ y
     resDB   : ∀ {k x y}     → NL DIA k x ⊢ y      → NL x ⊢ BOX k y
 
-    upB     : ∀ {x y z w}   → NL x ∙ (y ∘ z) ⊢ w        → NL y ∘ ((B ∙ x) ∙ z) ⊢ w
-    upC     : ∀ {x y z w}   → NL (x ∘ y) ∙ z ⊢ w        → NL x ∘ ((C ∙ y) ∙ z) ⊢ w
-    dnB     : ∀ {x y z w}   → NL y ∘ ((B ∙ x) ∙ z) ⊢ w  → NL x ∙ (y ∘ z) ⊢ w
-    dnC     : ∀ {x y z w}   → NL x ∘ ((C ∙ y) ∙ z) ⊢ w  → NL (x ∘ y) ∙ z ⊢ w
+    dnB     : ∀ {x y z w}   → NL x ∙ (y ∘ z) ⊢ w        → NL y ∘ ((B ∙ x) ∙ z) ⊢ w
+    dnC     : ∀ {x y z w}   → NL (x ∘ y) ∙ z ⊢ w        → NL x ∘ ((C ∙ y) ∙ z) ⊢ w
+    upB     : ∀ {x y z w}   → NL y ∘ ((B ∙ x) ∙ z) ⊢ w  → NL x ∙ (y ∘ z) ⊢ w
+    upC     : ∀ {x y z w}   → NL x ∘ ((C ∙ y) ∙ z) ⊢ w  → NL (x ∘ y) ∙ z ⊢ w
 
     ifxRR   : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↓ z ⊢ w)  → NL (x ∙ (y ∙ ◆↓ z) ⊢ w)
     ifxLR   : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↓ z ⊢ w)  → NL ((x ∙ ◆↓ z) ∙ y ⊢ w)
@@ -231,9 +231,9 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
 
 \subsubsection{Contexts and Plugging functions}
 \begin{code}
-  record Pluggable (F I : Polarity → Set) (O : Set) : Set where
+  record Pluggable (C I O : Set) : Set where
     field
-      _[_] : ∀ {p} → F p → I p → O
+      _[_] : C → I → O
   open Pluggable {{...}}
 \end{code}
 
@@ -251,8 +251,8 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
     IMPL2  : Kind → Struct        -  → StructCtxt p  +  → StructCtxt p  -
 
   instance
-    Pluggable-Struct : ∀ {p} → Pluggable (flip StructCtxt p) Struct (Struct p)
-    Pluggable-Struct = record { _[_] = _[_]′ }
+    Pluggable-StructI : ∀ {p1 p2} → Pluggable (StructCtxt p1 p2) (Struct p1) (Struct p2)
+    Pluggable-StructI = record { _[_] = _[_]′ }
       where
         _[_]′ : ∀ {p1 p2} → StructCtxt p1 p2 → Struct p1 → Struct p2
         ( HOLE          ) [ z ]′ = z
@@ -265,6 +265,7 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
         ( IMPL1  k x y  ) [ z ]′ = IMPL k    (x [ z ]′) y
         ( IMPL2  k x y  ) [ z ]′ = IMPL k x  (y [ z ]′)
 \end{code}
+
 
 \begin{multicols}{2}
 \begin{code}
@@ -295,7 +296,7 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
     _⊢>_  : Struct        + → StructCtxt p  - → SequentCtxt p
 
   instance
-    Pluggable-Sequent : Pluggable SequentCtxt Struct Sequent
+    Pluggable-Sequent : ∀ {p} → Pluggable (SequentCtxt p) (Struct p) Sequent
     Pluggable-Sequent = record { _[_] = _[_]′ }
       where
         _[_]′ : ∀ {p} → SequentCtxt p → Struct p → Sequent
@@ -303,13 +304,16 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
         (x ⊢> y)  [ z ]′ = x ⊢ y [ z ]
 \end{code}
 
+
+
+\subsubsection{Display Property}
 \begin{code}
   data DisplayCtxt : Polarity → Set where
     <⊢_  : Struct -  → DisplayCtxt +
     _⊢>  : Struct +  → DisplayCtxt -
 
   instance
-    Pluggable-Display : Pluggable DisplayCtxt Struct Sequent
+    Pluggable-Display : ∀ {p} → Pluggable (DisplayCtxt p) (Struct p) Sequent
     Pluggable-Display = record { _[_] = _[_]′ }
       where
         _[_]′ : ∀ {p} → DisplayCtxt p → Struct p → Sequent
@@ -317,7 +321,6 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
         (x ⊢>)  [ y ]′  = x ⊢ y
 \end{code}
 
-\subsubsection{Display Property}
 \AgdaFunction{DP} is a type-level function, which takes a sequent
 context (a sequent with exactly one hole, either in its antecedent or
 in its succedent) and computes the sequent in which the formula in
@@ -463,7 +466,6 @@ structuralise either the antecedent, the succedent, or both.
 \end{code}
 
 \subsubsection{Identity Expansion}
-
 \begin{code}
   mutual
     ax : ∀ {a} → NL · a · ⊢ · a ·
@@ -498,11 +500,63 @@ structuralise either the antecedent, the succedent, or both.
     axL′ { a = ImpL   k  b a  } n = impLL axR axL
 \end{code}
 
-
-\subsection{Translation to Agda}
+\subsection{Quanfitier Raising}
 \begin{code}
-module SyntaxToAgda
-  (Atom : Set) (F  : Set → Set)
+  data QRCtxt : Set where
+    HOLE   : QRCtxt
+    PROD1  : QRCtxt    → Struct +  → QRCtxt
+    PROD2  : Struct +  → QRCtxt    → QRCtxt
+
+  instance
+    Pluggable-QR : Pluggable QRCtxt (Struct +) (Struct +)
+    Pluggable-QR = record { _[_] = _[_]′ }
+      where
+        _[_]′ : QRCtxt → Struct + → Struct +
+        ( HOLE        ) [ z ]′ = z
+        ( PROD1  x y  ) [ z ]′ = PROD Sol    (x [ z ]′) y
+        ( PROD2  x y  ) [ z ]′ = PROD Sol x  (y [ z ]′)
+\end{code}
+
+\begin{code}
+  trace : QRCtxt → Struct +
+  trace ( HOLE        )  = UNIT Hol
+  trace ( PROD1  x y  )  = PROD Sol (PROD Sol C (trace x)) y
+  trace ( PROD2  x y  )  = PROD Sol (PROD Sol B x) (trace y)
+\end{code}
+
+\begin{code}
+  ↑ : ∀ x {a z} → NL · a · ∘ trace(x) ⊢ z → NL x [ · Q a · ] ⊢ z
+  ↑ x f = init x (move x f)
+    where
+    init : ∀ (x : QRCtxt) {a z} → NL x [ · a · ∘ I ] ⊢ z → NL x [ · Q a · ] ⊢ z
+    init ( HOLE        ) f = unitRL f
+    init ( PROD1  x y  ) f = resLP (init x (resPL f))
+    init ( PROD2  x y  ) f = resRP (init y (resPR f))
+    move : ∀ (x : QRCtxt) {y z} → NL y ∘ trace(x) ⊢ z → NL x [ y ∘ I ] ⊢ z
+    move ( HOLE        ) f = f
+    move ( PROD1  x y  ) f = resLP (move x (resPL (upC f)))
+    move ( PROD2  x y  ) f = resRP (move y (resPR (upB f)))
+
+  ↓ : ∀ x {y z} → NL x [ y ] ⊢ z → NL y ∘ trace(x) ⊢ z
+  ↓ ( HOLE        ) f = unitRI f
+  ↓ ( PROD1  x y  ) f = dnC (resLP (↓ x (resPL f)))
+  ↓ ( PROD2  x y  ) f = dnB (resRP (↓ y (resPR f)))
+\end{code}
+
+\begin{code}
+  q↑ : ∀ x {y b c} → NL trace(x) ⊢[ b ] → NL [ c ]⊢ y → NL x [ · Q (c ⇦ b) · ] ⊢ y
+  q↑ x f g = ↑ x (resLP (focL refl (impLL f g)))
+
+  q↓ : ∀ x {a b} → NL x [ · a · ] ⊢ · b · → NL trace(x) ⊢ · a ⇨ b ·
+  q↓ x f = impRR (resPR (↓ x f))
+\end{code}
+
+
+
+\subsection{Interpretation in Agda}
+\begin{code}
+module InterpretationInAgda
+  (Atom : Set)
   (PolarisedAtom   : Polarised Atom)
   (TranslateAtom   : Translate Atom Set)
   where
@@ -523,7 +577,7 @@ module SyntaxToAgda
     TranslateType = record { _* = _*′ }
       where
         _*′ : NL.Type → Set
-        El        a    *′ = F (a *)
+        El        a    *′ = a *
         Dia    _  a    *′ = a *′
         Box    _  a    *′ = a *′
         UnitR  _  a    *′ = a *′
@@ -582,10 +636,10 @@ module SyntaxToAgda
         boxR    f    *′ = f *′
         resBD   f    *′ = f *′
         resDB   f    *′ = f *′
-        upB     f    *′ = λ{ ( y , (_ , x) , z)  → (f *′) ( x , y  , z) }
-        upC     f    *′ = λ{ ( x , (_ , y) , z)  → (f *′) ((x , y) , z) }
-        dnB     f    *′ = λ{ ( x , y   , z)  → (f *′) ( y , (_ , x) , z) }
-        dnC     f    *′ = λ{ ((x , y)  , z)  → (f *′) ( x , (_ , y) , z) }
+        dnB     f    *′ = λ{ ( y , (_ , x) , z)  → (f *′) ( x , y  , z) }
+        dnC     f    *′ = λ{ ( x , (_ , y) , z)  → (f *′) ((x , y) , z) }
+        upB     f    *′ = λ{ ( x , y   , z)  → (f *′) ( y , (_ , x) , z) }
+        upC     f    *′ = λ{ ((x , y)  , z)  → (f *′) ( x , (_ , y) , z) }
         ifxRR   f    *′ = λ{ ( x , y   , z)  → (f *′) ((x , y) , z)  }
         ifxLR   f    *′ = λ{ ((x , z)  , y)  → (f *′) ((x , y) , z)  }
         ifxLL   f    *′ = λ{ ((z , y)  , x)  → (f *′) ( z , y  , x)  }
