@@ -156,7 +156,7 @@ bwd = QuasiQuoter
 
 allBwd :: TH.Q Exp
 allBwd = do
-  bwds1 <- traverse lookupValueName (map (("bwd"++).show) [0..23])
+  bwds1 <- traverse lookupValueName (map (("bwd"++).show) [0..24])
   let bwds2 = map (VarE . fromJust) (takeWhile isJust bwds1)
   return (AppE (VarE 'sequence_) (ListE bwds2))
 

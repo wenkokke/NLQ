@@ -97,51 +97,36 @@ $\S\himpl(\NP\himpr\S)$ for quantifiers:
 \end{pfblock}
 However, the use of a binding construct in the syntax for structures
 makes this equivalence quite difficult to formalise.
-
-If we were to take the equivalence at face value, we would end up with
-a logic in which we could do all kinds of unpleasant things. For
-instance, since contexts are defined as structures with a hole, we
-could raise quantifiers past one another, indefinitely:
+In addition, if we were to take the equivalence at face value, we
+would end up with a logic in which we could do all kinds of unpleasant
+things. For instance, since contexts are defined as structures with a
+hole, we could raise quantifiers past one another, indefinitely:
 \begin{pfblock}
   \AXC{$\vdots$}\noLine
-  \UIC{$
-    \struct{{\S\impl(\NP\impr\S)}}\hprod
-    \lambda{z}.
-    (
-    \struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{y}.
-    ({z}\hprod\lambda{x}.({y}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x}))
-    )
-    \fCenter\struct{\S}$}
+  \UIC{$\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{z}.(\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{y}.({z}\hprod\lambda{x}.({y}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x})))\fCenter\struct{\S}$}
   \RightLabel{$\lambda$}
-  \UIC{$
-    \struct{{\S\impl(\NP\impr\S)}}\hprod
-    \lambda{y}.
-    (
-    \struct{{\S\impl(\NP\impr\S)}}\hprod
-    \lambda{x}.({y}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x})
-    )
-    \fCenter\struct{\S}$}
+  \UIC{$\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{y}.(\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{x}.({y}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x}))\fCenter\struct{\S}$}
   \RightLabel{$\lambda$}
-  \UIC{$
-    \struct{{\S\impl(\NP\impr\S)}}\hprod
-    \lambda{x}.
-    (
-    \struct{{\S\impl(\NP\impr\S)}}\prod
-    \struct{(\NP\impr\S)\impl\NP}\prod{x}
-    )
-    \fCenter\struct{\S}$}
+  \UIC{$\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{x}.(\struct{{\S\impl(\NP\impr\S)}}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x})\fCenter\struct{\S}$}
   \RightLabel{$\lambda$}
-  \UIC{$
-    \struct{{\S\impl(\NP\impr\S)}}\prod
-    \struct{(\NP\impr\S)\impl\NP}\prod
-    \struct{{\S\impl(\NP\impr\S)}}
-    \fCenter\struct{\S}$}
+  \UIC{$\struct{{\S\impl(\NP\impr\S)}}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{{\S\impl(\NP\impr\S)}}\fCenter\struct{\S}$}
 \end{pfblock}
-Needless to say, any logic extended with this equivalence loses the
-decidability of proof search. In chapter 17 of their book,
-\citeauthor{barker2015} do a great job of capturing the essence of the
-$\lambda$-rule in a logical manner; while their system is not yet
-decidable, it is very nearly so. They extend NL by a second modality
+Or, as \citet{barker2015} note, we could lift variables out of the
+scope of their binder:
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{${x}\hprod\lambda{y}.(\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{x}.(\struct{{\S\impl(\NP\impr\S)}}\prod\struct{(\NP\impr\S)\impl\NP}\prod{y}))\fCenter\struct{\S}$}
+  \RightLabel{$\lambda$}
+  \UIC{$\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{x}.(\struct{{\S\impl(\NP\impr\S)}}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x})\fCenter\struct{\S}$}
+  \RightLabel{$\lambda$}
+  \UIC{$\struct{{\S\impl(\NP\impr\S)}}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{{\S\impl(\NP\impr\S)}}\fCenter\struct{\S}$}
+\end{pfblock}
+Needless to say, any logic extended with this equivalence loses a
+number of pleasant properties, one of which is decidable proof
+search. However, in chapter 17 of their book, \citeauthor{barker2015}
+do a great job of capturing the essence of the $\lambda$-rule in a
+logical manner; while their system is not yet decidable, it is very
+nearly so. They extend NL by a second modality
 $\{\himpr,\hprod,\himpl\}$, add three primitive structural constants
 $\{\I,\B,\C\}$, and add the following structural rules:
 \begin{center}
@@ -161,9 +146,10 @@ $\{\I,\B,\C\}$, and add the following structural rules:
     \UIC{$X\hprod((\C\prod Y)\prod Z)\fCenter W$}
   \end{pfbox}
 \end{center}
-They call the result NL$_{CL}$. In this calculus, quantifier raising
-can be done in much the same way as in NL$_\lambda$---though the new
-version is ever so slightly more verbose:\footnote{%
+They call the result NL$_{\text{CL}}$ (and, occasionally,
+NL$_{\text{IBC}}$). In this calculus, quantifier raising can be done
+in much the same way as in NL$_\lambda$---though the new version is
+ever so slightly more verbose:\footnote{%
   Inverted applications of the \I, \B\ and \C\ rules are marked with a prime.
 }
 \begin{pfblock}
@@ -208,7 +194,7 @@ version is ever so slightly more verbose:\footnote{%
   \UIC{$\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{{\S\himpl(\NP\himpr\S)}}\fCenter\struct{\S}$}
 \end{pfblock}
 One of the advantages of this formalisation is that it gets rid of the
-awkward binding construct in the structure syntax. In addition, it
+awkward binding construct in the syntax of structures. In addition, it
 makes it clear that quantifiers can only move past \emph{solid}
 products. However, it is not entirely free of problems. One of the
 more glaring problems is that using this encoding, any expression can
@@ -240,17 +226,17 @@ proof search procedure:
   \UIC{$\struct{\NP}\prod\struct{\NP\impr\S}\fCenter\struct{\S}$}
 \end{pfblock}
 I propose to handle both of these issues with one simple addition. The
-idea is to add a new unary connective, $\qr[A]$, which represents a
+idea is to add a new unary connective, $\q[A]$, which represents a
 license to perform quantifier raising. Since we want to replace the
 problematic $\I'$-rule, we will choose the structural version of our
 quantifying license to be a \emph{hollow} product with a right-hand
 unit. On the other side, since we do not want logical products, we
-will keep $\qr[A]$ it as an atomic logical connective. This gives us
+will keep $\q[A]$ it as an atomic logical connective. This gives us
 the following logical left rule:
 \begin{pfblock}
   \AXC{$\struct{A}\hprod\I\fCenter Δ$}
   \RightLabel{L\I}
-  \UIC{$\struct{\qr[A]}\fCenter Δ$}
+  \UIC{$\struct{\q[A]}\fCenter Δ$}
 \end{pfblock}
 The appropriate right rule is easily derived from the conventional
 display calculus rules for products and units---though I do not imagine
@@ -258,7 +244,7 @@ we will generally want to see quantifying licenses in our output type:
 \begin{pfblock}
   \AXC{$Γ\fCenter\struct{B}$}
   \RightLabel{R\I}
-  \UIC{$Γ\hprod\I\fCenter\struct{\qr[B]}$}
+  \UIC{$Γ\hprod\I\fCenter\struct{\q[B]}$}
 \end{pfblock}
 And indeed, the pair obeys all constraints imposed by display
 calculus, including a valid proof for \textbf{C8}:
@@ -277,7 +263,7 @@ emphasise that it can now only \emph{remove} $\I$s. The full
 extension, including semantics, and focused rules, can be found in
 \autoref{fig:extension-quantifier-raising}. The semantics are rather
 trivial: we simply translate all constants as units, and translate
-$\qr[A]$ as $A$, inserting and removing the right unit as needed.
+$\q[A]$ as $A$, inserting and removing the right unit as needed.
 
 \input{fig-extension-quantifier-raising}
 
@@ -298,13 +284,11 @@ products---does not have this problem.
 
 \citet[][chapter 17.6]{barker2015} examine the restrictions that need
 to be put on the $\lambda$-rule in order to be able to translate
-NL$_\lambda$ to NL$_{CL}$. In order to keep our structural rules
-simple, and our calculus free of structural lambdas, I opt to go the
-other way around, and see how close we can get to defining the
-$\lambda$-rule in our calculus in
-\autoref{fig:extension-quantifier-raising}. I will assume the
-following definitions for contexts, the plugging operator
-`$\cdot\:[\:\cdot\:]$', and a function I call `trace':
+NL$_\lambda$ to NL$_{\text{CL}}$. In order to keep our structural
+rules simple, and our calculus free of structural lambdas, I opt to go
+the other way around, and see how close we can get to defining the
+$\lambda$-rule in our calculus in \autoref{fig:extension-quantifier-raising}.
+For this, we will need the following definitions:
 \begin{center}
   $\text{Context}\;Σ\coloneqq\Box\vsep Σ\prodl Γ\vsep Γ\prodr Σ$\\
   \begin{minipage}{0.45\linewidth}
@@ -323,12 +307,19 @@ following definitions for contexts, the plugging operator
     \end{alignat*}
   \end{minipage}
 \end{center}
-Contexts encode structures with a single hole, where the nodes leading
-up to the hole are all solid products---exactly the type of structure
-that quantifiers can move up through. The plugging function inserts
-some structure into the single hole in a context. The `trace' function
-computes, from a context, exactly the trace of $\B$s and $\C$s that
-would be left after something quantifies out of that context.
+First we have contexts, which encode structures with a single hole,
+where the nodes leading up to the hole are all solid
+products---exactly the type of structure that quantifiers can move up
+through. The syntax is a little abusive, as we use the same symbol for
+products, products with a hole in their left argument, and products
+with a hole in their right argument. However, as we require that
+contexts have only a single hole, it is always unambiguous. Note that
+products are right-associative.
+Secondly, we have the plugging function `$\plug$', which inserts some
+structure into the single hole in a context.
+Lastly, the `trace' function computes, from a context, the trace of
+$\B$s and $\C$s that would be left after something quantifies out of
+that context.
 
 Given these definitions, we can show that the following rule for
 quantifier movement is admissible, by induction on the structure of
@@ -336,18 +327,19 @@ the context:
 \begin{pfblock}
   \AXC{$\struct{A}\hprod\trace(Σ)\fCenter Δ$}
   \doubleLine\RightLabel{$\uparrow\downarrow$}
-  \UIC{$Σ[\struct{\qr[A]}]\fCenter Δ$}
+  \UIC{$Σ[\struct{\q[A]}]\fCenter Δ$}
 \end{pfblock}
-Which is very close to the equivalence we had before, with the
-quantifying license built in:
+This new rule is very close to \citeauthor{barker2015}'s equivalence,
+with as its only difference that the quantifying license is now built
+into it:
 \[
   \Sigma[\Delta]\equiv\Delta\circ\lambda x.\Sigma[x]
   \qquad
-  Σ[\struct{\qr[A]}]\equiv\struct{A}\hprod\trace(Σ)
+  Σ[\struct{\q[A]}]\equiv\struct{A}\hprod\trace(Σ)
 \]
 In fact, if you read products as function applications, and the
-$\{\I,\B,\C\}$ constants as the combinators, the way
-\citet{barker2015} intended, then the right-hand side expressions are
+constants $\{\I,\B,\C\}$ as the combinators, as \citet{barker2015}
+intended, then the right-hand side expressions are more-or-less
 equivalent.\footnote{%
   As an aside: what we set out to encode were contexts with holes that
   are unique---plugging should never duplicate or forget
@@ -358,170 +350,138 @@ equivalent.\footnote{%
 }
 Proof search with this derived rule is still complete; it merely
 enforces that the entire quantifier raising or lowering is done in one
-go.
+go.\todo{No proof.}
 
 In their discussion of decidability, \citet{barker2015} derive the
 `expansion' and `reduction' rules which more-or-less correspond to
-the two directions of the equivalence. They then combine these rules
-with L$\himpl$ and R$\himpr$, respectively, yielding the
+the two directions of the equivalence, or the two directions of our
+$\uparrow\downarrow$-rule. They then combine these rules with
+L$\himpl$ and R$\himpr$, respectively, yielding the
 $\himpl\,\text{L}_\lambda$ and $\himpr\text{R}_\lambda$ rules. The
 advantage of these combined rules is that they obey the sub-formula
 property, and are therefore suited to naive backward-chaining proof
-search. We can do a similar thing using our $\uparrow\downarrow$ rule:
+search. We can do a similar thing using our $\uparrow\downarrow$-rule:
 \begin{center}
   \begin{pfbox}
     \AXC{$\trace(Σ)\fCenter\struct{A\himpr B}$} \AXC{$\struct{C}\fCenter Δ$}
-    \RightLabel{$\mathbf{Q}{\uparrow}$}
-    \BIC{$Σ[\struct{\qr[C\himpl(A\himpr B)]}]\fCenter Δ$}
+    \RightLabel{\qup}
+    \BIC{$Σ[\struct{\q[C\himpl(A\himpr B)]}]\fCenter Δ$}
   \end{pfbox}
   \begin{pfbox}
     \AXC{$Σ[\struct{A}]\fCenter\struct{B}$}
-    \RightLabel{$\mathbf{Q}{\downarrow}$}
+    \RightLabel{\qdown}
     \UIC{$\trace(Σ)\fCenter\struct{A\himpr B}$}
   \end{pfbox}
 \end{center}
-Using these admissible and derived rules, we can once again write
-proofs involving quantifier movement in a much more succinct
-manner. The following, for instance, is a proof for ``Everyone likes
-someone.''
+While proof search with these rules is decidable, it is no longer
+complete. However, it \emph{is} complete for the fragment of display
+NL where all types involving a quantifying license are of the form
+$\q[C\himpl(A\himpr B)]$, which is what we can reasonably expect from
+natural language.
+In addition, proof search using these rules is no longer plagued by
+the spurious ambiguity that resulted from the $\B$ and $\C$
+rules---and, to boot, we can write proofs involving quantifier
+movement in a much more succinct manner:
 \begin{pfblock}
   \AXC{$\vdots$}\noLine
-  \UIC{$\struct{\NP}\prod\struct{\TV}\prod\struct{\NP}\fCenter\struct{\S}$}
-  \RightLabel{$\mathbf{Q}{\downarrow}$}
-  \UIC{$\trace(\Box\prod\struct{\TV}\prod\struct{\NP})\fCenter\struct{{\NP\himpr\S}}$}
+  \UIC{$\struct{\NP}\prod\textsc{loves}\prod\struct{\NP}\fCenter\struct{\S}$}
+  \RightLabel{\qdown}
+  \UIC{$\trace(\Box\prod\textsc{loves}\prod\struct{\NP})\fCenter\struct{{\NP\himpr\S}}$}
   \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
-  \RightLabel{$\mathbf{Q}{\uparrow}$}
-  \BIC{$\struct{{\S\himpl(\NP\himpr\S)}}\prod\struct{\TV}\prod\struct{\NP}\fCenter\struct{\S}$}
-  \RightLabel{$\mathbf{Q}{\downarrow}$}
-  \UIC{$\trace(\struct{{\S\himpl(\NP\himpr\S)}}\prod\struct{\TV}\prod\Box)\fCenter\struct{{\NP\himpr\S}}$}
+  \RightLabel{\qup}
+  \BIC{$\textsc{everyone}\prod\textsc{loves}\prod\struct{\NP}\fCenter\struct{\S}$}
+  \RightLabel{\qdown}
+  \UIC{$\trace(\textsc{everyone}\prod\textsc{loves}\prod\Box)\fCenter\struct{{\NP\himpr\S}}$}
   \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
-  \RightLabel{$\mathbf{Q}{\uparrow}$}
-  \BIC{$\struct{{\S\himpl(\NP\himpr\S)}}\prod\struct{\TV}\prod\struct{{\S\himpl(\NP\himpr\S)}}\fCenter\struct{\S}$}
+  \RightLabel{\qup}
+  \BIC{$\textsc{everyone}\prod\textsc{loves}\prod\textsc{someone}\fCenter\struct{\S}$}
 \end{pfblock}
 \vspace*{-1\baselineskip}
 \begin{gather*}
-  \Downarrow
+  \downmapsto
   \\
   (\someone\;(\lambda y. \everyone\;(\lambda x.\likes\;y\;x)))
   \\
-  \Downarrow
+  \downmapsto
   \\
   \exists y.\PERSON(y)\wedge\forall x.\PERSON(x)\supset\LIKE(x,y)
 \end{gather*}
-And, since this maintains the decomposition of the quantifier movement
-into two separate functions---raising and lowering---we can still use
-it to analyse parasitic scope \citep{barker2007}. For example, in
-\autoref{fig:parasitic-scope}, we show a classic example of parasitic
-scope for \emph{different}, albeit with a small changes, in order to
-obtain the semantics described by \citet{kiselyov2015b}, using the
-lexicon described below:
-\begin{alignat*}{3}
-    &\a         \ &:&\ \tr[{(\qr[\S\himpl(\NP\himpr\S)]\impl\N)}]
-  \\&\a         \ &=&\ \lambda n. \lambda k. \exists x. n\;x\wedge k\;x
-  \\&\different \ &:&\ \tr[{(\qr[\S\himpl(\qr[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\himpr\S)])}]
-  \\&\different \ &=&\ \lambda k. \exists f. (\forall x.\forall y.\nexists z.f\;z\;x\wedge f\;z\;y)\;\wedge k\;(\lambda k'.\lambda x.k'\;(\lambda g.\lambda y.g\;y\wedge f\;x\;y)\;x)
-  \\&\waiter    \ &:&\ \tr[\N]
-  \\&\waiter    \ &=&\ \lambda x.\WAITER(x)
-  \\&\served    \ &:&\ \tr[\TV]
-  \\&\served    \ &=&\ \lambda y.\lambda x.\PAST(\SERVE(x,y))
-  \\&\everyone  \ &:&\ \tr[{(\qr[\S\himpl(\NP\himpr\S)])}]
-  \\&\everyone  \ &=&\ \lambda k.\forall x.\PERSON(x)\supset k\;x
-\end{alignat*}
-\begin{landscape}
-  \begin{figure}
-    \begin{mdframed}
-      \vspace*{0.5\baselineskip}
-      \begin{pfblock}[0.85]
-        \AXC{}\RightLabel{Ax}\UIC{$\textsc{waiter}\fCenter\struct{\N}$}
-        \AXC{}\RightLabel{Ax}\UIC{$\struct{\N}\fCenter\struct{\N}$}
-        \AXC{$\vdots$}\noLine
-        \UIC{$\struct{\NP}\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
-        \RightLabel{$\mathbf{Q}{\downarrow}$}
-        \UIC{$\trace(\Box\prodl\textsc{served}\prod\struct{\NP})\fCenter\struct{\NP\himpr\S}$}
-        \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
-        \RightLabel{$\mathbf{Q}{\uparrow}$}
-        \BIC{$\struct{\qr[\S\himpl(\NP\himpr\S)]}\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
-        \RightLabel{Res$\prod\impl$}
-        \UIC{$\struct{\qr[\S\himpl(\NP\himpr\S)]}\fCenter\struct{\S}\impl(\textsc{served}\prod\struct{\NP})$}
-        \RightLabel{L$\impl$}
-        \BIC{$\textsc{a}\fCenter(\struct{\S}\impl(\textsc{served}\prod\struct{\NP}))\impl\struct{\N}$}
-        \RightLabel{Res$\impl\prod$}
-        \UIC{$\textsc{a}\prod\struct{\N}\fCenter\struct{\S}\impl(\textsc{served}\prod\struct{\NP})$}
-        \RightLabel{Res$\prod\impr$}
-        \UIC{$\struct{\N}\fCenter\textsc{a}\impr(\struct{\S}\impl(\textsc{served}\prod\struct{\NP}))$}
-        \RightLabel{L$\impl$}
-        \BIC{$\struct{\A}\fCenter(\textsc{a}\impr(\struct{\S}\impl(\textsc{served}\prod\struct{\NP})))\impl\textsc{waiter}$}
-        \RightLabel{Res$\impl\prod$}
-        \UIC{$\struct{\A}\prod\textsc{waiter}\fCenter\textsc{a}\impr(\struct{\S}\impl(\textsc{served}\prod\struct{\NP}))$}
-        \RightLabel{Res$\impr\prod$}
-        \UIC{$\textsc{a}\prod\struct{\A}\prod\textsc{waiter}\fCenter\struct{\S}\impl(\textsc{served}\prod\struct{\NP})$}
-        \RightLabel{Res$\impl\prod$}
-        \UIC{$(\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
-        \RightLabel{$\mathbf{Q}{\downarrow}$}
-        \UIC{$\trace((\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box)\fCenter\struct{\NP\himpr\S}$}
-        \RightLabel{$\beta$}
-        \UIC{$(\B\prod\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prod(\B\prod\textsc{served})\prod\I)\fCenter\struct{\NP\himpr\S}$}
-        \RightLabel{$\mathbf{Q}{\downarrow}$}
-        \UIC{$\trace((\B\prodr\textsc{a}\prodr\Box\prodl\textsc{waiter})\prodl(\B\prod\textsc{served})\prod\I)\fCenter\struct{\A\himpr(\NP\himpr\S)}$}
-        \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
-        \RightLabel{$\mathbf{Q}{\uparrow}$}
-        \BIC{$(\B\prod\textsc{a}\prod\qr[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\prod\textsc{waiter})\prod(\B\prod\textsc{served})\prod\I\fCenter\struct{\NP\himpr\S}$}
-        \RightLabel{$\beta$}
-        \UIC{$\trace((\textsc{a}\prod\qr[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box)\fCenter\struct{\NP\himpr\S}$}
-        \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
-        \RightLabel{$\mathbf{Q}{\uparrow}$}
-        \BIC{$(\textsc{a}\prod\qr[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\prod\textsc{waiter})\prod\textsc{served}\prod\textsc{everyone}\fCenter\struct{\S}$}
-        \RightLabel{$\mathbf{Q}{\downarrow}$}
-        \UIC{$\trace((\textsc{a}\prodr\Box\prodl\textsc{waiter})\prodl\textsc{served}\prod\textsc{everyone})\fCenter\qr[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\himpr\S$}
-        \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
-        \RightLabel{$\mathbf{Q}{\uparrow}$}
-        \BIC{$(\textsc{a}\prod\textsc{different}\prod\textsc{waiter})\prod\textsc{served}\prod\textsc{everyone}\fCenter\struct{\S}$}
-      \end{pfblock}
-      \vspace*{-1\baselineskip}
-      \begin{gather*}
-        \Downarrow
-        \\
-        \different\;(\lambda k.(\everyone (k\;(\lambda k'.(\lambda
-        x.(\a\;(k'\;\waiter)\;(\lambda y.\served\;x\;y)))))))
-        \\
-        \Downarrow
-        \\
-        \exists f.
-        (\forall x.\forall y.\nexists z.f\;z\;x\wedge f\;z\;y)
-        \wedge
-        (\forall y.\PERSON(y)\supset(\exists x.\WAITER(x)\wedge f\;y\;x\wedge\PAST(\SERVE(y,x))))
-      \end{gather*}
-      \vspace*{0.001\baselineskip}
-    \end{mdframed}
-    \caption{An example of parasitic scope.}
-    \label{fig:parasitic-scope}
-  \end{figure}
-\end{landscape}
+Note that though we have the option, we do not have to unfold the
+application of `trace' in this particular proof. In future proofs, if
+we choose to fold or unfold an application of `trace', we will
+explicitly mark this as an application of rewriting by equality
+(`$=$').
+
+\input{fig-example-changing-answer-type}
+
+\paragraph{Parasitic scope}
+The system described in \autoref{fig:extension-quantifier-raising}
+maintains the decomposition of the quantifier movement into two
+separate functions---raising and lowering. Therefore, we can still
+analyse parasitic scope \citep{barker2007}. In
+\autoref{fig:parasitic-scope}, we analyse a classic example of
+parasitic scope for \emph{different}: ``A different waiter served
+everyone.'' However, we make one small change to the type of
+`different', in order to obtain the semantics described by
+\citet{kiselyov2015b}. We use the lexicon described below:
+\[
+  \renewcommand*{\arraystretch}{1}
+  \begin{array}{l c l}
+    \multirow{2}{*}{\a}
+    &:& \tr[{(\q[\S\himpl(\NP\himpr\S)]\impl\N)}]\\
+    &=& \lambda n. \lambda k. \exists x. n\;x\wedge k\;x\\
+
+    \multirow{2}{*}{\different}
+    &:& \tr[{(\q[\S\himpl(\q[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\himpr\S)])}]\\
+    &=& \lambda k. \exists f. (\forall x.\forall y.\nexists z.f\;z\;x\wedge f\;z\;y)\;\wedge\\
+    & & k\;(\lambda k'.\lambda x.k'\;(\lambda g.\lambda y.g\;y\wedge f\;x\;y)\;x)\\
+
+    \multirow{2}{*}{\waiter}
+    &:& \tr[\N]\\
+    &=& \lambda x.\WAITER(x)\\
+
+    \multirow{2}{*}{\served}
+    &:& \tr[\TV]\\
+    &=& \lambda y.\lambda x.\PAST(\SERVE(x,y))\\
+
+    \multirow{2}{*}{\everyone}
+    &:& \tr[{(\q[\S\himpl(\NP\himpr\S)])}]\\
+    &=& \lambda k.\forall x.\PERSON(x)\supset k\;x
+  \end{array}
+\]
 It may be worthwhile to have a closer look at the type for
 `different.' It is a quantifier taking scope at the sentence
-level ${\qr[\S\himpl(\ldots\himpr\S)]}$, which becomes a quantifier
-taking scope parasitically ${\qr[(\NP\himpr\S)\himpl(\ldots
+level ${\q[\S\himpl(\ldots\himpr\S)]}$, which becomes a quantifier
+taking scope parasitically ${\q[(\NP\himpr\S)\himpl(\ldots
 \himpr(\NP\himpr\S))]}$, and finally becomes an adjective $\A$.
 
-The double quantification has some very interesting effects. First of
-all, because it takes scope normally and then parasitically the
+The double quantification in `different' has some very interesting
+effects. Because it takes scope normally and then parasitically the
 sentence ``A different waiter served everyone'' is unambiguous, even
-though it contains \emph{no fewer than three} quantifiers. This is
-because `a' cannot take scope until it receives its noun argument,
-which is modified by `different', and `different' must take scope once
-before `everyone', and once parasitically while `everyone' is taking
-scope.
-Secondly, this combination of normal and parasitic scope taking allows
-a quantifier to take scope \emph{over} another quantifier, while still
-getting access to this quantifier.
+though it contains no fewer than \emph{three} quantifiers. This is
+because of the dependencies between the quantifiers: `a' cannot take
+scope until it receives its noun argument, which is modified by
+`different'. Meanwhile, `different' has to take scope twice, once
+normally and once parasitically. Its parasitic scope-taking has to
+occur \emph{while} `everyone' is taking scope, so its normal
+scope-taking has to occur before that.
+On the semantic level, double quantification allows a quantifier to
+capture another quantifier while \emph{also} taking scope over it.
+
+\input{fig-example-parasitic-scope}
+
+
+\paragraph{Scope islands}
 
 
 
 
 
 
+\input{fig-extension-scope-islands}
 
-%\input{fig-extension-scope-islands}
+
+
 %\input{fig-extension-infixation}
 %\input{fig-extension-extraction}
 

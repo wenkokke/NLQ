@@ -56,6 +56,8 @@ bwd20 = [bwd| mary reads a book (the author of which) john likes |]
 bwd21 = [bwd| mary sees foxes   |]
 bwd22 = [bwd| mary sees the fox |]
 bwd23 = [bwd| mary sees a   fox |]
+
+bwd24 = [bwd| alice reads a book (the author of which) fears the ocean |]
 ~~~
 
 In the examples above, `[bwd| ... |]` is a template Haskell script,
@@ -144,10 +146,11 @@ In addition, we define the following aliases:
     NS := Q NP S S
 
 ~~~{.haskell}
-john, mary, bill :: Word NP
+john, mary, bill, alice :: Word NP
 john      = lex "john"
 mary      = lex "mary"
 bill      = lex "bill"
+alice     = lex "alice"
 ~~~
 
 ~~~{.haskell}
@@ -155,11 +158,12 @@ run, leave :: Word IV
 run       = lex "run"    ; runs   = run
 leave     = lex "leave"  ; leaves = leave
 
-read, see, like, serve :: Word TV
+read, see, like, serve, fear :: Word TV
 read      = lex "read"   ; reads  = read
 see       = lex "see"    ; sees   = see
 like      = lex "like"   ; likes  = like
 serve     = lex "serve"  ; serves = serve
+fear      = lex "fear"   ; fears  = fear
 
 say :: Word (IV :← Res S)
 say       = lex "say"    ; says   = say
@@ -172,6 +176,7 @@ waiter    = lex "waiter" ; waiters = plural <$ waiter
 fox       = lex "fox"    ; foxes   = plural <$ fox
 book      = lex "book"   ; books   = plural <$ book
 author    = lex "author" ; authors = plural <$ author
+ocean     = lex "ocean"
 ~~~
 
 ~~~{.haskell}

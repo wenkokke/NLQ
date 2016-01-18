@@ -58,6 +58,8 @@
 }
 \makeatother
 
+\def\downmapsto{\rotatebox[origin=c]{270}{\ensuremath{\mapsto}}}%
+
 \usepackage{bussproofs}%
 \EnableBpAbbreviations%
 \def\fCenter  {\mathbin{\vdash}}%
@@ -124,8 +126,10 @@
 \def\DOG      {\ensuremath{\mathbf{dog}}}%
 \def\WANT     {\ensuremath{\mathbf{want}}}%
 \def\plug     {\ensuremath{\:\cdot\:[\:\cdot\:]}}%
+\def\qdown    {\ensuremath{\mathbf{Q}{\downarrow}}}
+\def\qup      {\ensuremath{\mathbf{Q}{\uparrow}}}
 
-\newcommand{\qr}      [1][{\cdot}]{\mathbf{Q}(#1)}%
+\newcommand{\q}       [1][{\cdot}]{\mathbf{Q}(#1)}%
 \newcommand{\focus}   [1]{\boxed{#1}}%
 \newcommand{\struct}  [1]{{\cdot}#1{\cdot}}%
 \newcommand{\sub}     [3]{#1[#2/#3]}%

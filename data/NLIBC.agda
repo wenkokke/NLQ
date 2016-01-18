@@ -502,16 +502,20 @@ module Example where
   man1 =
     (ResRP (ResRP (ResLP (FocL refl (ImpLL
     (UnfR refl (ResRP (ResLP
-    (qrL (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (UnfR refl
-    (qrR (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (ResLP (FocL refl
-    (ImpLL (UnfR refl (ResRP (ResLP (FocL refl AxL′)))) AxL′)))))
-    (ImpLL (UnfR refl (ImpLR (ResPL (ResRP (DiaL (ResPR (ExtRR
-    (ResRP (ResLP (FocL refl (ImpLL (UnfR refl (ResBD (FocL refl
-    (BoxL AxL′)))) AxL′))))))))))) AxL′)))))
+    {!!}
+    )))
     (UnfL refl (ResPR (ResPR
     (qrL (PROD2 _ (PROD2 _ HOLE)) (UnfR refl
     (qrR (PROD2 _ (PROD2 _ HOLE)) (ResRP (ResLP (FocL refl AxL′))))) AxL′))))
     )))))
+
+
+-- (qrL (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (UnfR refl
+-- (qrR (PROD2 _ (PROD2 _ (PROD2 _ HOLE))) (ResLP (FocL refl
+-- (ImpLL (UnfR refl (ResRP (ResLP (FocL refl AxL′)))) AxL′)))))
+-- (ImpLL (UnfR refl (ImpLR (ResPL (ResRP (DiaL (ResPR (ExtRR
+-- (ResRP (ResLP (FocL refl (ImpLL (UnfR refl (ResBD (FocL refl
+-- (BoxL AxL′)))) AxL′))))))))))) AxL′)))))
 
 -- -}
 -- -}

@@ -4,7 +4,7 @@
     \begin{minipage}{0.666\linewidth}
       \centering
       \begin{alignat*}{4}
-        \text{Type}     &  \;&A,B&\coloneqq\ldots\vsep A\himpr B\vsep B\himpl A\vsep\qr[A]\\
+        \text{Type}     &  \;&A,B&\coloneqq\ldots\vsep A\himpr B\vsep B\himpl A\vsep\q[A]\\
         \text{Structure}&^+\;&Γ  &\coloneqq\ldots\vsep Γ_1\hprod Γ_2\vsep\I\vsep\B\vsep\C\\
         \text{Structure}&^-\;&Δ  &\coloneqq\ldots\vsep Γ\himpr Δ\vsep Δ\himpl Γ
       \end{alignat*}
@@ -14,7 +14,7 @@
       \begin{alignat*}{4}
         &\text{Pol}(A\himpr B) &&\mapsto{-}\\
         &\text{Pol}(B\himpl A) &&\mapsto{-}\\
-        &\text{Pol}(\qr[A])    &&\mapsto{+}
+        &\text{Pol}(\q[A])    &&\mapsto{+}
       \end{alignat*}
     \end{minipage}
     \\[1\baselineskip]
@@ -24,12 +24,12 @@
     \begin{pfbox}
       \AXC{$\struct{A}\hprod\I\fCenter Δ$}
       \RightLabel{L\I}
-      \UIC{$\struct{\qr[A]}\fCenter Δ$}
+      \UIC{$\struct{\q[A]}\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
       \AXC{$Γ\fCenter\focus{B}$}
       \RightLabel{R\I}
-      \UIC{$Γ\hprod\I\fCenter\focus{\qr[B]}$}
+      \UIC{$Γ\hprod\I\fCenter\focus{\q[B]}$}
     \end{pfbox}
     \begin{pfbox}
       \AXC{$Γ\fCenter Δ$}
@@ -54,7 +54,7 @@
       \renewcommand{\arraystretch}{1.5}%
       \(\!
       \begin{array}{c c c}
-        \multicolumn{3}{c}{\qr[\tr[A]]\mapsto\tr[A]}\\
+        \multicolumn{3}{c}{\tr[({\q[A]})]\mapsto\tr[A]}\\
         \tr[\I]\mapsto\top      & \tr [\B]\mapsto\top     & \tr [\C]\mapsto\top\\
       \end{array}
       \)
@@ -67,7 +67,7 @@
       \begin{pfbox}
         \AXC{$\struct{A}\hprod\I\fCenter Δ$}
         \RightLabel{L\I}
-        \UIC{$\struct{\qr[A]}\fCenter Δ$}
+        \UIC{$\struct{\q[A]}\fCenter Δ$}
       \end{pfbox}
       &$\Longrightarrow$&
       \begin{pfbox}
@@ -79,7 +79,7 @@
       \begin{pfbox}
         \AXC{$Γ\fCenter\focus{B}$}
         \RightLabel{R\I}
-        \UIC{$Γ\hprod\I\fCenter\focus{\qr[B]}$}
+        \UIC{$Γ\hprod\I\fCenter\focus{\q[B]}$}
       \end{pfbox}
       &$\Longrightarrow$&
       \begin{pfbox}

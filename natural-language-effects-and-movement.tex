@@ -64,14 +64,14 @@ conventional of these is to apply the monadic translation, as
 described by \citet{moggi1991}:
 \[
   \begin{aligned}
-    &(A\ra B)^\text{M} &&\coloneqq A^M\ra\mathbb{M}B^M\\
-    &A^\text{M}        &&\coloneqq A
+    &(A\ra B)^\text{M} &&= A^M\ra\mathbb{M}B^M\\
+    &A^\text{M}        &&= A
   \end{aligned}
   \qquad
   \begin{aligned}
-    &\text{lift}\;x           &&\mapsto \eta\;x\\
-    &\text{lift}(\lambda x.M) &&\mapsto \eta(\lambda x.\text{lift}\;M)\\
-    &\text{lift}(M\;N)        &&\mapsto (\lambda f.f\star(\text{lift}\;N))\star\text{lift}\;M
+    &\text{lift}\;x           &&= \eta\;x\\
+    &\text{lift}(\lambda x.M) &&= \eta(\lambda x.\text{lift}\;M)\\
+    &\text{lift}(M\;N)        &&= (\lambda f.f\star(\text{lift}\;N))\star\text{lift}\;M
   \end{aligned}
 \]
 Another possibility is to modify our translation to semantic calculus
@@ -81,11 +81,11 @@ translation. For instance, we could simply choose to modify our
 translation on types to insert an `$\mathbb{M}$' over every atomic
 type:
 \[
-  \tr[\S]\mapsto\mathbb{M}\t
+  \tr[\S]=\mathbb{M}\t
   \quad
-  \tr[\N]\mapsto\mathbb{M}(\e\ra\t)
+  \tr[\N]=\mathbb{M}(\e\ra\t)
   \quad
-  \tr[\NP]\mapsto\mathbb{M}\e
+  \tr[\NP]=\mathbb{M}\e
 \]
 Whichever choice we make, the important point is that the insertion of
 the monad constructor $\mathbb{M}$ in our types gives us the
@@ -106,25 +106,25 @@ We can implement this using a variant of the writer monad: we
 represent values of the type $\mathbb{M}A$ as a tuple of
 truth-conditional (or ``at-issue'') content, and expressive content:
 \begin{align*}
-  \mathbb{M}A    &\coloneqq A\times\t                                         \\
-  \eta\;M        &\coloneqq (M,\text{true})                                   \\
-  M\star N       &\coloneqq \case{M}{x}{y}{(\case{N\;x}{z}{w}{(z,y\land w)})} \\
-  \text{tell}(M) &\coloneqq ((),M)                                            \\
+  \mathbb{M}A    &= A\times\t                                         \\
+  \eta\;M        &= (M,\text{true})                                   \\
+  M\star N       &= \case{M}{x}{y}{(\case{N\;x}{z}{w}{(z,y\land w)})} \\
+  \text{tell}(M) &= ((),M)                                            \\
   \intertext{%
   Using this monad, we can define a small lexicon. We lift our regular
   entries into monadic entries:
   }
-  \text{john}  &\coloneqq \eta\;\JOHN\\
-  \text{walks} &\coloneqq \lambda y\;x.(\lambda x'.(\lambda y'.\eta(\WALK(x,y)))\star y)\star x\\
-  \text{the}   &\coloneqq \lambda f.(\lambda f'.\iota(f'))\star f\footnotemark\\
-  \text{dog}   &\coloneqq \eta\;\DOG\\
+  \text{john}  &= \eta\;\JOHN\\
+  \text{walks} &= \lambda y\;x.(\lambda x'.(\lambda y'.\eta(\WALK(x,y)))\star y)\star x\\
+  \text{the}   &= \lambda f.(\lambda f'.\iota(f'))\star f\footnotemark\\
+  \text{dog}   &= \eta\;\DOG\\
   \intertext{%
     We treat `damn' as an identity function in its at-issue
     content---it binds $x'$, then returns it. However, we also define
     `damn' as expressing some sort of displeasure, represented as the
     proposition $\DAMN$ in its expressive content:
   }
-  \text{damn} &\coloneqq \lambda f.(\lambda f'.(\lambda().\eta\;f')\star\text{tell}(\DAMN(f')))\star f
+  \text{damn} &= \lambda f.(\lambda f'.(\lambda().\eta\;f')\star\text{tell}(\DAMN(f')))\star f
 \end{align*}
 \footnotetext{%
   The semantics for `the' are commonly given in terms of a function
@@ -207,7 +207,7 @@ defined as follows:\footnote{%
   output type of `tell' to be $\top$.
 }
 \[
-  \text{Exp}\;\top\coloneqq\t
+  \text{Exp}\;\top=\t
 \]
 Once we have this definition, we can recover the `tell' function using
 one of the primitives offered by extensible effects---the `send'
@@ -264,13 +264,13 @@ tree, somehow takes scope over the entire expression.
 lexicon, lifting expressions of type $A$ into the type $(A\ra R)\ra R$
 for some answer type $R$:
 \begin{alignat*}{3}
-  &\john           &&\coloneqq \lambda k. k\;\JOHN\\
-  &\sees           &&\coloneqq \lambda k. k\;\SEE
+  &\john           &&= \lambda k. k\;\JOHN\\
+  &\sees           &&= \lambda k. k\;\SEE
   \intertext{%
     He then uses this freedom to define `everyone' as a lifted expression
     of type `\e', with $R$ instantiated to `\t':
   }
-  &\everyone       &&\coloneqq \lambda k. \forall x.\PERSON(x)\supset k\;x
+  &\everyone       &&= \lambda k. \forall x.\PERSON(x)\supset k\;x
 \end{alignat*}
 Lastly, he defines a translation on terms, replacing function
 application with a method of combining CPS-translated
@@ -283,8 +283,8 @@ terms:\footnote{%
   ambiguous translation, and therefore I have chosen not to include it.
 }
 \[
-  \overline{M\;N} \mapsto \lambda k. \overline{N}\;(\lambda
-  n.\overline{M}\;(\lambda m.k\;(m\;n)))\\
+  \overline{M\;N}= \lambda k. \overline{N}\;(\lambda
+  n.\overline{M}\;(\lambda m.k\;(m\;n)))
 \]
 As CPS-translations and monadic translations are closely related
 \citep{filinski1994}, it is rather easy to implement this approach as
@@ -304,9 +304,9 @@ meanings. Barker solves this problem by adding another possible
 translation for function application, thereby making the
 CPS-translation ambiguous:
 \begin{alignat*}{3}
-  &\overline{M\;N} &&\mapsto \lambda k. \overline{N}\;(\lambda
+  &\overline{M\;N} &&= \lambda k. \overline{N}\;(\lambda
   n.\overline{M}\;(\lambda m.k\;(m\;n)))\\
-  &\overline{M\;N} &&\mapsto \lambda k. \overline{M}\;(\lambda
+  &\overline{M\;N} &&= \lambda k. \overline{M}\;(\lambda
   m.\overline{N}\;(\lambda n.k\;(m\;n)))
 \end{alignat*}
 There are several problems with this solution. First of all, this
