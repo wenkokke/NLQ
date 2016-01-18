@@ -86,7 +86,7 @@ in~\autoref{fig:implicit-semantic-calculus}. It is a simple lambda
 calculus, with atomic types \e\ (`entity') and \t\ (`truth-value'). In
 addition, all logical operators and word-meanings we need are assumed
 to be defined as constants, with their expected type. For instance,
-$\forall$ is a constant of type $(\e\ra\t)\ra\t$, and \john\ is a
+$\forall$ is a constant of type $(\e\ra\t)\ra\t$, and `john' is a
 constant of type \e. Note that we will often write logical operators
 in their usual notation, e.g.\ $M\land N$ or $\forall x.M$, but this
 should be taken as syntactic sugar for constants, abstractions and
@@ -95,9 +95,9 @@ applications.
 \input{fig-implicit-semantic-calculus}%
 
 Using this calculus as a semantics function directly would
-over-generate as, e.g.\ for the sequent $\{\john:\e,
-\likes:\e\ra\e\ra\t, \mary:\e\}\fCenter\t$ we can derive
-both $((\likes\;\john)\;\mary)$ and $((\likes\;\mary)\;\john)$.
+over-generate as, e.g.\ for the sequent $\{\text{john}:\e,
+\text{likes}:\e\ra\e\ra\t, \text{mary}:\e\}\fCenter\t$ we can derive
+both $((\text{likes}\;\text{john})\;\text{mary})$ and $((\text{likes}\;\text{mary})\;\text{john})$.
 The reason for this is, of course, that the set structure used in this
 formulation is much too expressive for natural language grammar.
 
@@ -222,7 +222,7 @@ As an example, let's give an analysis of the sentence ``Mary likes
 Bill.'' We assume the morphological, lexical and syntactic phases
 have been taken care of. This turns our input sequent into:
 \[
-  \mary:\NP\prod(\likes:\TV\prod\bill:\NP)\;\fCenter\;?:\S
+  \text{mary}:\NP\prod(\text{likes}:\TV\prod\text{bill}:\NP)\;\fCenter\;?:\S
 \]
 Fortunately, proof search is decidable for this system, so we can
 simply search the space of all possible proofs of this sequent. It
@@ -231,13 +231,13 @@ turns out that the only proof is:
   \vspace*{-1\baselineskip}
   \hspace*{-2em}%
   \begin{pfbox}
-    \AXC{}\RightLabel{Ax}\UIC{$\mary:\NP\fCenter\mary:\NP$}
-    \AXC{}\RightLabel{Ax}\UIC{$\likes:\TV\fCenter\likes:(\NP\impr\S)\impl\NP$}
-    \AXC{}\RightLabel{Ax}\UIC{$\bill:\NP\fCenter\bill:\NP$}
+    \AXC{}\RightLabel{Ax}\UIC{$\text{mary}:\NP\fCenter\text{mary}:\NP$}
+    \AXC{}\RightLabel{Ax}\UIC{$\text{likes}:\TV\fCenter\text{likes}:(\NP\impr\S)\impl\NP$}
+    \AXC{}\RightLabel{Ax}\UIC{$\text{bill}:\NP\fCenter\text{bill}:\NP$}
     \RightLabel{$\impl$E}
-    \BIC{$\likes:\TV\prod\bill:\NP\fCenter(\likes\;\bill):\NP\impr\S$}
+    \BIC{$\text{likes}:\TV\prod\text{bill}:\NP\fCenter(\text{likes}\;\text{bill}):\NP\impr\S$}
     \RightLabel{$\impr$E}
-    \BIC{$\mary:\NP\prod(\likes:\TV\prod\bill:\NP)\fCenter((\likes\;\bill)\;\mary):\S$}
+    \BIC{$\text{mary}:\NP\prod(\text{likes}:\TV\prod\text{bill}:\NP)\fCenter((\text{likes}\;\text{bill})\;\text{mary}):\S$}
   \end{pfbox}
 \end{center}
 And so, by searching for a proof in our syntactic calculus, and

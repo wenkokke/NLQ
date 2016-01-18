@@ -52,17 +52,16 @@
       \begin{gather*}
         \downmapsto
         \\
-        \different\;(\lambda k.(\everyone (k\;(\lambda k'.(\lambda
-        x.(\a\;(k'\;\waiter)\;(\lambda y.\served\;x\;y)))))))
+        \text{different}\;(\lambda{k}.\text{everyone}\;(k\;(\lambda{k'}.\lambda{x}.
+        (\text{a}\;(k'\;\text{waiter})\;(\lambda{y}.\text{served}\;x\;y)))))
         \\
         \downmapsto
         \\
-        \exists f.
-        (\forall x.\forall y.\nexists z.f\;z\;x\wedge f\;z\;y)
-        \wedge
-        (\forall y.\PERSON(y)\supset(\exists x.\WAITER(x)\wedge f\;y\;x\wedge\PAST(\SERVE(y,x))))
+        \exists{f}.(\forall{x}.\forall{y}.\nexists{z}.f\;z\;x\wedge{f\;z\;y})\wedge
+        {(\forall{y}.\PERSON(y)\supset(\exists{x}.\WAITER(x)\wedge
+          {f\;y\;x\wedge\PAST(\SERVE(y,x))}))}
+        \\
       \end{gather*}
-      \vspace*{0.001\baselineskip}
     \end{mdframed}
     \caption{An example of parasitic scope.}
     \label{fig:parasitic-scope}

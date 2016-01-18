@@ -350,7 +350,7 @@ labelling employs substitution, which was defined in
 Now that we once again have a complete type-logical grammar, let us
 take a quick look at an example, ``Mary likes Bill'':
 \[
-  \struct{\mary:\NP}\prod(\struct{\likes:\TV}\prod\struct{\bill:\NP})\;\fCenter\;?:\struct{\S}
+  \struct{\text{mary}:\NP}\prod(\struct{\text{likes}:\TV}\prod\struct{\text{bill}:\NP})\;\fCenter\;?:\struct{\S}
 \]
 If we search for proofs, using backward-chaining proof search, we find
 the following proof:
@@ -373,7 +373,7 @@ Applying the translation from \autoref{fig:display-calculus-to-explicit-lamET}
 gives us the following lambda term:
 \[
   s:\e\times(\e\e\t\times\e)\fCenter
-  (\case{s}{\mary}{(\likes,\bill)}{(\likes\;\bill)\;\mary}):\t
+  (\case{s}{\text{mary}}{(\text{likes},\text{bill})}{(\text{likes}\;\text{bill})\;\text{mary}}):\t
 \]
 This lambda term takes the sentence structure apart, and computes the
 meaning. If this is desirable, it is possible to do some
@@ -395,11 +395,11 @@ post-processing with the structuralisation lemma:
 This would result---after $\beta$-normalisation---in the following
 lambda term:
 \[
-  \mary:\NP,\likes:\TV,\bill:\NP\fCenter((\likes\;\bill)\;\mary):\t
+  \text{mary}:\NP,\text{likes}:\TV,\text{bill}:\NP\fCenter((\text{likes}\;\text{bill})\;\text{mary}):\t
 \]
 The lemma itself is fairly easy to derive by induction on the
 antecedent. Using it has the advantage that the lambda term takes the
-lexical definitions---the values for \mary, \likes\ and \bill---from a
+lexical definitions---the values for mary, likes and bill---from a
 \emph{linear} structure, instead of from a nested tuple.
 
 \subsection{Focusing and spurious ambiguity}

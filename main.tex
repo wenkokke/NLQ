@@ -400,7 +400,7 @@ movement in a much more succinct manner:
 \begin{gather*}
   \downmapsto
   \\
-  (\someone\;(\lambda y. \everyone\;(\lambda x.\likes\;y\;x)))
+  (\text{someone}\;(\lambda y. \text{everyone}\;(\lambda x.\text{likes}\;y\;x)))
   \\
   \downmapsto
   \\
@@ -427,24 +427,24 @@ everyone.'' However, we make one small change to the type of
 \[
   \renewcommand*{\arraystretch}{1}
   \begin{array}{l c l}
-    \multirow{2}{*}{\a}
+    \multirow{2}{*}{\text{a}}
     &:& \tr[{(\q[\S\himpl(\NP\himpr\S)]\impl\N)}]\\
     &=& \lambda n. \lambda k. \exists x. n\;x\wedge k\;x\\
 
-    \multirow{2}{*}{\different}
+    \multirow{2}{*}{\text{different}}
     &:& \tr[{(\q[\S\himpl(\q[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\himpr\S)])}]\\
     &=& \lambda k. \exists f. (\forall x.\forall y.\nexists z.f\;z\;x\wedge f\;z\;y)\;\wedge\\
     & & k\;(\lambda k'.\lambda x.k'\;(\lambda g.\lambda y.g\;y\wedge f\;x\;y)\;x)\\
 
-    \multirow{2}{*}{\waiter}
+    \multirow{2}{*}{\text{waiter}}
     &:& \tr[\N]\\
     &=& \lambda x.\WAITER(x)\\
 
-    \multirow{2}{*}{\served}
+    \multirow{2}{*}{\text{served}}
     &:& \tr[\TV]\\
     &=& \lambda y.\lambda x.\PAST(\SERVE(x,y))\\
 
-    \multirow{2}{*}{\everyone}
+    \multirow{2}{*}{\text{everyone}}
     &:& \tr[{(\q[\S\himpl(\NP\himpr\S)])}]\\
     &=& \lambda k.\forall x.\PERSON(x)\supset k\;x
   \end{array}

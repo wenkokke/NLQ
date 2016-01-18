@@ -170,7 +170,7 @@ say       = lex "say"    ; says   = say
 ~~~
 
 ~~~{.haskell}
-person, waiter, fox, book, author :: Word N
+person, waiter, fox, book, author, ocean :: Word N
 person    = lex "person" ; people  = plural <$ person
 waiter    = lex "waiter" ; waiters = plural <$ waiter
 fox       = lex "fox"    ; foxes   = plural <$ fox

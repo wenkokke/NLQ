@@ -57,7 +57,7 @@ used in two different ways, with two different meanings:\\
   \renewcommand{\arraystretch}{1}
   \begin{tabular}{c c}
     ``Mary wants John to leave.'' & ``Mary wants to leave.''\\
-    $\WANT(\mary,\leave(\john))$  & $\WANT(\mary,\leave(\mary))$
+    $\WANT(\MARY,\LEAVE(\JOHN))$  & $\WANT(\MARY,\LEAVE(\MARY))$
   \end{tabular}
 \end{center}
 `Wants' has an implicit reflexive object: if no object is explicitly
@@ -67,8 +67,8 @@ behaviour are words such as `to wash' and `to shave'.
 Using our new connective, we can give a single definition for such
 words, which takes this ambiguity into account:
 \begin{alignat*}{3}
-  &\wants\;&:\;&\tr[(((\IV\impl\INF\impl\NP))\&(\IV\impl\INF))]\\
-  &\wants\;&=\;&((\lambda y\;f\;x.\WANT(x,f\;y)),(\lambda f\;x.\WANT(x,f\;x)))
+  &\text{wants}\;&:\;&\tr[(((\IV\impl\INF\impl\NP))\&(\IV\impl\INF))]\\
+  &\text{wants}\;&=\;&((\lambda y\;f\;x.\WANT(x,f\;y)),(\lambda f\;x.\WANT(x,f\;x)))
 \end{alignat*}
 
 How much of an advantage does this method have over allowing multiple
