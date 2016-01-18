@@ -1,0 +1,74 @@
+\begin{landscape}
+  \begin{figure}
+    \begin{mdframed}
+      \vspace*{0.5\baselineskip}
+      \begin{pfblock}[0.85]
+        \AXC{}\RightLabel{Ax}\UIC{$\textsc{waiter}\fCenter\struct{\N}$}
+        \AXC{}\RightLabel{Ax}\UIC{$\struct{\N}\fCenter\struct{\N}$}
+        \AXC{$\vdots$}\noLine
+        \UIC{$\struct{\NP}\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
+        \RightLabel{\qdown}
+        \UIC{$\trace(\Box\prodl\textsc{served}\prod\struct{\NP})\fCenter\struct{\NP\himpr\S}$}
+        \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+        \RightLabel{\qup}
+        \BIC{$\struct{\q[\S\himpl(\NP\himpr\S)]}\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
+        \RightLabel{Res$\prod\impl$}
+        \UIC{$\struct{\q[\S\himpl(\NP\himpr\S)]}\fCenter\struct{\S}\impl(\textsc{served}\prod\struct{\NP})$}
+        \RightLabel{L$\impl$}
+        \BIC{$\textsc{a}\fCenter(\struct{\S}\impl(\textsc{served}\prod\struct{\NP}))\impl\struct{\N}$}
+        \RightLabel{Res$\impl\prod$}
+        \UIC{$\textsc{a}\prod\struct{\N}\fCenter\struct{\S}\impl(\textsc{served}\prod\struct{\NP})$}
+        \RightLabel{Res$\prod\impr$}
+        \UIC{$\struct{\N}\fCenter\textsc{a}\impr(\struct{\S}\impl(\textsc{served}\prod\struct{\NP}))$}
+        \RightLabel{L$\impl$}
+        \BIC{$\struct{\A}\fCenter(\textsc{a}\impr(\struct{\S}\impl(\textsc{served}\prod\struct{\NP})))\impl\textsc{waiter}$}
+        \RightLabel{Res$\impl\prod$}
+        \UIC{$\struct{\A}\prod\textsc{waiter}\fCenter\textsc{a}\impr(\struct{\S}\impl(\textsc{served}\prod\struct{\NP}))$}
+        \RightLabel{Res$\impr\prod$}
+        \UIC{$\textsc{a}\prod\struct{\A}\prod\textsc{waiter}\fCenter\struct{\S}\impl(\textsc{served}\prod\struct{\NP})$}
+        \RightLabel{Res$\impl\prod$}
+        \UIC{$(\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
+        \RightLabel{\qdown}
+        \UIC{$\trace((\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box)\fCenter\struct{\NP\himpr\S}$}
+        \RightLabel{$=$}
+        \UIC{$(\B\prod\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prod(\B\prod\textsc{served})\prod\I)\fCenter\struct{\NP\himpr\S}$}
+        \RightLabel{\qdown}
+        \UIC{$\trace((\B\prodr\textsc{a}\prodr\Box\prodl\textsc{waiter})\prodl(\B\prod\textsc{served})\prod\I)\fCenter\struct{\A\himpr(\NP\himpr\S)}$}
+        \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+        \RightLabel{\qup}
+        \BIC{$(\B\prod\textsc{a}\prod\q[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\prod\textsc{waiter})\prod(\B\prod\textsc{served})\prod\I\fCenter\struct{\NP\himpr\S}$}
+        \RightLabel{$=$}
+        \UIC{$\trace((\textsc{a}\prod\q[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box)\fCenter\struct{\NP\himpr\S}$}
+        \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+        \RightLabel{\qup}
+        \BIC{$(\textsc{a}\prod\q[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\prod\textsc{waiter})\prod\textsc{served}\prod\textsc{everyone}\fCenter\struct{\S}$}
+        \RightLabel{\qdown}
+        \UIC{$\trace((\textsc{a}\prodr\Box\prodl\textsc{waiter})\prodl\textsc{served}\prod\textsc{everyone})\fCenter\q[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\himpr\S$}
+        \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+        \RightLabel{\qup}
+        \BIC{$(\textsc{a}\prod\textsc{different}\prod\textsc{waiter})\prod\textsc{served}\prod\textsc{everyone}\fCenter\struct{\S}$}
+      \end{pfblock}
+      \vspace*{-1\baselineskip}
+      \begin{gather*}
+        \downmapsto
+        \\
+        \different\;(\lambda k.(\everyone (k\;(\lambda k'.(\lambda
+        x.(\a\;(k'\;\waiter)\;(\lambda y.\served\;x\;y)))))))
+        \\
+        \downmapsto
+        \\
+        \exists f.
+        (\forall x.\forall y.\nexists z.f\;z\;x\wedge f\;z\;y)
+        \wedge
+        (\forall y.\PERSON(y)\supset(\exists x.\WAITER(x)\wedge f\;y\;x\wedge\PAST(\SERVE(y,x))))
+      \end{gather*}
+      \vspace*{0.001\baselineskip}
+    \end{mdframed}
+    \caption{An example of parasitic scope.}
+    \label{fig:parasitic-scope}
+  \end{figure}
+\end{landscape}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

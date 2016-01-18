@@ -1,0 +1,77 @@
+\begin{landscape}
+  \begin{figure}
+    \begin{mdframed}
+      \centering
+      \begin{pfblock}[0.73]
+        \AXC{$\vdots$}\noLine
+        \UIC{$
+          \textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\struct\NP
+          \fCenter\struct\NP$}
+        \RightLabel{\qdown}
+        \UIC{$
+          \trace(\textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\Box)
+          \fCenter\struct{\NP \himpr\NP}$}
+        \AXC{$\vdots$}\noLine
+        \UIC{$
+          \NP\prod\textsc{feared}\prod\textsc{the}\prod\textsc{ocean}\fCenter\struct{\S}$}
+        \RightLabel{DP}
+        \UIC{$
+          \textsc{feared}\prod\textsc{the}\prod\textsc{ocean}\fCenter\struct{\NP\impr\S}$}
+        \AXC{$\vdots$}\noLine
+        \UIC{$\struct{\N\impr\N}\fCenter\textsc{book}\impr\struct\N$}
+        \RightLabel{L$\impl$}
+        \BIC{$
+          \struct{(\N\impr\N)\impl(\NP\impr\S)}
+          \fCenter(\textsc{book}\impr\struct\N)\impl
+          (\textsc{feared}\prod\textsc{the}\prod\textsc{ocean})$}
+        \RightLabel{\qup}
+        \BIC{$
+          \textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\textsc{which}
+          \fCenter(\textsc{book}\impr\struct\N)\impl(\textsc{feared}\prod
+          \textsc{the}\prod\textsc{ocean})$}
+        \RightLabel{DP}
+        \UIC{$
+          \textsc{book}\prod(\textsc{the}\prod\textsc{author}\prod\textsc{of}\prod
+          \textsc{which})\prod\textsc{feared}\prod\textsc{the}\prod\textsc{ocean}
+          \fCenter\struct\N$}
+        \AXC{$\vdots$}\noLine
+        \UIC{$
+          \textsc{alice}\prod\textsc{read}\prod\struct\NP
+          \fCenter\struct\S$}
+        \RightLabel{\qdown}
+        \UIC{$
+          \trace(\textsc{alice}\prod\textsc{read}\prod\Box)
+          \fCenter\struct{\NP\himpr\S}$}
+        \AXC{}\RightLabel{Ax}\UIC{$\struct\S\fCenter\struct\S$}
+        \RightLabel{\qup}
+        \BIC{$
+          \textsc{alice}\prod\textsc{read}\prod\q[\S\himpl(\NP\himpr\S)]
+          \fCenter\struct{\S}$}
+        \RightLabel{DP}
+        \UIC{$
+          \q[\S\himpl(\NP\himpr\S)]
+          \fCenter\textsc{read}\impr(\textsc{alice}\impr\struct{\S})$}
+        \RightLabel{L$\impl$}
+        \BIC{$
+          \textsc{a}\fCenter(\textsc{read}\impr(\textsc{alice}\impr\struct{\S}))\impl
+          (\textsc{book}\prod(\textsc{the}\prod\textsc{author}\prod\textsc{of}\prod
+          \textsc{which})\prod\textsc{feared}\prod\textsc{the}\prod\textsc{ocean})$}
+        \RightLabel{DP}
+        \UIC{$
+          \textsc{alice}\prod\textsc{read}\prod\textsc{a}\prod\textsc{book}\prod
+          (\textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\textsc{which})\prod
+          \textsc{feared}\prod\textsc{the}\prod\textsc{ocean}\fCenter\struct{\S}$}
+      \end{pfblock}
+    \end{mdframed}
+    \caption{An example of changing answer types.}
+    \label{fig:example-changing-answer-type}
+  \end{figure}
+\end{landscape}
+%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+
+
+% which : \q[\NP\himpl(((\NP\impr\NP)\impl(\NP\impr\S))\himpr\NP)]
