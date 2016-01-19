@@ -196,37 +196,45 @@ rules to navigate them. These two work together to guarantee the
 \emph{display property}---the property that any sub-structure can be
 made the sole structure in either the antecedent or the succedent,
 depending on its polarity. For instance, below we use residuation to
-isolate the object NP on the left-hand side:\footnote{
+isolate the object NP on the left-hand side:\footnote{%
   Inverted applications of the residuation rules are marked by
   switching the operators---e.g. by writing Res$\prod\impr$ instead of
-  Res$\impr\prod$.
-}
-\begin{center}
-  \begin{pfbox}
-    \AXC{$\vdots$}\noLine
-    \UIC{$\struct{\NP}\prod(\struct{\TV}\prod\struct{\underline{\NP}})\fCenter\struct{\S}$}
-    \RightLabel{Res$\prod\impr$}
-    \UIC{$\struct{\TV}\prod\struct{\underline{\NP}}\fCenter\struct{\NP}\impr\struct{\S}$}
-    \RightLabel{Res$\prod\impl$}
-    \UIC{$\struct{\underline{\NP}}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\TV}$}
-  \end{pfbox}
-\end{center}
+  Res$\impr\prod$.}%
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$\struct{\NP}\prod(\struct{\TV}\prod\struct{\underline{\NP}})\fCenter\struct{\S}$}
+  \RightLabel{Res$\prod\impr$}
+  \UIC{$\struct{\TV}\prod\struct{\underline{\NP}}\fCenter\struct{\NP}\impr\struct{\S}$}
+  \RightLabel{Res$\prod\impl$}
+  \UIC{$\struct{\underline{\NP}}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\TV}$}
+\end{pfblock}
+Because the display property guarantees that any sub-structure can be
+displayed on either the right- or the left-hand side of the turnstile,
+we will occasionally abbreviate inferences such as the one above using
+the display postulate (DP):\footnote{%
+  We have attached a formal proof of the display property for our main
+  logic---an extension of display NL as presented in this section. See
+  the appendix A for more details.}%
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$\struct{\NP}\prod(\struct{\TV}\prod\struct{\underline{\NP}})\fCenter\struct{\S}$}
+  \RightLabel{DP}
+  \UIC{$\struct{\underline{\NP}}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\TV}$}
+\end{pfblock}
 
 Another change that was made in this display calculus, is that the
 axiom has been restricted to atoms. This does not mean our logic no
 longer has the identity, since it is derivable by simple induction
 over the structure of the formula. For instance, in the case of an
 identity on $A\impr B$:
-\begin{center}
-  \begin{pfbox}
-    \AXC{$\vdots$}\noLine\UIC{$\struct{A}\fCenter\struct{A}$}
-    \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter\struct{B}$}
-    \RightLabel{L$\impr$}
-    \BIC{$\struct{A\impr B}\fCenter\struct{A}\impr\struct{B}$}
-    \RightLabel{R$\impr$}
-    \UIC{$\struct{A\impr B}\fCenter\struct{A\impr B}$}
-  \end{pfbox}
-\end{center}
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine\UIC{$\struct{A}\fCenter\struct{A}$}
+  \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter\struct{B}$}
+  \RightLabel{L$\impr$}
+  \BIC{$\struct{A\impr B}\fCenter\struct{A}\impr\struct{B}$}
+  \RightLabel{R$\impr$}
+  \UIC{$\struct{A\impr B}\fCenter\struct{A\impr B}$}
+\end{pfblock}
 Instead, the change was made to avoid spurious ambiguity. If the
 calculus \emph{were} to have a full identity, then there would be, for
 instance, \emph{two} proofs of the identity over \IV:
@@ -350,30 +358,30 @@ labelling employs substitution, which was defined in
 Now that we once again have a complete type-logical grammar, let us
 take a quick look at an example, ``Mary likes Bill'':
 \[
-  \struct{\text{mary}:\NP}\prod(\struct{\text{likes}:\TV}\prod\struct{\text{bill}:\NP})\;\fCenter\;?:\struct{\S}
+  \struct{\text{mary}:\NP}\prod(\struct{\text{likes}:\TV}\prod\struct{\text{bill}:\NP})\;
+  \fCenter\;?:\struct{\S}
 \]
 If we search for proofs, using backward-chaining proof search, we find
 the following proof:
-\begin{center}
-  \begin{pfbox}
-    \AXC{}\RightLabel{Ax}\UIC{$\struct{\NP}\fCenter\struct{\NP}$}
-    \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
-    \RightLabel{L$\impr$}
-    \BIC{$\struct{\NP\impr\S}\fCenter\struct{\NP}\impr\struct{\S}$}
-    \AXC{}\RightLabel{Ax}\UIC{$\struct{\NP}\fCenter\struct{\NP}$}
-    \RightLabel{L$\impl$}
-    \BIC{$\struct{(\NP\impr\S)\impl\NP}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\NP}$}
-    \RightLabel{Res$\impl\prod$}
-    \UIC{$\struct{(\NP\impr\S)\impl\NP}\prod\struct{\NP}\fCenter\struct{\NP}\impr\struct{\S}$}
-    \RightLabel{Res$\impr\prod$}
-    \UIC{$\struct{\NP}\prod(\struct{(\NP\impr\S)\impl\NP}\prod\struct{\NP})\fCenter\struct{\S}$}
-  \end{pfbox}
-\end{center}
+\begin{pfblock}
+  \AXC{}\RightLabel{Ax}\UIC{$\struct{\NP}\fCenter\struct{\NP}$}
+  \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+  \RightLabel{L$\impr$}
+  \BIC{$\struct{\NP\impr\S}\fCenter\struct{\NP}\impr\struct{\S}$}
+  \AXC{}\RightLabel{Ax}\UIC{$\struct{\NP}\fCenter\struct{\NP}$}
+  \RightLabel{L$\impl$}
+  \BIC{$\struct{(\NP\impr\S)\impl\NP}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\NP}$}
+  \RightLabel{Res$\impl\prod$}
+  \UIC{$\struct{(\NP\impr\S)\impl\NP}\prod\struct{\NP}\fCenter\struct{\NP}\impr\struct{\S}$}
+  \RightLabel{Res$\impr\prod$}
+  \UIC{$\struct{\NP}\prod(\struct{(\NP\impr\S)\impl\NP}\prod\struct{\NP})\fCenter\struct{\S}$}
+\end{pfblock}
 Applying the translation from \autoref{fig:display-calculus-to-explicit-lamET}
 gives us the following lambda term:
 \[
   s:\e\times(\e\e\t\times\e)\fCenter
-  (\case{s}{\text{mary}}{(\text{likes},\text{bill})}{(\text{likes}\;\text{bill})\;\text{mary}}):\t
+  (\case{s}{\text{mary}}{(\text{likes},\text{bill})}
+  {(\text{likes}\;\text{bill})\;\text{mary}}):\t
 \]
 This lambda term takes the sentence structure apart, and computes the
 meaning. If this is desirable, it is possible to do some
@@ -395,7 +403,8 @@ post-processing with the structuralisation lemma:
 This would result---after $\beta$-normalisation---in the following
 lambda term:
 \[
-  \text{mary}:\NP,\text{likes}:\TV,\text{bill}:\NP\fCenter((\text{likes}\;\text{bill})\;\text{mary}):\t
+  \text{mary}:\NP,\text{likes}:\TV,\text{bill}:\NP
+  \fCenter((\text{likes}\;\text{bill})\;\text{mary}):\t
 \]
 The lemma itself is fairly easy to derive by induction on the
 antecedent. Using it has the advantage that the lambda term takes the

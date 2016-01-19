@@ -19,7 +19,8 @@
 module NLIBC.Prelude
        (Word,(∷),(<$),($>),lex,lex_,id
        ,S,N,NP,PP,INF,A,IV,TV,Q,NS
-       ,Combine(..),bwd,allBwd,parseBwd,module X) where
+       ,Boolean(..)
+       ,Combine(..),bwd,bwdUpTo,parseBwd,module X) where
 
 
 import           Prelude hiding (Word,abs,lex,not,(*),($),(<$),($>))
@@ -81,6 +82,20 @@ instance Show (Entry x) where
 
 ($>) :: Entry (StI a) -> Entry (StI (a :→ b)) -> Entry (StI b)
 (Entry (SStI _) x) $> (Entry (SStI (_ :%→ b)) f) = Entry (SStI b) (f x)
+
+
+-- * Boolean types, and generalised `past tense` modifier
+
+class Boolean a where
+  past :: UnivI a => Hask a -> Hask a
+  past (x :: Hask a) = past_ (univ :: Univ a) x
+  past_ :: Univ  a -> Hask a -> Hask a
+
+instance Boolean T where
+  past_ T = "past" ∷ TT
+
+instance (Boolean b) => Boolean (a -> b) where
+  past_ (a :-> b) f x = past_ b (f x)
 
 
 -- ** Backward-Chaining Proof Search
@@ -154,9 +169,9 @@ bwd = QuasiQuoter
         fixWS ('>':    xs) = fixWS xs
         fixWS ( x :    xs) = x : fixWS xs
 
-allBwd :: TH.Q Exp
-allBwd = do
-  bwds1 <- traverse lookupValueName (map (("bwd"++).show) [0..24])
+bwdUpTo :: Int -> TH.Q Exp
+bwdUpTo n = do
+  bwds1 <- traverse lookupValueName (map (("bwd"++).show) [0..n])
   let bwds2 = map (VarE . fromJust) (takeWhile isJust bwds1)
   return (AppE (VarE 'sequence_) (ListE bwds2))
 

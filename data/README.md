@@ -10,13 +10,13 @@
 {-# LANGUAGE FlexibleContexts       #-}
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE NoImplicitPrelude      #-}
+{-# LANGUAGE ScopedTypeVariables    #-}
 {-# LANGUAGE UndecidableInstances   #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
 {-# LANGUAGE FunctionalDependencies #-}
 ~~~
 
 ~~~{.haskell}
-import Prelude (Monad(..))
 import NLIBC.Prelude
 ~~~
 
@@ -58,6 +58,8 @@ bwd22 = [bwd| mary sees the fox |]
 bwd23 = [bwd| mary sees a   fox |]
 
 bwd24 = [bwd| alice reads a book (the author of which) fears the ocean |]
+
+bwd25 = [bwd| alice knows who leaves |]
 ~~~
 
 In the examples above, `[bwd| ... |]` is a template Haskell script,
@@ -85,7 +87,7 @@ by collecting all functions called 'bwd*' and running them. This
 assumes each is of these functions type `IO ()`.
 
 ~~~{.haskell}
-main = $(allBwd)
+main = $(bwdUpTo 25)
 ~~~
 
 All of the parsing and interpretation is done in plain Haskell, and is
@@ -158,12 +160,13 @@ run, leave :: Word IV
 run       = lex "run"    ; runs   = run
 leave     = lex "leave"  ; leaves = leave
 
-read, see, like, serve, fear :: Word TV
+read, see, like, serve, fear, know :: Word TV
 read      = lex "read"   ; reads  = read
 see       = lex "see"    ; sees   = see
 like      = lex "like"   ; likes  = like
 serve     = lex "serve"  ; serves = serve
 fear      = lex "fear"   ; fears  = fear
+know      = lex "know"   ; knows  = know
 
 say :: Word (IV :← Res S)
 say       = lex "say"    ; says   = say
@@ -176,7 +179,7 @@ waiter    = lex "waiter" ; waiters = plural <$ waiter
 fox       = lex "fox"    ; foxes   = plural <$ fox
 book      = lex "book"   ; books   = plural <$ book
 author    = lex "author" ; authors = plural <$ author
-ocean     = lex "ocean"
+ocean     = lex "ocean"  ; oceans  = plural <$ ocean
 ~~~
 
 ~~~{.haskell}
@@ -184,6 +187,8 @@ a, some, every :: Word (Q NP S S :← N)
 a         = some
 some      = lex_ (\f g -> exists E (\x -> f x ∧ g x))
 every     = lex_ (\f g -> forall E (\x -> f x ⊃ g x))
+
+someone, everyone :: Word (Q NP S S)
 someone   = some  <$ person
 everyone  = every <$ person
 ~~~
@@ -223,6 +228,16 @@ which :: Word (WHICH1 :& WHICH2)
 which = lex_ (which' , which')
   where
     which' f g h x = h x ∧ (g (f x))
+~~~
+
+~~~{.haskell}
+type WHO1 = (Q NP S S) :← (NP :⇃ S)
+type WHO2 = (Q NP S S) :← (S :⇂ NP)
+
+who :: Word (WHO1 :& WHO2)
+who = lex_ (who' , who')
+  where
+    who' f g = exists E (\x -> g x :∧ f x)
 ~~~
 
 Utility Functions

@@ -32,14 +32,159 @@
 \label{sec:movement-and-quantifier-raising}
 
 In the previous section, we discussed the framework of monadic
-semantics and extensible effects, and explained the limitations of
-this framework for analysing quantification. In this section, we will
-discuss the extensions made to the syntactic calculus NL, and see how
-they can be used to analyse quantification. We will then giving our
-own extensions, implemented in display NL, and show that they preserve
-the properties we expect of a grammar logic (i.e. admissibility of
-cut, and a decidable and complete proof search procedure).
+semantics and extensible effects. This framework is extremely
+powerful. As mentioned, it provides a flexible and powerful framework
+for a large spectrum of complex natural language phenomena such as
+context, intensionality, expressives and quantification.
 
+In this section, we will discuss some of the limitations of monadic
+and effectful semantics---specifically, those relating to movement and
+quantification.
+We will then discuss extensions made to the syntactic calculus NL, and
+see how they can be used to analyse quantification. We will then
+present the reader with our own extensions, implemented in display NL,
+and show that they can be used to analyse quantification and related
+phenomena, while preserving the properties we expect of a grammar
+logic (i.e. admissibility of cut, and a decidable and complete proof
+search procedure).
+
+\todo{Write general introduction to quantification}
+
+\subsection{Quantification and Continuation-Passing Style}
+\citet{barker2002,barker2004} advocates the use of continuations in
+natural language semantics. He does this with several case studies,
+one of which is quantification. The gist of this is as follows:
+
+For the utterance ``John saw everyone,'' the function-argument
+structure is `(sees everyone) john', but we associate it with
+the meaning $\forall x.\PERSON(x)\supset\SEE(\JOHN,x)$. This means
+that the expression `everyone,' which is deeply nested in the parse
+tree, somehow takes scope over the entire expression.
+\citeauthor{barker2004} proposes to solve this problem by applying a
+(nonstandard) continuation-passing style (CPS) translation to the
+lexicon, lifting expressions of type $A$ into the type $(A\ra R)\ra R$
+for some answer type $R$:
+\begin{alignat*}{3}
+  &\text{john}     &&= \lambda k. k\;\JOHN\\
+  &\text{sees}     &&= \lambda k. k\;\SEE
+  \intertext{%
+    He then uses this freedom to define `everyone' as a lifted expression
+    of type `\e', with $R$ instantiated to `\t':
+  }
+  &\text{everyone} &&= \lambda k. \forall x.\PERSON(x)\supset k\;x
+\end{alignat*}
+Lastly, he defines a translation on terms, replacing function
+application with a method of combining CPS-translated
+terms:\footnote{%
+  It should be noted that \citeauthor{barker2004}'s initial solution
+  uses some directional information to ensure that scope-takers are
+  always processed in a left-to-right order, instead of always
+  processing the argument first, as it is presented here.
+  This distinction, however, becomes irrelevant once he introduces the
+  ambiguous translation, and therefore I have chosen not to include it.
+}
+\[
+  \overline{M\;N}= \lambda k. \overline{N}\;(\lambda
+  n.\overline{M}\;(\lambda m.k\;(m\;n)))
+\]
+As CPS-translations and monadic translations are closely related
+\citep{filinski1994}, it is rather easy to implement this approach as
+a monad or an effect---in fact, \citet{shan2002} already provides such
+an implementation.
+
+However, the analysis of quantification as a side-effect has several
+major issues. The first of these is already mentioned by
+\citet{barker2004}: scope ambiguity. Sentences containing two or
+more quantifiers, such as ``Everyone likes someone,'' are ambiguous:
+\begin{alignat*}{3}
+  &\forall x.\PERSON(x) \,&\supset \,&\exists y.\PERSON(y) \,&\wedge  \,&\LIKE(x,y)\\
+  &\exists y.\PERSON(y) \,&\wedge  \,&\forall x.\PERSON(x) \,&\supset \,&\LIKE(x,y)
+\end{alignat*}
+The solution provided above will only derive the first of these
+meanings. Barker solves this problem by adding another possible
+translation for function application, thereby making the
+CPS-translation ambiguous:
+\begin{alignat*}{3}
+  &\overline{M\;N} &&= \lambda k. \overline{N}\;(\lambda
+  n.\overline{M}\;(\lambda m.k\;(m\;n)))\\
+  &\overline{M\;N} &&= \lambda k. \overline{M}\;(\lambda
+  m.\overline{N}\;(\lambda n.k\;(m\;n)))
+\end{alignat*}
+There are several problems with this solution. First of all, this
+results in a huge amount of spurious ambiguity. A sentence with $n$
+words has $n-1$ function applications, and will therefore have
+$2^{(n-1)}$ ``different'' interpretations. However, the ambiguity is
+only relevant for scope-takers. In the motivating example, ``likes''
+is not a scope taker. Nevertheless, there are two possible
+translations for ``likes someone'', resulting in \emph{four}
+interpretations for the sentence where we only want two.
+
+Secondly, using an ambiguous translation clearly makes our
+CPS-translation incompatible with our monadic translation, unless we
+are willing to ambiguously translate all our effects. But doing so is
+risky, as a right-to-left interpretation may not be desirable for
+effects other than quantification. For instance, a right-to-left
+interpretation of the state monad for anaphora resolution will allow
+sentences such as ``He$_i$ gave a book to John$_i$.''
+
+\vspace*{1\baselineskip}
+
+In more recent work, \citet{moortgat2012} integrate CPS-semantics into
+the syntactic calculus. The result is the Lambek-Grishin (LG)
+calculus, a classical variant of NL, with semantics inspired on
+\citeauthor{parigot1992}'s $\lambda\mu$-calculus
+(\citeyear{parigot1992}). LG is a beautifully symmetric calculus, and
+display NL, as used in this thesis is, is directly based from it. The
+integrated CPS-semantics give some interesting opportunities, for
+instance the ability to give quantifiers such as `everyone' the type
+$(NP\oslash N)\otimes N$---a pair of a determiner and a noun---and
+give them the desired scope-taking semantics.
+
+\vspace*{1\baselineskip}
+
+\citeauthor{barker2004}'s CPS-translation and
+\citeauthor{moortgat2012}'s CPS-semantics both suffer from two related
+problems:
+\begin{enumerate}
+\item Both require a \emph{static} choice of answer type. This
+  means that the answer type cannot change throughout the
+  program. However, there are examples which demonstrate the need for
+  allowing dynamic answer types.
+\item Both cannot encode \emph{delimiters} past which a nested
+  expression cannot take scope. However, in natural language we find
+  evidence for scope islands\footnote{%
+    We will discuss scope islands in
+    \autoref{sec:movement-and-quantifier-raising}.
+  }, from which quantifiers cannot escape.
+\end{enumerate}
+These are the hallmark of \emph{delimited} or \emph{composable}
+continuations \citep{danvy1990}. However, while delimited
+continuations seem extremely promising, they are still not entirely
+without problems. They still suffer from the problem of ambiguity, as
+described above for CPS- and monadic translations. Additionally, they
+do not form a monad. Instead, they form something known as an indexed
+monad, which has two additional type-level parameters, meaning $\eta$
+and $\star$ get the following types:
+\[
+  \eta : A\ra\mathbb{M}\;i\;i\;A
+  \qquad
+  \star: (A\ra\mathbb{M}\;j\;k\;B)\ra\mathbb{M}\;i\;j\;A\ra\mathbb{M}\;i\;k\;B
+\]
+This makes sense: since we now allow the answer type of the
+continuation to change, we need to add indices to keep track of the
+input and output answer type. However, the downside of this is that
+since we need these additional parameters, we cannot simply
+CPS-translate to delimited continuations---if we use a delimited
+continuation indexed monad in our semantics, this will have to be
+reflected in our syntactic calculus.
+
+While such a solution using delimited continuations may still be
+interesting to examine, we will choose to keep our solution entirely
+syntactic. In the next section we will present quantifier movement and
+scope islands in the syntactic calculus, based on work by
+\citet{moortgat1996} and \citet{barker2015}.
+
+\subsection{NL$_\lambda$, NL$_{\text{CL}}$ and NL$_{\text{IBC}}$}
 In their \citeyear{barker2015} book, \citeauthor{barker2015} describe
 an extension of NL which they call NL$_\lambda$. The main insight in
 the formulation of this calculus was this: in type-logical grammar,
@@ -414,7 +559,7 @@ explicitly mark this as an application of rewriting by equality
 
 \input{fig-example-changing-answer-type}
 
-\paragraph{Parasitic scope}
+\subsection{Parasitic scope and double quantifiers}
 The system described in \autoref{fig:extension-quantifier-raising}
 maintains the decomposition of the quantifier movement into two
 separate functions---raising and lowering. Therefore, we can still
@@ -471,15 +616,43 @@ capture another quantifier while \emph{also} taking scope over it.
 \input{fig-example-parasitic-scope}
 
 
-\paragraph{Scope islands}
 
-
-
-
-
+\subsection{Scope islands}
 
 \input{fig-extension-scope-islands}
 
+
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$\textsc{everyone}\prod\textsc{left}\fCenter\struct{\S}$}
+  \RightLabel{L$\di$}
+  \UIC{$\langle\textsc{everyone}\prod\textsc{left}\rangle\fCenter\struct{\di\S}$}
+  \AXC{$\vdots$}\noLine
+  \UIC{$\struct{\NP\impr\S}\fCenter\textsc{mary}\impr\struct{\S}$}
+  \RightLabel{L$\impl$}
+  \BIC{$
+    \textsc{said}\fCenter
+    (\textsc{mary}\impr\struct{\S})\impl
+    \langle\textsc{everyone}\prod\textsc{left}\rangle$}
+  \RightLabel{DP}
+  \UIC{$
+    \textsc{mary}\prod\textsc{said}\prod
+    \langle\textsc{everyone}\prod\textsc{left}\rangle
+    \fCenter\struct{\S}$}
+\end{pfblock}
+\vspace*{-1\baselineskip}
+\begin{gather*}
+  \downmapsto
+  \\
+  \text{say}\;(\text{everyone}\;\text{left})\;\text{mary}
+  \\
+  \downmapsto
+  \\
+  \SAY(\MARY,\forall{x}.\PERSON(x)\supset\PAST(\LEAVE(x)))
+\end{gather*}
+
+
+\subsection{Infixation, Extraction and Reasoning with Gaps}
 
 
 %\input{fig-extension-infixation}
