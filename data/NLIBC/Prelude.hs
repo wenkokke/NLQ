@@ -19,7 +19,7 @@
 module NLIBC.Prelude
        (Word,(∷),(<$),($>),lex,lex_,id
        ,S,N,NP,PP,INF,A,IV,TV,Q,NS
-       ,bwd,allBwd,parseBwd,module X) where
+       ,Combine(..),bwd,allBwd,parseBwd,module X) where
 
 
 import           Prelude hiding (Word,abs,lex,not,(*),($),(<$),($>))

@@ -180,10 +180,10 @@ ocean     = lex "ocean"
 ~~~
 
 ~~~{.haskell}
-some, every :: Word (Q NP S S :← N)
+a, some, every :: Word (Q NP S S :← N)
+a         = some
 some      = lex_ (\f g -> exists E (\x -> f x ∧ g x))
 every     = lex_ (\f g -> forall E (\x -> f x ⊃ g x))
-a         = some
 someone   = some  <$ person
 everyone  = every <$ person
 ~~~
@@ -259,110 +259,3 @@ quantifier, and scopes up to the top of the noun phrase "the author of
 which". Because it scope up to the top of an embedded phrase, there is
 a choice of things to do first: resolve the scoping behaviour of
 `which`, or resolve the main phrase "mary reads X."
-
-Below, I've included the output of the program, minus the colouring --
-due to restrictions on GitHub Markdown.
-
-    john runs
-    1
-    run john
-
-    john likes mary
-    1
-    like mary john
-
-    someone likes mary
-    1
-    ∃x0.person x0 ∧ like mary x0
-
-    john likes everyone
-    1
-    ∀x0.person x0 ⊃ like x0 john
-
-    someone likes everyone
-    2
-    ∃x0.person x0 ∧ (∀x1.person x1 ⊃ like x1 x0)
-    ∀x0.person x0 ⊃ (∃x1.person x1 ∧ like x0 x1)
-    the waiter serves everyone
-    1
-    ∀x0.person x0 ⊃ serve x0 (the (λx1.(waiter x1)))
-
-    the same waiter serves everyone
-    1
-    ∃x0.(∀x1.person x1 ⊃ serve x1 (the (λx2.(waiter x2 ∧ x2 ≡ x0))))
-
-    a different waiter serves everyone
-    2
-    ∃x0.(∀x1.(∀x2.¬ (∃x3.x0 x3 x1 ∧ x0 x3 x2))) ∧
-        (∀x4.person x4 ⊃ (∃x5.(waiter x5 ∧ x0 x4 x5) ∧ serve x4 x5))
-    ∃x0.(∀x1.(∀x2.¬ (∃x3.x0 x3 x1 ∧ x0 x3 x2))) ∧
-        (∀x4.person x4 ⊃ (∃x5.(waiter x5 ∧ x0 x4 x5) ∧ serve x4 x5))
-
-    mary wants to leave
-    1
-    want (leave mary) mary
-    mary wants john to leave
-    1
-    want (leave john) mary
-
-    mary wants everyone to leave
-    1
-    ∀x0.person x0 ⊃ want (leave x0) mary
-
-    mary wants to like bill
-    1
-    want (like bill mary) mary
-
-    mary wants john to like bill
-    1
-    want (like bill john) mary
-
-    mary wants everyone to like bill
-    1
-    ∀x0.person x0 ⊃ want (like bill x0) mary
-
-    mary wants to like someone
-    2
-    want (∃x0.person x0 ∧ like x0 mary) mary
-    ∃x0.person x0 ∧ want (like x0 mary) mary
-
-    mary wants john to like someone
-    2
-    want (∃x0.person x0 ∧ like x0 john) mary
-
-    ∃x0.person x0 ∧ want (like x0 john) mary
-    mary wants everyone to like someone
-    3
-    ∀x0.person x0 ⊃ want (∃x1.person x1 ∧ like x1 x0) mary
-    ∀x0.person x0 ⊃ (∃x1.person x1 ∧ want (like x1 x0) mary)
-    ∃x0.person x0 ∧ (∀x1.person x1 ⊃ want (like x0 x1) mary)
-
-    mary says john likes bill
-    1
-    say (like bill john) mary
-
-    mary says everyone likes bill
-    1
-    say (∀x0.person x0 ⊃ like bill x0) mary
-
-    mary reads a book which john likes
-    2
-    ∃x0.(book x0 ∧ like x0 john) ∧ read x0 mary
-    ∃x0.(book x0 ∧ like x0 john) ∧ read x0 mary
-
-    mary reads a book the author of which john likes
-    2
-    ∃x0.(book x0 ∧ like (the (λx1.(of x0 (λx2.(author x2)) x1))) john) ∧ read x0 mary
-    ∃x0.(book x0 ∧ like (the (λx1.(of x0 (λx2.(author x2)) x1))) john) ∧ read x0 mary
-
-    mary sees foxes
-    1
-    ∃x0.(∃x1.(∃x2.x0 x1 ∧ x0 x2 ∧ x1 ≢ x2)) ∧ (∀x3.x0 x3 ⊃ (fox x3 ∧ see x3 mary))
-
-    mary sees the fox
-    1
-    see (the (λx0.(fox x0))) mary
-
-    mary sees a fox
-    1
-    ∃x0.fox x0 ∧ see x0 mary
