@@ -174,12 +174,12 @@ say       = lex "say"    ; says   = say
 
 ~~~{.haskell}
 person, waiter, fox, book, author, ocean :: Word N
-person    = lex "person" ; people  = plural <$ person
-waiter    = lex "waiter" ; waiters = plural <$ waiter
-fox       = lex "fox"    ; foxes   = plural <$ fox
-book      = lex "book"   ; books   = plural <$ book
-author    = lex "author" ; authors = plural <$ author
-ocean     = lex "ocean"  ; oceans  = plural <$ ocean
+person    = lex "person" ; people  = plural person
+waiter    = lex "waiter" ; waiters = plural waiter
+fox       = lex "fox"    ; foxes   = plural fox
+book      = lex "book"   ; books   = plural book
+author    = lex "author" ; authors = plural author
+ocean     = lex "ocean"  ; oceans  = plural ocean
 ~~~
 
 ~~~{.haskell}
@@ -252,9 +252,11 @@ moreThanOne :: (Expr E -> Expr T)  -> Expr T
 moreThanOne =
   (\f -> exists E (\x -> exists E (\y -> f x ∧ f y ∧ x ≢ y)))
 
-plural :: Word (NS :← N)
-plural = lex_
-  (\f g -> exists ET (\h -> moreThanOne h ∧ forall E (\x -> h x ⊃ (f x ∧ g x))))
+plural :: Word N -> Word NS
+plural x = plural' <$ x
+  where
+    plural' = lex_
+      (\f g -> exists ET (\h -> moreThanOne h ∧ forall E (\x -> h x ⊃ (f x ∧ g x))))
 ~~~
 
 

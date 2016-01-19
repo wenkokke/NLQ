@@ -17,7 +17,7 @@
 {-# LANGUAGE MultiParamTypeClasses  #-}
 {-# LANGUAGE FunctionalDependencies #-}
 module NLIBC.Prelude
-       (Word,(∷),(<$),($>),lex,lex_,id
+       (Word,Entry(..),(∷),(<$),($>),lex,lex_,id
        ,S,N,NP,PP,INF,A,IV,TV,Q,NS
        ,Boolean(..)
        ,Combine(..),bwd,bwdUpTo,parseBwd,module X) where
