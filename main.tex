@@ -37,18 +37,66 @@ powerful. As mentioned, it provides a flexible and powerful framework
 for a large spectrum of complex natural language phenomena such as
 context, intensionality, expressives and quantification.
 
-In this section, we will discuss some of the limitations of monadic
-and effectful semantics---specifically, those relating to movement and
-quantification.
-We will then discuss extensions made to the syntactic calculus NL, and
-see how they can be used to analyse quantification. We will then
-present the reader with our own extensions, implemented in display NL,
-and show that they can be used to analyse quantification and related
-phenomena, while preserving the properties we expect of a grammar
-logic (i.e. admissibility of cut, and a decidable and complete proof
-search procedure).
+In this section, we will study quantification in more detail.
+Quantification is the problem of analysing scope-taking expressions in
+natural language. For instance, the canonical interpretation for a
+sentence such as ``Everyone laughs'' is:
+\[
+  \forall{x}.\PERSON(x)\supset\LAUGH(x)
+\]
+The easiest way to obtain these semantics in NL is to assign
+`everyone' the type $\S\impl\IV$---i.e.\ make it a higher-order
+function that takes verb phrase in need of a subject, and scopes over
+it. With this type, we can assign `everyone' the interpretation
+$\lambda{k}.\forall{x}.\PERSON(x)\supset(k\;x)$, and derive the above
+semantics as expected.
 
-\todo{Write general introduction to quantification}
+However, we run into problems as soon as we try to apply the above
+solution to quantifiers in object position, such as in ``John saw
+everyone''. Because $\S\impl(\NP\impr\S)$---unfolding the IV used
+above---scopes over a verb phrase in need of a subject, we cannot use
+it here. In the \emph{associative} Lambek calculus, we can use the
+deceptively similar looking type $(\S\impl\NP)\impr\S$---a similarity
+which extended the popularity of the associative Lambek calculus way
+past its due date. Meanwhile, in NL, we have to devise a type which
+actually reflects the sentence structure, such as $\TV\impr\IV$. Using
+this type, we can assign `everyone' a second interpretation,
+$\lambda{k}.\lambda{x}.\forall{y}.\PERSON(y)\supset(k\;y\;x)$, which
+gives us the following interpretation for our example:
+\[
+  \forall{y}.\PERSON(y)\supset\PAST(\SEE(\JOHN,y))
+\]
+The need for multiple definitions for `everyone' aside, there are more
+problems with this approach. For instance, in natural language we
+observe a phenomenon known as `scope ambiguity', which is to say that
+sentences containing multiple quantifiers are ambiguous. For instance,
+``Everyone loves someone'' has two interpretations:
+\begin{alignat*}{3}
+  &\forall x.\PERSON(x) \,&\supset \,&\exists y.\PERSON(y) \,&\wedge  \,&\LIKE(x,y)\\
+  &\exists y.\PERSON(y) \,&\wedge  \,&\forall x.\PERSON(x) \,&\supset \,&\LIKE(x,y)
+\end{alignat*}
+However, with our current definitions for `everyone'---and a similar
+definition for `someone'---we can only derive the first of these
+interpretations. Now, we could imagine giving a third definition for
+`everyone' and `someone', with the type $(\S\impl\IV)\impr(\TV\impr\IV)$,
+which would allow us to define object quantifiers taking scope over
+subject quantifiers. However, there are many other cases---think of
+ditransitive verbs, or verb phrases modified by some number of
+adverbs. Clearly, this way lies madness.
+
+In the following section, we will discuss semantic approaches to the
+problem of quantification---approaches trying to solve the problem
+within the framework of monadic or effectful semantics---and why these
+solutions are generally inadequate.
+Next, we will discuss the approach to quantification taken by
+\citet{barker2007,barker2015}. We will then reformulate this approach
+as an extension of display NL that maintains the properties we are
+interested in---i.e. admissibility of cut, and a decidable and complete
+proof search procedure. In \autoref{sec:scope-islands} we will discuss
+an extension which can be used to treat a phenomenon known as `scope
+islands'. And finally, we will discuss some other forms of
+movement---infixation and extraction---and show how they can be used
+to analyse sentences with gaps.
 
 \subsection{Quantification and Continuation-Passing Style}
 \citet{barker2002,barker2004} advocates the use of continuations in
@@ -182,7 +230,7 @@ While such a solution using delimited continuations may still be
 interesting to examine, we will choose to keep our solution entirely
 syntactic. In the next section we will present quantifier movement and
 scope islands in the syntactic calculus, based on work by
-\citet{moortgat1996} and \citet{barker2015}.
+\citet{moortgat1996}, \citet{barker2007} and \citet{barker2015}.
 
 \subsection{NL$_\lambda$, NL$_{\text{CL}}$ and NL$_{\text{IBC}}$}
 In their \citeyear{barker2015} book, \citeauthor{barker2015} describe
@@ -297,47 +345,7 @@ in much the same way as in NL$_\lambda$---though the new version is
 ever so slightly more verbose:\footnote{%
   Inverted applications of the \I, \B\ and \C\ rules are marked with a prime.
 }
-\begin{pfblock}
-  \AXC{$\vdots$}\noLine
-  \UIC{$\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{{\NP}}\fCenter\struct{{\S}}$}
-  \RightLabel{Res$\prod\impr$}
-  \UIC{$\struct{(\NP\impr\S)\impl\NP}\prod\struct{{\NP}}\fCenter\struct{\NP}\impr\struct{{\S}}$}
-  \RightLabel{Res$\prod\impr$}
-  \UIC{$\struct{{\NP}}\fCenter\struct{(\NP\impr\S)\impl\NP}\impr\struct{\NP}\impr\struct{{\S}}$}
-  \RightLabel{\I}
-  \UIC{$\struct{{\NP}}\hprod\I\fCenter\struct{(\NP\impr\S)\impl\NP}\impr\struct{\NP}\impr\struct{{\S}}$}
-  \RightLabel{Res$\impr\prod$}
-  \UIC{$\struct{(\NP\impr\S)\impl\NP}\prod(\struct{{\NP}}\hprod\I)\fCenter\struct{\NP}\impr\struct{{\S}}$}
-  \RightLabel{\B}
-  \UIC{$\struct{{\NP}}\prod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I)\fCenter\struct{\NP}\impr\struct{{\S}}$}
-  \RightLabel{Res$\prod\impr$}
-  \UIC{$\struct{\NP}\prod(\struct{{\NP}}\hprod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))\fCenter\struct{{\S}}$}
-  \RightLabel{\B}
-  \UIC{$\struct{{\NP}}\hprod((\B\prod\struct{\NP})\prod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))\fCenter\struct{{\S}}$}
-  \RightLabel{Res$\hprod\himpr$}
-  \UIC{$((\B\prod\struct{\NP})\prod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))\fCenter\struct{{\NP}}\himpr\struct{{\S}}$}
-  \RightLabel{R$\himpr$}
-  \UIC{$((\B\prod\struct{\NP})\prod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))\fCenter\struct{{\NP\himpr\S}}$}
-  \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{{\S}}$}
-  \RightLabel{L$\himpl$}
-  \BIC{$\struct{{\S\himpl(\NP\himpr\S)}}\fCenter\struct{\S}\himpl((\B\prod\struct{\NP})\prod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))$}
-  \RightLabel{Res$\himpl\:\hprod$}
-  \UIC{$\struct{{\S\himpl(\NP\himpr\S)}}\hprod((\B\prod\struct{\NP})\prod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))\fCenter\struct{\S}$}
-  \RightLabel{$\B'$}
-  \UIC{$\struct{\NP}\prod(\struct{{\S\himpl(\NP\himpr\S)}}\hprod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I))\fCenter\struct{\S}$}
-  \RightLabel{Res$\prod\impr$}
-  \UIC{$\struct{{\S\himpl(\NP\himpr\S)}}\hprod((\B\prod\struct{(\NP\impr\S)\impl\NP})\prod\I)\fCenter\struct{\NP}\impr\struct{\S}$}
-  \RightLabel{$\B'$}
-  \UIC{$\struct{(\NP\impr\S)\impl\NP}\prod(\struct{{\S\himpl(\NP\himpr\S)}}\hprod\I)\fCenter\struct{\NP}\impr\struct{\S}$}
-  \RightLabel{Res$\impr\prod$}
-  \UIC{$\struct{{\S\himpl(\NP\himpr\S)}}\hprod\I\fCenter\struct{(\NP\impr\S)\impl\NP}\impr\struct{\NP}\impr\struct{\S}$}
-  \RightLabel{$\I'$}
-  \UIC{$\struct{{\S\himpl(\NP\himpr\S)}}\fCenter\struct{(\NP\impr\S)\impl\NP}\impr\struct{\NP}\impr\struct{\S}$}
-  \RightLabel{Res$\prod\impr$}
-  \UIC{$\struct{(\NP\impr\S)\impl\NP}\prod\struct{{\S\himpl(\NP\himpr\S)}}\fCenter\struct{\NP}\impr\struct{\S}$}
-  \RightLabel{Res$\prod\impr$}
-  \UIC{$\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{{\S\himpl(\NP\himpr\S)}}\fCenter\struct{\S}$}
-\end{pfblock}
+\input{fig-example-quantifier-raising}
 One of the advantages of this formalisation is that it gets rid of the
 awkward binding construct in the syntax of structures. In addition, it
 makes it clear that quantifiers can only move past \emph{solid}
@@ -559,65 +567,129 @@ explicitly mark this as an application of rewriting by equality
 
 \input{fig-example-changing-answer-type}
 
-\subsection{Parasitic scope and double quantifiers}
-The system described in \autoref{fig:extension-quantifier-raising}
-maintains the decomposition of the quantifier movement into two
-separate functions---raising and lowering. Therefore, we can still
-analyse parasitic scope \citep{barker2007}. In
-\autoref{fig:parasitic-scope}, we analyse a classic example of
-parasitic scope for \emph{different}: ``A different waiter served
-everyone.'' However, we make one small change to the type of
-`different', in order to obtain the semantics described by
-\citet{kiselyov2015b}. We use the lexicon described below:
+\subsection{Parasitic scope}
+Parasitic scope is a beautiful mechanism, put forward by
+\citet{barker2007}, which allows expressions to capture a quantifier's
+scope. Using this mechanism, a parasitic expression can take scope
+\emph{right} underneath another quantifier, and capture the bound
+variable. For instance, a parasitic expression $k$ might take scope
+under the bounded quantifier `everyone', receiving both its context
+and the bound variable $x$ as arguments:
 \[
-  \renewcommand*{\arraystretch}{1}
-  \begin{array}{l c l}
-    \multirow{2}{*}{\text{a}}
-    &:& \tr[{(\q[\S\himpl(\NP\himpr\S)]\impl\N)}]\\
-    &=& \lambda n. \lambda k. \exists x. n\;x\wedge k\;x\\
-
-    \multirow{2}{*}{\text{different}}
-    &:& \tr[{(\q[\S\himpl(\q[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\himpr\S)])}]\\
-    &=& \lambda k. \exists f. (\forall x.\forall y.\nexists z.f\;z\;x\wedge f\;z\;y)\;\wedge\\
-    & & k\;(\lambda k'.\lambda x.k'\;(\lambda g.\lambda y.g\;y\wedge f\;x\;y)\;x)\\
-
-    \multirow{2}{*}{\text{waiter}}
-    &:& \tr[\N]\\
-    &=& \lambda x.\WAITER(x)\\
-
-    \multirow{2}{*}{\text{served}}
-    &:& \tr[\TV]\\
-    &=& \lambda y.\lambda x.\PAST(\SERVE(x,y))\\
-
-    \multirow{2}{*}{\text{everyone}}
-    &:& \tr[{(\q[\S\himpl(\NP\himpr\S)])}]\\
-    &=& \lambda k.\forall x.\PERSON(x)\supset k\;x
-  \end{array}
+  \forall{x}.\PERSON(x)\supset(k\ldots{x})
 \]
-It may be worthwhile to have a closer look at the type for
-`different.' It is a quantifier taking scope at the sentence
-level ${\q[\S\himpl(\ldots\himpr\S)]}$, which becomes a quantifier
-taking scope parasitically ${\q[(\NP\himpr\S)\himpl(\ldots
-\himpr(\NP\himpr\S))]}$, and finally becomes an adjective $\A$.
+The mechanism depends crucially on two properties:\footnote{%
+  Though I do not rule out the possibility that the mechanism can
+  exists under different circumstances.
+}
+\begin{enumerate*}[label=(\arabic*)]
+\item quantification must be (at least) a two-step process; and
+\item the `function' that becomes the argument of the quantifier must
+  be represented in the type.
+\end{enumerate*}
+NL$_\lambda$ (obviously) respects these requirements: we have
+$\himpl\text{L}_\lambda$ (or $\qup$) and $\himpr\text{R}_\lambda$ (or
+$\qdown$), and the type of the `function' that is quantifier-over is
+represented as ${A}\himpr{B}$. Using this, we can write a quantifier
+which targets the type of raised quantifiers. For instance,
+\[
+  \q[(\NP\himpr\S)\himpl(\ldots\himpr(\NP\himpr\S))]
+\]
+Canonical examples of such quantifiers are expressions such as `same'
+and `different', as used in the sentence ``The same waiter served
+everyone'', which \citet{barker2007} assigns more-or-less the
+following semantics:\footnote{%
+  I suppose that selection of the choice function $f$ should be
+  bounded by a predicate such as $\exists{z}.\forall{x}.f(x)=z$, as
+  would be dictated by the semantics of same.
+}
+\[
+  \text{everyone}\;(\lambda{X}.\exists{f_{(\e\t)\e}}.\forall{x<X}:
+  \PAST(\SERVE(x,\iota(f(\WAITER)))))
+\]
+Which \citeauthor{barker2007} describes as meaning that ``[e]veryone
+collectively has the property of being a group such that there is a
+unique waiter who served each member of the group''. It is clear that
+the intention is to have $x$ range over the same set of variables over
+which `everyone' ranges. However, it is not entirely clear to me how
+`everyone' should reduce---it is ostensibly not a quantifier, but a
+function which takes a continuation and provides it with the set of
+all people (e.g.\ $\text{everyone}=\lambda{k}.k\;\PERSON$). All this
+seems to be a whole lot of work to push the existential selecting the
+choice function over the quantifier introduced by `everyone'.
 
-The double quantification in `different' has some very interesting
-effects. Because it takes scope normally and then parasitically the
-sentence ``A different waiter served everyone'' is unambiguous, even
-though it contains no fewer than \emph{three} quantifiers. This is
-because of the dependencies between the quantifiers: `a' cannot take
-scope until it receives its noun argument, which is modified by
-`different'. Meanwhile, `different' has to take scope twice, once
-normally and once parasitically. Its parasitic scope-taking has to
-occur \emph{while} `everyone' is taking scope, so its normal
-scope-taking has to occur before that.
-On the semantic level, double quantification allows a quantifier to
-capture another quantifier while \emph{also} taking scope over it.
+\citet{kiselyov2015b} provides much clearer semantics for the semantics
+of `same' and `different' sentences:
+\[
+  \exists{z}.\forall{y}.\PAST(\SERVE(\iota(\lambda{x}.\WAITER(x)\wedge{x=z}),y))
+\]
+The crucial point seems to be that words such as `same' want to take
+scope \emph{over} another quantifier, but in the meantime also want
+access to the variable bound by that quantifier. In order to derive
+these semantics, we use a different type for parasitic quantifiers---a
+double quantifier:
+\[
+  \q[\S\himpl(\quad{\q[(\NP\himpr\S)\himpl(\quad{\ldots}\quad\himpr(\NP\himpr\S))]}\quad\himpr\S)]
+\]
+Such double quantification has some interesting aspects. First of all,
+one might expect huge amounts of quantifier ambiguity. However,
+because a double quantifier has to take scope once \emph{normally} and
+once \emph{parasitically}, in the case where there is one double and
+one normal quantifier, there is not room for ambiguity. The double
+quantifier \emph{has} to take scope first, in order to be able to take
+scope parasitically while the other quantifier is taking scope.
 
+In \autoref{fig:parasitic-scope}, we give an analysis of the sentence
+``A different waiter served everyone'', for which we derive the
+following semantics, also assigned by \citeauthor{kiselyov2015b}:
+\begin{align*}
+  &\exists{f_{\e\e\t}}.(\forall{x}.\forall{y}.\nexists{z}.f\;z\;x\wedge{f\;z\;y})\;\wedge\\
+  &\qquad(\forall{y}.\PERSON(y)\supset(\exists{x}.\WAITER(x)\wedge{f\;y\;x\wedge\PAST(\SERVE(y,x))}))
+\end{align*}
+The first clause, $\forall{x}.\forall{y}.\nexists{z}.f\;z\;x\wedge
+{f\;z\;y}$, is entirely contained withing the semantics for
+`different'---it enforces that $f$ does not assign the same output $z$
+to two different inputs. The full lexicon used in the derivation is
+given in \autoref{fig:parasitic-scope-lexicon}
+\begin{figure}[hb]
+  \centering
+  \begin{mdframed}
+    \[
+      \renewcommand*{\arraystretch}{1}
+      \begin{array}{l c l}
+        \text{a}
+        &:& \tr[{(\q[\S\himpl(\NP\himpr\S)]\impl\N)}]\\
+        &=& \lambda n. \lambda k. \exists x. n\;x\wedge k\;x\\
+
+        \text{different}
+        &:& \tr[{(\q[\S\himpl(\q[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\himpr\S)])}]\\
+        &=& \lambda k. \exists f. (\forall x.\forall y.\nexists z.f\;z\;x\wedge f\;z\;y)\;\wedge\\
+        & & k\;(\lambda k'.\lambda x.k'\;(\lambda g.\lambda y.g\;y\wedge f\;x\;y)\;x)\\
+
+        \text{waiter}
+        &:& \tr[\N]\\
+        &=& \lambda x.\WAITER(x)\\
+
+        \text{served}
+        &:& \tr[\TV]\\
+        &=& \lambda y.\lambda x.\PAST(\SERVE(x,y))\\
+
+        \text{everyone}
+        &:& \tr[{(\q[\S\himpl(\NP\himpr\S)])}]\\
+        &=& \lambda k.\forall x.\PERSON(x)\supset k\;x
+      \end{array}
+    \]
+  \end{mdframed}
+  \caption{Lexicon used in the derivation in \autoref{fig:parasitic-scope}.}
+  \label{fig:parasitic-scope-lexicon}
+\end{figure}
+%
 \input{fig-example-parasitic-scope}
-
+%
 
 
 \subsection{Scope islands}
+\label{sec:scope-islands}
 
 \input{fig-extension-scope-islands}
 
