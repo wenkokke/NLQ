@@ -103,15 +103,16 @@ to analyse sentences with gaps.
 natural language semantics. He does this with several case studies,
 one of which is quantification. The gist of this is as follows:
 
-For the utterance ``John saw everyone,'' the function-argument
-structure is `(sees everyone) john', but we associate it with
-the meaning $\forall x.\PERSON(x)\supset\SEE(\JOHN,x)$. This means
-that the expression `everyone,' which is deeply nested in the parse
-tree, somehow takes scope over the entire expression.
+As mentioned before, the utterance ``John saw everyone,'' the
+function-argument structure `(sees everyone) john', but we associate
+it with the interpretation $\forall
+x.\PERSON(x)\supset\SEE(\JOHN,x)$. This means that the expression
+`everyone,' which is deeply nested in the parse tree, must somehow
+scope over the entire expression.
 \citeauthor{barker2004} proposes to solve this problem by applying a
 (nonstandard) continuation-passing style (CPS) translation to the
-lexicon, lifting expressions of type $A$ into the type $(A\ra R)\ra R$
-for some answer type $R$:
+lexicon. He lifts expressions of type $A$ into the type $(A\ra R)\ra
+R$ for some answer type $R$:
 \begin{alignat*}{3}
   &\text{john}     &&= \lambda k. k\;\JOHN\\
   &\text{sees}     &&= \lambda k. k\;\SEE
@@ -121,9 +122,8 @@ for some answer type $R$:
   }
   &\text{everyone} &&= \lambda k. \forall x.\PERSON(x)\supset k\;x
 \end{alignat*}
-Lastly, he defines a translation on terms, replacing function
-application with a method of combining CPS-translated
-terms:\footnote{%
+In addition, he defines a translation on terms, replacing function
+application with a method of combining CPS-translated terms:\footnote{%
   It should be noted that \citeauthor{barker2004}'s initial solution
   uses some directional information to ensure that scope-takers are
   always processed in a left-to-right order, instead of always
@@ -136,22 +136,22 @@ terms:\footnote{%
   n.\overline{M}\;(\lambda m.k\;(m\;n)))
 \]
 As CPS-translations and monadic translations are closely related
-\citep{filinski1994}, it is rather easy to implement this approach as
-a monad or an effect---in fact, \citet{shan2002} already provides such
-an implementation.
+\citep{filinski1994}, it is rather easy to implement approaches using
+a CPS translation as a monad or an effect---in fact, \citet{shan2002}
+already provides such an implementation.
 
 However, the analysis of quantification as a side-effect has several
 major issues. The first of these is already mentioned by
-\citet{barker2004}: scope ambiguity. Sentences containing two or
-more quantifiers, such as ``Everyone likes someone,'' are ambiguous:
+\citet{barker2004}: scope ambiguity. The sentence ``Everyone likes
+someone'', is ambiguous:
 \begin{alignat*}{3}
   &\forall x.\PERSON(x) \,&\supset \,&\exists y.\PERSON(y) \,&\wedge  \,&\LIKE(x,y)\\
   &\exists y.\PERSON(y) \,&\wedge  \,&\forall x.\PERSON(x) \,&\supset \,&\LIKE(x,y)
 \end{alignat*}
-The solution provided above will only derive the first of these
-meanings. Barker solves this problem by adding another possible
-translation for function application, thereby making the
-CPS-translation ambiguous:
+The solution provided by \citet{barker2002,barker2004} will only
+derive the first of these meanings. Barker solves this problem by
+adding another possible translation for function application, thereby
+making the CPS-translation ambiguous:
 \begin{alignat*}{3}
   &\overline{M\;N} &&= \lambda k. \overline{N}\;(\lambda
   n.\overline{M}\;(\lambda m.k\;(m\;n)))\\
