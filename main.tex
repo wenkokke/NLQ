@@ -4,31 +4,12 @@
 
 \begin{document}
 
-% ``We are constructing a \emph{grammar logic}. Therefore, we only
-% want features in our logic for which we can demonstrate a motivating
-% example from natural language.''
-
-% - implicit semantic calculus;
-% - explicit semantic calculus;
-% - syntactic calculus;
-% - display calculus;
-% - compositionality principle;
-% - problems with compositionality;
-% - quantifier raising and scope ambiguity;
-% - continuation monad & delimited continuations;
-% - extension: lexical ambiguity;
-% - extension: quantifier raising
-%   * treatment of some & every;
-%   * treatment of same & different;
-%   * treatment of plurals;
-% - extension: scope islands;
-
 \include{introduction}
 \include{display-calculus}
 \include{lexical-ambiguity}
 \include{natural-language-effects-and-movement}
 
-\section{Movement and Quantifier Raising}%
+\section{Logical Approaches to Movement}%
 \label{sec:movement-and-quantifier-raising}
 
 In the previous section, we discussed the framework of monadic
@@ -37,6 +18,7 @@ powerful. As mentioned, it provides a flexible and powerful framework
 for a large spectrum of complex natural language phenomena such as
 context, intensionality, expressives and quantification.
 
+\subsection{Quantifier Movement}
 In this section, we will study quantification in more detail.
 Quantification is the problem of analysing scope-taking expressions in
 natural language. For instance, the canonical interpretation for a
@@ -98,7 +80,7 @@ islands'. And finally, we will discuss some other forms of
 movement---infixation and extraction---and show how they can be used
 to analyse sentences with gaps.
 
-\subsection{Quantification and Continuation-Passing Style}
+\subsubsection{Continuation-Passing Style}
 \citet{barker2002,barker2004} advocates the use of continuations in
 natural language semantics. He does this with several case studies,
 one of which is quantification. The gist of this is as follows:
@@ -232,7 +214,7 @@ syntactic. In the next section we will present quantifier movement and
 scope islands in the syntactic calculus, based on work by
 \citet{moortgat1996}, \citet{barker2007} and \citet{barker2015}.
 
-\subsection{NL$_\lambda$, NL$_{\text{CL}}$ and NL$_{\text{IBC}}$}
+\subsubsection{NL$_\lambda$, NL$_{\text{CL}}$ and NL$_{\text{IBC}}$}
 In their \citeyear{barker2015} book, \citeauthor{barker2015} describe
 an extension of NL which they call NL$_\lambda$. The main insight in
 the formulation of this calculus was this: in type-logical grammar,
@@ -288,12 +270,19 @@ $\S\himpl(\NP\himpr\S)$ for quantifiers:
   \UIC{$\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{\S\himpl
       (\NP\himpr\S)}\fCenter\struct{\S}$}
 \end{pfblock}
-However, the use of a binding construct in the syntax for structures
-makes this equivalence quite difficult to formalise.
-In addition, if we were to take the equivalence at face value, we
-would end up with a logic in which we could do all kinds of unpleasant
-things. For instance, since contexts are defined as structures with a
-hole, we could raise quantifiers past one another, indefinitely:
+Note that contrary to most linguistic frameworks, in which quantifier
+movement is strictly upwards (i.e.\ quantifier raising), in this
+framework it ends up being characterised by upwards movement followed
+by downwards movement \emph{along the same path}---i.e.\ scope-taking
+followed by the insertion of the newly bound variable.
+
+One problem with this framework, however, is the use of a binding
+construct in the syntax for structures, which makes it quite difficult
+to formalise.
+In addition, if we take the equivalence at face value, we end up with
+a logic in which we can do all kinds of unpleasant things. For
+instance, since contexts are defined as structures with a hole, we
+could raise quantifiers past one another, indefinitely:
 \begin{pfblock}
   \AXC{$\vdots$}\noLine
   \UIC{$\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{z}.(\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{y}.({z}\hprod\lambda{x}.({y}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x})))\fCenter\struct{\S}$}
@@ -567,14 +556,14 @@ explicitly mark this as an application of rewriting by equality
 
 \input{fig-example-changing-answer-type}
 
-\subsection{Parasitic scope}
+\subsubsection{Parasitic scope}
 Parasitic scope is a beautiful mechanism, put forward by
-\citet{barker2007}, which allows expressions to capture a quantifier's
-scope. Using this mechanism, a parasitic expression can take scope
-\emph{right} underneath another quantifier, and capture the bound
-variable. For instance, a parasitic expression $k$ might take scope
-under the bounded quantifier `everyone', receiving both its context
-and the bound variable $x$ as arguments:
+\citet{barker2007}, which allows expressions to capture another
+quantifier's scope. Using this mechanism, a parasitic expression can
+take scope \emph{right} underneath another quantifier, and capture the
+bound variable. For instance, a parasitic expression $k$ might take
+scope under the bounded quantifier `everyone', receiving both its
+context and the bound variable $x$ as arguments:
 \[
   \forall{x}.\PERSON(x)\supset(k\ldots{x})
 \]
@@ -607,7 +596,7 @@ following semantics:\footnote{%
   \text{everyone}\;(\lambda{X}.\exists{f_{(\e\t)\e}}.\forall{x<X}:
   \PAST(\SERVE(x,\iota(f(\WAITER)))))
 \]
-Which \citeauthor{barker2007} describes as meaning that ``[e]veryone
+\citeauthor{barker2007} describes this as meaning that ``[e]veryone
 collectively has the property of being a group such that there is a
 unique waiter who served each member of the group''. It is clear that
 the intention is to have $x$ range over the same set of variables over
@@ -616,7 +605,7 @@ which `everyone' ranges. However, it is not entirely clear to me how
 function which takes a continuation and provides it with the set of
 all people (e.g.\ $\text{everyone}=\lambda{k}.k\;\PERSON$). All this
 seems to be a whole lot of work to push the existential selecting the
-choice function over the quantifier introduced by `everyone'.
+choice function up over the quantifier introduced by `everyone'.
 
 \citet{kiselyov2015b} provides much clearer semantics for the semantics
 of `same' and `different' sentences:
@@ -688,12 +677,60 @@ given in \autoref{fig:parasitic-scope-lexicon}
 %
 
 
-\subsection{Scope islands}
+\subsubsection{Scope islands}
 \label{sec:scope-islands}
 
+One phenomenon we have not discussed so far is that of scope
+restriction, or `scope islands'. There are many different forms of
+scope restriction in natural language, but one of the clearest
+examples to me is a phrase such as ``Mary said everyone left''. If we
+assigned `said' the type $(\NP\impr\S)\impl\S$---since it takes a
+sentence as its right argument---we get the following readings:
+\begin{gather*}
+  \PAST(\SAY(\MARY,\forall{x}.\PAST(\LEAVE(x))))\\
+  \forall{x}.\PAST(\SAY(\MARY,\PAST(\LEAVE(x))))
+\end{gather*}
+The reason we get scope ambiguity here is not because we have several
+quantifiers, but because the quantifier `everybody' can take scope at
+two different positions:
+\begin{enumerate*}[label=(\arabic*)]
+\item at the top of the embedded clause; and
+\item at the top of the sentence.
+\end{enumerate*}
+
+There is, however, something off about the second interpretation for
+the sentence. If we think about what the two logical formulas mean,
+the first one means that Mary made a speech act, in which she declared
+``everyone left''. The second interpretation, however, states that for
+each person Mary made a \emph{separate} speech act, in which she
+declared that that particular person had left.
+
+Our goal for this section is to develop an extension to display NL
+which can be used to give `to say' a type which blocks the second
+interpretation---creating an island from which scope takers cannot
+escape.
+
+The solution to this problem is rather simple: we have previously
+discussed that quantifiers are to be restricted to moving upwards and
+downwards past \emph{solid products}. So what we should do is simply
+insert a structural connective which is not a solid product.
+From the literature on display calculus we can easily take a
+description of what a unary residuated connective should look like, and
+add this to the calculus. In \autoref{fig:extension-scope-islands} we
+describe such an extension, adding a dual pair of unary residuated
+connectives, $\di$ and $\sq$.\footnote{%
+  Note that these connectives have nothing to do with the unary
+  connectives from modal logic, which are unfortunately also often
+  called $\di$ and $\sq$.
+}
+%
 \input{fig-extension-scope-islands}
-
-
+%
+Using the newly defined connectives, we can assign `said' the type
+$(\NP\impr\S)\impl\di\S$. Instead of taking a sentence-argument from
+the right, `said' now takes a \emph{closed-off} sentence---a scope
+island. Have a look at the derivation for ``Mary said everyone left''
+given below:
 \begin{pfblock}
   \AXC{$\vdots$}\noLine
   \UIC{$\textsc{everyone}\prod\textsc{left}\fCenter\struct{\S}$}
@@ -722,13 +759,119 @@ given in \autoref{fig:parasitic-scope-lexicon}
   \\
   \SAY(\MARY,\forall{x}.\PERSON(x)\supset\PAST(\LEAVE(x)))
 \end{gather*}
+Note that in the bottom-most sequent, `everyone' is nested under the
+structural scope island, and therefore cannot take scope at the
+top-level. Later on, when the L$\di$-rule is applied, the scope island
+is deconstructed. However, it is already too late for `everyone' to
+take sentence-wide scope: in feeding the scope island as an argument
+to `said', one opens up the opportunity to deconstruct it, but at the
+same time isolates it from its surrounding context.
 
+It may be troubling to some of the readers that in order to deal with
+scope islands, we have to introduce a new structural connective that
+has to be present in the endsequent.
+This is, however, much less problematic than it seems. The sentence
+structure---the binary tree of solid products---must already be
+inferred in some way. For most of this thesis we have sidestepped this
+problem, by requiring that this structure is given to us by the
+`syntactic function'. Much in the same way, we can relegate the
+marking of scope islands to the `syntactic function'.
+However, in \autoref{sec:what-is-type-logical-grammar} we already
+mentioned that we are sticking to backward-chaining proof search
+mostly because it is a pleasant tool for research purposes; it allows
+us to write down and look for proofs for particular syntax trees. In
+practical parsing, however, this is not an option. The number of
+binary syntax trees for a sentence of $n$ words is equal to the $n$th
+Catalan number.
+Therefore, instead of depending on a magical hypothetical to take care
+of our problems for us, we could also pursue an actual solution. One
+possible solution is to switch to forward-chaining proof search, which
+we briefly touch upon in \autoref{sec:future-work}.
 
 \subsection{Infixation, Extraction and Reasoning with Gaps}
+In the previous sections, we have discussed quantifier movement, which
+is characterised by upwards movement, and insertion of a trace. In
+this section, we will focus on simpler kinds of movement: infixation
+and extraction. These are types of movement where a constituent
+\emph{only} moves up or \emph{only} moves down.
+
+In order to avoid confusion, we should probably discuss naming. In
+logic, the convention is to name a rule after its effect when read
+downwards (towards the endsequent). An example of this is contraction,
+which contracts two identical formulas when read downwards, but
+duplicates a formula when read upwards.
+Problems arise when naming constructs which encode linguistic
+movement. For instance, the quantification rules $\qup$ and $\qdown$
+are named as such because what they do from a linguistic perspective
+is raise the quantifier, and lower it. However, if you look up the
+these rules, you will see that from a logical perspective, they should
+have been named the other way around.
+We are faced with a similar choice with infixation and extraction;
+both can be used for upwards \emph{or} downwards movement, depending
+on which convention we follow. My choice is to assign the names from a
+linguistic perspective: the transformation which encodes
+\emph{downwards} movement in a tree will be called infixation, and the
+transformation which encodes \emph{upwards} movement will be called
+extraction.
+
+\todo{Motivating example of infixation.}
+
+\todo{Motivating example of extraction.}
 
 
-%\input{fig-extension-infixation}
-%\input{fig-extension-extraction}
+\subsubsection{Reasoning with Gaps}
+\citet[][chapter 17.10]{barker2015} adopts two new inference rules in
+order to deal with gaps. However, these rules have a bit of an ad-hoc
+feel about them. They eliminate a logical connective, but also
+perform a structural function (movement) and they add an additional,
+unrelated meaning to the quantificational slash ($\himpr$):
+\begin{center}
+  \begin{pfbox}
+    \AXC{$\Sigma[A\prod{B}]\fCenter{C}$}
+    \RightLabel{R$_{\text{rgap}}$}
+    \UIC{$\Sigma[A]\fCenter{B\himpr{C}}$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$\Sigma[B\prod{A}]\fCenter{C}$}
+    \RightLabel{R$_{\text{lgap}}$}
+    \UIC{$\Sigma[A]\fCenter{B\himpr{C}}$}
+  \end{pfbox}
+\end{center}
+These rules are very similar to the rules we can derive for our
+infixation arrows:
+\begin{center}
+  \begin{pfbox}
+    \AXC{$\Sigma[\Gamma\prod\struct{B}]\fCenter\struct{C}$}
+    \RightLabel{R${\downharpoonright}$}
+    \UIC{$\Sigma[\Gamma]\fCenter\struct{C\downharpoonright{B}}$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$\Sigma[\struct{B}\prod\Gamma]\fCenter\struct{C}$}
+    \RightLabel{R${\downharpoonleft}$}
+    \UIC{$\Sigma[\Gamma]\fCenter\struct{B\downharpoonleft{C}}$}
+  \end{pfbox}
+\end{center}
+However, there are two important distinctions:
+\begin{enumerate*}[label=(\arabic*)]
+\item R${\downharpoonleft}$ and R${\downharpoonright}$ are \emph{not}
+  axiomatic rules, but they are derived from existing logical
+  connectives in display NL with infixation; and
+\item R${\downharpoonleft}$ and R${\downharpoonright}$ distinguish
+  between moving to the left- and right-hand side of the
+  sub-structure.
+\end{enumerate*}
+The first of these is an advantage, because it allows us to encode
+\citepos{barker2015} approach in our display calculus, in a more
+general manner, and without having to resort to proof search with
+contexts. The second one \emph{may} be an advantage---there are be
+some situations where you require the distinction, and some where you
+do not. However, if you do not require the distinction, then you can
+always solve this using the extension for ambiguity (\&).
+
+
+
+\input{fig-extension-infixation}
+\input{fig-extension-extraction}
 
 \include{future-work}
 

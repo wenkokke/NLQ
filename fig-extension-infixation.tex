@@ -3,44 +3,44 @@
     \centering
     \begin{minipage}{0.66\linewidth}
       \begin{alignat*}{4}
-        \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\diIfx A\vsep\sqIfx A\\
-        \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\diIfx Γ\\
-        \text{Structure}&^-\;&Δ  &\coloneqq \ldots\vsep\sqIfx Δ
+        \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\diDn A\vsep\sqDn A\\
+        \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\diDn Γ\\
+        \text{Structure}&^-\;&Δ  &\coloneqq \ldots\vsep\sqDn Δ
       \end{alignat*}
     \end{minipage}%
     \begin{minipage}{0.33\linewidth}
       \begin{alignat*}{3}
-        &A \upharpoonleft  B\;&&\coloneqq\;\diIfx\sqIfx(A\impr B)\\
-        &B \upharpoonright A\;&&\coloneqq\;\diIfx\sqIfx(B\impl A)
+        &A \downharpoonleft  B\;&&\coloneqq\;(\diDn\sqDn{A})\impr{B}\\
+        &B \downharpoonright A\;&&\coloneqq\;{B}\impl(\diDn\sqDn{A})
       \end{alignat*}
     \end{minipage}
     \\
     \vspace*{\baselineskip}%
     (copy of rules for $\{\di,\sq\}$ from
-    \autoref{fig:extension-scope-islands} for $\{\diIfx,\sqIfx\}$)
+    \autoref{fig:extension-scope-islands} for $\{\diDn,\sqDn\}$)
     \\
     \vspace*{\baselineskip}%
     \begin{pfbox}
-      \AXC{$(Γ_1\prodΓ_2)\prod\diIfxΓ_3\fCenterΔ$}
-      \RightLabel{RR\diIfx}
-      \UIC{$Γ_1\prod(Γ_2\prod\diIfxΓ_3)\fCenterΔ$}
+      \AXC{$Γ_1\prod (Γ_2\prod\diDn Γ_3)\fCenter Δ$}
+      \RightLabel{RR\diDn}
+      \UIC{$(Γ_1\prod Γ_2)\prod\diDn Γ_3\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
-      \AXC{$(Γ_1\prod\diIfxΓ_3)\prodΓ_2\fCenterΔ$}
-      \RightLabel{LR\diIfx}
-      \UIC{$Γ_1\prod(Γ_2\prod\diIfxΓ_3)\fCenterΔ$}
+      \AXC{$(Γ_1\prod\diDn Γ_3)\prod Γ_2\fCenter Δ$}
+      \RightLabel{LR\diDn}
+      \UIC{$(Γ_1\prod Γ_2)\prod\diDn Γ_3\fCenter Δ$}
     \end{pfbox}
 
     \vspace*{\baselineskip}%
     \begin{pfbox}
-      \AXC{$\diIfxΓ_1\prod(Γ_2\prodΓ_3)\fCenterΔ$}
-      \RightLabel{LL\diIfx}
-      \UIC{$(\diIfxΓ_1\prodΓ_2)\prodΓ_3\fCenterΔ$}
+      \AXC{$(\diDn Γ_3\prod Γ_2)\prod Γ_1\fCenter Δ$}
+      \RightLabel{LL\diDn}
+      \UIC{$\diDn Γ_3\prod (Γ_2\prod Γ_1)\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
-      \AXC{$\diIfxΓ_1\prod(Γ_2\prodΓ_3)\fCenterΔ$}
-      \RightLabel{RL\diIfx}
-      \UIC{$Γ_2\prod(\diIfxΓ_1\prodΓ_3)\fCenterΔ$}
+      \AXC{$Γ_2\prod (\diDn Γ_3\prod Γ_1)\fCenter Δ$}
+      \RightLabel{RL\diDn}
+      \UIC{$\diDn Γ_3\prod (Γ_2\prod Γ_1)\fCenter Δ$}
     \end{pfbox}
     \\
     \vspace*{\baselineskip}
@@ -48,10 +48,10 @@
     \\
     \vspace*{\baselineskip}
     (copy of translations for $\{\di,\sq\}$ from
-    \autoref{fig:extension-scope-islands} for $\{\diIfx,\sqIfx\}$)
+    \autoref{fig:extension-scope-islands} for $\{\diDn,\sqDn\}$)
     \\
     \vspace*{\baselineskip}
-    ({RR\diIfx}, {LR\diIfx}, {LL\diIfx} and {RL\diIfx} translate to
+    ({RR\diDn}, {LR\diDn}, {LL\diDn} and {RL\diDn} translate to
     various combinations of associativity and commutativity)
     \\
     \vspace*{\baselineskip}

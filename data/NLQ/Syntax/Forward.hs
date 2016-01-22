@@ -3,10 +3,10 @@
     KindSignatures, UndecidableInstances, StandaloneDeriving, PatternSynonyms,
     AllowAmbiguousTypes, MultiParamTypeClasses, FunctionalDependencies,
     ViewPatterns, ScopedTypeVariables, TupleSections #-}
-module NLIBC.Syntax.Forward where
+module NLQ.Syntax.Forward where
 
 
-import NLIBC.Syntax.Base
+import NLQ.Syntax.Base
 import Control.Arrow ((***))
 import Control.Applicative (empty)
 import Data.Function (on)

@@ -1,7 +1,8 @@
 MAKEFLAGS=B
+DELEGATE=./buildfile.hs
 
 default:
-	./buildfile.hs
+	@$(DELEGATE)
 
 %:
-	./buildfile.hs $@
+	@$(DELEGATE) $@

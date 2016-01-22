@@ -4,16 +4,16 @@
 {-# LANGUAGE TypeFamilies   #-}
 {-# LANGUAGE TypeOperators  #-}
 {-# LANGUAGE ImplicitParams #-}
-module NLIBC.Semantics
+module NLQ.Semantics
        (HS,HI,HO,H,withHS,withHI,withHO,withH,hs,hi,ho,h,eta,Lift,etaM) where
 
 
 import           Control.Monad ((>=>))
 import           Data.Proxy (Proxy(..))
 
-import qualified NLIBC.Syntax.Base as NL
-import           NLIBC.Syntax.Base
-import           NLIBC.Semantics.Postulate as X
+import qualified NLQ.Syntax.Base as NL
+import           NLQ.Syntax.Base
+import           NLQ.Semantics.Postulate as X
 
 
 -- ** Translation from Syntactic Types into Semantic Types

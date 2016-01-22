@@ -34,15 +34,13 @@
 \begin{document}
 \begin{appendices}
 
-\section{Formalisation of NLPlus in Agda}
-\begin{code}
-module NLPlus where
-\end{code}
+\appendix
+\renewcommand{\thesection}{A}
+\section{Formalisation of NLQ in Agda}
 
 \begin{comment}
 \begin{code}
-open import Level          using (_⊔_)
-open import Category.Monad using (module RawMonad; RawMonad)
+open import Level using (_⊔_)
 \end{code}
 \end{comment}
 
@@ -51,7 +49,6 @@ data Polarity : Set where
   + : Polarity
   - : Polarity
 \end{code}
-
 \begin{code}
 record Polarised (A : Set) : Set where
   field
@@ -88,8 +85,8 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
     Sol  : Kind -- solid       {⇐, ∙, ⇒}
     Hol  : Kind -- hollow      {⇦, ∘, ⇨}
     Res  : Kind -- reset       {◇, □}
-    Ifx  : Kind -- infixation  {⇃, ⇂, ◇↓, □↓}
-    Ext  : Kind -- extraction  {↿, ↾, ◇↑, □↑}
+    Ext  : Kind -- infixation  {⇃, ⇂, ◇↓, □↓}
+    Ifx  : Kind -- ifxraction  {↿, ↾, ◇↑, □↑}
 
   data Type : Set where
     El     : Atom  → Type
@@ -159,18 +156,18 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
   pattern □_   a    = Box    Res  a
   pattern ◆_   x    = DIA    Res  x
   pattern ■_   x    = BOX    Res  x
-  pattern ◇↓_  a    = Dia    Ifx  a
-  pattern □↓_  a    = Box    Ifx  a
-  pattern ◆↓_  x    = DIA    Ifx  x
-  pattern ■↓_  x    = BOX    Ifx  x
-  pattern _⇃_  a b  = ◇↓ □↓ (a ⇒ b)
-  pattern _⇂_  b a  = ◇↓ □↓ (b ⇐ a)
   pattern ◇↑_  a    = Dia    Ext  a
   pattern □↑_  a    = Box    Ext  a
   pattern ◆↑_  x    = DIA    Ext  x
   pattern ■↑_  x    = BOX    Ext  x
-  pattern _↿_  a b  = (◇↑ □↑ a) ⇒ b
-  pattern _↾_  b a  = b ⇐ (◇↑ □↑ a)
+  pattern _↿_  a b  = ◇↑ □↑ (a ⇒ b)
+  pattern _↾_  b a  = ◇↑ □↑ (b ⇐ a)
+  pattern ◇↓_  a    = Dia    Ifx  a
+  pattern □↓_  a    = Box    Ifx  a
+  pattern ◆↓_  x    = DIA    Ifx  x
+  pattern ■↓_  x    = BOX    Ifx  x
+  pattern _⇃_  a b  = (◇↓ □↓ a) ⇒ b
+  pattern _⇂_  b a  = b ⇐ (◇↓ □↓ a)
 \end{code}
 \end{multicols}
 
@@ -211,15 +208,15 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
     upB     : ∀ {x y z w}   → NL y ∘ ((B ∙ x) ∙ z) ⊢ w  → NL x ∙ (y ∘ z) ⊢ w
     upC     : ∀ {x y z w}   → NL x ∘ ((C ∙ y) ∙ z) ⊢ w  → NL (x ∘ y) ∙ z ⊢ w
 
-    ifxRR   : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↓ z ⊢ w)  → NL (x ∙ (y ∙ ◆↓ z) ⊢ w)
-    ifxLR   : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↓ z ⊢ w)  → NL ((x ∙ ◆↓ z) ∙ y ⊢ w)
-    ifxLL   : ∀ {x y z w}   → NL (◆↓ z ∙ (y ∙ x) ⊢ w)  → NL ((◆↓ z ∙ y) ∙ x ⊢ w)
-    ifxRL   : ∀ {x y z w}   → NL (◆↓ z ∙ (y ∙ x) ⊢ w)  → NL (y ∙ (◆↓ z ∙ x) ⊢ w)
+    extRR   : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NL (x ∙ (y ∙ ◆↑ z) ⊢ w)
+    extLR   : ∀ {x y z w}   → NL ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NL ((x ∙ ◆↑ z) ∙ y ⊢ w)
+    extLL   : ∀ {x y z w}   → NL (◆↑ z ∙ (y ∙ x) ⊢ w)  → NL ((◆↑ z ∙ y) ∙ x ⊢ w)
+    extRL   : ∀ {x y z w}   → NL (◆↑ z ∙ (y ∙ x) ⊢ w)  → NL (y ∙ (◆↑ z ∙ x) ⊢ w)
 
-    extRR   : ∀ {x y z w}   → NL (x ∙ (y ∙ ◆↑ z) ⊢ w)  → NL ((x ∙ y) ∙ ◆↑ z ⊢ w)
-    extLR   : ∀ {x y z w}   → NL ((x ∙ ◆↑ z) ∙ y ⊢ w)  → NL ((x ∙ y) ∙ ◆↑ z ⊢ w)
-    extLL   : ∀ {x y z w}   → NL ((◆↑ z ∙ y) ∙ x ⊢ w)  → NL (◆↑ z ∙ (y ∙ x) ⊢ w)
-    extRL   : ∀ {x y z w}   → NL (y ∙ (◆↑ z ∙ x) ⊢ w)  → NL (◆↑ z ∙ (y ∙ x) ⊢ w)
+    ifxRR   : ∀ {x y z w}   → NL (x ∙ (y ∙ ◆↓ z) ⊢ w)  → NL ((x ∙ y) ∙ ◆↓ z ⊢ w)
+    ifxLR   : ∀ {x y z w}   → NL ((x ∙ ◆↓ z) ∙ y ⊢ w)  → NL ((x ∙ y) ∙ ◆↓ z ⊢ w)
+    ifxLL   : ∀ {x y z w}   → NL ((◆↓ z ∙ y) ∙ x ⊢ w)  → NL (◆↓ z ∙ (y ∙ x) ⊢ w)
+    ifxRL   : ∀ {x y z w}   → NL (y ∙ (◆↓ z ∙ x) ⊢ w)  → NL (◆↓ z ∙ (y ∙ x) ⊢ w)
 
   resRL : ∀ {k x y z} → NL y ⊢ IMPR k x z → NL x ⊢ IMPL k z y
   resRL f = resPL (resRP f)
@@ -269,24 +266,24 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
 
 \begin{multicols}{2}
 \begin{code}
-  pattern _<∙_  x y  = PROD1   Sol  x y
-  pattern _∙>_  x y  = PROD2   Sol  x y
-  pattern _<⇐_  y x  = IMPL1   Sol  y x
-  pattern _<⇒_  x y  = IMPR2   Sol  x y
-  pattern _⇐>_  y x  = IMPL1   Sol  y x
-  pattern _⇒>_  x y  = IMPR2   Sol  x y
-  pattern _<∘_  x y  = PROD1   Hol  x y
-  pattern _∘>_  x y  = PROD2   Hol  x y
-  pattern _<⇨_  x y  = IMPR1   Hol  x y
-  pattern _<⇦_  y x  = IMPL1   Hol  y x
-  pattern _⇨>_  x y  = IMPR2   Hol  x y
-  pattern _⇦>_  y x  = IMPL2   Hol  y x
-  pattern ◆>_   x    = DIA1    Res  x
-  pattern ■>_   x    = BOX1    Res  x
-  pattern ◆↓>_  x    = DIA1    Ifx  x
-  pattern ■↓>_  x    = BOX1    Ifx  x
-  pattern ◆↑>_  x    = DIA1    Ext  x
-  pattern ■↑>_  x    = BOX1    Ext  x
+  pattern _<∙_  x y  = PROD1  Sol  x y
+  pattern _∙>_  x y  = PROD2  Sol  x y
+  pattern _<⇐_  y x  = IMPL1  Sol  y x
+  pattern _<⇒_  x y  = IMPR2  Sol  x y
+  pattern _⇐>_  y x  = IMPL1  Sol  y x
+  pattern _⇒>_  x y  = IMPR2  Sol  x y
+  pattern _<∘_  x y  = PROD1  Hol  x y
+  pattern _∘>_  x y  = PROD2  Hol  x y
+  pattern _<⇨_  x y  = IMPR1  Hol  x y
+  pattern _<⇦_  y x  = IMPL1  Hol  y x
+  pattern _⇨>_  x y  = IMPR2  Hol  x y
+  pattern _⇦>_  y x  = IMPL2  Hol  y x
+  pattern ◆>_   x    = DIA1   Res  x
+  pattern ■>_   x    = BOX1   Res  x
+  pattern ◆↓>_  x    = DIA1   Ext  x
+  pattern ■↓>_  x    = BOX1   Ext  x
+  pattern ◆↑>_  x    = DIA1   Ifx  x
+  pattern ■↑>_  x    = BOX1   Ifx  x
 \end{code}
 \end{multicols}
 
@@ -398,7 +395,7 @@ allow you to access the two sides of the isomorphism more easily.\\
 
 \subsubsection{Structuralising Types}
 Because each logical connective has a structural equivalent, it is
-possible---to a certain extend---structuralise logical connectives
+possible---to a certain ifxend---structuralise logical connectives
 en masse. The function \AgdaFunction{St} takes a type, and computes
 the maximally structuralised version of that type, given a target
 polarity $p$.
@@ -502,60 +499,73 @@ structuralise either the antecedent, the succedent, or both.
 
 \subsection{Quanfitier Raising}
 \begin{code}
-  data QRCtxt : Set where
-    HOLE   : QRCtxt
-    PROD1  : QRCtxt    → Struct +  → QRCtxt
-    PROD2  : Struct +  → QRCtxt    → QRCtxt
+  data ∙-Ctxt : Set where
+    HOLE   : ∙-Ctxt
+    PROD1  : ∙-Ctxt    → Struct +  → ∙-Ctxt
+    PROD2  : Struct +  → ∙-Ctxt    → ∙-Ctxt
 
   instance
-    Pluggable-QR : Pluggable QRCtxt (Struct +) (Struct +)
+    Pluggable-QR : Pluggable ∙-Ctxt (Struct +) (Struct +)
     Pluggable-QR = record { _[_] = _[_]′ }
       where
-        _[_]′ : QRCtxt → Struct + → Struct +
+        _[_]′ : ∙-Ctxt → Struct + → Struct +
         ( HOLE        ) [ z ]′ = z
         ( PROD1  x y  ) [ z ]′ = PROD Sol    (x [ z ]′) y
         ( PROD2  x y  ) [ z ]′ = PROD Sol x  (y [ z ]′)
 \end{code}
 
 \begin{code}
-  trace : QRCtxt → Struct +
+  trace : ∙-Ctxt → Struct +
   trace ( HOLE        )  = UNIT Hol
   trace ( PROD1  x y  )  = PROD Sol (PROD Sol C (trace x)) y
   trace ( PROD2  x y  )  = PROD Sol (PROD Sol B x) (trace y)
 \end{code}
 
 \begin{code}
-  ↑ : ∀ x {a z} → NL · a · ∘ trace(x) ⊢ z → NL x [ · Q a · ] ⊢ z
-  ↑ x f = init x (move x f)
-    where
-    init : ∀ (x : QRCtxt) {a z} → NL x [ · a · ∘ I ] ⊢ z → NL x [ · Q a · ] ⊢ z
-    init ( HOLE        ) f = unitRL f
-    init ( PROD1  x y  ) f = resLP (init x (resPL f))
-    init ( PROD2  x y  ) f = resRP (init y (resPR f))
-    move : ∀ (x : QRCtxt) {y z} → NL y ∘ trace(x) ⊢ z → NL x [ y ∘ I ] ⊢ z
-    move ( HOLE        ) f = f
-    move ( PROD1  x y  ) f = resLP (move x (resPL (upC f)))
-    move ( PROD2  x y  ) f = resRP (move y (resPR (upB f)))
-
-  ↓ : ∀ x {y z} → NL x [ y ] ⊢ z → NL y ∘ trace(x) ⊢ z
-  ↓ ( HOLE        ) f = unitRI f
-  ↓ ( PROD1  x y  ) f = dnC (resLP (↓ x (resPL f)))
-  ↓ ( PROD2  x y  ) f = dnB (resRP (↓ y (resPR f)))
-\end{code}
-
-\begin{code}
-  q↑ : ∀ x {y b c} → NL trace(x) ⊢[ b ] → NL [ c ]⊢ y → NL x [ · Q (c ⇦ b) · ] ⊢ y
+  q↑ : ∀ {y b c} x → NL trace(x) ⊢[ b ] → NL [ c ]⊢ y → NL x [ · Q (c ⇦ b) · ] ⊢ y
   q↑ x f g = ↑ x (resLP (focL refl (impLL f g)))
+    where
+    ↑ : ∀ {a z} x → NL · a · ∘ trace(x) ⊢ z → NL x [ · Q a · ] ⊢ z
+    ↑ x f = init x (move x f)
+      where
+      init  : ∀ {a z} (x : ∙-Ctxt) → NL x [ · a · ∘ I ] ⊢ z → NL x [ · Q a · ] ⊢ z
+      init  ( HOLE        ) f = unitRL f
+      init  ( PROD1  x y  ) f = resLP (init x (resPL f))
+      init  ( PROD2  x y  ) f = resRP (init y (resPR f))
+      move  : ∀ {y z} (x : ∙-Ctxt) → NL y ∘ trace(x) ⊢ z → NL x [ y ∘ I ] ⊢ z
+      move  ( HOLE        ) f = f
+      move  ( PROD1  x y  ) f = resLP (move x (resPL (upC f)))
+      move  ( PROD2  x y  ) f = resRP (move y (resPR (upB f)))
+\end{code}
 
-  q↓ : ∀ x {a b} → NL x [ · a · ] ⊢ · b · → NL trace(x) ⊢ · a ⇨ b ·
+\begin{code}
+  q↓ : ∀ {a b} x → NL x [ · a · ] ⊢ · b · → NL trace(x) ⊢ · a ⇨ b ·
   q↓ x f = impRR (resPR (↓ x f))
+    where
+    ↓ : ∀ {y z} x → NL x [ y ] ⊢ z → NL y ∘ trace(x) ⊢ z
+    ↓ ( HOLE        ) f = unitRI f
+    ↓ ( PROD1  x y  ) f = dnC (resLP (↓ x (resPL f)))
+    ↓ ( PROD2  x y  ) f = dnB (resRP (↓ y (resPR f)))
+\end{code}
+
+\begin{code}
+  r⇂ : ∀ {y b c} (x : ∙-Ctxt) → Pol(b) ≡ + → NL x [ y ∙ · b · ] ⊢ · c · →  NL x [ y ] ⊢ · c ⇂ b ·
+  r⇂ x pr f = impLR (resPL (resRP (diaL (resPR (move x (stop x pr f))))))
+    where
+    move : ∀ {y z w} (x : ∙-Ctxt) → NL x [ y ∙ ◆↓ z ] ⊢ w → NL x [ y ] ∙ ◆↓ z ⊢ w
+    move ( HOLE        ) f = f
+    move ( PROD1  x y  ) f = ifxLR (resLP (move x (resPL f)))
+    move ( PROD2  x y  ) f = ifxRR (resRP (move y (resPR f)))
+    stop : ∀ {y z b} (x : ∙-Ctxt) → Pol(b) ≡ + → NL x [ y ∙ · b · ] ⊢ z → NL x [ y ∙ ◆↓ · □↓ b · ] ⊢ z
+    stop ( HOLE        ) pr f = resRP (resBD (focL refl (boxL (unfL pr (resPR f)))))
+    stop ( PROD1  x y  ) pr f = resLP (stop x pr (resPL f))
+    stop ( PROD2  x y  ) pr f = resRP (stop y pr (resPR f))
 \end{code}
 
 
-
-\subsection{Interpretation in Agda}
+\subsection{Semantics in Agda}
 \begin{code}
-module InterpretationInAgda
+module Semantics
   (Atom : Set)
   (PolarisedAtom   : Polarised Atom)
   (TranslateAtom   : Translate Atom Set)
@@ -640,14 +650,14 @@ module InterpretationInAgda
         dnC     f    *′ = λ{ ( x , (_ , y) , z)  → (f *′) ((x , y) , z) }
         upB     f    *′ = λ{ ( x , y   , z)  → (f *′) ( y , (_ , x) , z) }
         upC     f    *′ = λ{ ((x , y)  , z)  → (f *′) ( x , (_ , y) , z) }
-        ifxRR   f    *′ = λ{ ( x , y   , z)  → (f *′) ((x , y) , z)  }
-        ifxLR   f    *′ = λ{ ((x , z)  , y)  → (f *′) ((x , y) , z)  }
-        ifxLL   f    *′ = λ{ ((z , y)  , x)  → (f *′) ( z , y  , x)  }
-        ifxRL   f    *′ = λ{ ( y , z   , x)  → (f *′) ( z , y  , x)  }
-        extRR   f    *′ = λ{ ((x , y)  , z)  → (f *′) ( x , y  , z)  }
-        extLR   f    *′ = λ{ ((x , y)  , z)  → (f *′) ((x , z) , y)  }
-        extLL   f    *′ = λ{ ( z , y   , x)  → (f *′) ((z , y) , x)  }
-        extRL   f    *′ = λ{ ( z , y   , x)  → (f *′) ( y , z  , x)  }
+        extRR   f    *′ = λ{ ( x , y   , z)  → (f *′) ((x , y) , z)  }
+        extLR   f    *′ = λ{ ((x , z)  , y)  → (f *′) ((x , y) , z)  }
+        extLL   f    *′ = λ{ ((z , y)  , x)  → (f *′) ( z , y  , x)  }
+        extRL   f    *′ = λ{ ( y , z   , x)  → (f *′) ( z , y  , x)  }
+        ifxRR   f    *′ = λ{ ((x , y)  , z)  → (f *′) ( x , y  , z)  }
+        ifxLR   f    *′ = λ{ ((x , y)  , z)  → (f *′) ((x , z) , y)  }
+        ifxLL   f    *′ = λ{ ( z , y   , x)  → (f *′) ((z , y) , x)  }
+        ifxRL   f    *′ = λ{ ( z , y   , x)  → (f *′) ( y , z  , x)  }
 \end{code}
 
 \end{appendices}

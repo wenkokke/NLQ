@@ -3,7 +3,7 @@
     KindSignatures, UndecidableInstances, StandaloneDeriving, PatternSynonyms,
     AllowAmbiguousTypes, MultiParamTypeClasses, FunctionalDependencies,
     ViewPatterns, ScopedTypeVariables #-}
-module NLIBC.Syntax.Base where
+module NLQ.Syntax.Base where
 
 
 import Data.Singletons.Decide

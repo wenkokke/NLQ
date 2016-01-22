@@ -2,10 +2,10 @@
     TypeFamilies, GADTs, TypeOperators, DataKinds, PolyKinds, RankNTypes,
     KindSignatures, UndecidableInstances, StandaloneDeriving, PatternSynonyms,
     AllowAmbiguousTypes, MultiParamTypeClasses, FunctionalDependencies #-}
-module NLIBC.Syntax.Backward where
+module NLQ.Syntax.Backward where
 
 
-import           NLIBC.Syntax.Base
+import           NLQ.Syntax.Base
 import           Control.Applicative (Alternative(empty,(<|>)))
 import           Control.Monad (msum,MonadPlus(..))
 import           Control.Monad.State.Strict (StateT,get,put,evalStateT)

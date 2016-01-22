@@ -1,6 +1,59 @@
 \section{Introduction}
 \label{sec:introduction}
 
+This thesis is not meant to be a work of thorough linguistic
+analysis. In this thesis, what I hope to do is \emph{extend} and
+\emph{solidify} the logical vocabulary with which such analyses can be
+made. In this endeavour, I will use two guiding principles:
+\begin{itemize}
+\item We are constructing a \emph{grammar} logic. Therefore, we only
+  want features in our logic for which we can demonstrate a motivating
+  example from natural language.
+\item We are constructing a grammar \emph{logic}. Therefore, we will
+  only accept extensions in our logic if we can show that they
+  preserve our most important property: we want procedure for proof
+  search that is both \emph{decidable} and \emph{complete}. This
+  implies a procedure for cut-elimination.
+\end{itemize}
+None of the extensions that I will be proposing will be the be-all
+and end-all of logical grammar, so another important point in this
+thesis will be \emph{modularity}. It will be incredibly important to
+formulate extensions in a modular manner, so that other logical
+grammarians will be free to mix and match my extensions, and perhaps
+their own extensions, without having to worry about unforeseen
+interactions.
+
+The last key point in this thesis will be \emph{verification}. It is
+far too easy to make mistakes when writing down logical proofs in a
+pen-and-paper---or, more accurately, \LaTeX---style. Therefore, most
+of the claims I make in this thesis will be backed up by \emph{two}
+verified implementations of the full version of the grammar logic I am
+proposing (i.e. the version using all discussed extensions). The first
+of these is given in Agda, and is a verification of the grammar logic,
+some key properties, and semantics in the form of a translation from
+proofs in grammar logic to Agda terms. The second is given in
+Haskell,\footnote{%
+  The Haskell implementation makes heavy use of the
+  \texttt{singletons} library.
+}
+and is a verification of the grammar logic, an implementation of proof
+search, and semantics in the form of a translation into a subset of
+Haskell which includes meaning postulates. These can be found,
+respectively, in appendices A and B, and on GitHub.
+
+Starting in \autoref{sec:what-is-type-logical-grammar}, we will give a
+brief introduction to type-logical grammar in general, and to what I
+consider to be the base type-logical grammar: the non-associative
+Lambek calculus (NL) paired with a simple semantic lambda calculus
+(\lamET).
+In \autoref{sec:display-calculus}, we will discuss the display
+calculus formulation of NL, and motivate our usage of display
+calculus.
+Then, in sections \ref{sec:lexical-ambiguity},
+\ref{sec:natural-language-monads-and-effects} and
+\ref{sec:movement-and-quantifier-raising}, we will discuss several
+extension to the base type-logical grammar.
+
 \subsection{What is type-logical grammar?}
 \label{sec:what-is-type-logical-grammar}
 

@@ -62,46 +62,26 @@
     \\[1\baselineskip]
     (copy of translations for $\{\impr,\prod,\impl\}$ from
     \autoref{fig:display-calculus-to-explicit-lamET} for
-    $\{\himpr,\hprod,\himpl\}$)\\
-    \begin{tabular}{c c c}
-      \begin{pfbox}
-        \AXC{$\struct{A}\hprod\I\fCenter Δ$}
-        \RightLabel{L\I}
-        \UIC{$\struct{\q[A]}\fCenter Δ$}
-      \end{pfbox}
-      &$\Longrightarrow$&
-      \begin{pfbox}
-        \AXC{$\tr[A]\prod\emptyset\fCenter\tr[Δ]$}
-        \RightLabel{$\emptyset$E}
-        \UIC{$\tr[A]\fCenter\tr[Δ]$}
-      \end{pfbox}
-      \\
-      \begin{pfbox}
-        \AXC{$Γ\fCenter\focus{B}$}
-        \RightLabel{R\I}
-        \UIC{$Γ\hprod\I\fCenter\focus{\q[B]}$}
-      \end{pfbox}
-      &$\Longrightarrow$&
-      \begin{pfbox}
-        \AXC{$\trd[Γ]\fCenter\tr[B]$}
-        \RightLabel{Weak.}
-        \UIC{$\trd[Γ]\prod\emptyset\fCenter\tr[B]$}
-      \end{pfbox}
-      \\
-      \begin{pfbox}
-        \AXC{$Γ\fCenter Δ$}
-        \RightLabel{$\I^-$}
-        \UIC{$Γ\hprod\I\fCenter Δ$}
-      \end{pfbox}
-      &$\Longrightarrow$&
-      \begin{pfbox}
-        \AXC{$\trd[Γ]\fCenter\tr[Δ]$}
-        \RightLabel{Weak.}
-        \UIC{$\trd[Γ]\prod\emptyset\fCenter\tr[Δ]$}
-      \end{pfbox}
-    \end{tabular}
-    \\
-    \vspace*{\baselineskip}
+    $\{\himpr,\hprod,\himpl\}$)
+    \\[1\baselineskip]
+    \begin{pfbox}
+      \AXC{$x:\struct{A}\hprod\I\fCenter M:Δ$}
+      \RightLabel{L\I}
+      \UIC{$y:\struct{\q[A]}\fCenter \sub{M}{(y,())}{x}:Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$x:Γ\fCenter\focus{M:B}$}
+      \RightLabel{R\I}
+      \UIC{$y:Γ\hprod\I\fCenter\focus{\sub{M}{\fst{y}}{x}:\q[B]}$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$x:Γ\fCenter M:Δ$}
+      \RightLabel{$\I^-$}
+      \UIC{$y:Γ\hprod\I\fCenter \sub{M}{\fst{y}}{x}:Δ$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    (where $\fst{x}=\case{x}{y}{z}{y}$)
+    \\[1\baselineskip]
     (\B\ and \C\ translate to various combinations of associativity,
     commutativity, $\emptyset$E and weakening)
     \\

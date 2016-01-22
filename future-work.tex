@@ -1,6 +1,25 @@
 \section{Future work}
+\label{sec:future-work}
 
 \paragraph*{Integrate Focusing and Display Logic}
+In \autoref{sec:focusing-and-spurious-ambiguity} we mentioned that, at
+the moment, there is no work which integrates focusing and display
+logic. Although we have a proof of cut-elimination for display NL and
+LG, due to \citet{bastenhof2011}, we have not extended this proof to
+fully cover \NLBS.
+As mentioned in \autoref{sec:focusing-and-spurious-ambiguity}, the
+reason for this is that in doing so, we would undo the advantage of
+using display calculus: if we have to maintain the proof of
+cut-elimination ourselves, then why use display calculus?
+
+However, for the small number of natural language examples that were
+presented in this thesis, and those that were analysed in the Haskell
+implementation, focusing does exactly as advertised: it greatly
+reduces spurious ambiguity---eliminating it in many cases---while
+retaining all useful ambiguity.
+Therefore, it would be interesting to see the focusing integrated with
+display calculus, so that we would have a principled approach to
+developing focused display calculi.
 
 \paragraph*{Deep Inference Sequent Calculus}
 In \autoref{sec:why-use-display-calculus}, we discussed that in order

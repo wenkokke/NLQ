@@ -5,7 +5,7 @@
 {-# LANGUAGE RankNTypes           #-}
 {-# LANGUAGE PatternSynonyms      #-}
 {-# LANGUAGE ScopedTypeVariables  #-}
-module NLIBC.Semantics.Postulate where
+module NLQ.Semantics.Postulate where
 
 
 import Control.Monad.Supply (Supply,supply,evalSupply)
@@ -220,6 +220,9 @@ instance Show (Expr t) where
             showStr "case " <.> pp2 0 xy <.> showStr (printf "of (%s,%s) → " x y) <.> pp2 2 fxy
 
     pp2 :: Int -> Expr a -> Supply Name ShowS
+    pp2 d (Not (Exists a f)) = do
+      x <- supply
+      showParen (d > 1) <$> showStr (printf "∄%s." x) <.> pp2 2 (f (PRIM(Prim a x)))
     pp2 d (ForAll a f)       = do
       x <- supply
       showParen (d > 1) <$> showStr (printf "∀%s." x) <.> pp2 2 (f (PRIM(Prim a x)))

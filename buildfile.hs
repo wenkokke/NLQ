@@ -40,13 +40,14 @@ main =
 
     -- compile thesis.pdf from several files
     toBuild "thesis.pdf" %> \out -> do
-      need (toBuild <$> [ "main.pdf", "NLPlus.pdf" ])
+      need (toBuild <$> [ "main.pdf", "NLQ_Agda.pdf" , "NLQ_Haskell.pdf" ])
       command_ [Cwd "_build", EchoStdout True] "gs"
         [ "-o", "thesis.pdf"
         , "-sDEVICE=pdfwrite"
         , "-dPDFSETTINGS=/prepress"
         , "main.pdf"
-        , "NLPlus.pdf"
+        , "NLQ_Agda.pdf"
+        , "NLQ_Haskell.pdf"
         ]
 
     -- compile main.tex with PdfLaTeX
@@ -75,13 +76,13 @@ main =
       command_ [Cwd "_build", EchoStdout True] "pdflatex" ["-draftmode", lcl]
       command_ [Cwd "_build", WithStdout True] "pdflatex" [lcl]
 
-    -- compile NLPlus.lagda with Agda
-    toBuild "NLPlus.pdf" %> \out -> do
+    -- compile NLQ_Agda.lagda with Agda
+    toBuild "NLQ_Agda.pdf" %> \out -> do
       let
-        src = toBuild "NLPlus.processed.pdf"
+        src = toBuild "NLQ_Agda.processed.pdf"
       copyFile' src out
 
-    toBuild "NLPlus.processed.pdf" %> \out -> do
+    toBuild "NLQ_Agda.processed.pdf" %> \out -> do
       let
         src = out -<.> "tex"
         lcl = fromBuild src
@@ -89,29 +90,43 @@ main =
       need [src, toBuild "agda.sty"]
       command_ [Cwd "_build", EchoStdout True] "pdflatex" [lcl]
 
-    toBuild "NLPlus.processed.tex" %> \out -> do
+    toBuild "NLQ_Agda.processed.tex" %> \out -> do
       let
-        src    = toBuild "NLPlus.tex"
+        src    = toBuild "NLQ_Agda.tex"
         script = "remove_implicit_args.rb"
       need [ src, script ]
       command_ [Cwd ".", WithStdout True] "ruby" [ script , "tex" , src , out ]
 
-    toBuild <$> ["NLPlus.tex", "agda.sty"] |%> \out -> do
-      need ["NLPlus.lagda"]
+    toBuild <$> ["NLQ_Agda.tex", "agda.sty"] |%> \out -> do
+      need ["NLQ_Agda.lagda"]
       command_ [Cwd ".", EchoStdout True] "agda"
         ["--latex"
         ,"--latex-dir=_build"
         ,"-i."
         ,"-i/usr/local/lib/agda/src"
-        ,"NLPlus.lagda"
+        ,"NLQ_Agda.lagda"
         ]
+
+    -- compile NLQ_Haskell.lhs with lhs2TeX
+    toBuild "NLQ_Haskell.pdf" %> \out -> do
+      let
+        src = out -<.> "tex"
+        lcl = fromBuild src
+
+      need [src]
+      command_ [Cwd "_build", EchoStdout True] "pdflatex" [lcl]
+
+    toBuild "NLQ_Haskell.tex" %> \out -> do
+      let src = fromBuild (out -<.> "lhs")
+      need [src]
+      command_ [Cwd ".", EchoStdout True] "lhs2TeX" [src,"-o",out]
 
     -- copy files into the _build directory
     let static = map toBuild (thesisFileList ++ slidesFileList)
     static |%> \out -> copyFile' (fromBuild out) out
 
     -- copy files out of the _build directory
-    let result = [ "thesis.pdf" , "main.pdf" , "slides.pdf" , "NLPlus.pdf" ]
+    let result = [ "thesis.pdf" , "main.pdf" , "slides.pdf" , "NLQ_Agda.pdf" , "NLQ_Haskell.pdf" ]
     result |%> \out -> copyFile' (toBuild out) out
 
     -- clean files by removing the _build directory

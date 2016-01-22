@@ -17,64 +17,64 @@
 ~~~
 
 ~~~{.haskell}
-import NLIBC.Prelude
+import NLQ.Prelude
 ~~~
 
 Examples -- Backward-Chaining Search
 ====================================
 
 ~~~{.haskell}
-bwd0  = [bwd| john runs |]
+s0  = [nlq| john runs |]
 
-bwd1  = [bwd| john    likes mary     |]
-bwd2  = [bwd| someone likes mary     |]
-bwd3  = [bwd| john    likes everyone |]
-bwd4  = [bwd| someone likes everyone |]
+s1  = [nlq| john    likes mary     |]
+s2  = [nlq| someone likes mary     |]
+s3  = [nlq| john    likes everyone |]
+s4  = [nlq| someone likes everyone |]
 
-bwd5  = [bwd| (the           waiter) serves everyone |]
-bwd6  = [bwd| (the same      waiter) serves everyone |]
-bwd7  = [bwd| (a   different waiter) serves everyone |]
+s5  = [nlq| (the           waiter) serves everyone |]
+s6  = [nlq| (the same      waiter) serves everyone |]
+s7  = [nlq| (a   different waiter) serves everyone |]
 
-bwd8  = [bwd| mary  wants           to leave |]
-bwd9  = [bwd| mary (wants john)     to leave |]
-bwd10 = [bwd| mary (wants everyone) to leave |]
+s8  = [nlq| mary  wants           to leave |]
+s9  = [nlq| mary (wants john)     to leave |]
+s10 = [nlq| mary (wants everyone) to leave |]
 
-bwd11 = [bwd| mary  wants           to like bill |]
-bwd12 = [bwd| mary (wants john)     to like bill |]
-bwd13 = [bwd| mary (wants everyone) to like bill |]
+s11 = [nlq| mary  wants           to like bill |]
+s12 = [nlq| mary (wants john)     to like bill |]
+s13 = [nlq| mary (wants everyone) to like bill |]
 
-bwd14 = [bwd| mary  wants           to like someone |]
-bwd15 = [bwd| mary (wants john)     to like someone |]
-bwd16 = [bwd| mary (wants everyone) to like someone |]
+s14 = [nlq| mary  wants           to like someone |]
+s15 = [nlq| mary (wants john)     to like someone |]
+s16 = [nlq| mary (wants everyone) to like someone |]
 
-bwd17 = [bwd| mary says <john     likes bill> |]
-bwd18 = [bwd| mary says <everyone likes bill> |]
+s17 = [nlq| mary says <john     likes bill> |]
+s18 = [nlq| mary says <everyone likes bill> |]
 
-bwd19 = [bwd| mary reads a book                which  john likes |]
-bwd20 = [bwd| mary reads a book (the author of which) john likes |]
+s19 = [nlq| mary reads a book                which  john likes |]
+s20 = [nlq| mary reads a book (the author of which) john likes |]
 
-bwd21 = [bwd| mary sees foxes   |]
-bwd22 = [bwd| mary sees the fox |]
-bwd23 = [bwd| mary sees a   fox |]
+s21 = [nlq| mary sees foxes   |]
+s22 = [nlq| mary sees the fox |]
+s23 = [nlq| mary sees a   fox |]
 
-bwd24 = [bwd| alice reads a book (the author of which) fears the ocean |]
+s24 = [nlq| alice reads a book (the author of which) fears the ocean |]
 
-bwd25 = [bwd| alice knows who leaves |]
+s25 = [nlq| alice knows who leaves |]
 ~~~
 
-In the examples above, `[bwd| ... |]` is a template Haskell script,
+In the examples above, `[nlq| ... |]` is a template Haskell script,
 but it doesn't do a whole lot. It
 
   1. parses the string as a right associative tree of pairs, so
      that "john likes mary" becomes `(john , (likes , mary))`, but "(a
      man) ran" becomes `((a , man) , ran)`;
   2. interprets `<...>` as scope islands; and
-  3. generates an application of the function `parseBwd S`,
+  3. generates an application of the function `parseS S`,
      with the tree as the argument.
 
 One small quirk of the parser is that if some word it finds conflicts
 with a reserved keyword in Haskell, it adds an underscore to the
-end -- so, for instance, 'of' in `bwd20` is interpreted as the Haskell
+end -- so, for instance, 'of' in `s20` is interpreted as the Haskell
 function `of_`.
 
 There is no objection to simply writing a tree of pairs of values by
@@ -83,11 +83,11 @@ if you write these trees by hand, note that scope islands are written
 with *square* brackets instead.
 
 Below, another tempalte Haskell script constructs the `main` function,
-by collecting all functions called 'bwd*' and running them. This
+by collecting all functions called 's*' and running them. This
 assumes each is of these functions type `IO ()`.
 
 ~~~{.haskell}
-main = $(bwdUpTo 25)
+main = $(nlqAll "s")
 ~~~
 
 All of the parsing and interpretation is done in plain Haskell, and is
@@ -264,13 +264,13 @@ Output
 ======
 
 The code in this file will attempt to parse the sentences in
-`bwd0`...`bwd23`, and for each sentence print: 1) the input sentence;
+`s0`...`s25`, and for each sentence print: 1) the input sentence;
 2) the number of parses; and 3) the meaning associated with each
 parts, in lambda calculus. Spurious ambiguity will be highlighted in
 red. At the moment, the only spurious ambiguity is irrelevant
 structural ambiguity.
 
-As an example of this, in `bwd20` -- "mary reads a book (the author of
+As an example of this, in `s20` -- "mary reads a book (the author of
 which) john likes" -- there is `which`, which behaves like a
 quantifier, and scopes up to the top of the noun phrase "the author of
 which". Because it scope up to the top of an embedded phrase, there is

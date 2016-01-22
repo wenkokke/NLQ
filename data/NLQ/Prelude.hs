@@ -16,29 +16,30 @@
 {-# LANGUAGE UndecidableInstances   #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
 {-# LANGUAGE FunctionalDependencies #-}
-module NLIBC.Prelude
+module NLQ.Prelude
        (Word,Entry(..),(∷),(<$),($>),lex,lex_,id
        ,S,N,NP,PP,INF,A,IV,TV,Q,NS
        ,Boolean(..)
-       ,Combine(..),bwd,bwdUpTo,parseBwd,module X) where
+       ,Combine(..),nlq,nlqAll,parseBwd,module X) where
 
 
 import           Prelude hiding (Word,abs,lex,not,(*),($),(<$),($>))
 import           Control.Arrow (first)
 import           Control.Monad (when)
 import           Data.Char (isSpace)
+import           Data.List (intersperse)
 import           Data.Maybe (isJust,fromJust)
 import           Data.Proxy (Proxy(..))
 import           Data.Singletons.Decide ((:~:)(..))
 import           Data.Singletons.Prelude (SingI(..))
 import           Data.Singletons.Prelude.List ((:++))
 import qualified Data.Singletons.Prelude.List as SL
-import           NLIBC.Syntax.Base            as X hiding (Q,Atom(..))
-import qualified NLIBC.Syntax.Base            as Syn (Atom(..))
-import qualified NLIBC.Syntax.Backward        as Bwd
-import qualified NLIBC.Syntax.Forward         as Fwd
-import           NLIBC.Semantics              as X
-import           NLIBC.Semantics.Postulate    as X
+import           NLQ.Syntax.Base            as X hiding (Q,Atom(..))
+import qualified NLQ.Syntax.Base            as Syn (Atom(..))
+import qualified NLQ.Syntax.Backward        as Bwd
+import qualified NLQ.Syntax.Forward         as Fwd
+import           NLQ.Semantics              as X
+import           NLQ.Semantics.Postulate    as X
 import           Text.Parsec
 import           Text.Parsec.Token
 import           Text.Parsec.Language
@@ -118,39 +119,48 @@ instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
 
 -- ** Type and DSL for lexicon entries
 
-red   str = "\x1b[31m" ++ str ++ "\x1b[0m"
-green str = "\x1b[32m" ++ str ++ "\x1b[0m"
+data Meanings (b :: Type) = Meanings String [Expr (H b)]
 
-parseBwd :: Combine x (Entry a) => String -> SType b -> x -> IO ()
-parseBwd str b arg = do
-  let
-    Entry x arg' = combine arg
-    terms_NL     = Bwd.findAll (x :%⊢ SStO b)
-    terms_HS     = map (\f -> fromHask (h b) (eta f arg')) terms_NL
-  putStrLn str
+instance Show (Meanings b) where
+  show (Meanings str terms) =
+    concat (intersperse "\n" (map show terms))
 
-  let
+
+putMeanings :: Meanings b -> IO ()
+putMeanings (Meanings str terms) =
+  do putStrLn str; putLength (length terms); putAll [] terms
+  where
     putLength 0 = do putStrLn (red "0")
     putLength n = do putStrLn (show n)
-  putLength (length terms_NL)
-
-  let
     putAll _  [    ] = return ()
     putAll vs (x:xs) = do
       let v = show x
       putStrLn ((if v `elem` vs then red else green) v)
       putAll (v:vs) xs
-  putAll [] terms_HS
+
+
+
+red   str = "\x1b[31m" ++ str ++ "\x1b[0m"
+green str = "\x1b[32m" ++ str ++ "\x1b[0m"
+
+parseBwd :: Combine a (Entry x) => String -> SType b -> a -> Meanings b
+parseBwd str b arg = Meanings str terms_HS
+  where
+    Entry x arg' = combine arg
+    terms_NL     = Bwd.findAll (x :%⊢ SStO b)
+    terms_HS     = map (\f -> fromHask (h b) (eta f arg')) terms_NL
+
+
 
 
 -- ** QuasiQuoter for Backward-Chaining Proof Search
 
-bwd :: QuasiQuoter
-bwd = QuasiQuoter
-  { quoteExp = bwd, quotePat = undefined, quoteType = undefined, quoteDec = undefined }
+nlq :: QuasiQuoter
+nlq = QuasiQuoter
+  { quoteExp = nlq, quotePat = undefined, quoteType = undefined, quoteDec = undefined }
   where
     -- generate `parseBwd $(strExp) S $(treeExp)`
-    bwd str =
+    nlq str =
       AppE (AppE (AppE (VarE 'parseBwd) strExp)
             (AppE (ConE 'SEl) (ConE 'SS))) <$> treeExp
       where
@@ -169,11 +179,21 @@ bwd = QuasiQuoter
         fixWS ('>':    xs) = fixWS xs
         fixWS ( x :    xs) = x : fixWS xs
 
-bwdUpTo :: Int -> TH.Q Exp
-bwdUpTo n = do
-  bwds1 <- traverse lookupValueName (map (("bwd"++).show) [0..n])
-  let bwds2 = map (VarE . fromJust) (takeWhile isJust bwds1)
-  return (AppE (VarE 'sequence_) (ListE bwds2))
+nlqAll :: Name -> TH.Q Exp
+nlqAll s = do
+  list <- go 0
+  return (AppE (AppE (VarE 'mapM_) (VarE 'putMeanings)) (ListE list))
+  where
+    go :: Int -> TH.Q [Exp]
+    go n = do m <- lookupValueName (s ++ show n)
+              case m of
+                Just x  -> do xs <- go (n + 1); return (VarE x : xs)
+                Nothing -> return []
+
+-- n = do
+--   bwds1 <- traverse lookupValueName (map (("s"++).show) [0..n])
+--   let bwds2 = map (VarE . fromJust) (takeWhile isJust bwds1)
+--   return (AppE (AppE (VarE 'mapM_) (VarE 'putResult)) (ListE bwds2))
 
 parseTree :: String -> Either ParseError (TH.Q Exp)
 parseTree = parse (whiteSpace *> pTree1) ""
