@@ -18,6 +18,7 @@ thesisFileList =
   , "display-calculus.tex"
   , "lexical-ambiguity.tex"
   , "natural-language-monads-and-effects.tex"
+  , "logical-approaches-to-movement.tex"
   , "future-work.tex"
   , "main.bib"
   , "preamble.tex"

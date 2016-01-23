@@ -1,16 +1,15 @@
 \documentclass{article}
-\usepackage{hyperref}
-\usepackage[links]{agda}
-\let\oldcode\code
-\def\code{\vspace{0.5\baselineskip}\oldcode}
-\let\oldendcode\endcode
-\def\endcode{\oldendcode\vspace{0.5\baselineskip}}
 \usepackage{stmaryrd}
 \usepackage{comment}
+\usepackage{etoolbox}
 \usepackage{multicol}
 \usepackage{catchfilebetweentags}
 \usepackage{appendix}
-\setlength{\mathindent}{0pt}
+\usepackage{hyperref}
+\usepackage[links]{agda}
+\setlength{\mathindent}{0cm}
+
+\def\lamET{\lambda^{\rightarrow}_{\{\mathbf{e},\mathbf{t}\}}}%
 \DeclareUnicodeCharacter{8852}{$\sqcup$}
 \DeclareUnicodeCharacter{8704}{$\forall$}
 \DeclareUnicodeCharacter{8866}{$\vdash$}
@@ -20,10 +19,10 @@
 \DeclareUnicodeCharacter{8728}{$\circ$}
 \DeclareUnicodeCharacter{8678}{$\!\fatslash$}
 \DeclareUnicodeCharacter{8680}{$\fatbslash$}
-\DeclareUnicodeCharacter{9671}{$\Diamond$}
-\DeclareUnicodeCharacter{9633}{$\Box$}
-\DeclareUnicodeCharacter{9670}{$\Diamond$}
-\DeclareUnicodeCharacter{9632}{$\Box$}
+\DeclareUnicodeCharacter{9671}{$\lozenge$}
+\DeclareUnicodeCharacter{9633}{$\square$}
+\DeclareUnicodeCharacter{9670}{$\blacklozenge$}
+\DeclareUnicodeCharacter{9632}{$\blacksquare$}
 \DeclareUnicodeCharacter{8639}{$\upharpoonleft$}
 \DeclareUnicodeCharacter{8638}{$\upharpoonright$}
 \DeclareUnicodeCharacter{8643}{$\downharpoonleft$}
@@ -31,71 +30,138 @@
 \DeclareUnicodeCharacter{8242}{$'$}
 \DeclareUnicodeCharacter{8801}{$\equiv$}
 \DeclareUnicodeCharacter{8594}{$\rightarrow$}
+
 \begin{document}
 \begin{appendices}
 
 \appendix
 \renewcommand{\thesection}{A}
 \section{Formalisation of NLQ in Agda}
-
+This section contains the Agda formalisation of \emph{focused}
+NLQ. This section is written in literate Agda, and includes \emph{all}
+of the code.
 \begin{comment}
 \begin{code}
 open import Level using (_⊔_)
 \end{code}
 \end{comment}
+The order of presentation is different from the order used in the
+thesis, due to constraints on the Agda language.
 
+We will start out by formalising the syntactic calculus, NLQ. Next,
+instead of formalising $\lamET$, we will implement a translation from
+proofs in NLQ to terms in Agda. Last, we will give some analyses of
+very simple example sentences.
+
+
+
+\subsection{NLQ, Syntactic Calculus}
+For our formalisation of NLQ, we are going to abstract over the atomic
+types---a luxury offered by the Agda module system. The reason for
+this is that the set of atomic types is more-or-less open---sometimes
+we find out that we have to add a new one---and can be treated in a
+uniform manner. Because atomic types must be assigned a polarity, we
+will start out by defining a notion of polarity and polarised values:
+\\[1\baselineskip]
 \begin{code}
 data Polarity : Set where
   + : Polarity
   - : Polarity
-\end{code}
-\begin{code}
+
 record Polarised (A : Set) : Set where
   field
     Pol : A → Polarity
 open Polarised {{...}}
 \end{code}
-
-\begin{code}
-record Translate {t1 t2} (T1 : Set t1) (T2 : Set t2) : Set (t1 ⊔ t2) where
-  field
-    _* : T1 → T2
-open Translate {{...}}
-\end{code}
-
-\subsection{NLPlus, Syntactic Calculus}
+\\
+We can now open our \AgdaModule{Syntax} module, abstracting over the
+type of atomic types and a notion of polarisation for this type:
+\\[1\baselineskip]
 \begin{code}
 module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
 \end{code}
-
 \begin{comment}
 \begin{code}
-  open import Data.Product                               using (∃; _,_)
-  open import Function                                   using (flip; const)
-  open import Function.Equality                          using (_⟨$⟩_)
-  open import Function.Equivalence                  as I using (_⇔_) renaming (equivalence to mkISO)
+  open import Data.Product using (∃; _,_)
+  open import Function using (flip; const)
+  open import Function.Equality using (_⟨$⟩_)
+  open import Function.Equivalence as I using (_⇔_) renaming (equivalence to mkISO)
   open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; inspect)
   open I.Equivalence using (from; to)
 \end{code}
 \end{comment}
 
-\subsubsection{Kinds, Types, Structures and Sequents}
+
+
+\subsubsection{Types, Structures and Sequents}
+First thing to do is to define our types. We abstract a little here:
+instead of defining several copies of our rules for $\{\backslash,
+\bullet, \slash\}$ and $\{\Diamond,\Box\}$ for new connectives, as we
+did in the thesis, we define a datatype to represent the different
+kinds of connectives we will be using, and parameterise our
+connectives with a kind. We then recover the pretty versions of our
+connectives using pattern synonyms. The advantage of this approach is
+that we can later-on use e.g.\ the abstract right implication
+\AgdaInductiveConstructor{ImpR} in the definitions of the inference
+rules, defining all the copies at the same time.
+\\[1\baselineskip]
 \begin{code}
   data Kind : Set where
-    Sol  : Kind -- solid       {⇐, ∙, ⇒}
-    Hol  : Kind -- hollow      {⇦, ∘, ⇨}
+    Sol  : Kind -- solid       {⇒, ∙, ⇐}
+    Hol  : Kind -- hollow      {⇨, ∘, ⇦}
     Res  : Kind -- reset       {◇, □}
-    Ext  : Kind -- infixation  {⇃, ⇂, ◇↓, □↓}
-    Ifx  : Kind -- ifxraction  {↿, ↾, ◇↑, □↑}
+    Ext  : Kind -- extraction  {↿, ↾, ◇↑, □↑}
+    Ifx  : Kind -- infixation  {⇃, ⇂, ◇↓, □↓}
 
   data Type : Set where
     El     : Atom  → Type
     Dia    : Kind  → Type  → Type
     Box    : Kind  → Type  → Type
+    _&_     : Type → Type → Type
     UnitR  : Kind  → Type  → Type
     ImpR   : Kind  → Type  → Type  → Type
     ImpL   : Kind  → Type  → Type  → Type
+\end{code}
+\begin{comment}
+\begin{code}
+  infix  6 _&_
+  infixl 7 _⇐_ _⇦_
+  infixr 7 _⇒_ _⇨_
+  infix  7 _⇃_ _⇂_
+  infix  7 _↿_ _↾_
+  infixr 9 ◇_  □_ ◇↓_ □↓_ ◇↑_ □↑_
+\end{code}
+\end{comment}
+\begin{multicols}{2}
+\begin{code}
+  pattern _⇐_  b a  = ImpL   Sol  b a
+  pattern _⇒_  a b  = ImpR   Sol  a b
 
+  pattern _⇨_  a b  = ImpR   Hol  a b
+  pattern _⇦_  b a  = ImpL   Hol  b a
+  pattern Q    a    = UnitR  Hol  a
+  pattern ◇_   a    = Dia    Res  a
+  pattern ◇↑_  a    = Dia    Ext  a
+  pattern ◇↓_  a    = Dia    Ifx  a
+  pattern □_   a    = Box    Res  a
+  pattern □↑_  a    = Box    Ext  a
+  pattern □↓_  a    = Box    Ifx  a
+\end{code}
+\end{multicols}
+\begin{multicols}{2}
+\begin{code}
+  pattern _↿_  a b  = ◇↑ □↑ (a ⇒ b)
+  pattern _↾_  b a  = ◇↑ □↑ (b ⇐ a)
+  pattern _⇃_  a b  = (◇↓ □↓ a) ⇒ b
+  pattern _⇂_  b a  = b ⇐ (◇↓ □↓ a)
+\end{code}
+\end{multicols}
+\noindent
+We use the same trick in defining structures, and merge Struct$^{+}$
+and Struct$^{-}$ together into a single datatype indexed by a
+polarity:
+\\[1\baselineskip]
+\begin{code}
   data Struct : Polarity → Set where
     ·_·   : ∀ {p} → Type → Struct p
     B     : Struct +
@@ -106,13 +172,46 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
     BOX   : Kind → Struct -  → Struct -
     IMPR  : Kind → Struct +  → Struct -  → Struct -
     IMPL  : Kind → Struct -  → Struct +  → Struct -
+\end{code}
+\begin{comment}
+\begin{code}
+  infixr 3 _∙_ _∘_
+  infixr 9 ◆_  ■_ ◆↓_ ■↓_ ◆↑_ ■↑_
+\end{code}
+\end{comment}
+\begin{multicols}{2}
+\begin{code}
+  pattern _∙_  x y  = PROD   Sol  x y
+  pattern _∘_  x y  = PROD   Hol  x y
+  pattern ◆_   x    = DIA    Res  x
+  pattern ◆↑_  x    = DIA    Ext  x
+  pattern ◆↓_  x    = DIA    Ifx  x
 
+  pattern I         = UNIT   Hol
+  pattern ■_   x    = BOX    Res  x
+  pattern ■↑_  x    = BOX    Ext  x
+  pattern ■↓_  x    = BOX    Ifx  x
+\end{code}
+\end{multicols}
+\noindent
+Since there is no pretty way to write the box we used for focusing in
+Unicode, we will have to go with an ugly way:
+\\[1\baselineskip]
+\begin{comment}
+\begin{code}
+  infix 2 _⊢_ _⊢[_] [_]⊢_
+\end{code}
+\end{comment}
+\begin{code}
   data Sequent : Set where
     _⊢_    : Struct +  → Struct -  → Sequent
     [_]⊢_  : Type      → Struct -  → Sequent
     _⊢[_]  : Struct +  → Type      → Sequent
 \end{code}
-
+\\
+And finally, we need to extend our concept of polarity to
+\emph{types}:
+\\[1\baselineskip]
 \begin{code}
   instance
     PolarisedType : Polarised Type
@@ -122,59 +221,26 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
         Pol′ (El    a)      = Pol(a)
         Pol′ (Dia   _ _)    = +
         Pol′ (Box   _ _)    = -
+        Pol′ (_ & _)        = +
         Pol′ (UnitR _ _)    = +
         Pol′ (ImpR  _ _ _)  = -
         Pol′ (ImpL  _ _ _)  = -
 \end{code}
 
-\subsubsection{Type and Structure aliases}
-\begin{comment}
-\begin{code}
-  infix  2 _⊢_ _⊢[_] [_]⊢_
-  infixr 3 _∙_ _∘_
-  infixl 7 _⇐_ _⇦_
-  infixr 7 _⇒_ _⇨_
-  infix  7 _⇃_ _⇂_
-  infix  7 _↿_ _↾_
-  infixr 9 ◇_  □_  ◆_  ■_
-  infixr 9 ◇↓_ □↓_ ◆↓_ ■↓_
-  infixr 9 ◇↑_ □↑_ ◆↑_ ■↑_
-\end{code}
-\end{comment}
 
-\begin{multicols}{2}
-\begin{code}
-  pattern _∙_  x y  = PROD   Sol  x y
-  pattern _⇐_  b a  = ImpL   Sol  b a
-  pattern _⇒_  a b  = ImpR   Sol  a b
-  pattern I         = UNIT   Hol
-  pattern Q    a    = UnitR  Hol  a
-  pattern _∘_  x y  = PROD   Hol  x y
-  pattern _⇨_  a b  = ImpR   Hol  a b
-  pattern _⇦_  b a  = ImpL   Hol  b a
-  pattern ◇_   a    = Dia    Res  a
-  pattern □_   a    = Box    Res  a
-  pattern ◆_   x    = DIA    Res  x
-  pattern ■_   x    = BOX    Res  x
-  pattern ◇↑_  a    = Dia    Ext  a
-  pattern □↑_  a    = Box    Ext  a
-  pattern ◆↑_  x    = DIA    Ext  x
-  pattern ■↑_  x    = BOX    Ext  x
-  pattern _↿_  a b  = ◇↑ □↑ (a ⇒ b)
-  pattern _↾_  b a  = ◇↑ □↑ (b ⇐ a)
-  pattern ◇↓_  a    = Dia    Ifx  a
-  pattern □↓_  a    = Box    Ifx  a
-  pattern ◆↓_  x    = DIA    Ifx  x
-  pattern ■↓_  x    = BOX    Ifx  x
-  pattern _⇃_  a b  = (◇↓ □↓ a) ⇒ b
-  pattern _⇂_  b a  = b ⇐ (◇↓ □↓ a)
-\end{code}
-\end{multicols}
 
 \subsubsection{Inference Rules}
+Below we define the logic of NLQ as a single datatype, indexed by a
+sequent. As described in the section on focusing, the axioms and
+focusing/unfocusing rules take an extra argument---a piece of evidence
+for the polarity of the type \AgdaBound{a}/\AgdaBound{b}:
+\\[1\baselineskip]
+\begin{comment}
 \begin{code}
   infix 1 NL_
-
+\end{code}
+\end{comment}
+\begin{code}
   data NL_ : Sequent → Set where
     axElR   : ∀ {b}         → Pol(b) ≡ +  → NL · El b · ⊢[ El b ]
     axElL   : ∀ {a}         → Pol(a) ≡ -  → NL [ El a ]⊢ · El a ·
@@ -192,9 +258,9 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
     resLP   : ∀ {k x y z}   → NL x ⊢ IMPL k z y  → NL PROD k x y ⊢ z
     resPL   : ∀ {k x y z}   → NL PROD k x y ⊢ z  → NL x ⊢ IMPL k z y
 
-    unitRL  : ∀ {k y a}     → NL PROD k · a · (UNIT k) ⊢ y → NL · UnitR k a · ⊢ y
-    unitRR  : ∀ {k x b}     → NL x ⊢[  b ]  → NL PROD k x (UNIT k) ⊢[ UnitR k b ]
-    unitRI  : ∀ {k x y}     → NL x ⊢   y    → NL PROD k x (UNIT k) ⊢ y
+    withL1 : ∀ {a1 a2 y}   → NL [ a1 ]⊢ y  → NL · a1 & a2 · ⊢ y
+    withL2 : ∀ {a1 a2 y}   → NL [ a2 ]⊢ y  → NL · a1 & a2 · ⊢ y
+    withR  : ∀ {b1 b2 x}   → NL x ⊢ · b1 · → NL x ⊢ · b2 · → NL x ⊢[ b1 & b2 ]
 
     diaL    : ∀ {k a y}     → NL DIA k · a · ⊢ y  → NL · Dia k a · ⊢ y
     diaR    : ∀ {k x b}     → NL x ⊢[ b ]         → NL DIA k x ⊢[ Dia k b ]
@@ -202,6 +268,10 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
     boxR    : ∀ {k x b}     → NL x ⊢ BOX k · b ·  → NL x ⊢ · Box k b ·
     resBD   : ∀ {k x y}     → NL x ⊢ BOX k y      → NL DIA k x ⊢ y
     resDB   : ∀ {k x y}     → NL DIA k x ⊢ y      → NL x ⊢ BOX k y
+
+    unitRL  : ∀ {k y a}     → NL PROD k · a · (UNIT k) ⊢ y → NL · UnitR k a · ⊢ y
+    unitRR  : ∀ {k x b}     → NL x ⊢[  b ]  → NL PROD k x (UNIT k) ⊢[ UnitR k b ]
+    unitRI  : ∀ {k x y}     → NL x ⊢   y    → NL PROD k x (UNIT k) ⊢ y
 
     dnB     : ∀ {x y z w}   → NL x ∙ (y ∘ z) ⊢ w        → NL y ∘ ((B ∙ x) ∙ z) ⊢ w
     dnC     : ∀ {x y z w}   → NL (x ∘ y) ∙ z ⊢ w        → NL x ∘ ((C ∙ y) ∙ z) ⊢ w
@@ -217,7 +287,13 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
     ifxLR   : ∀ {x y z w}   → NL ((x ∙ ◆↓ z) ∙ y ⊢ w)  → NL ((x ∙ y) ∙ ◆↓ z ⊢ w)
     ifxLL   : ∀ {x y z w}   → NL ((◆↓ z ∙ y) ∙ x ⊢ w)  → NL (◆↓ z ∙ (y ∙ x) ⊢ w)
     ifxRL   : ∀ {x y z w}   → NL (y ∙ (◆↓ z ∙ x) ⊢ w)  → NL (◆↓ z ∙ (y ∙ x) ⊢ w)
-
+\end{code}
+\\
+Using these axiomatic rules, we can define derived rules. For
+instance, we can define the following ``residuation'' rules, which
+convert left implication to right implication, and vice versa:
+\\[1\baselineskip]
+\begin{code}
   resRL : ∀ {k x y z} → NL y ⊢ IMPR k x z → NL x ⊢ IMPL k z y
   resRL f = resPL (resRP f)
 
@@ -248,19 +324,19 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
     IMPL2  : Kind → Struct        -  → StructCtxt p  +  → StructCtxt p  -
 
   instance
-    Pluggable-StructI : ∀ {p1 p2} → Pluggable (StructCtxt p1 p2) (Struct p1) (Struct p2)
-    Pluggable-StructI = record { _[_] = _[_]′ }
+    Pluggable-Struct : ∀ {p1 p2} → Pluggable (StructCtxt p1 p2) (Struct p1) (Struct p2)
+    Pluggable-Struct = record { _[_] = _[_]′ }
       where
         _[_]′ : ∀ {p1 p2} → StructCtxt p1 p2 → Struct p1 → Struct p2
         ( HOLE          ) [ z ]′ = z
-        ( DIA1   k x    ) [ z ]′ = DIA  k    (x [ z ]′)
-        ( PROD1  k x y  ) [ z ]′ = PROD k    (x [ z ]′) y
-        ( PROD2  k x y  ) [ z ]′ = PROD k x  (y [ z ]′)
-        ( BOX1   k x    ) [ z ]′ = BOX  k    (x [ z ]′)
-        ( IMPR1  k x y  ) [ z ]′ = IMPR k    (x [ z ]′) y
-        ( IMPR2  k x y  ) [ z ]′ = IMPR k x  (y [ z ]′)
-        ( IMPL1  k x y  ) [ z ]′ = IMPL k    (x [ z ]′) y
-        ( IMPL2  k x y  ) [ z ]′ = IMPL k x  (y [ z ]′)
+        ( DIA1   k x    ) [ z ]′ = DIA   k    (x [ z ]′)
+        ( PROD1  k x y  ) [ z ]′ = PROD  k    (x [ z ]′) y
+        ( PROD2  k x y  ) [ z ]′ = PROD  k x  (y [ z ]′)
+        ( BOX1   k x    ) [ z ]′ = BOX   k    (x [ z ]′)
+        ( IMPR1  k x y  ) [ z ]′ = IMPR  k    (x [ z ]′) y
+        ( IMPR2  k x y  ) [ z ]′ = IMPR  k x  (y [ z ]′)
+        ( IMPL1  k x y  ) [ z ]′ = IMPL  k    (x [ z ]′) y
+        ( IMPL2  k x y  ) [ z ]′ = IMPL  k x  (y [ z ]′)
 \end{code}
 
 
@@ -317,7 +393,7 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
         (<⊢ y)  [ x ]′  = x ⊢ y
         (x ⊢>)  [ y ]′  = x ⊢ y
 \end{code}
-
+\\
 \AgdaFunction{DP} is a type-level function, which takes a sequent
 context (a sequent with exactly one hole, either in its antecedent or
 in its succedent) and computes the sequent in which the formula in
@@ -327,8 +403,8 @@ This is implemented with two potentially mutually recursive functions,
 \AgdaFunction{DPL} and \AgdaFunction{DPR}, which manipulate the
 antecedent and succedent. By splitting up the sequent in two
 arguments---the antecedent and the succedent---these functions become
-structurally recursive.
-
+structurally recursive:
+\\[1\baselineskip]
 \begin{code}
   mutual
     DP : ∀ {p} (s : SequentCtxt p) → DisplayCtxt p
@@ -349,14 +425,23 @@ structurally recursive.
     DPR x  ( IMPL1  k z y  ) = DPR    ( PROD  k x y  ) z
     DPR x  ( IMPL2  k z y  ) = DPL y  ( IMPR  k x z  )
 \end{code}
-
-\noindent
-\AgdaFunction{dp} is a term-level function, which takes a sequent
-context $s$ (as  above), a structure $w$, and a proof for the sequent $s [ w
-]$. It then computes an isomorphism between proofs of $s [ w ]$ and
-proofs of $\AgdaFunction{DP}(s)[ w ]$ where, in the second proof, the formula $w$ is
-guaranteed  to be displayed.
-
+\\
+The actual displaying is done by the term-level function
+\AgdaFunction{dp}. This function takes a sequent context $s$ (as
+above), a structure $w$, and a proof for the sequent $s [ w ]$. It
+then computes an isomorphism between proofs of $s [ w ]$ and proofs of
+$\AgdaFunction{DP}(s)[ w ]$ where, in the second proof, the structure
+$w$ is guaranteed  to be displayed:\footnote{%
+  In the definition of \AgdaFunction{dp} we use some definitions from
+  the Agda standard library, related to isomorphisms, found under
+  \AgdaFunction{Function.Equivalence}. An isomorphism is written
+  \AgdaFunction{⇔}, and created with \AgdaFunction{mkISO}---which was
+  renamed from \AgdaFunction{equivalence}. Identity and composition
+  are written as usual, with the module prefix \AgdaFunction{I}.
+  Application is written with a combination of
+  \AgdaField{from}/\AgdaField{to} and \AgdaFunction{⟨\$⟩}.
+}
+\\[1\baselineskip]
 \begin{code}
   mutual
     dp : ∀ {p} (s : SequentCtxt p) (w : Struct p) → (NL s [ w ]) ⇔ (NL DP(s)[ w ])
@@ -379,11 +464,15 @@ guaranteed  to be displayed.
     dpR x ( IMPL1  k z y  ) w = dpR    ( PROD  k x y  ) z  w I.∘ mkISO resLP resPL
     dpR x ( IMPL2  k z y  ) w = dpL y  ( IMPR  k x z  )    w I.∘ mkISO resLR resRL
 \end{code}
+\\
+Note that while they are defined under a \AgdaKeyword{mutual}-keyword,
+these functions are not mutually recursive---however, if the logic NLQ
+contained e.g.\ subtractive types as found in LG, they would be.
 
-\noindent
-\AgdaFunction{dp1} and \AgdaFunction{dp2} are helper functions, which
-allow you to access the two sides of the isomorphism more easily.\\
-
+Below we define \AgdaFunction{dp1} and \AgdaFunction{dp2}, which are
+helper functions. These functions allow you to access the two sides of
+the isomorphism more easily:
+\\[1\baselineskip]
 \begin{code}
   dp1 : ∀ {p} (s : SequentCtxt p) (w : Struct p) → NL s [ w ] → NL DP(s)[ w ]
   dp1 s w f = to (dp s w) ⟨$⟩ f
@@ -393,13 +482,14 @@ allow you to access the two sides of the isomorphism more easily.\\
 \end{code}
 
 
+
 \subsubsection{Structuralising Types}
 Because each logical connective has a structural equivalent, it is
 possible---to a certain ifxend---structuralise logical connectives
 en masse. The function \AgdaFunction{St} takes a type, and computes
 the maximally structuralised version of that type, given a target
 polarity $p$.
-
+\\[1\baselineskip]
 \begin{code}
   St : ∀ {p} → Type → Struct p
   St { p = + } ( Dia    k  a   )  = DIA   k (St a)
@@ -409,18 +499,18 @@ polarity $p$.
   St { p = - } ( ImpL   k  b a )  = IMPL  k (St b) (St a)
   St { p = _ } a                  = · a ·
 \end{code}
-
-\noindent
+\\
 We know that if we try to structuralise a positive type as a negative
 structure, or vice versa, it results in the primitive structure. The
 lemmas \AgdaFunction{lem-Neg-St} and \AgdaFunction{lem-Pos-St} encode
 this knowledge.
-
+\\[1\baselineskip]
 \begin{code}
   lem-Neg-St : ∀ a → Pol(a) ≡ - → St { + } a ≡ · a ·
   lem-Neg-St ( El        a    ) n = refl
   lem-Neg-St ( Dia    k  a    ) ()
   lem-Neg-St ( Box    k  a    ) n = refl
+  lem-Neg-St ( a & b          ) ()
   lem-Neg-St ( UnitR  k  a    ) ()
   lem-Neg-St ( ImpR   k  a b  ) n = refl
   lem-Neg-St ( ImpL   k  b a  ) n = refl
@@ -429,17 +519,17 @@ this knowledge.
   lem-Pos-St ( El        a    ) p = refl
   lem-Pos-St ( Dia    k  a    ) p = refl
   lem-Pos-St ( Box    k  a    ) ()
+  lem-Pos-St ( a & b          ) p = refl
   lem-Pos-St ( UnitR  k  a    ) p = refl
   lem-Pos-St ( ImpR   k  a b  ) ()
   lem-Pos-St ( ImpL   k  b a  ) ()
 \end{code}
-
-\noindent
-The functions \AgdaFunction{stL}, \AgdaFunction{stR} and
-\AgdaFunction{st} actually perform the structuralisation described by
+\\
+The functions \AgdaFunction{st}, \AgdaFunction{stL} and
+\AgdaFunction{stR} actually perform the structuralisation described by
 \AgdaFunction{St}. Given a proof for a sequent $s$, they will
 structuralise either the antecedent, the succedent, or both.
-
+\\[1\baselineskip]
 \begin{code}
   mutual
     st : ∀ {a b} → NL St a ⊢ St b → NL · a · ⊢ · b ·
@@ -449,6 +539,7 @@ structuralise either the antecedent, the succedent, or both.
     stL { a = El        a    } f = f
     stL { a = Dia    k  a    } f = diaL (resBD (stL (resDB f)))
     stL { a = Box    k  a    } f = f
+    stL { a = a & b          } f = f
     stL { a = UnitR  k  a    } f = unitRL (resLP (stL (resPL f)))
     stL { a = ImpR   k  a b  } f = f
     stL { a = ImpL   k  b a  } f = f
@@ -457,10 +548,15 @@ structuralise either the antecedent, the succedent, or both.
     stR { b = El        a    } f = f
     stR { b = Dia    k  a    } f = f
     stR { b = Box    k  a    } f = boxR (resDB (stR (resBD f)))
+    stR { b = a & b          } f = f
     stR { b = UnitR  k  a    } f = f
     stR { b = ImpR   k  a b  } f = impRR (resPR (stR (resLP (stL (resPL (resRP f))))))
     stR { b = ImpL   k  b a  } f = impLR (resPL (stR (resRP (stL (resPR (resLP f))))))
 \end{code}
+\\
+
+
+
 
 \subsubsection{Identity Expansion}
 \begin{code}
@@ -484,6 +580,7 @@ structuralise either the antecedent, the succedent, or both.
     axR′ { b = El        a    } p = axElR p
     axR′ { b = Dia    k  a    } p = diaR axR
     axR′ { b = Box    k  a    } ()
+    axR′ { b = a & b          } p = withR (stR (withL1 axL)) (stR (withL2 axL))
     axR′ { b = UnitR  k  a    } p = unitRR axR
     axR′ { b = ImpR   k  a b  } ()
     axR′ { b = ImpL   k  b a  } ()
@@ -492,6 +589,7 @@ structuralise either the antecedent, the succedent, or both.
     axL′ { a = El        a    } n = axElL n
     axL′ { a = Dia    k  a    } ()
     axL′ { a = Box    k  a    } n = boxL axL
+    axL′ { a = a & b          } ()
     axL′ { a = UnitR  k  a    } ()
     axL′ { a = ImpR   k  a b  } n = impRL axR axL
     axL′ { a = ImpL   k  b a  } n = impLL axR axL
@@ -565,6 +663,13 @@ structuralise either the antecedent, the succedent, or both.
 
 \subsection{Semantics in Agda}
 \begin{code}
+record Translate {t1 t2} (T1 : Set t1) (T2 : Set t2) : Set (t1 ⊔ t2) where
+  field
+    _* : T1 → T2
+open Translate {{...}}
+\end{code}
+
+\begin{code}
 module Semantics
   (Atom : Set)
   (PolarisedAtom   : Polarised Atom)
@@ -590,6 +695,7 @@ module Semantics
         El        a    *′ = a *
         Dia    _  a    *′ = a *′
         Box    _  a    *′ = a *′
+        (a & b)       *′ = a *′ × b *′
         UnitR  _  a    *′ = a *′
         ImpR   _  a b  *′ = a *′ → b *′
         ImpL   _  b a  *′ = a *′ → b *′
@@ -637,15 +743,18 @@ module Semantics
         resLP   f    *′ = λ{ (x , y)  → (f *′)  x   y   }
         resPR   f    *′ = λ{  y   x   → (f *′) (x , y)  }
         resPL   f    *′ = λ{  x   y   → (f *′) (x , y)  }
-        unitRL  f    *′ = λ{  x       → (f *′) (x , _)  }
-        unitRR  f    *′ = λ{ (x , _)  → (f *′)  x       }
-        unitRI  f    *′ = λ{ (x , _)  → (f *′)  x       }
+        withL1  f    *′ = λ{ (x , y)  → (f *′)  x }
+        withL2  f    *′ = λ{ (x , y)  → (f *′)  y }
+        withR   f g  *′ = λ x → ((f *′) x , (g *′) x)
         diaL    f    *′ = f *′
         diaR    f    *′ = f *′
         boxL    f    *′ = f *′
         boxR    f    *′ = f *′
         resBD   f    *′ = f *′
         resDB   f    *′ = f *′
+        unitRL  f    *′ = λ{  x       → (f *′) (x , _)  }
+        unitRR  f    *′ = λ{ (x , _)  → (f *′)  x       }
+        unitRI  f    *′ = λ{ (x , _)  → (f *′)  x       }
         dnB     f    *′ = λ{ ( y , (_ , x) , z)  → (f *′) ( x , y  , z) }
         dnC     f    *′ = λ{ ( x , (_ , y) , z)  → (f *′) ((x , y) , z) }
         upB     f    *′ = λ{ ( x , y   , z)  → (f *′) ( y , (_ , x) , z) }
