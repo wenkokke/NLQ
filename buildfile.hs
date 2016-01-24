@@ -23,6 +23,7 @@ thesisFileList =
   , "main.bib"
   , "preamble.tex"
   , "fig-*.tex"
+  , "cover.png"
   ]
 
 slidesFileList :: [FilePattern]
