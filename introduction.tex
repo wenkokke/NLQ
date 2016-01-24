@@ -1,45 +1,64 @@
 \section{Introduction}
 \label{sec:introduction}
 
+In this thesis, I will discuss the grammar logic NLQ, an extension of
+the non-associative Lambek calculus, which is capable of analysing
+quantifier movement, scope islands, infixation and extraction.
+
 This thesis is not meant to be a work of thorough linguistic
 analysis. In this thesis, what I hope to do is \emph{extend} and
 \emph{solidify} the logical vocabulary with which such analyses can be
-made. In this endeavour, I will use two guiding principles:
+made. In this, I will use the following guiding principles:
 \begin{itemize}
-\item We are constructing a \emph{grammar} logic. Therefore, we only
+\item We are constructing a \uline{grammar} logic. Therefore, we only
   want features in our logic for which we can demonstrate a motivating
   example from natural language.
-\item We are constructing a grammar \emph{logic}. Therefore, we will
-  only accept extensions in our logic if we can show that they
-  preserve our most important property: we want procedure for proof
-  search that is both \emph{decidable} and \emph{complete}. This
-  implies a procedure for cut-elimination.
+\item We are constructing a grammar \uline{logic}. Therefore, we will
+  only accept extensions to our logic if we can show that they
+  preserve our most important properties: we want our logic to be
+  reflexive and transitive, and want a procedure for proof
+  search that is both \emph{decidable} and \emph{complete}.
 \end{itemize}
-None of the extensions that I will be proposing will be the be-all
-and end-all of logical grammar, so another important point in this
-thesis will be \emph{modularity}. It will be incredibly important to
-formulate extensions in a modular manner, so that other logical
-grammarians will be free to mix and match my extensions, and perhaps
-their own extensions, without having to worry about unforeseen
-interactions.
+I am under no impression that the extensions I am proposing will be
+the be-all and end-all of logical grammar, so another important point
+in this thesis will be \emph{modularity}.
+In my opinion, it is incredibly important to formulate extensions in a
+modular manner, so that other logical grammarians are free to mix and
+match extensions without having to worry about unforeseen
+interactions. There are two key techniques for this:
+\begin{enumerate*}[label=(\arabic*)]
+\item
+  we use display calculus to get a general procedure for
+  cut-elimination; and
+\item
+  we associate each syntactic extension with its own set of
+  connectives (or \emph{modality}) and make sure that the inference
+  rules in that extension only apply in the presence of these
+  connectives.
+\end{enumerate*}
 
 The last key point in this thesis will be \emph{verification}. It is
 far too easy to make mistakes when writing down logical proofs in a
-pen-and-paper---or, more accurately, \LaTeX---style. Therefore, most
-of the claims I make in this thesis will be backed up by \emph{two}
-verified implementations of the full version of the grammar logic I am
-proposing (i.e. the version using all discussed extensions). The first
-of these is given in Agda, and is a verification of the grammar logic,
-some key properties, and semantics in the form of a translation from
-proofs in grammar logic to Agda terms. The second is given in
-Haskell,\footnote{%
-  The Haskell implementation makes heavy use of the
-  \texttt{singletons} library.
-}
-and is a verification of the grammar logic, an implementation of proof
-search, and semantics in the form of a translation into a subset of
-Haskell which includes meaning postulates. These can be found,
-respectively, in appendices A and B, and on GitHub.
+pen-and-paper style, or when manually typesetting them in
+\LaTeX. Therefore, most of the claims I make in this thesis will be
+backed up by a pair of verified implementations of the full version
+of NLQ (i.e. the version using all discussed extensions).
+These verifications can be found in appendices A and B and on GitHub.
+
+In appendix A, we discuss a formalisation in Agda \citep{norell2009}.
+We implement the grammar logic, prove some key properties, and give a
+formal semantics in the form of a translation from proofs in NLQ to
+Agda terms.
+
+In appendix B, we discuss a formalisation in Haskell
+\citep{marlow2010} using the singletons library
+\citet{eisenberg2012}. In the full version, we implement the grammar
+logic, implement proof search, and give a formal semantics in the form
+of a translation into a subset of Haskell which includes meaning
+postulates. However, because the implementations of the grammar logic
+are nearly identical, we restrict our discussion of the Haskell
+version to the interface provided by the library, and how to write
+your own lexicon and example sentences.
 
 Starting in \autoref{sec:what-is-type-logical-grammar}, we will give a
 brief introduction to type-logical grammar in general, and to what I
@@ -58,8 +77,9 @@ extension to the base type-logical grammar.
 \label{sec:what-is-type-logical-grammar}
 
 Before we address the question of what type-logical grammar is, let us
-look at the abstract pipeline for natural language understanding (NLU)
-in~\autoref{fig:abstract-nlu-pipeline}.
+try and get an idea of what problem it is trying to solve. Have a look
+at the abstract pipeline for natural language understanding (NLU) in
+\autoref{fig:abstract-nlu-pipeline}.
 
 \input{fig-abstract-nlu-pipeline}
 
@@ -83,9 +103,10 @@ is truly considered\footnote{%
   sentences.
 }. This makes sense from a research perspective: we can refer to the
 huge body of work on generative grammar to inform our choice for
-sentence structure, and focus on assigning these structures the right
-meaning. This is also the approach we will also take in this
-thesis---that is, we consider type-logical grammars to be the function:
+sentence structure, and focus on assigning the right meaning to these
+structures. This is also the approach we will also take in this
+thesis---that is, we consider type-logical grammars to be the
+function:
 \begin{center}
   Mary:NP [see:TV.PAST fox:NP.PL]\\
   $\downarrow$\\
@@ -116,12 +137,12 @@ type for the tree---usually \S\ for `sentence'---to form an input
 sequent.
 We then search for a proof of that sequent in the syntactic calculus,
 and translate it to a term in the semantic calculus.
-Once there, we interpret the morphemes (e.g.\ lemmas, \texttt{PAST}
-and \texttt{PL}) as possibly complex terms in the semantic calculus.
+Once there, we interpret the morphemes (e.g.\ lemmas, \texttt{PAST},
+\texttt{PL}, etc.) as terms in the semantic calculus.
 
 In \autoref{sec:simple-type-logical-grammar}, we will have a look at
-an example type-logical grammar, and give some examples of this
-process of computing sentence meaning.
+the base type-logical grammar, and give some examples of the process
+of deriving sentence meaning.
 
 
 
@@ -134,23 +155,25 @@ the simply-typed lambda calculus with atomic types \e\ and \t\ (\lamET) as
 a semantic calculus, and the non-associative Lambek calculus
 \citep[NL;][]{lambek1961} as a syntactic calculus.
 
-The usual natural deduction formulation of \lamET\ can to be seen
-in~\autoref{fig:implicit-semantic-calculus}. It is a simple lambda
-calculus, with atomic types \e\ (`entity') and \t\ (`truth-value'). In
-addition, all logical operators and word-meanings we need are assumed
-to be defined as constants, with their expected type. For instance,
-$\forall$ is a constant of type $(\e\ra\t)\ra\t$, and `john' is a
-constant of type \e. Note that we will often write logical operators
-in their usual notation, e.g.\ $M\land N$ or $\forall x.M$, but this
-should be taken as syntactic sugar for constants, abstractions and
-applications.
+The usual natural deduction formulation of \lamET\ can to be seen in
+\autoref{fig:implicit-semantic-calculus}. It is a simple lambda
+calculus, with atomic types \e\ (`entity') and \t\ (`truth-value').
+In addition, we usually assume that any logical operator or
+word-meanings we need is defined as a constant of the appropriate
+type. For instance, $\forall$ is a constant of type $(\e\ra\t)\ra\t$,
+and `john' is a constant of type \e. Note that we will sometimes write
+logical operators in their usual notation, e.g.\ $M\wedge N$ or
+$\forall x.M$, but this should be taken as syntactic sugar, in the
+case of our examples rewriting to $(({\wedge}\;M)\;N)$ and
+$\forall\;(\lambda{x}.M)$, respectively.
 
 \input{fig-implicit-semantic-calculus}%
 
 Using this calculus as a semantics function directly would
 over-generate as, e.g.\ for the sequent $\{\text{john}:\e,
 \text{likes}:\e\ra\e\ra\t, \text{mary}:\e\}\fCenter\t$ we can derive
-both $((\text{likes}\;\text{john})\;\text{mary})$ and $((\text{likes}\;\text{mary})\;\text{john})$.
+both $((\text{likes}\;\text{john})\;\text{mary})$ and
+$((\text{likes}\;\text{mary})\;\text{john})$.
 The reason for this is, of course, that the set structure used in this
 formulation is much too expressive for natural language grammar.
 
@@ -162,7 +185,7 @@ replaced the set by a (possibly empty) binary tree, spanned by the
 structural product `$\prod$'. We have also included a number of new
 structural rules, which implement the structure of a set: $\emptyset$E
 allows us to have an empty antecedent; contraction and weakening tell
-us that we can use formulas multiple times, or not at all; and with
+us that we can use formulas multiple times or not at all; and with
 commutativity and associativity we can change the order of the
 formulas any way we like.
 
@@ -226,64 +249,68 @@ calculus in three simple steps:
   from the left, we add a second implication `$\la$' which can only
   take arguments from the right---by convention, implications in this
   system are written as `$\impr$' and `$\impl$' (pronounced ``under''
-  and ``over'') with the arguments \emph{under} the slash;
+  and ``over'') with the argument type written \emph{under} the slash;
 \item%
   we replace the atomic semantic types \e\ and \t\ by atomic syntactic
-  types, reminiscent of part-of-speech tags---in this case, these
-  are S (`sentence'), NP (`noun phrase'), N (`noun'), PP
-  (`prepositional phrase') and INF (`infinitive').
+  types, reminiscent of part-of-speech tags---in this case, we will
+  use S (`sentence'), NP (`noun phrase'), N (`noun'), PP
+  (`prepositional phrase') and INF (`infinitive');
 \end{enumerate}
 The resulting system can be seen in \autoref{fig:syntactic-calculus},
-defined along with some definitions for common part-of-speech tags \A\
-(`adjective'), \IV\ (`intransitive verb') and \TV\ (`transitive verb').
+defined along with some definitions for common part-of-speech tags,
+i.e.\ \A\ (`adjective'), \IV\ (`intransitive verb') and \TV\
+(`transitive verb').
 
 \input{fig-syntactic-calculus}
 
 Dropping \emph{all} structural rules may seem unnecessary, but there
 is a good motivation for each rule.  For example, in the presence of
-commutativity, there is no way to distinguish between ``Mary walks.''\ %
-and ``walks Mary.''; under weakening, we can add any word anywhere in a
+commutativity, there is no way to distinguish between ``Mary walks''
+and ``walks Mary''; under weakening, we can add any word anywhere in a
 grammatical sentence, and the sentence will remain grammatical---
-e.g.\ ``Mary banana walks.''; and with contraction, we can remove
-consecutive words with the same type---this means that ``John read
-a fantastic blue book.'' could be taken to mean the same thing as
-``John read a blue book.''
+e.g.\ ``Mary banana walks''; and with contraction, we can remove
+consecutive words with the same type---which means that ``John read
+a fantastic blue book'' could be taken to mean the same thing as
+``John read a blue book''.
 
 The motivations to drop associativity and the empty structure are a
 little bit harder to understand, but the interested reader can refer
-to \citet[p. 33, 105-106]{moot2012} or \citet{lambek1961}, who show
-some ungrammatical sentences that would be accepted in the presence of
-these rules.
+to \citet[p. 33, 105-106]{moot2012} or \citet{lambek1961}, who give
+some examples of  ungrammatical sentences that would be accepted in
+the presence of these rules.
 
 \vspace*{1\baselineskip}
 
 The last component we need for our simple type-logical grammar is a
-translation from our syntactic calculus to our semantic calculus. This
-translation is described in
-\autoref{fig:syntactic-calculus-to-explicit-lamET} as:
+translation from our syntactic calculus to our semantic calculus,
+which consists of:
 \begin{enumerate}[label=(\arabic*)]
 \item
   a function $\tr$, translating the types in NL to types in \lamET; and
 \item
   a set of rewrite rules, that rewrite proofs in NL to proofs in \lamET.
 \end{enumerate}
-With these two translation functions, we can set up a new presentation
-for our syntactic proofs, namely one where the syntactic proofs are
-labelled with the semantic terms resulting from the translation.
+However, in the interest of brevity, we will often give this second
+translation directly as a term labelling. For instance, in
+\autoref{fig:syntactic-calculus-to-explicit-lamET}, we give the
+translation on terms by directly labelling the rules of the syntactic
+calculus with semantic terms. Because there is a one-to-one
+correspondence between lambda terms and proofs, this is perfectly
+unambiguous.
 
-As an example, let's give an analysis of the sentence ``Mary likes
-Bill.'' We assume the morphological, lexical and syntactic phases
-have been taken care of. This turns our input sequent into:
+Now that we have a full type-logical grammar, let's give an example
+analysis of the sentence ``Mary likes Bill''. We assume the
+morphological, lexical and syntactic phases have been taken care of,
+which leaves us with the following endsequent:
 \[
   \text{mary}:\NP\prod(\text{likes}:\TV\prod\text{bill}:\NP)\;\fCenter\;?:\S
 \]
 Fortunately, proof search is decidable for this system, so we can
-simply search the space of all possible proofs of this sequent. It
-turns out that the only proof is:
+simply search the space of all possible proofs of this sequent. As it
+turns out, the only proof is:
 \begin{center}
   \vspace*{-1\baselineskip}
-  \hspace*{-2em}%
-  \begin{pfbox}
+  \begin{pfbox}[0.8]
     \AXC{}\RightLabel{Ax}\UIC{$\text{mary}:\NP\fCenter\text{mary}:\NP$}
     \AXC{}\RightLabel{Ax}\UIC{$\text{likes}:\TV\fCenter\text{likes}:(\NP\impr\S)\impl\NP$}
     \AXC{}\RightLabel{Ax}\UIC{$\text{bill}:\NP\fCenter\text{bill}:\NP$}
@@ -293,11 +320,6 @@ turns out that the only proof is:
     \BIC{$\text{mary}:\NP\prod(\text{likes}:\TV\prod\text{bill}:\NP)\fCenter((\text{likes}\;\text{bill})\;\text{mary}):\S$}
   \end{pfbox}
 \end{center}
-And so, by searching for a proof in our syntactic calculus, and
-translating it to our semantic calculus, we get a meaning
-representation for our input sequent.
-
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: t
-%%% End:
+And so, by searching for a proof in our syntactic calculus (bottom-up)
+and then adding in the term labelling (top-down) we derive an
+interpretation for our sentence.

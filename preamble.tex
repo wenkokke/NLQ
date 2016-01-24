@@ -5,7 +5,9 @@
 \usepackage[greek,english]{babel}%
 \languageattribute{greek}{polutoniko}%
 \usepackage{hyperref}%
-\addto\extrasenglish{\def\figureautorefname{figure}}%
+\addto\extrasenglish{\def\figureautorefname{figure}}
+\addto\extrasenglish{\def\subsectionautorefname{section}}
+\addto\extrasenglish{\def\subsubsectionautorefname{section}}
 \usepackage{lmodern}%
 
 \usepackage{xcolor}
@@ -14,6 +16,7 @@
 \usepackage[inline]{enumitem}
 \usepackage{natbib}
 \usepackage{xstring}
+\usepackage[normalem]{ulem}
 
 \makeatletter
 \patchcmd{\NAT@test}{\else \NAT@nm}{\else \NAT@nmfmt{\NAT@nm}}{}{}
