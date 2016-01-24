@@ -9,6 +9,9 @@
 \usepackage[links]{agda}
 \setlength{\mathindent}{0cm}
 
+%%% TODO UPDATE NUMBER MANUALLY -- SIGH
+\setcounter{page}{50}
+
 \def\lamET{\lambda^{\rightarrow}_{\{\mathbf{e},\mathbf{t}\}}}%
 \DeclareUnicodeCharacter{8852}{$\sqcup$}
 \DeclareUnicodeCharacter{8704}{$\forall$}

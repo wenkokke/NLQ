@@ -30,6 +30,9 @@
 %format Res      = "\Diamond\!\!"
 %format Q a b c  = "\mathbf{Q}(" c "\!\!\fatslash" "(" a "\fatbslash" b ")" ")"
 
+%%% TODO UPDATE NUMBER MANUALLY -- SIGH
+\setcounter{page}{66}
+
 \usepackage{appendix}
 \usepackage{stmaryrd}
 \setlength{\mathindent}{0cm}

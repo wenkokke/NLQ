@@ -40,18 +40,6 @@ main =
 
     want [ "main.pdf" ]
 
-    -- compile thesis.pdf from several files
-    toBuild "thesis.pdf" %> \out -> do
-      need (toBuild <$> [ "main.pdf", "NLQ_Agda.pdf" , "NLQ_Haskell.pdf" ])
-      command_ [Cwd "_build", EchoStdout True] "gs"
-        [ "-o", "thesis.pdf"
-        , "-sDEVICE=pdfwrite"
-        , "-dPDFSETTINGS=/prepress"
-        , "main.pdf"
-        , "NLQ_Agda.pdf"
-        , "NLQ_Haskell.pdf"
-        ]
-
     -- compile main.tex with PdfLaTeX
     toBuild "main.pdf" %> \out -> do
       let
@@ -59,7 +47,7 @@ main =
         lcl  = fromBuild src
 
       thesisFiles <- getDirectoryFiles "" thesisFileList
-      need (toBuild <$> thesisFiles)
+      need (toBuild <$> ("NLQ_Agda.pdf" : "NLQ_Haskell.pdf" : thesisFiles))
 
       command_ [Cwd "_build", EchoStdout True] "pdflatex" ["-draftmode", lcl]
       command_ [Cwd "_build", WithStdout True] "bibtex"   [dropExtension lcl]

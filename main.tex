@@ -10,7 +10,7 @@
 \backgroundsetup{
   scale=1,
   color=black,
-  opacity=0.2,
+  opacity=0.1,
   angle=0,
   contents={%
     \includegraphics[width=\paperwidth,height=\paperheight]{cover.png}
@@ -19,6 +19,7 @@
 
 \begin{document}
 
+\begin{titlepage}
 \begin{center}
   \BgThispage
   \makeatletter
@@ -30,13 +31,40 @@
   {A thesis submitted in fulfilment of the requirements \par}%
   {for the degree of Master of Science \par}%
   \vskip 0.5em%
-  {\Large%
-    Under the supervision of Prof. dr. Michael Moortgat \par %
-  }%
+  {\Large Under the supervision of prof. dr. Michael Moortgat \par}%
+  {\Large and dr. Wouter Swierstra \par}%
   \vskip 0.5em%
   {\Large \@date \par}%
   \makeatother
 \end{center}
+\end{titlepage}
+\clearpage
+
+\vspace*{\fill}
+\begin{center}\itshape
+  \noindent
+  I would like to thank Michael Moortgat for introducing me to the
+  wonderful field of type-logical grammar, and for supervising me
+  throughout this thesis.
+  \\[1\baselineskip]
+
+  \noindent
+  I would like to thank Wouter Swierstra for introducing me to
+  dependent type theory, which has become so central to my
+  understanding of logic and mathematics, and to Agda, my favourite
+  programming language.
+  \\[1\baselineskip]
+
+  \noindent
+  And finally, I would like to thank Chris Barker, Oleg Kiseljov,
+  Jirka Maršík and Richard Moot for the incredibly useful lectures and
+  discussions on scope, NL$_{\lambda}$, and monadic semantics at
+  ESSLLI 2015.
+  \\[1\baselineskip]
+\end{center}
+\vspace*{\fill}
+\tableofcontents
+\clearpage
 
 \include{introduction}
 \include{display-calculus}
@@ -47,5 +75,11 @@
 
 \bibliographystyle{apalike}
 \bibliography{main}%
+
+\cftaddtitleline{toc}{part}{Appendices}{}
+\renewcommand\thesection{A}
+\includepdf[pages=-,addtotoc={1,section,1,Formalisation of NLQ in Agda,p1}]{NLQ_Agda.pdf}
+\renewcommand\thesection{B}
+\includepdf[pages=-,addtotoc={1,section,1,Formalisation of NLQ in Haskell,p1}]{NLQ_Haskell.pdf}
 
 \end{document}
