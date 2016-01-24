@@ -204,6 +204,7 @@ scope islands in the syntactic calculus, based on work by
 \citet{moortgat1996}, \citet{barker2007} and \citet{barker2015}.
 
 \subsubsection{NL$_\lambda$, NL$_{\text{CL}}$ and NL$_{\text{IBC}}$}
+\label{sec:nl-lambda-nl-cl-and-nl-ibc}
 In their \citeyear{barker2015} book, \citeauthor{barker2015} describe
 an extension of NL which they call NL$_\lambda$. The main insight in
 the formulation of this calculus was this: in type-logical grammar,
@@ -225,10 +226,10 @@ encode quantifier raising in our logic.
     \end{tikzpicture}
   \end{minipage}
 \end{center}
-To achieve this, they add a new mode to NL---that is to say, a copy of
-the rules for $\{\impr,\prod,\impl\}$ applying to three new connectives
-$\{\himpr,\hprod,\himpl\}$---and the following (somewhat controversial)
-equivalence on structures:
+To achieve this, they add a new modality to NL---that is to say, a
+copy of the rules for $\{\impr,\prod,\impl\}$ applying to three new
+connectives $\{\himpr,\hprod,\himpl\}$---and the following (somewhat
+controversial) equivalence on structures:
 \[
   \Sigma[\Delta]\equiv\Delta\circ\lambda x.\Sigma[x]
 \]
@@ -401,7 +402,7 @@ $\q[A]$ as $A$, inserting and removing the right unit as needed.
 The extension presented so far for quantifier raising is pretty good:
 because we have removed all growing loops in structural rules, it now
 has a decidable and complete procedure for proof search, and it neatly
-captures quantifier movement---i.e. moving upwards, taking scope,
+captures quantifier movement---i.e.\ moving upwards, taking scope,
 binding a variable, and moving that variable back down. However, it
 still has one problem: spurious ambiguity. Imagine a sentence with two
 quantifiers $P$ and $Q$, respectively \emph{one} and \emph{two} places

@@ -17,6 +17,7 @@
 \usepackage{natbib}
 \usepackage{xstring}
 \usepackage[normalem]{ulem}
+\usepackage{longfigure}
 
 \makeatletter
 \patchcmd{\NAT@test}{\else \NAT@nm}{\else \NAT@nmfmt{\NAT@nm}}{}{}
@@ -184,7 +185,7 @@
 \providecommand{\todo}[1]{%
   \ifthenelse%
   {\boolean{notes}}%
-  {\textcolor{red}{\_}\marginpar{\color{red}#1}}%
+  {{\color{red}#1}}%
   {}}
 \providecommand{\note}[1]{%
   \ifthenelse%
