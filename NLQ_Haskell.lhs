@@ -198,8 +198,8 @@ Expr T|:
 > every     = lex_ (\f g -> forall E (\x -> f x ⊃ g x))
 
 \\
-In these definitions, |forall E|, |exists E|, |∧| and |⊃| are
-predefined in |NLQ.Prelude|.
+The functions |forall E|, |exists E|, |∧| and |⊃| are defined in
+|NLQ.Prelude|.
 
 Now that we have definitions for |some|, |every|, and |person| it
 would be a shame if we could not simply give the definitions by
