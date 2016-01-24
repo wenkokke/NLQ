@@ -123,3 +123,7 @@ main =
     phony "clean" $ do
       putNormal "Cleaning files in _build"
       removeFilesAfter "_build" ["//*"]
+      putNormal "Cleaning temporary Agda files"
+      removeFilesAfter "." ["NLQ_Agda.agdai"]
+      putNormal "Cleaning temporary Haskell files"
+      removeFilesAfter "." ["NLQ_Haskell.hi","NLQ_Haskell.o"]
