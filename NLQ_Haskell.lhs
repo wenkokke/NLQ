@@ -166,11 +166,11 @@ forgotten to give an explicit type for a lexicon entry:
 \begin{lstlisting}
   NLQ_Haskell.lhs:134:15:
     No instance for (Data.Singletons.SingI a0)
-      arising from a use of ‘lex’
-    The type variable ‘a0’ is ambiguous
+      arising from a use of `lex'
+    The type variable `a0' is ambiguous
     ...
     In the expression: lex "alice"
-    In an equation for ‘alice’: alice = lex "alice"
+    In an equation for `alice': alice = lex "alice"
 \end{lstlisting}
 At this point, it is best to ignore the plural definitions, they will
 make sense soon enough.
@@ -183,13 +183,13 @@ instead of simply as postulates. For this, there is the function
 \begin{lstlisting}
   lex_ :: (SingI a) => Hask (H a) -> Word a
 \end{lstlisting}
-In this type, the type family |H| is the function which translates
-syntactic types to semantic types, and the type family |Hask| is a
-type family which translates a semantic type to a Haskell
-type, prefixing all atomic types with the datatype |Expr|.
-Therefore, if you write, e.g.\ a lexical entry of type |N| using
-|lex_|, you will be expected to provide something of type |Expr E ->
-Expr T|:
+Here, |H| is a function which translates syntactic types to semantic
+types, and |Hask| is a  function which translates semantic types to
+Haskell types. In addition, |Hask| prefixes all atomic types with
+the datatype |Expr|, which allows you to use ``postulates''---more
+on this below.
+So, if you write, e.g.\ a lexical entry of type |N| using |lex_|, you
+will be expected to provide something of type |Expr E -> Expr T|:
 \\
 
 > a, some, every :: Word (Q NP S S :← N)

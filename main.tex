@@ -3,25 +3,40 @@
 \input{preamble}
 \usepackage[pages=some]{background}
 
-\author{Pepijn Kokke}
 \title{NLQ: a modular type-logical grammar for quantifier movement,
   scope islands, and more}
+\author{Pepijn Kokke}
 \date{\today}
-
-\begin{document}
-
 \backgroundsetup{
   scale=1,
   color=black,
-  opacity=0.4,
+  opacity=0.2,
   angle=0,
   contents={%
     \includegraphics[width=\paperwidth,height=\paperheight]{cover.png}
   }%
 }
 
-\BgThispage
-\maketitle
+\begin{document}
+
+\begin{center}
+  \BgThispage
+  \makeatletter
+  \vskip 2em%
+  {\LARGE \@title \par}%
+  \vskip 1.5em%
+  {\LARGE \@author \par}%
+  \vfill
+  {A thesis submitted in fulfilment of the requirements \par}%
+  {for the degree of Master of Science \par}%
+  \vskip 0.5em%
+  {\Large%
+    Under the supervision of Prof. dr. Michael Moortgat \par %
+  }%
+  \vskip 0.5em%
+  {\Large \@date \par}%
+  \makeatother
+\end{center}
 
 \include{introduction}
 \include{display-calculus}
