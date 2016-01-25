@@ -7,6 +7,12 @@ powerful. As mentioned, it provides a flexible and powerful framework
 for a large spectrum of complex natural language phenomena such as
 context, intensionality, expressives and quantification.
 
+\todo{Discuss: division of labour---do you want to analyse a phenomeon
+as syntactic or as semantic?}
+\todo{Discuss: the $q(A,B,C)$ operator as specification of
+  quantification as a syntactic phenomenon.}
+\todo{Discuss: tweaking the polarities to obtain scope ambiguity.}
+
 \subsection{Quantifier Movement}
 In this section, we will study quantification in more detail.
 Quantification is the problem of analysing scope-taking expressions in
@@ -56,18 +62,17 @@ ditransitive verbs, or verb phrases modified by some number of
 adverbs. Clearly, this way lies madness.
 
 In the following section, we will discuss semantic approaches to the
-problem of quantification---approaches trying to solve the problem
-within the framework of monadic or effectful semantics---and why these
-solutions are generally inadequate.
+problem of quantification and why these solutions are generally
+inadequate.
 Next, we will discuss the approach to quantification taken by
-\citet{barker2007,barker2015}. We will then reformulate this approach
-as an extension of display NL that maintains the properties we are
-interested in---i.e. admissibility of cut, and a decidable and complete
-proof search procedure. In \autoref{sec:scope-islands} we will discuss
-an extension which can be used to treat a phenomenon known as `scope
-islands'. And finally, we will discuss some other forms of
-movement---infixation and extraction---and show how they can be used
-to analyse sentences with gaps.
+\citet{barker2007}. We will then reformulate this approach as an
+extension of display NL that maintains the properties we are
+interested in---i.e. admissibility of cut, and a decidable and
+complete proof search procedure. In \autoref{sec:scope-islands} we
+will discuss an extension which can be used to treat a phenomenon
+known as `scope islands'. And finally, we will discuss some other
+forms of movement---infixation and extraction---and show how they can
+be used to analyse sentences with gaps.
 
 \subsubsection{Continuation-Passing Style}
 \citet{barker2002,barker2004} advocates the use of continuations in
@@ -106,13 +111,9 @@ application with a method of combining CPS-translated terms:\footnote{%
   \overline{M\;N}= \lambda k. \overline{N}\;(\lambda
   n.\overline{M}\;(\lambda m.k\;(m\;n)))
 \]
-As CPS-translations and monadic translations are closely related
-\citep{filinski1994}, it is rather easy to implement approaches using
-a CPS translation as a monad or an effect---in fact, \citet{shan2002}
-already provides such an implementation.
 
-However, the analysis of quantification as a side-effect has several
-major issues. The first of these is already mentioned by
+However, the analysis of quantification as a semantic phenomenon has
+several issues. The first of these is already mentioned by
 \citet{barker2004}: scope ambiguity. The sentence ``Everyone likes
 someone'', is ambiguous:
 \begin{alignat*}{3}
@@ -148,9 +149,9 @@ sentences such as ``He$_i$ gave a book to John$_i$.''
 
 \vspace*{1\baselineskip}
 
-In more recent work, \citet{moortgat2012} integrate CPS-semantics into
+In more recent work, \citet{moortgat2009,moortgat2012} integrate CPS-semantics into
 the syntactic calculus. The result is the Lambek-Grishin (LG)
-calculus, a classical variant of NL, with semantics inspired on
+calculus, a bilinear variant of NL, with semantics inspired on
 \citeauthor{parigot1992}'s $\lambda\mu$-calculus
 (\citeyear{parigot1992}). LG is a beautifully symmetric calculus, and
 display NL, as used in this thesis is, is directly based from it. The
@@ -161,9 +162,8 @@ give them the desired scope-taking semantics.
 
 \vspace*{1\baselineskip}
 
-\citeauthor{barker2004}'s CPS-translation and
-\citeauthor{moortgat2012}'s CPS-semantics both suffer from two related
-problems:
+\citepos{barker2004} CPS-translation and \citepos{moortgat2012}
+CPS-semantics both suffer from two related problems:
 \begin{enumerate}
 \item Both require a \emph{static} choice of answer type. This
   means that the answer type cannot change throughout the
@@ -469,10 +469,9 @@ into it:
   \qquad
   Σ[\struct{\q[A]}]\equiv\struct{A}\hprod\trace(Σ)
 \]
-In fact, if you read products as function applications, and the
-constants $\{\I,\B,\C\}$ as the combinators, as \citet{barker2015}
-intended, then the right-hand side expressions are more-or-less
-equivalent.\footnote{%
+In fact, if you interpret the products as function applications, and
+the constants $\{\I,\B,\C\}$ as the combinators, as \citet{barker2015}
+intended, then the right-hand side expressions are equivalent.\footnote{%
   As an aside: what we set out to encode were contexts with holes that
   are unique---plugging should never duplicate or forget
   information. So the $\lambda$-terms in NL$_\lambda$ were implicitly
@@ -757,26 +756,7 @@ take sentence-wide scope: in feeding the scope island as an argument
 to `said', one opens up the opportunity to deconstruct it, but at the
 same time isolates it from its surrounding context.
 
-It may be troubling to some of the readers that in order to deal with
-scope islands, we have to introduce a new structural connective that
-has to be present in the endsequent.
-This is, however, much less problematic than it seems. The sentence
-structure---the binary tree of solid products---must already be
-inferred in some way. For most of this thesis we have sidestepped this
-problem, by requiring that this structure is given to us by the
-`syntactic function'. Much in the same way, we can relegate the
-marking of scope islands to the `syntactic function'.
-However, in \autoref{sec:what-is-type-logical-grammar} we already
-mentioned that we are sticking to backward-chaining proof search
-mostly because it is a pleasant tool for research purposes; it allows
-us to write down and look for proofs for particular syntax trees. In
-practical parsing, however, this is not an option. The number of
-binary syntax trees for a sentence of $n$ words is equal to the $n$th
-Catalan number.
-Therefore, instead of depending on a magical hypothetical to take care
-of our problems for us, we could also pursue an actual solution. One
-possible solution is to switch to forward-chaining proof search, which
-we briefly touch upon in \autoref{sec:future-work}.
+
 
 \subsection{Infixation, Extraction and Reasoning with Gaps}
 In the previous sections, we have discussed quantifier movement, which

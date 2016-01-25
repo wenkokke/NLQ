@@ -897,7 +897,7 @@ translation on proofs:
 \end{code}
 
 
-\section{Example}
+\subsection{Example}
 We will end the Agda formalisation with a small example. For this, we
 need to instantiate the syntax and semantics modules. We start by
 defining atomic types, and a concept of polarisation---everything has

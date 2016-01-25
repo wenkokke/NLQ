@@ -2,25 +2,194 @@
 \label{sec:display-calculus}
 
 In the previous section, we glossed over the issue of proof
-search. However, the natural deduction formulation of the syntactic
-calculus we presented in \autoref{fig:syntactic-calculus} is not
-especially suited to proof search. Lambek originally developed a
-sequent calculus for NL, which does have a practical proof search
-algorithm.
+search. This is problematic, because the natural deduction formulation
+of the syntactic calculus we presented in
+\autoref{fig:syntactic-calculus} is not especially suited to proof
+search. \citeauthor{lambek1961} originally developed a sequent
+calculus for NL, which \emph{does} have a practical procedure
+for proof search. However, we are not interested in using just any
+sequent calculus for our system; we want to have a \emph{display
+  calculus}.
 
 In this section, we will develop a display calculus
-\citep{belnap1982} for NL. We will start out by motivating our choice
-for display calculus. Then we will present a display calculus for NL
-based on work by \citet{moortgat2012,gore1998}.
+\citep{belnap1982} for NL. We will start out by presenting a display
+calculus for NL based on work by \citet{moortgat2009,moortgat2012} and
+\citet{gore1998}. We will then motivating our choice for display
+calculus.
 In \autoref{sec:translation-to-lamET} we will relate our display
-calculus back to the framework discussed in
-\autoref{sec:introduction}, by defining a translation from our display
-calculus back to \lamET.
+calculus back to the framework discussed in \autoref{sec:introduction},
+by defining a translation from our display calculus back to \lamET.
 And finally, in \autoref{sec:focusing-and-spurious-ambiguity}, we will
-then conclude this section by discussing the problem of spurious
-ambiguity, and address this problem by developing an extension to
-display calculus, using polarities and focusing
-\citep{girard1991,bastenhof2011}.
+conclude our discussion of display calculus by addressing the problem
+of spurious ambiguity, and developing an extension to display
+calculus, using polarities and focusing
+\citep{girard1991,bastenhof2011}, which is free of spurious
+ambiguity.
+
+
+
+\subsection{NL as a display calculus}
+\label{sec:nl-as-a-display-calculus}
+\input{fig-display-calculus}
+
+We present the display calculus for NL in
+\autoref{fig:display-calculus}.\footnote{%
+  The calculus in \autoref{fig:display-calculus} was first formulated
+  by \citet{moortgat1999}---though without display calculus in
+  mind. Because the logical and structural connectives in NL coincide,
+  they did not think to distinguish between them. Therefore, they do
+  not have the R$\impr$ and R$\impl$ rules, and their version has
+  slightly different properties.
+}
+It features the same atoms and types
+as in \autoref{fig:syntactic-calculus}, but structures have been
+expanded: there are now positive and negative structures---with one
+structural connective for each logical connective---and residuation
+rules to navigate them.\footnote{%
+  For each connective, we use the \emph{same} symbol at both the
+  logical and the structural level. This is unconventional. However,
+  because each type, when used in a structure, is wrapped in the
+  $\struct{\ }$-connective, this is perfectly unambiguous.
+}
+These two work together to guarantee the \textbf{display
+  property}---the property that any sub-structure can be made the sole
+structure in either the antecedent or the succedent, depending on its
+polarity. For instance, below we use residuation to isolate the object
+NP on the left-hand side:\footnote{%
+  Inverted applications of the residuation rules are marked by
+  switching the operators---e.g. by writing Res$\prod\impr$ instead of
+  Res$\impr\prod$.}%
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$\struct{\NP}\prod(\struct{\TV}\prod\struct{\underline{\NP}})\fCenter\struct{\S}$}
+  \RightLabel{Res$\prod\impr$}
+  \UIC{$\struct{\TV}\prod\struct{\underline{\NP}}\fCenter\struct{\NP}\impr\struct{\S}$}
+  \RightLabel{Res$\prod\impl$}
+  \UIC{$\struct{\underline{\NP}}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\TV}$}
+\end{pfblock}
+Because the display property guarantees that any sub-structure can be
+displayed on either the right- or the left-hand side of the turnstile,
+we will occasionally abbreviate inferences such as the one above using
+the display postulate (DP):\footnote{%
+  We have attached a formal proof of the display property for full
+  NLQ---an extension of display NL as presented in this section. See
+  the appendix A for more details.}
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$\struct{\NP}\prod(\struct{\TV}\prod\struct{\underline{\NP}})\fCenter\struct{\S}$}
+  \RightLabel{DP}
+  \UIC{$\struct{\underline{\NP}}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\TV}$}
+\end{pfblock}
+
+One difference between our display calculus and \citepos{lambek1961}
+sequent calculus is that we use the product-free version of NL. The
+reason for this is that we do not have solid linguistic evidence to
+include the product type. However, if it turns out to be useful, it is
+very easily added:
+\begin{center}
+  \begin{pfbox}
+    \AXC{$\struct{A}\prod\struct{B}\fCenter{X}$}
+    \RightLabel{L$\prod$}
+    \UIC{$\struct{A\prod{B}}\fCenter{X}$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$X\fCenter\struct{A}$}
+    \AXC{$Y\fCenter\struct{B}$}
+    \RightLabel{R$\prod$}
+    \BIC{$X\prod{Y}\fCenter\struct{A\prod{B}}$}
+  \end{pfbox}
+\end{center}
+
+Another change that was made in this display calculus, is that the
+axiom has been restricted to atoms. This does not mean our logic no
+longer has the identity, since it is derivable by simple induction
+over the structure of the formula. For instance, in the case of an
+identity on $A\impr B$:
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine\UIC{$\struct{A}\fCenter\struct{A}$}
+  \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter\struct{B}$}
+  \RightLabel{L$\impr$}
+  \BIC{$\struct{A\impr B}\fCenter\struct{A}\impr\struct{B}$}
+  \RightLabel{R$\impr$}
+  \UIC{$\struct{A\impr B}\fCenter\struct{A\impr B}$}
+\end{pfblock}
+Instead, the change was made to avoid spurious ambiguity. If the
+calculus \emph{were} to have a full identity, then there would be
+e.g.\ \emph{two} proofs of the identity over \IV:
+\begin{center}
+  \begin{pfbox}
+    \AXC{}
+    \RightLabel{Ax}
+    \UIC{$\struct{\NP\impr\S}\fCenter\struct{\NP\impr\S}$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{}\RightLabel{Ax}\UIC{$\struct{\NP}\fCenter\struct{\NP}$}
+    \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
+    \RightLabel{L$\impr$}
+    \BIC{$\struct{\NP\impr\S}\fCenter\struct{\NP}\impr\struct{\S}$}
+    \RightLabel{R$\impr$}
+    \UIC{$\struct{\NP\impr\S}\fCenter\struct{\NP\impr\S}$}
+  \end{pfbox}
+\end{center}
+This is problematic. Generally, we only want to have two proofs for
+the same sequent when that sequent is associated with an ambiguous
+sentence. However, the derivation for e.g.\ ``Mary left'' contains the
+above derivation---as $\NP\impr\S$ is the type of `left'. But this
+sentence is not ambiguous at all! In fact, when we use the derived
+identity described above, the two proofs will expand to be equal. The
+problem of spurious ambiguity is further discussed in
+\autoref{sec:focusing-and-spurious-ambiguity}.
+
+In order for our calculus to be a valid display calculus, it needs to
+obey eight simple conditions. Of these conditions, the only one that
+involves any proof burden is \textbf{C8}---adapted from
+\citet{gore1998}:
+\begin{quote}
+  If there are inference rules $ρ_1$ and $ρ_2$ with respective
+  conclusions $Γ\fCenter\struct{A}$ and $\struct{A}\fCenter Δ$
+  and if {Cut} is applied to yield $Γ\fCenter Δ$ then, either
+  $Γ\fCenter Δ$ is identical to $Γ\fCenter\struct{A}$ or to
+  $\struct{A}\fCenter Δ$; or it is possible to pass from the premises
+  of $ρ_1$ and $ρ_2$ to $Γ\fCenter Δ$ by means of inferences falling
+  under {Cut} where the cut-formula is always a proper sub-formula of
+  $A$.
+\end{quote}
+In other words, we have to show that we can rewrite cuts on matching
+left and right rules to smaller cuts on proper sub-formulas of the
+cut-formula. For L$\impr$ and R$\impr$, this is done as follows:
+\begin{center}
+  \begin{pfbox}
+    \AXC{$\vdots$}\noLine\UIC{$Π\fCenter\struct{A}\impr\struct{B}$}
+    \RightLabel{R$\impr$}
+    \UIC{$Π\fCenter\struct{A\impr B}$}
+    \AXC{$\vdots$}\noLine\UIC{$Γ\fCenter\struct{A}$}
+    \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter Δ$}
+    \RightLabel{L$\impr$}
+    \BIC{$\struct{A\impr B}\fCenter Γ\impr Δ$}
+    \RightLabel{Cut}
+    \BIC{$Π\fCenter Γ\impr Δ$}
+  \end{pfbox}
+  \\[1\baselineskip] $\Longrightarrow$ \\
+  \begin{pfbox}
+    \AXC{$\vdots$}\noLine\UIC{$Γ\fCenter\struct{A}$}
+    \AXC{$\vdots$}\noLine\UIC{$Π\fCenter\struct{A}\impr\struct{B}$}
+    \RightLabel{Res$\impr\prod$}
+    \UIC{$\struct{A}\prodΠ\fCenter\struct{B}$}
+    \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter Δ$}
+    \RightLabel{Cut}
+    \BIC{$\struct{A}\prod Π\fCenter Δ$}
+    \RightLabel{Res$\prod\impl$}
+    \UIC{$\struct{A}\fCenter Δ\impl Π$}
+    \RightLabel{Cut}
+    \BIC{$Γ\fCenter Δ\impl Π$}
+    \RightLabel{Res$\impl\prod$}
+    \UIC{$Γ\prod Π\fCenter Δ$}
+    \RightLabel{Res$\prod\impr$}
+    \UIC{$Π\fCenter Γ\impr Δ$}
+  \end{pfbox}
+\end{center}
+And likewise for L$\impl$ and R$\impl$.
+
 
 \subsection{Why use display calculus?}
 \label{sec:why-use-display-calculus}
@@ -122,11 +291,11 @@ unknown formula $A$.
 
 Another reason why cut is important is because it embodies a
 linguistic intuition that many of us have: the idea that if you have a
-sentence which contains a noun phrase---e.g.\ `a book' in ``Mary read
-a book''---and we have some other phrase of which we known that it is
+sentence which contains a noun phrase---e.g.\ `a book' in ``Mary met
+John''---and we have some other phrase of which we known that it is
 also a noun phrase---e.g.\ ``the tallest man''---then we should be
 able to substitute that second noun phrase for the first, and the
-result should still be a grammatical sentence---e.g.\ ``Mary read the
+result should still be a grammatical sentence---e.g.\ ``Mary met the
 tallest man.''
 
 It should be clear that it is always important for the cut rule to be
@@ -182,137 +351,8 @@ proof obligation, and do not have to check all possible contexts under
 which this unification could succeed.
 
 
-\subsection{NL as a display calculus}
-\label{sec:nl-as-a-display-calculus}
 
-\input{fig-display-calculus}
-
-We present the display calculus for NL in
-\autoref{fig:display-calculus}. It features the same atoms and types
-as in \autoref{fig:syntactic-calculus}, but structures have been
-expanded: there are now positive and negative structures---with one
-structural connective for each logical connective---and residuation
-rules to navigate them. These two work together to guarantee the
-\emph{display property}---the property that any sub-structure can be
-made the sole structure in either the antecedent or the succedent,
-depending on its polarity. For instance, below we use residuation to
-isolate the object NP on the left-hand side:\footnote{%
-  Inverted applications of the residuation rules are marked by
-  switching the operators---e.g. by writing Res$\prod\impr$ instead of
-  Res$\impr\prod$.}%
-\begin{pfblock}
-  \AXC{$\vdots$}\noLine
-  \UIC{$\struct{\NP}\prod(\struct{\TV}\prod\struct{\underline{\NP}})\fCenter\struct{\S}$}
-  \RightLabel{Res$\prod\impr$}
-  \UIC{$\struct{\TV}\prod\struct{\underline{\NP}}\fCenter\struct{\NP}\impr\struct{\S}$}
-  \RightLabel{Res$\prod\impl$}
-  \UIC{$\struct{\underline{\NP}}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\TV}$}
-\end{pfblock}
-Because the display property guarantees that any sub-structure can be
-displayed on either the right- or the left-hand side of the turnstile,
-we will occasionally abbreviate inferences such as the one above using
-the display postulate (DP):\footnote{%
-  We have attached a formal proof of the display property for our main
-  logic---an extension of display NL as presented in this section. See
-  the appendix A for more details.}%
-\begin{pfblock}
-  \AXC{$\vdots$}\noLine
-  \UIC{$\struct{\NP}\prod(\struct{\TV}\prod\struct{\underline{\NP}})\fCenter\struct{\S}$}
-  \RightLabel{DP}
-  \UIC{$\struct{\underline{\NP}}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\TV}$}
-\end{pfblock}
-
-Another change that was made in this display calculus, is that the
-axiom has been restricted to atoms. This does not mean our logic no
-longer has the identity, since it is derivable by simple induction
-over the structure of the formula. For instance, in the case of an
-identity on $A\impr B$:
-\begin{pfblock}
-  \AXC{$\vdots$}\noLine\UIC{$\struct{A}\fCenter\struct{A}$}
-  \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter\struct{B}$}
-  \RightLabel{L$\impr$}
-  \BIC{$\struct{A\impr B}\fCenter\struct{A}\impr\struct{B}$}
-  \RightLabel{R$\impr$}
-  \UIC{$\struct{A\impr B}\fCenter\struct{A\impr B}$}
-\end{pfblock}
-Instead, the change was made to avoid spurious ambiguity. If the
-calculus \emph{were} to have a full identity, then there would be, for
-instance, \emph{two} proofs of the identity over \IV:
-\begin{center}
-  \begin{pfbox}
-    \AXC{}
-    \RightLabel{Ax}
-    \UIC{$\struct{\NP\impr\S}\fCenter\struct{\NP\impr\S}$}
-  \end{pfbox}
-  \begin{pfbox}
-    \AXC{}\RightLabel{Ax}\UIC{$\struct{\NP}\fCenter\struct{\NP}$}
-    \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
-    \RightLabel{L$\impr$}
-    \BIC{$\struct{\NP\impr\S}\fCenter\struct{\NP}\impr\struct{\S}$}
-    \RightLabel{R$\impr$}
-    \UIC{$\struct{\NP\impr\S}\fCenter\struct{\NP\impr\S}$}
-  \end{pfbox}
-\end{center}
-This is problematic. Generally, we only want to have two proofs for
-the same sequent when that sequent is associated with an ambiguous
-sentence. But the associated sentences---e.g.\ ``Mary left''---are not
-at all ambiguous. In fact, when we use the derived identity described
-above, the first proof expands to the second one. The problem of
-spurious ambiguity is further discussed in
-\autoref{sec:focusing-and-spurious-ambiguity}.
-
-In order for our calculus to be a valid display calculus, it needs to
-obey eight simple conditions. Of these conditions, the only one that
-involves any proof burden is \textbf{C8}---adapted from
-\citet{gore1998}:
-\begin{quote}
-  If there are inference rules $ρ_1$ and $ρ_2$ with respective
-  conclusions $Γ\fCenter\struct{A}$ and $\struct{A}\fCenter Δ$
-  and if {Cut} is applied to yield $Γ\fCenter Δ$ then, either
-  $Γ\fCenter Δ$ is identical to $Γ\fCenter\struct{A}$ or to
-  $\struct{A}\fCenter Δ$; or it is possible to pass from the premises
-  of $ρ_1$ and $ρ_2$ to $Γ\fCenter Δ$ by means of inferences falling
-  under {Cut} where the cut-formula is always a proper sub-formula of
-  $A$.
-\end{quote}
-In other words, we have to show that we can rewrite cuts on matching
-left and right rules to smaller cuts on proper sub-formulas of the
-cut-formula. For L$\impr$ and R$\impr$, this is done as follows:
-\begin{center}
-  \begin{pfbox}
-    \AXC{$\vdots$}\noLine\UIC{$Π\fCenter\struct{A}\impr\struct{B}$}
-    \RightLabel{R$\impr$}
-    \UIC{$Π\fCenter\struct{A\impr B}$}
-    \AXC{$\vdots$}\noLine\UIC{$Γ\fCenter\struct{A}$}
-    \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter Δ$}
-    \RightLabel{L$\impr$}
-    \BIC{$\struct{A\impr B}\fCenter Γ\impr Δ$}
-    \RightLabel{Cut}
-    \BIC{$Π\fCenter Γ\impr Δ$}
-  \end{pfbox}
-  \\[1\baselineskip] $\Longrightarrow$ \\
-  \begin{pfbox}
-    \AXC{$\vdots$}\noLine\UIC{$Γ\fCenter\struct{A}$}
-    \AXC{$\vdots$}\noLine\UIC{$Π\fCenter\struct{A}\impr\struct{B}$}
-    \RightLabel{Res$\impr\prod$}
-    \UIC{$\struct{A}\prodΠ\fCenter\struct{B}$}
-    \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter Δ$}
-    \RightLabel{Cut}
-    \BIC{$\struct{A}\prod Π\fCenter Δ$}
-    \RightLabel{Res$\prod\impl$}
-    \UIC{$\struct{A}\fCenter Δ\impl Π$}
-    \RightLabel{Cut}
-    \BIC{$Γ\fCenter Δ\impl Π$}
-    \RightLabel{Res$\impl\prod$}
-    \UIC{$Γ\prod Π\fCenter Δ$}
-    \RightLabel{Res$\prod\impr$}
-    \UIC{$Π\fCenter Γ\impr Δ$}
-  \end{pfbox}
-\end{center}
-And likewise for L$\impl$ and R$\impl$.
-
-
-\subsection{Terms for \lamET}
+\subsection{Terms for display NL}
 \label{sec:translation-to-lamET}
 
 
@@ -479,11 +519,11 @@ ambiguity in our syntax when there is ambiguity in the meaning.
 In order to solve this, we can employ focusing, as developed by
 \citet{andreoli1992} for linear logic. This extension was first
 employed for proof search in Lambek calculi by
-\citet{bastenhof2011} and \citet{moortgat2012} for classical
-non-associative Lambek calculus (CNL) and the Lambek-Grishin calculus
-(LG), respectively. Both of these calculi are extensions of NL, so
-applying the techniques developed in their work to display NL is
-trivial.
+\citet{bastenhof2011} and \citet{moortgat2009,moortgat2012} for
+classical non-associative Lambek calculus (CNL) and the Lambek-Grishin
+calculus (LG), respectively. Both of these calculi are extensions of
+NL, so applying the techniques developed in their work to display NL
+is trivial.
 
 \input{fig-focused-display-calculus}
 
@@ -567,8 +607,9 @@ formulas---positive for inputs such as \N\ and \NP, negative for
 outputs such as \S---the logic can be tuned to allow ambiguous
 derivations exactly where scope ambiguity may arise in natural
 language. However, we employ different mechanisms to deal with scope
-ambiguity, which we will discuss in \todo{NL$_{QR}$}. For this reason,
-we assign all atomic formulas negative polarity, and use a direct
+ambiguity, which we will discuss
+in \autoref{sec:nl-lambda-nl-cl-and-nl-ibc}. For this reason, we
+assign all atomic formulas negative polarity, and use a direct
 translation. This translation is identical to the term labelling given
 in \autoref{fig:display-calculus-to-explicit-lamET}; the left and
 right axioms translate no different than the old axiom, and the
@@ -647,21 +688,22 @@ However, defining this procedure requires a proof of cut-elimination.
 The work by \citeauthor{bastenhof2011} assures us that focused NL is
 indeed a display calculus. However, since the proof of this fact
 requires a proof of cut-elimination, using this approach would lose
-the main advantage of display calculus. Worse so, if we make
-extensions to display NL beyond CNL, we can no longer depend on the
-assurance offered by \citeauthor{bastenhof2011}.
+the main advantage of display calculus. And if we make extensions to
+display NL beyond CNL, we can no longer depend on the assurance
+offered by \citeauthor{bastenhof2011}.
+
+More generally, \citet{andreoli1992} proves that the focused full
+linear logic is complete w.r.t.\ full linear logic. Since any
+extension that we propose in this thesis is less expressive than
+linear logic, we believe that between these two results, anything we
+propose in this thesis should have a valid focusing regime.
 
 Because it does not fall within the scope of this thesis, we will
 leave the problem of finding an elegant solution to this as future
 work. For the remainder of this thesis, will depend on the display
-calculus for the formal properties, and consider the focused calculus
-to merely be an optimisation, believed to be complete w.r.t.\ the
-display calculus.
-This way, if an solution is found in the future, the entire body of
-work---including focusing---remains valid. However, if the opposite is
-proven, the display version of the calculus will still be of use.
-
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: t
-%%% End:
+calculus for the formal properties, and use the focused calculus as an
+optimisation, which we believed to be complete w.r.t.\ the display
+calculus. This way, if a solution is found in the future, the entire
+body of work---including focusing---remains valid. However, if the
+opposite is proven, the display version of the calculus will still be
+of use.

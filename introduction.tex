@@ -5,15 +5,17 @@ In this thesis, I will discuss the grammar logic NLQ, an extension of
 the non-associative Lambek calculus, which is capable of analysing
 quantifier movement, scope islands, infixation and extraction.
 
-This thesis is not meant to be a work of thorough linguistic
-analysis. In this thesis, what I hope to do is \emph{extend} and
-\emph{solidify} the logical vocabulary with which such analyses can be
-made. In this, I will use the following guiding principles:
+% This thesis is not meant to be a work of thorough linguistic
+% analysis.
+What I hope to do in this thesis is to \emph{extend} and
+\emph{solidify} the logical vocabulary with which such linguistic
+analyses can be made. In this, I will use the following guiding
+principles:
 \begin{itemize}
-\item We are constructing a \uline{grammar} logic. Therefore, we only
+\item We are constructing a \emph{grammar} logic. Therefore, we only
   want features in our logic for which we can demonstrate a motivating
   example from natural language.
-\item We are constructing a grammar \uline{logic}. Therefore, we will
+\item We are constructing a grammar \emph{logic}. Therefore, we will
   only accept extensions to our logic if we can show that they
   preserve our most important properties: we want our logic to be
   reflexive and transitive, and want a procedure for proof
@@ -68,8 +70,7 @@ Lambek calculus (NL) paired with a simple semantic lambda calculus
 In \autoref{sec:display-calculus}, we will discuss the display
 calculus formulation of NL, and motivate our usage of display
 calculus.
-Then, in sections \ref{sec:lexical-ambiguity},
-\ref{sec:natural-language-monads-and-effects} and
+Then, in sections \ref{sec:lexical-ambiguity} and
 \ref{sec:movement-and-quantifier-raising}, we will discuss several
 extension to the base type-logical grammar.
 
@@ -98,9 +99,10 @@ both the syntactic and the semantic function. However, the current
 state of affairs in research is that often only the semantic function
 is truly considered\footnote{%
   This statement is not true for \emph{associative} type-logical
-  grammars, which fundamentally treat the syntactic and semantic
-  functions as the same function by rejecting the tree structure of
-  sentences.
+  grammars, which fundamentally reject the tree structure of
+  language---that is, they assume that the meaning of a sentence
+  depends solely on the linear order of words, and not on some hidden
+  tree structure.
 }. This makes sense from a research perspective: we can refer to the
 huge body of work on generative grammar to inform our choice for
 sentence structure, and focus on assigning the right meaning to these
@@ -114,12 +116,11 @@ function:
   $\downarrow$\\
   $\exists X.X\subseteq\mathbf{fox}\land\mathbf{past}(\mathbf{see}(\text{mary},X))$
 \end{center}
-The problem that the semantic function is trying to address is the
-following:
-\begin{center}\itshape
-  Given a tree of typed terms, return the meaning associated with that tree.
-\end{center}
-Given the presence of the phrase ``tree of typed terms'', we may
+That is, it is a function which, given some structured and typed input
+which represents the syntactic structure of a sentence, returns the
+meaning(s) associated with that sentence.
+
+Given the presence of the phrase ``structured and typed'', we may
 already suspect that type theory offers a fitting solution to this
 problem. And indeed, under the guise of type-logical grammar, it
 does. A type-logical grammar generally consists of three things:
@@ -165,12 +166,15 @@ and `john' is a constant of type \e. Note that we will sometimes write
 logical operators in their usual notation, e.g.\ $M\wedge N$ or
 $\forall x.M$, but this should be taken as syntactic sugar, in the
 case of our examples rewriting to $(({\wedge}\;M)\;N)$ and
-$\forall\;(\lambda{x}.M)$, respectively.
+$\forall\;(\lambda{x}.M)$, respectively. Additionally, we will
+occasionally write e.g.\ $\e\e\t$ instead of $\e\ra\e\ra\t$, or
+$(\e\t)\t$ instead of $(\e\ra\t)\ra\t$, using adjacency to mean
+implication.
 
 \input{fig-implicit-semantic-calculus}%
 
 Using this calculus as a semantics function directly would
-over-generate as, e.g.\ for the sequent $\{\text{john}:\e,
+over-generate, e.g.\ for the sequent $\{\text{john}:\e,
 \text{likes}:\e\ra\e\ra\t, \text{mary}:\e\}\fCenter\t$ we can derive
 both $((\text{likes}\;\text{john})\;\text{mary})$ and
 $((\text{likes}\;\text{mary})\;\text{john})$.
