@@ -44,6 +44,15 @@
 \usepackage{ifthen}
 \usepackage{tikz}
 \usepackage{tikz-qtree}
+\usetikzlibrary{positioning}
+\tikzset{
+  center coordinate/.style={
+    execute at end picture={
+      \path ([rotate around={180:#1}]perpendicular cs: horizontal line through={#1},
+                                  vertical line through={(current bounding box.east)})
+            ([rotate around={180:#1}]perpendicular cs: horizontal line through={#1},
+                                  vertical line through={(current bounding box.west)});}}}
+
 \usepackage{textcomp}
 
 \usepackage{amsmath, amscd, amsthm, amssymb, mathrsfs, amsfonts, wasysym}%

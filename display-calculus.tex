@@ -4,7 +4,7 @@
 In the previous section, we glossed over the issue of proof
 search. This is problematic, because the natural deduction formulation
 of the syntactic calculus we presented in
-\autoref{fig:syntactic-calculus} is not especially suited to proof
+\autoref{fig:nl-natural-deduction} is not especially suited to proof
 search. \citeauthor{lambek1961} originally developed a sequent
 calculus for NL, which \emph{does} have a practical procedure
 for proof search. However, we are not interested in using just any
@@ -30,11 +30,11 @@ ambiguity.
 
 \subsection{NL as a display calculus}
 \label{sec:nl-as-a-display-calculus}
-\input{fig-display-calculus}
+\input{fig-nl-display-calculus}
 
 We present the display calculus for NL in
-\autoref{fig:display-calculus}.\footnote{%
-  The calculus in \autoref{fig:display-calculus} was first formulated
+\autoref{fig:nl-display-calculus}.\footnote{%
+  The calculus in \autoref{fig:nl-display-calculus} was first formulated
   by \citet{moortgat1999}---though without display calculus in
   mind. Because the logical and structural connectives in NL coincide,
   they did not think to distinguish between them. Therefore, they do
@@ -42,14 +42,14 @@ We present the display calculus for NL in
   slightly different properties.
 }
 It features the same atoms and types
-as in \autoref{fig:syntactic-calculus}, but structures have been
+as in \autoref{fig:nl-natural-deduction}, but structures have been
 expanded: there are now positive and negative structures---with one
 structural connective for each logical connective---and residuation
 rules to navigate them.\footnote{%
   For each connective, we use the \emph{same} symbol at both the
   logical and the structural level. This is unconventional. However,
   because each type, when used in a structure, is wrapped in the
-  $\struct{\ }$-connective, this is perfectly unambiguous.
+  $\struct{\_}$-connective, this is perfectly unambiguous.
 }
 These two work together to guarantee the \emph{display
   property}---the property that any sub-structure can be made the sole
@@ -71,9 +71,9 @@ Because the display property guarantees that any sub-structure can be
 displayed on either the right- or the left-hand side of the turnstile,
 we will occasionally abbreviate inferences such as the one above using
 the display postulate (DP):\footnote{%
-  We have attached a formal proof of the display property for full
-  NLQ---an extension of display NL as presented in this section. See
-  the appendix A for more details.}
+  We have attached a formal, executable proof of the display property
+  for full NLQ---an extension of display NL as presented in this
+  section. See the appendix A for more details.}
 \begin{pfblock}
   \AXC{$\vdots$}\noLine
   \UIC{$\struct{\NP}\prod(\struct{\TV}\prod\struct{\underline{\NP}})\fCenter\struct{\S}$}
@@ -81,10 +81,8 @@ the display postulate (DP):\footnote{%
   \UIC{$\struct{\underline{\NP}}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\TV}$}
 \end{pfblock}
 
-One difference between our display calculus and \citepos{lambek1961}
-sequent calculus is that we use the product-free version of NL. The
-reason for this is that we have no use for the product in this
-thesis. Should it be needed, however, it is very easily added:
+Again, we use the product-free version of NL. Should the reader need a
+product, though, it is easily added \citep{moortgat2012}:
 \begin{center}
   \begin{pfbox}
     \AXC{$\struct{A}\prod\struct{B}\fCenter{X}$}
@@ -99,11 +97,11 @@ thesis. Should it be needed, however, it is very easily added:
   \end{pfbox}
 \end{center}
 
-Another change that was made in this display calculus, is that the
-axiom has been restricted to atoms. This does not mean our logic no
-longer has the identity, since it is derivable by simple induction
-over the structure of the formula. For instance, in the case of an
-identity on $A\impr B$:
+One change that was made in this display calculus, is that the axiom
+has been restricted to atoms. This does not mean our logic no longer
+has the identity, since it is derivable by simple induction over the
+structure of the formula. For instance, in the case of an identity on
+$A\impr B$:
 \begin{pfblock}
   \AXC{$\vdots$}\noLine\UIC{$\struct{A}\fCenter\struct{A}$}
   \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter\struct{B}$}
@@ -245,7 +243,7 @@ Theoretically, in order to be able to use naive backwards-chaining
 proof search, our structural rules have to have the sub-structure
 property. In practice, this is unfeasible for display calculi.
 As an example of why, have a look at the residuation rules---for
-instance, those in \autoref{fig:display-calculus}. Such rules are
+instance, those in \autoref{fig:nl-display-calculus}. Such rules are
 crucial to display calculus---we will discuss why in the following
 section---but they do not have the sub-structure property. In fact,
 since they can be applied either way around, it is easy to see how
@@ -274,8 +272,9 @@ visited more than once. We will discuss this further in
 \paragraph{Generic proof of cut-elimination}
 Another important property of display calculus is the generic proof of
 cut-elimination.
-A proof of cut-elimination means that every proof which uses the cut
-rule can be rewritten to a proof that does not use the cut rule:
+A proof of cut-elimination means that cut is an admissible rule, i.e.\
+that every proof which uses the cut rule can be rewritten to a proof
+that does not use the cut rule:
 \begin{prooftree}
   \AXC{$Γ\fCenter A$}
   \AXC{$A\fCenter Δ$}
@@ -314,7 +313,7 @@ once.
 One last property of display calculus that is useful in formalising
 the calculus, is the fact that display calculus does not rely on the
 mechanisms of contexts and plugging functions, as used in
-\autoref{fig:explicit-semantic-calculus} and the usual sequent
+\autoref{fig:explicit-lamET} and the usual sequent
 calculus formulation of NL.
 These mechanisms are sometimes touted for simplifying the presentation
 of proofs on paper, and for decreasing the complexity of proof
@@ -334,11 +333,36 @@ datatypes. In their implementation of verified binary search trees,
 \citet{mcbride2014} notes that this is bad design, as it leads to an
 increased proof burden.
 
+Another issue is that, on paper, researchers are used to reasoning
+with a number of simplifications: the function `\plug' is often
+overloaded to mean ``plug structure into context'' and ``compose two
+contexts'', and we reason up to e.g.\ the equivalence between the two
+($\Sigma_1[\Sigma_2[\Gamma]]\equiv (\Sigma_1[\Sigma_2])[\Gamma]$) and
+the associativity of context composition. When using a proof
+assistant, these implicit rewrite steps become painfully obvious.
+
 To make matters worse, it is not trivial to see if these mechanisms
 actually \emph{do} decrease the size of the proofs. Undoubtedly, there
 are fewer rule applications, but the flipside of this is that each
 rule application involving a context must now implicitly be decorated
-with that context.
+with that context to be perfectly unambiguous.
+Note that to apply a \emph{single} rule under a context of depth $d$,
+we need to write $2d$ applications of residuation rules---$1d$ to move
+down into the context, $1d$ to move back up---as opposed of annotating
+with a single context of size $d$.\footnote{%
+  Though contexts are usually conceptualised as ``structures with a
+  single hole'', there is no need to write anything but the path to
+  the hole---that is to say, it is perfectly unambiguous to write
+  ``$\_\prodr(\square\prodl\_)$'' instead of e.g.\
+  $\NP\prodr(\square\prodl((\N\impl\NP)\prod\NP))$. Therefore, we can
+  say \emph{size} $d$ instead of \emph{depth} $d$.
+}
+A doubling in size. However, if we have $n$ successive applications
+under the \emph{same} context, then residuation starts to take the
+upper hand. For residuation, we still need to write $2d$ contexts, but
+for annotated rules, we will need to repeat the context each time,
+writing contexts of total size $nd$.
+
 In a similar vein, it is hard to see whether these mechanisms reduce
 amount of work to be done during proof search. While there are indeed
 fewer rules, each of these rules can now be applied under a variety of
@@ -348,6 +372,13 @@ allows for the proof search algorithm to be truly trivial, as we can
 say a rule applies if its conclusion can be unified with the current
 proof obligation, and do not have to check all possible contexts under
 which this unification could succeed.
+
+And lastly, for any calculus it is trivial, when given the display
+calculus rules, to derive the sequent calculus rules which use
+contexts and absorb the residuation steps---this can be done by
+induction on the structure of the context. However, the opposite,
+deriving the display calculus rules using the sequent calculus rules,
+is much more involved.
 
 
 
@@ -383,10 +414,8 @@ In \autoref{fig:extension-products}, we extend our semantic calculus
 with products. Anticipating future needs, we also extend it with
 units.
 
-\input{fig-display-calculus-terms}
-
 The term labelling for display NL is presented in
-\autoref{fig:display-calculus-to-explicit-lamET}. The lambda terms are
+\autoref{fig:nl-display-calculus-to-lamET}. The lambda terms are
 typed by the translations of the  formulas from display NL. As is
 usual when translating sequent calculus to natural deduction, our term
 labelling employs substitution, which was defined in
@@ -415,7 +444,7 @@ the following proof:
   \RightLabel{Res$\impr\prod$}
   \UIC{$\struct{\NP}\prod(\struct{(\NP\impr\S)\impl\NP}\prod\struct{\NP})\fCenter\struct{\S}$}
 \end{pfblock}
-Applying the translation from \autoref{fig:display-calculus-to-explicit-lamET}
+Applying the translation from \autoref{fig:nl-display-calculus-to-lamET}
 gives us the following lambda term:
 \[
   s:\e\times(\e\e\t\times\e)\fCenter
@@ -450,17 +479,61 @@ antecedent. Using it has the advantage that the lambda term takes the
 lexical definitions---the values for mary, likes and bill---from a
 \emph{linear} structure, instead of from a nested tuple.
 
+
+
+
 \subsection{Focusing and spurious ambiguity}
 \label{sec:focusing-and-spurious-ambiguity}
 
 In \autoref{sec:nl-as-a-display-calculus}, we briefly touched upon
 spurious ambiguity. We investigated the spurious ambiguity inherent in
-the axiom. In display NL as it stands, there is another kind of
-spurious ambiguity that display NL shares with the sequent
-calculus. In the case where there are two logical implications, not
-nested under one another, there is an ambiguity in which one to
-resolve first. We find this ambiguity, for instance, in the proofs
-associated with ``Mary saw the fox.'':
+the axiom, but we never gave a formal definition of spurious
+ambiguity.
+
+To be able to give such a formal definition, we need the notion of a
+\emph{normal-form}. For instance, \citet{andreoli1992} defines a
+normal-form for full linear logic. This system removes e.g.\ the
+choice in when to apply contraction and weakening, and in which order
+to decompose the formulae. \citet{hepple1990} does a similar thing for
+the Lambek calculus. Once we have a normal-form, we can define
+spurious ambiguity in our search procedure as finding multiple proofs
+for which the normal-forms are equal.
+
+We can refine the above definition of spurious ambiguity, by referring
+to the semantic interpretation \citep{capelletti2007,bastenhof2013}.
+Below is a diagram representing the function which interprets
+syntactic terms, where `$\tr$' is the translation from NL to \lamET,
+and `lex' is the function that inserts the lexical definitions for
+words:\footnote{%
+  Note that the second node is often considered to be \emph{linear}
+  \lamET, i.e.\ the fragment of \lamET\ without contraction and
+  weakening. This is because the syntactic calculus is not supposed
+  to do insertion or deletion. \todo{Reference as to further discussion?}
+}
+\begin{center}
+  \begin{tikzpicture}[center coordinate=(B)]
+    \node             (A) {NL};
+    \node[right=of A] (B) {$\lamET$};
+    \node[right=of B] (C) {$\lamET$};
+
+    \draw[->] (A) -- (B) node[draw=none, midway, above=1ex] {$\tr$};
+    \draw[->] (B) -- (C) node[draw=none, midway, above=1ex] {lex};
+  \end{tikzpicture}
+\end{center}
+We can define spurious ambiguity with respect to the second node,
+i.e.\ the semantic terms after applying the translation `$\tr$'
+\emph{and normalising}, but before inserting the lexical definitions.
+In effect, we want a normal-form for NL which is guaranteed to
+translate to a \emph{unique} normal-form term in \lamET.
+
+\todo{THIS IS WHERE I STOPPED}
+
+In display NL as it stands, there is another kind of spurious
+ambiguity that display NL shares with the sequent calculus. In the
+case where there are two logical implications, not nested under one
+another, there is an ambiguity as to which one to resolve first. We
+find this ambiguity, for instance, in the proofs associated with
+``Mary saw the fox.'':
 \begin{pfblock}
   \AXC{}\RightLabel{Ax}\UIC{$\struct\N \fCenter\struct\N$}
   \AXC{}\RightLabel{Ax}\UIC{$\struct\NP\fCenter\struct\NP$}
@@ -516,13 +589,12 @@ the two are $\beta$-equivalent. This is problematic, as we only want
 ambiguity in our syntax when there is ambiguity in the meaning.
 
 In order to solve this, we can employ focusing, as developed by
-\citet{andreoli1992} for linear logic. This extension was first
-employed for proof search in Lambek calculi by
-\citet{bastenhof2011} and \citet{moortgat2009,moortgat2012} for
-classical non-associative Lambek calculus (CNL) and the Lambek-Grishin
-calculus (LG), respectively. Both of these calculi are extensions of
-NL, so applying the techniques developed in their work to display NL
-is trivial.
+\citet{hepple1990} for the Lambek calculus, and \citet{andreoli1992}
+for linear logic.
+The focusing regime as presented in this thesis is a fragment of those
+developed by \citet{bastenhof2011} for classical non-associative
+Lambek calculus (CNL) and by \citet{moortgat2009,moortgat2012} for the
+Lambek-Grishin calculus (LG).
 
 \input{fig-focused-display-calculus}
 
@@ -610,7 +682,7 @@ ambiguity, which we will discuss
 in \autoref{sec:nl-lambda-nl-cl-and-nl-ibc}. For this reason, we
 assign all atomic formulas negative polarity, and use a direct
 translation. This translation is identical to the term labelling given
-in \autoref{fig:display-calculus-to-explicit-lamET}; the left and
+in \autoref{fig:nl-display-calculus-to-lamET}; the left and
 right axioms translate no different than the old axiom, and the
 focusing and unfocusing rules translate to the identity.
 

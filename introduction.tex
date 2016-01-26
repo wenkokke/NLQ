@@ -159,7 +159,7 @@ a semantic calculus, and the non-associative Lambek calculus
 \citep[NL;][]{lambek1961} as a syntactic calculus.
 
 The usual natural deduction formulation of \lamET\ can to be seen in
-\autoref{fig:implicit-semantic-calculus}. It is a simple lambda
+\autoref{fig:implicit-lamET}. It is a simple lambda
 calculus, with atomic types \e\ (`entity') and \t\ (`truth-value').
 In addition, we usually assume that any logical operator or
 word-meanings we need is defined as a constant of the appropriate
@@ -173,7 +173,7 @@ occasionally write e.g.\ $\e\e\t$ instead of $\e\ra\e\ra\t$, or
 $(\e\t)\t$ instead of $(\e\ra\t)\ra\t$, using adjacency to mean
 implication.
 
-\input{fig-implicit-semantic-calculus}%
+\input{fig-implicit-lamET}%
 
 Using this calculus as a semantics function directly would
 over-generate, e.g.\ for the sequent $\{\text{john}:\e,
@@ -187,7 +187,7 @@ formulation is much too expressive for natural language grammar.
 If we want more control over the structure of our terms, a good first
 step is to move to a purely syntactic formulation, where all the
 structural properties are made explicit in the calculus itself; this
-has been done in \autoref{fig:explicit-semantic-calculus}. We have
+has been done in \autoref{fig:explicit-lamET}. We have
 replaced the set by a (possibly empty) binary tree, spanned by the
 structural product `$\prod$'. We have also included a number of new
 structural rules, which implement the structure of a set: $\emptyset$E
@@ -196,7 +196,7 @@ weakening tell us that we can use formulas multiple times or not at
 all; and with commutativity and associativity we can change the order
 of the formulas any way we like.
 
-\input{fig-explicit-semantic-calculus}
+\input{fig-explicit-lamET}
 
 Note that, in order to define these structural rules, we had to define
 the notion of a `context'---a structure with \emph{exactly one} hole
@@ -216,7 +216,7 @@ It is not hard to convince yourself that the implicit and explicit
 versions of \lamET\ are equivalent---though we will refrain from
 giving the full proof here.
 Because of this equivalence, we can use the term language from
-\autoref{fig:implicit-semantic-calculus} for the explicit version of
+\autoref{fig:implicit-lamET} for the explicit version of
 \lamET.
 The term labelling of the logical rules is exactly the same. The
 structural rules only manipulate structures, and therefore do not
@@ -263,12 +263,12 @@ calculus in three simple steps:
   use S (`sentence'), NP (`noun phrase'), N (`noun'), PP
   (`prepositional phrase') and INF (`infinitive');
 \end{enumerate}
-The resulting system can be seen in \autoref{fig:syntactic-calculus},
+The resulting system can be seen in \autoref{fig:nl-natural-deduction},
 defined along with some definitions for common part-of-speech tags,
 i.e.\ \A\ (`adjective'), \IV\ (`intransitive verb') and \TV\
 (`transitive verb').
 
-\input{fig-syntactic-calculus}
+\input{fig-nl-natural-deduction}
 
 Dropping \emph{all} structural rules may seem unnecessary, but there
 is a good motivation for each rule.  For example, in the presence of
@@ -291,7 +291,23 @@ More examples, including specific derivations, of ungrammatical
 sentences that would be admitted in the presence of associativity and
 the empty structure can be found in \citet[p.\ 33, 105-106]{moot2012}.
 
-\vspace*{1\baselineskip}
+Note that we use the product-free version of NL. The reason for this
+is that we have no use for the product in this thesis. Should you need
+the product, however, it is very easily added:
+\begin{center}
+  \begin{pfbox}
+    \AXC{$\Gamma\fCenter{A}$}
+    \AXC{$\Delta\fCenter{B}$}
+    \RightLabel{L$\otimes$}
+    \BIC{$\Gamma\prod\Delta\fCenter{A\otimes{B}}$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$\Gamma\fCenter{A\otimes{B}}$}
+    \AXC{$\Sigma[A\prod{B}]\fCenter{C}$}
+    \RightLabel{R$\otimes$}
+    \BIC{$\Sigma[\Gamma]\fCenter{C}$}
+  \end{pfbox}
+\end{center}
 
 The last component we need for our simple type-logical grammar is a
 translation from our syntactic calculus to our semantic calculus,
@@ -304,11 +320,19 @@ which consists of:
 \end{enumerate}
 However, in the interest of brevity, we will often give this second
 translation directly as a term labelling. For instance, in
-\autoref{fig:syntactic-calculus-to-explicit-lamET}, we give the
+\autoref{fig:nl-natural-deduction-to-lamET}, we give the
 translation on terms by directly labelling the rules of the syntactic
 calculus with semantic terms. Because there is a one-to-one
 correspondence between lambda terms and proofs, this is perfectly
 unambiguous.
+
+Note that we have chosen the particular translation for atomic types
+in \autoref{fig:nl-natural-deduction-to-lamET} because it
+aligns well with the remainder of this thesis. However, there are
+different ways to define this translation---most notably,
+\citepos{montague1973} worst-case generalisation for NPs, which
+interprets them as having the type $(\e\t)\t$.
+\todo{Reference to the correct work by Montague?}
 
 Now that we have a full type-logical grammar, let's give an example
 analysis of the sentence ``Mary likes Bill''. We assume the
@@ -335,3 +359,5 @@ turns out, the only proof is:
 And so, by searching for a proof in our syntactic calculus (bottom-up)
 and then adding in the term labelling (top-down) we derive an
 interpretation for our sentence.
+
+\input{fig-nl-sequent-calculus}
