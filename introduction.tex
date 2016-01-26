@@ -24,8 +24,8 @@ principles:
 I am under no impression that the extensions I am proposing will be
 the be-all and end-all of logical grammar, so another important point
 in this thesis will be \emph{modularity}.
-In my opinion, it is incredibly important to formulate extensions in a
-modular manner, so that other logical grammarians are free to mix and
+It is incredibly important to formulate extensions in a modular
+manner, so that other logical grammarians are free to mix and
 match extensions without having to worry about unforeseen
 interactions. There are two key techniques for this:
 \begin{enumerate*}[label=(\arabic*)]
@@ -38,6 +38,8 @@ interactions. There are two key techniques for this:
   rules in that extension only apply in the presence of these
   connectives.
 \end{enumerate*}
+
+\todo{Key point: we need a normal-form for our calculus.}
 
 The last key point in this thesis will be \emph{verification}. It is
 far too easy to make mistakes when writing down logical proofs in a
@@ -126,8 +128,8 @@ problem. And indeed, under the guise of type-logical grammar, it
 does. A type-logical grammar generally consists of three things:
 \begin{enumerate}[label=(\arabic*)]
 \item a syntactic calculus, set up in such a fashion that only
-  grammatical sentences are well-typed, and for which an efficient
-  method of proof-search exists;
+  grammatical sentences are well-typed, and for which an efficiently
+  decidable procedure for proof-search exists;
 \item a semantic calculus, used to represent the meanings of words and
   sentences; and
 \item a translation from the syntactic to the semantic calculus.
@@ -176,8 +178,9 @@ implication.
 Using this calculus as a semantics function directly would
 over-generate, e.g.\ for the sequent $\{\text{john}:\e,
 \text{likes}:\e\ra\e\ra\t, \text{mary}:\e\}\fCenter\t$ we can derive
-both $((\text{likes}\;\text{john})\;\text{mary})$ and
-$((\text{likes}\;\text{mary})\;\text{john})$.
+$((\text{likes}\; \text{john})\; \text{mary})$, $((\text{likes}\;
+\text{mary})\; \text{john})$, $((\text{likes}\; \text{mary})\;
+\text{mary})$ and $((\text{likes}\; \text{john})\; \text{john})$.
 The reason for this is, of course, that the set structure used in this
 formulation is much too expressive for natural language grammar.
 
@@ -188,10 +191,10 @@ has been done in \autoref{fig:explicit-semantic-calculus}. We have
 replaced the set by a (possibly empty) binary tree, spanned by the
 structural product `$\prod$'. We have also included a number of new
 structural rules, which implement the structure of a set: $\emptyset$E
-allows us to have an empty antecedent; contraction and weakening tell
-us that we can use formulas multiple times or not at all; and with
-commutativity and associativity we can change the order of the
-formulas any way we like.
+and $\emptyset$I allow us to have an empty antecedent; contraction and
+weakening tell us that we can use formulas multiple times or not at
+all; and with commutativity and associativity we can change the order
+of the formulas any way we like.
 
 \input{fig-explicit-semantic-calculus}
 
@@ -277,11 +280,16 @@ consecutive words with the same type---which means that ``John read
 a fantastic blue book'' could be taken to mean the same thing as
 ``John read a blue book''.
 
-The motivations to drop associativity and the empty structure are a
-little bit harder to understand, but the interested reader can refer
-to \citet[p. 33, 105-106]{moot2012} or \citet{lambek1961}, who give
-some examples of  ungrammatical sentences that would be accepted in
-the presence of these rules.
+With respect to associativity, \citet[][p.\ 167]{lambek1961} mentions
+that ``the most natural assignments of types to English words [would]
+admit many pseudo-sentences as grammatical, e.g.\ %
+\begin{center}
+  (*)~\itshape John is poor sad. John likes poor him. Who works and
+  John rests?
+\end{center}
+More examples, including specific derivations, of ungrammatical
+sentences that would be admitted in the presence of associativity and
+the empty structure can be found in \citet[p.\ 33, 105-106]{moot2012}.
 
 \vspace*{1\baselineskip}
 

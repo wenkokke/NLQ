@@ -83,20 +83,19 @@ the display postulate (DP):\footnote{%
 
 One difference between our display calculus and \citepos{lambek1961}
 sequent calculus is that we use the product-free version of NL. The
-reason for this is that we do not have solid linguistic evidence to
-include the product type. However, if it turns out to be useful, it is
-very easily added:
+reason for this is that we have no use for the product in this
+thesis. Should it be needed, however, it is very easily added:
 \begin{center}
   \begin{pfbox}
     \AXC{$\struct{A}\prod\struct{B}\fCenter{X}$}
-    \RightLabel{L$\prod$}
-    \UIC{$\struct{A\prod{B}}\fCenter{X}$}
+    \RightLabel{L$\otimes$}
+    \UIC{$\struct{A\otimes{B}}\fCenter{X}$}
   \end{pfbox}
   \begin{pfbox}
     \AXC{$X\fCenter\struct{A}$}
     \AXC{$Y\fCenter\struct{B}$}
-    \RightLabel{R$\prod$}
-    \BIC{$X\prod{Y}\fCenter\struct{A\prod{B}}$}
+    \RightLabel{R$\otimes$}
+    \BIC{$X\prod{Y}\fCenter\struct{A\otimes{B}}$}
   \end{pfbox}
 \end{center}
 

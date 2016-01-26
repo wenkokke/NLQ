@@ -2,15 +2,15 @@
 \label{sec:lexical-ambiguity}
 In this section, we will introduce `\&' (pronounced `with') from
 linear logic, and show how this can be used to encode lexical
-ambiguity. The original framework for categorial grammar
-\citep{lambek1958} already had machinery in place to deal with
-ambiguity; it allowed for multiple lexical entries for each
-word. However, in the spirit of wanting to deal with linguistic
-phenomena in a logical manner, it seems to make more sense to
-absorb lexical ambiguity into the logic itself. Not only is there a
-perfectly well-understood connective that can deal with this
-phenomenon, but it allows us to define ambiguity at any level in the
-type.
+ambiguity.
+The original framework for categorial grammar \citep{lambek1958}
+already had machinery in place to deal with ambiguity; it allowed for
+multiple lexical entries for each word.
+However, in the spirit of wanting to deal with linguistic phenomena in
+a logical manner, it seems to make more sense to absorb lexical
+ambiguity into the logic itself. This is already done by
+\citet[][p.\ 170]{lambek1961}, though he uses the `$\cap$' symbol
+instead of \citepos{girard1987} later `\&'.
 
 \input{fig-extension-lexical-ambiguity}
 
@@ -19,7 +19,7 @@ the associated inference rules, and term labelling in \lamET. You may
 notice that the left rules seem to \textit{forget} either the left- or
 the right-hand argument, and that in the right rule the context $Γ$ is
 \textit{shared} between the two branches. While these look like
-applications of weakening and contraction, it is perfectly
+applications of weakening and contraction, they is perfectly
 benign. What `\&' encodes is a \textit{choice}: The right rule says
 that if you can construct $A$ from $Γ$, and you can construct $B$ from
 $Γ$, and you have \textit{one} $Γ$, then you have a choice between
