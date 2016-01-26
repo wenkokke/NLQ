@@ -1,0 +1,54 @@
+\begin{figure}[hb]
+  \begin{mdframed}
+    \centering
+    \begin{minipage}{0.6\linewidth}
+      \begin{alignat*}{4}
+        \text{Atom}     \;&α  &&\coloneqq \S\vsep\N\vsep\NP\vsep\INF\\
+        \text{Type}     \;&A,B&&\coloneqq α\vsep A\impr B\vsep B\impl A\\
+        \text{Structure}\;&Γ,Δ&&\coloneqq A\vsep Γ\prod Δ
+      \end{alignat*}
+    \end{minipage}%
+    \begin{minipage}{0.4\linewidth}
+      \begin{align*}
+        \Box [Γ]&\mapsto Γ\\
+        (Σ\prodl Δ)[Γ]&\mapsto (Σ[Γ]\prod Δ)\\
+        (Δ\prodr Σ)[Γ]&\mapsto (Δ\prod Σ[Γ])
+      \end{align*}
+    \end{minipage}
+
+    \vspace*{1\baselineskip}
+    \begin{pfbox}
+      \AXC{}
+      \RightLabel{Ax}
+      \UIC{$A\fCenter{A}$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    \begin{pfbox}
+      \AXC{$\Sigma[B]\fCenter{C}$}
+      \AXC{$\Gamma\fCenter{A}$}
+      \RightLabel{L$\impr$}
+      \BIC{$\Sigma[\Gamma\prod(A\impr{B})]$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$A\prod\Gamma\fCenter{B}$}
+      \RightLabel{R$\impr$}
+      \UIC{$\Gamma\fCenter{A\impr{B}}$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    \begin{pfbox}
+      \AXC{$\Sigma[B]\fCenter{C}$}
+      \AXC{$\Gamma\fCenter{A}$}
+      \RightLabel{L$\impl$}
+      \BIC{$\Sigma[(B\impl{A})\prod\Gamma]$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$\Gamma\prod{A}\fCenter{B}$}
+      \RightLabel{R$\impr$}
+      \UIC{$\Gamma\fCenter{B\impl{A}}$}
+    \end{pfbox}
+    \vspace*{1\baselineskip}
+
+  \end{mdframed}
+  \caption{NL \citep{lambek1961} in sequent calculus style.}
+  \label{fig:nl-sequent-calculus}
+\end{figure}

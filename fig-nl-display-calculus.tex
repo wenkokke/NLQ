@@ -1,0 +1,114 @@
+\begin{figure}[hb]
+  \begin{mdframed}
+    \centering
+    \begin{alignat*}{4}
+      \text{Atom}&\;        &α   &\coloneqq \S\vsep\N\vsep\NP\vsep\PP\vsep\INF\\
+      \text{Type}&\;        &A,B &\coloneqq α\vsep A\impr B\vsep B\impl A\\
+      \text{Structure}&^+\; &Γ   &\coloneqq \cdot A\cdot\vsep Γ_1\prod Γ_2\\
+      \text{Structure}&^-\; &Δ   &\coloneqq \cdot A\cdot\vsep Γ\imprΔ\vsep Δ\implΓ
+    \end{alignat*}
+
+    \begin{pfbox}
+      \AXC{}
+      \RightLabel{Ax}
+      \UIC{$\struct{α}\fCenter\struct{α}$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\struct{A}$}
+      \AXC{$\struct{B}\fCenter Δ$}
+      \RightLabel{L$\impr$}
+      \BIC{$\struct{A\impr B}\fCenter Γ\impr Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\struct{A}\impr\struct{B}$}
+      \RightLabel{R$\impr$}
+      \UIC{$Γ\fCenter\struct{A\impr B}$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\struct{A}$}
+      \AXC{$\struct{B}\fCenter Δ$}
+      \RightLabel{L$\impl$}
+      \BIC{$\struct{B\impl A}\fCenter Δ\impl Γ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\struct{B}\impl\struct{A}$}
+      \RightLabel{R$\impl$}
+      \UIC{$Γ\fCenter\struct{B\impl A}$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    \begin{pfbox}
+      \AXC{$Γ_2\fCenter Γ_1\impr Δ$}
+      \doubleLine\RightLabel{Res$\impr\prod$}
+      \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ_1\fCenter Δ\impl Γ_2$}
+      \doubleLine\RightLabel{Res$\impl\prod$}
+      \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
+    \end{pfbox}
+    \vspace*{1\baselineskip}
+  \end{mdframed}
+  \caption{NL \citep{lambek1961} as a display calculus.}%
+  \label{fig:nl-display-calculus}
+\end{figure}
+%
+\begin{figure}[hb]
+  \begin{mdframed}
+    \centering
+    \begin{minipage}{0.333\linewidth}
+      \begin{alignat*}{4}
+        &\textit{Structures}\\
+        &\tr[(\struct{A})] &&\mapsto \tr[A]\\
+        &\tr[(Γ_1\prod Γ_2)] &&\mapsto \tr[Γ_1]\times\tr[Γ_2]\\
+        \\
+        &\tr[(\struct{A})] &&\mapsto \tr[A]\\
+        &\tr[(Δ\impl Γ)] &&\mapsto \tr[Γ]\ra\tr[Δ]\\
+        &\tr[(Γ\impr Δ)] &&\mapsto \tr[Γ]\ra\tr[Δ]\\
+        \\
+        &\textit{Sequents}\\
+        &\tr[(Γ\fCenterΔ)] &&\mapsto \tr[Γ]\fCenter\tr[Δ]\\
+      \end{alignat*}
+    \end{minipage}%
+    \begin{minipage}{0.666\linewidth}
+      \centering
+      \vspace*{1\baselineskip}
+      \begin{prooftree}
+        \AXC{$x:Γ\fCenter M:A$}
+        \AXC{$y:B\fCenter N:Δ$}
+        \RightLabel{L$\impr$}
+        \BIC{$f:\struct{A\impr B}\fCenter\lambda x.\sub{N}{f\;M}{y}:Γ\impr Δ$}
+      \end{prooftree}
+      \begin{prooftree}
+        \AXC{$y:B\fCenter N:Δ$}
+        \AXC{$x:Γ\fCenter M:A$}
+        \RightLabel{L$\impl$}
+        \BIC{$f:\struct{B\impl A}\fCenter\lambda x.\sub{N}{f\;M}{y}:Δ\impl Γ$}
+      \end{prooftree}
+      \begin{prooftree}
+        \AXC{$y:Γ_2\fCenter M:Γ_1\impr Δ$}
+        \RightLabel{Res$\impr\prod$}
+        \UIC{$z:Γ_1\prod Γ_2\fCenter\case{z}{x}{y}{M\;x}:Δ$}
+      \end{prooftree}
+      \begin{prooftree}
+        \AXC{$x:Γ_1\fCenter M:Δ\impl Γ_2$}
+        \RightLabel{Res$\impl\prod$}
+        \UIC{$z:Γ_1\prod Γ_2\fCenter\case{z}{x}{y}{M\;y}:Δ$}
+      \end{prooftree}
+      \begin{prooftree}
+        \AXC{$z:Γ_1\prod Γ_2\fCenter M:Δ$}
+        \RightLabel{Res$\prod\impr$}
+        \UIC{$y:Γ_2\fCenter\lambda x.\sub{M}{(x,y)}{z}:Γ_1\impr Δ$}
+      \end{prooftree}
+      \begin{prooftree}
+        \AXC{$z:Γ_1\prod Γ_2\fCenter M:Δ$}
+        \RightLabel{Res$\prod\impl$}
+        \UIC{$x:Γ_1\fCenter\lambda y.\sub{M}{(x,y)}{z}:Δ\impl Γ_2$}
+      \end{prooftree}
+      \vspace*{1\baselineskip}
+    \end{minipage}
+  \end{mdframed}
+  \caption{Term labelling for display NL.}
+  \label{fig:nl-display-calculus-to-lamET}
+\end{figure}
