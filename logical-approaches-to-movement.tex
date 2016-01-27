@@ -86,7 +86,7 @@ x.\PERSON(x)\supset\SEE(\JOHN,x)$. This means that the expression
 `everyone,' which is deeply nested in the parse tree, must somehow
 scope over the entire expression.
 \citeauthor{barker2004} proposes to solve this problem by applying a
-(nonstandard) continuation-passing style (CPS) translation to the
+non-recursive continuation-passing style (CPS) translation to the
 lexicon. He lifts expressions of type $A$ into the type $(A\ra R)\ra
 R$ for some answer type $R$:
 \begin{alignat*}{3}
@@ -297,10 +297,10 @@ Needless to say, any logic extended with this equivalence loses a
 number of pleasant properties, one of which is decidable proof
 search. However, in chapter 17 of their book, \citeauthor{barker2015}
 do a great job of capturing the essence of the $\lambda$-rule in a
-logical manner; while their system is not yet decidable, it is very
-nearly so. They extend NL by a second modality
-$\{\himpr,\hprod,\himpl\}$, add three primitive structural constants
-$\{\I,\B,\C\}$, and add the following structural rules:
+logical manner---though their system is undecidable. They extend NL by
+a second modality $\{\himpr,\hprod,\himpl\}$, add three primitive
+structural constants $\{\I,\B,\C\}$, and add the following structural
+rules:
 \begin{center}
   \begin{pfbox}
     \AXC{$X\fCenter Y$}
@@ -546,7 +546,7 @@ explicitly mark this as an application of rewriting by equality
 \input{fig-example-changing-answer-type}
 
 \subsubsection{Parasitic scope}
-Parasitic scope is a beautiful mechanism, put forward by
+Parasitic scope is a interesting mechanism, put forward by
 \citet{barker2007}, which allows expressions to capture another
 quantifier's scope. Using this mechanism, a parasitic expression can
 take scope \emph{right} underneath another quantifier, and capture the

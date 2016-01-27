@@ -1,28 +1,17 @@
 \section{Display calculus and focused proof search}
 \label{sec:display-calculus}
 
-In the previous section, we glossed over the issue of proof
-search. This is problematic, because the natural deduction formulation
-of the syntactic calculus we presented in
-\autoref{fig:nl-natural-deduction} is not especially suited to proof
-search. \citeauthor{lambek1961} originally developed a sequent
-calculus for NL, which \emph{does} have a practical procedure
-for proof search. However, we are not interested in using just any
-sequent calculus for our system; we want to have a \emph{display
-  calculus}.
-
 In this section, we will develop a display calculus
 \citep{belnap1982} for NL. We will start out by presenting a display
 calculus for NL based on work by \citet{moortgat2009,moortgat2012} and
-\citet{gore1998}. We will then motivating our choice for display
-calculus.
+\citet{gore1998}. We will then continue by motivating our choice for
+display calculus over sequent calculus.
 In \autoref{sec:translation-to-lamET} we will relate our display
 calculus back to the framework discussed in \autoref{sec:introduction},
 by defining a translation from our display calculus back to \lamET.
-And finally, in \autoref{sec:focusing-and-spurious-ambiguity}, we will
-conclude our discussion of display calculus by addressing the problem
-of spurious ambiguity, and developing an extension to display
-calculus, using polarities and focusing
+And finally, in \autoref{sec:focusing-and-spurious-ambiguity}, discuss
+the problem of spurious ambiguity, and address this by developing an
+extension to display calculus, using polarities and focusing
 \citep{girard1991,bastenhof2011}, which is free of spurious
 ambiguity.
 
@@ -41,9 +30,9 @@ We present the display calculus for NL in
   not have the R$\impr$ and R$\impl$ rules, and their version has
   slightly different properties.
 }
-It features the same atoms and types
-as in \autoref{fig:nl-natural-deduction}, but structures have been
-expanded: there are now positive and negative structures---with one
+It features the same atoms and types as in
+\autoref{fig:nl-natural-deduction}, but structures have been expanded:
+there are now positive and negative structures---with one
 structural connective for each logical connective---and residuation
 rules to navigate them.\footnote{%
   For each connective, we use the \emph{same} symbol at both the
@@ -80,6 +69,26 @@ the display postulate (DP):\footnote{%
   \RightLabel{DP}
   \UIC{$\struct{\underline{\NP}}\fCenter(\struct{\NP}\impr\struct{\S})\impl\struct{\TV}$}
 \end{pfblock}
+Using the display property, we can trivially derive the sequent
+calculus rules. For instance, below we derive the sequent-calculus
+version of L$\impr$:\footnote{%
+  $\Sigma'$ is the representation of $\Sigma$ after it has been moved
+  by the display postulate. A formal definition of this relation is
+  given in appendix A.
+}
+\begin{pfblock}
+  \AXC{$\Sigma[\struct{B}]\fCenter{\struct{C}}$}
+  \RightLabel{DP}
+  \UIC{$\struct{B}\fCenter{\Sigma'[\struct{C}]}$}
+  \AXC{$\Gamma\fCenter\struct{A}$}
+  \BIC{$\struct{A\impr{B}}\fCenter\Gamma\impr\Sigma'[\struct{C}]$}
+  \RightLabel{Res$\impr\prod$}
+  \UIC{$\Gamma\prod\struct{A\impr{B}}\fCenter\Sigma'[\struct{C}]$}
+  \RightLabel{DP}
+  \UIC{$\Sigma[\Gamma\prod\struct{A\impr{B}}]\fCenter\struct{C}$}
+\end{pfblock}
+
+\vspace*{1\baselineskip}
 
 Again, we use the product-free version of NL. Should the reader need a
 product, though, it is easily added \citep{moortgat2012}:
@@ -97,19 +106,33 @@ product, though, it is easily added \citep{moortgat2012}:
   \end{pfbox}
 \end{center}
 
-One change that was made in this display calculus, is that the axiom
-has been restricted to atoms. This does not mean our logic no longer
-has the identity, since it is derivable by simple induction over the
-structure of the formula. For instance, in the case of an identity on
-$A\impr B$:
-\begin{pfblock}
-  \AXC{$\vdots$}\noLine\UIC{$\struct{A}\fCenter\struct{A}$}
-  \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter\struct{B}$}
-  \RightLabel{L$\impr$}
-  \BIC{$\struct{A\impr B}\fCenter\struct{A}\impr\struct{B}$}
-  \RightLabel{R$\impr$}
-  \UIC{$\struct{A\impr B}\fCenter\struct{A\impr B}$}
-\end{pfblock}
+One change that we made, aside from moving to display calculus, is
+that the axiom has been restricted to atoms. This does not mean our
+logic no longer has the identity, since it is derivable by simple
+induction over the structure of the formula:
+\begin{center}
+  \begin{pfbox}
+    \AXC{}
+    \RightLabel{Ax}
+    \UIC{$\struct{\alpha}\fCenter\struct{\alpha}$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$\vdots$}\noLine\UIC{$\struct{A}\fCenter\struct{A}$}
+    \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter\struct{B}$}
+    \RightLabel{L$\impr$}
+    \BIC{$\struct{A\impr B}\fCenter\struct{A}\impr\struct{B}$}
+    \RightLabel{R$\impr$}
+    \UIC{$\struct{A\impr B}\fCenter\struct{A\impr B}$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$\vdots$}\noLine\UIC{$\struct{A}\fCenter\struct{A}$}
+    \AXC{$\vdots$}\noLine\UIC{$\struct{B}\fCenter\struct{B}$}
+    \RightLabel{L$\impr$}
+    \BIC{$\struct{B\impl{A}}\fCenter\struct{B}\impl\struct{A}$}
+    \RightLabel{R$\impl$}
+    \UIC{$\struct{B\impl{A}}\fCenter\struct{B\impl{A}}$}
+  \end{pfbox}
+\end{center}
 Instead, the change was made to avoid spurious ambiguity. If the
 calculus \emph{were} to have a full identity, then there would be
 e.g.\ \emph{two} proofs of the identity over \IV:
@@ -130,12 +153,12 @@ e.g.\ \emph{two} proofs of the identity over \IV:
 \end{center}
 This is problematic. Generally, we only want to have two proofs for
 the same sequent when that sequent is associated with an ambiguous
-sentence. However, the derivation for e.g.\ ``Mary left'' contains the
-above derivation---as $\NP\impr\S$ is the type of `left'. But this
-sentence is not ambiguous at all! In fact, when we use the derived
-identity described above, the two proofs will expand to be equal. The
-problem of spurious ambiguity is further discussed in
-\autoref{sec:focusing-and-spurious-ambiguity}.
+sentence. The derivation for e.g.\ ``Mary left'' contains the above
+derivation---as $\NP\impr\S$ is the type of `left'---but this sentence
+is not ambiguous at all!
+In fact, when we use the derived identity described above, the two
+proofs will expand to be equal. The problem of spurious ambiguity is
+further discussed in \autoref{sec:focusing-and-spurious-ambiguity}.
 
 In order for our calculus to be a valid display calculus, it needs to
 obey eight simple conditions. Of these conditions, the only one that
@@ -211,41 +234,26 @@ Below we will discuss these arguments in favour of display calculus in
 more detail.
 
 \paragraph{Practical proof search procedure}
-One important property of sequent calculus, is the \emph{sub-formula}
-property---the property that a derivation of a sequent uses only
-proper sub-formulas of the formulas in that sequent.
-As a direct consequence of this property, we generally get an
-algorithm for proof search which is both easy to implement, and
-complete. This algorithm is backward-chaining proof search: we
-\begin{enumerate*}[label=(\arabic*)]
-\item start with the desired sequent;
-\item branch, applying each rule that can be applied; and
-\item repeat.
-\end{enumerate*}
-This algorithm is trivially complete, because we try all rules. It is
-also trivially guaranteed to terminate, since a derivation can only
-use sub-formulas of the formulas in the conclusion---the number of
-available formulas is strictly smaller than the number of formulas in
-the end sequent, and so we will eventually run out of formulas.
-
-While all display calculi have the sub-formula property, they do not
-necessarily have the \emph{sub-structure} property---the property that
-the derivation of a sequent can only use proper sub-structures of the
-structure in that sequent. While the original formulation of NL has
-this property, it makes sense not to require it from all display
-calculi, since many logics depend crucially on inference rules that do
-not have this property.
+All display calculi (by definition) have the sub-formula
+property. However, in our display calculus, we have added structural
+rules, which do not mention formulas. Therefore, we can no longer
+guarantee termination---and thus decidability---based on the
+sub-formula property alone.
+Display calculi, however, do not necessarily have the
+\emph{sub-structure} property---the property that a structural rule,
+in its premises, can only use proper sub-structures of the structures
+in its conclusion. This makes sense, since many logics depend
+crucially on inference rules that do not have this property---e.g.\ %
+contraction and weakening.
 However, this does mean we will have to take special care that the
 structural rules we introduce will not break the guarantee of
 termination.
 
-Theoretically, in order to be able to use naive backwards-chaining
-proof search, our structural rules have to have the sub-structure
-property. In practice, this is unfeasible for display calculi.
-As an example of why, have a look at the residuation rules---for
-instance, those in \autoref{fig:nl-display-calculus}. Such rules are
-crucial to display calculus---we will discuss why in the following
-section---but they do not have the sub-structure property. In fact,
+There is one simple extension we can make to the backward-chaining
+proof search procedure, which gives us more freedom in the formulation
+of structural rules. For this, let us have a look at the residuation
+rules in \autoref{fig:nl-display-calculus}. They are crucial to the
+display calculus, but clearly do not have the sub-structure property:
 since they can be applied either way around, it is easy to see how
 they can cause problems with termination.
 This non-termination, however, is benign; these rules can only cause
@@ -373,13 +381,6 @@ say a rule applies if its conclusion can be unified with the current
 proof obligation, and do not have to check all possible contexts under
 which this unification could succeed.
 
-And lastly, for any calculus it is trivial, when given the display
-calculus rules, to derive the sequent calculus rules which use
-contexts and absorb the residuation steps---this can be done by
-induction on the structure of the context. However, the opposite,
-deriving the display calculus rules using the sequent calculus rules,
-is much more involved.
-
 
 
 \subsection{Terms for display NL}
@@ -421,7 +422,7 @@ usual when translating sequent calculus to natural deduction, our term
 labelling employs substitution, which was defined in
 \autoref{sec:simple-type-logical-grammar}.
 
-\vspace*{1\baselineskip}
+\input{fig-nl-display-calculus-to-lamET}
 
 Now that we once again have a complete type-logical grammar, let us
 take a quick look at an example, ``Mary likes Bill'':
@@ -525,15 +526,33 @@ i.e.\ the semantic terms after applying the translation `$\tr$'
 \emph{and normalising}, but before inserting the lexical definitions.
 In effect, we want a normal-form for NL which is guaranteed to
 translate to a \emph{unique} normal-form term in \lamET.
+\citet{moortgat2012} define such a normal-form for LG, for which we
+present the NL fragment in \autoref{fig:nl-focused-display-calculus}.
 
-\todo{THIS IS WHERE I STOPPED}
+\input{fig-nl-focused-display-calculus}
 
-In display NL as it stands, there is another kind of spurious
-ambiguity that display NL shares with the sequent calculus. In the
-case where there are two logical implications, not nested under one
-another, there is an ambiguity as to which one to resolve first. We
-find this ambiguity, for instance, in the proofs associated with
-``Mary saw the fox'':
+Focused display calculus is a system with \emph{three} kinds of
+sequents: the original structural sequent $Γ\fCenter{Δ}$, and two
+focused sequents $\focus{A}\fCenter{Δ}$ and $Γ\fCenter\focus{B}$.
+There are four new rules which communicate between these different
+sequents: left and right focusing and unfocusing. In addition, the
+axiom is split into a left- and a right-focused axiom.
+The crucial point is that all formulas are assigned a polarity, and
+that the axioms and the focusing and unfocusing rules are restricted to
+types of certain polarities, forcing the proofs into a normal form.
+For complex types, this polarity is based on the main connective, but
+for atomic types, polarities are assigned. The choice of polarity
+affects the types of ambiguity that we choose to allow---this will be
+discussed further in \autoref{sec:cps-semantics}.\footnote{%
+  For the remainder of this thesis, we will discuss extension in their
+  focused form, and include the polarities of any new type. Should you
+  wish to remove focusing, you can simply rewrite the focused sequents
+  to structural sequents (i.e.\ $\focus{A}\equiv\struct{A}$), merge
+  identifal rules, and remove any rules that become the identity.
+}
+
+Let us discuss an example. In the unfocused display calculus, there
+are two proofs associated with the sentence ``Mary saw the fox'':
 \begin{pfblock}
   \AXC{}\RightLabel{Ax}\UIC{$\struct\N \fCenter\struct\N$}
   \AXC{}\RightLabel{Ax}\UIC{$\struct\NP\fCenter\struct\NP$}
@@ -584,37 +603,16 @@ find this ambiguity, for instance, in the proofs associated with
   \UIC{$\struct\NP\prod\struct{(\NP\impr\S)\impl\NP}
     \prod\struct{\NP\impl\N}\prod\struct\N\fCenter\struct\S$}
 \end{pfblock}
-Although these two proofs are labelled with two distinct lambda terms,
-the two are $\beta$-equivalent. This is problematic, as we only want
+These proofs are clearly distinct, but they are associated with the
+\emph{same} function-argument structure, $(\text{saw}\; (\text{the}\;
+\text{fox})\; \text{mary})$. This is problematic, since we only want
 ambiguity in our syntax when there is ambiguity in the meaning.
 
-In order to solve this, we can employ focusing, as developed by
-\citet{hepple1990} for the Lambek calculus, and \citet{andreoli1992}
-for linear logic.
-The focusing regime as presented in this thesis is a fragment of those
-developed by \citet{bastenhof2011} for classical non-associative
-Lambek calculus (CNL) and by \citet{moortgat2009,moortgat2012} for the
-Lambek-Grishin calculus (LG).
-
-\input{fig-focused-display-calculus}
-
-The extension is described in \autoref{fig:focused-display-calculus}.
-It is a system with three kinds of sequents: the original structural
-sequent $Γ\fCenterΔ$, and two focused sequents $\focus{A}\fCenterΔ$
-and $Γ\fCenter\focus{B}$. There are four new rules which communicate
-between these sequent kinds: left and right focusing and unfocusing.
-In addition, the axiom is split into a left- and a right-focused
-axiom. The crucial point is that all formulas are assigned a
-polarity---based on the polarity of the main connective in case of a
-complex formula, and arbitrarily assigned in case of atomic
-formulas---and the focusing and unfocusing rules and axioms can only
-be applied to principal formulas of a certain polarity.
-
-Using the system from \autoref{fig:focused-display-calculus}, we see
-that we can easily extend the first proof for ``Mary saw the fox.'' by
-inserting the focusing and unfocusing rules in the right places.
-The second proof, however, is rejected by our new system, as it
-contains a polarity error.
+However, if attempt to write these two proofs down in the focused
+display calculus from \autoref{fig:nl-focused-display-calculus}, we
+see that the first proof can easily be transcribed---inserting focusing
+and unfocusing rules where needed---but the second proof is rejected,
+as it contains a polarity error:
 \begin{pfblock}
   \AXC{}
   \RightLabel{Ax $^L$}\UIC{$\focus \N \fCenter\struct\N$}
@@ -670,29 +668,14 @@ proof would be valid. However, in that case the \emph{first} proof
 would have contained a polarity error. We leave it as an exercise for
 the reader to find this error.
 
-It should be mentioned at this point that \citet{bastenhof2011}
-introduces focusing and polarisation in order to give a
-continuation-passing style (CPS) translation for CNL, based on work by
-\citet{girard1991}. By selecting the right polarities for atomic
-formulas---positive for inputs such as \N\ and \NP, negative for
-outputs such as \S---the logic can be tuned to allow ambiguous
-derivations exactly where scope ambiguity may arise in natural
-language. However, we employ different mechanisms to deal with scope
-ambiguity, which we will discuss
-in \autoref{sec:nl-lambda-nl-cl-and-nl-ibc}. For this reason, we
-assign all atomic formulas negative polarity, and use a direct
-translation. This translation is identical to the term labelling given
-in \autoref{fig:nl-display-calculus-to-lamET}; the left and
-right axioms translate no different than the old axiom, and the
-focusing and unfocusing rules translate to the identity.
-
-Looking at the proof above, one might wonder why we bother restricting
-the polarity for axioms at all, since obviously the focusing and
-unfocusing rules allow us to derive left- or right-focused sequents
-for any atom, regardless of polarity. Once again, this is to avoid
-spurious ambiguity: if we did not restrict the axioms, there would be
-two ways to derive either axiom. The above proof has 4 axioms, so---if
-it were correct---that would result in $2^4$ proofs.
+Looking at the proof above---especially at the three left-most
+axioms---one might wonder why we bother restricting the polarity for
+axioms at all, since obviously the focusing and unfocusing rules allow
+us to derive left- or right-focused sequents for any atom, regardless
+of polarity. Once again, this is to avoid spurious ambiguity: if we
+did not restrict the axioms, there would be two ways to derive either
+axiom. The above proof has 4 axioms, so---if it were correct---that
+would result in $2^4$ proofs.
 
 Extending display NL with focusing raises one problem: does this
 extension still obey the conditions for display calculus? We assume
@@ -748,33 +731,49 @@ the proof where we cannot guarantee the polarity of certain formulas:
     \end{pfbox}
   }
 \end{center}
-If this is the case, then we can no longer prove that focused NL is a
-display calculus. For CNL, \citet{bastenhof2011} solves this problem
-by proving that there is a normalisation procedure from display CNL to
-focused CNL. Together with the trivial injection from focused CNL into
-display CNL, this shows that the two are equivalent. Thus, focused CNL
-is a display calculus by virtue of being equivalent to display CNL.
-However, defining this procedure requires a proof of cut-elimination.
+If we assume that we can cut either on an $\focus{A}$, or on an
+$\struct{A}$, then we can construct proofs of \textbf{C8}; at the
+places where we cannot guarantee the polarity of $A$ or $B$, we then
+have a choice. For instance, in the position where we cut on $B$, if
+$B$ is negative, we use the proof as written, but if $B$ is positive,
+we use Unf$^L$ on the \emph{other} argument of cut, and cut on
+$\struct{B}$. It is, however, uncertain if this will works within the
+framework of display calculus, as it was formulated with a single
+turnstile.
+This means we can no longer be certain that focused NL is a display
+calculus, which in turn means that we lose our generic proof of
+cut-elimination.
 
-The work by \citeauthor{bastenhof2011} assures us that focused NL is
-indeed a display calculus. However, since the proof of this fact
-requires a proof of cut-elimination, using this approach would lose
-the main advantage of display calculus. And if we make extensions to
-display NL beyond CNL, we can no longer depend on the assurance
-offered by \citeauthor{bastenhof2011}.
+For CNL, \citet{bastenhof2011} solves this problem by proving that
+there is a normalisation procedure from display CNL to focused CNL.
+Together with the trivial injection from focused CNL into display CNL,
+we can show that the two are equivalent.
+Thus, focused CNL is a display calculus by virtue of being equivalent
+to display CNL. However, in order to define this procedure,
+\citet{bastenhof2011} requires a cut-elimination procedure. As one of
+our main motives for using display calculus is the generic proof of
+the admissibility of cut, one can see the futility of this exercise.
 
-More generally, \citet{andreoli1992} proves that the focused full
-linear logic is complete w.r.t.\ full linear logic. Since any
-extension that we propose in this thesis is less expressive than
-linear logic, we believe that between these two results, anything we
-propose in this thesis should have a valid focusing regime.
+Nonetheless, the work by \citeauthor{bastenhof2011} does assure us
+that focused NL is indeed a display calculus, and indeed enjoys
+an admissible cut.
+If we make extensions to display NL beyond CNL, there is another body
+of work we can lean on: \citet{andreoli1992} gives a cut-elimination
+procedure for focused \emph{full linear logic}. Since any extension
+that we propose in this thesis is less expressive than linear logic,
+we believe that between these two results, anything we propose in this
+thesis should have a valid focusing regime.\footnote{%
+  Not accounting for any errors we may have made in formulating these
+  regimes.
+}
 
 Because it does not fall within the scope of this thesis, we will
-leave the problem of finding an elegant solution to this as future
-work. For the remainder of this thesis, will depend on the display
-calculus for the formal properties, and use the focused calculus as an
-optimisation, which we believed to be complete w.r.t.\ the display
-calculus. This way, if a solution is found in the future, the entire
-body of work---including focusing---remains valid. However, if the
-opposite is proven, the display version of the calculus will still be
-of use.
+leave the problem of finding an elegant solution to integrating
+focusing and display calculus as future work.
+For the remainder of this thesis, we will \emph{assume} that focused
+NLQ is complete w.r.t.\ display NLQ.
+However, we will continue to give proofs of \citepos{belnap1982}
+\textbf{C8} using display NLQ, so that, if it is found that the
+focused version of a particular extension is incomplete, the reader
+can simply remove the focusing regime, and be left with a valid
+display calculus.

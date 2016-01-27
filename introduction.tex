@@ -357,7 +357,86 @@ turns out, the only proof is:
   \end{pfbox}
 \end{center}
 And so, by searching for a proof in our syntactic calculus (bottom-up)
-and then adding in the term labelling (top-down) we derive an
-interpretation for our sentence.
+and then adding in the term labelling (top-down) we derive a
+function-argument structure for our sentence. Usually, we include
+another step in this process, where we insert the lexical definitions
+for the words. For the above example, these are:\footnote{%
+  We use bold-face to distinguish between the variables associated
+  with each word, and the meaning postulates we use in our semantics.
+}
+\[
+  \begin{aligned}
+    &\text{mary}  &&= \MARY\\
+    &\text{john}  &&= \JOHN\\
+    &\text{likes} &&= \lambda{y}.\lambda{x}.\LIKE(x,y)
+  \end{aligned}
+\]
+After inserting these definitions, and $\beta$-reducing, we get:
+\[
+  \LIKE(\JOHN,\MARY)
+\]
+Because we are usually only interested in the resulting
+function-argument structure and the associated semantics, for the
+remainder of this thesis we will summarise the above translations as
+follows:
+\begin{center}
+  \begin{pfbox}
+    \AXC{}\RightLabel{Ax}\UIC{$\NP\fCenter\NP$}
+    \AXC{}\RightLabel{Ax}\UIC{$\TV\fCenter(\NP\impr\S)\impl\NP$}
+    \AXC{}\RightLabel{Ax}\UIC{$\NP\fCenter\NP$}
+    \RightLabel{$\impl$E}
+    \BIC{$\TV\prod\NP\fCenter(\NP\impr\S$}
+    \RightLabel{$\impr$E}
+    \BIC{$\NP\prod(\TV\prod\NP)\fCenter:\S$}
+  \end{pfbox}
+  \vspace*{-1\baselineskip}
+  \begin{gather*}
+    \downmapsto
+    \\
+    ((\text{likes}\;\text{bill})\;\text{mary})
+    \\
+    \downmapsto
+    \\
+    \LIKE(\JOHN,\MARY)
+  \end{gather*}
+\end{center}
+
+
+\subsection{Sequent calculus and proof search}
+\label{sec:sequent-calculus-and-proof-search}
+
+In the previous section, we glossed over the issue of proof
+search. This is problematic, because the natural deduction formulation
+of the syntactic calculus we presented in
+\autoref{fig:nl-natural-deduction} is not especially suited to proof
+search. \citeauthor{lambek1961} originally developed a sequent
+calculus for NL, which \emph{does} have a practical procedure for
+proof search. In \autoref{fig:nl-sequent-calculus} we present the
+product-free version of \citepos{lambek1961} sequent calculus.
 
 \input{fig-nl-sequent-calculus}
+
+One important property of sequent calculus, is the \emph{sub-formula}
+property---the property that a derivation of a sequent uses only
+proper sub-formulas of the formulas in that sequent.
+As a direct consequence of this property, we generally get an
+algorithm for proof search which is both easy to implement, and
+complete. This algorithm is backward-chaining proof search: we
+\begin{enumerate*}[label=(\arabic*)]
+\item start with the desired sequent;
+\item branch, applying each rule that can be applied; and
+\item repeat.
+\end{enumerate*}
+This algorithm is trivially complete, because we try all rules. It is
+also trivially guaranteed to terminate, since a derivation can only
+use sub-formulas of the formulas in the conclusion---at each
+successive step, the number of available formulas becomes strictly
+smaller, and so we will eventually run out of formulas.
+
+The sequent calculus formulation is equivalent to the natural
+deduction formulation from \autoref{fig:nl-natural-deduction}.
+This is trivial to prove once you have a procedure for cut-elimination
+\citep[see][p.\ 107]{moot2012}. Therefore, we are still able to
+translate to \lamET, and obtain an interpretation. However, in the
+next section we will discuss the alternative to this sequent calculus
+that we will use, so we will forgo this exercise.
