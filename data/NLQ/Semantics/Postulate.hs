@@ -217,7 +217,7 @@ instance Show (Expr t) where
         (a :* b) -> do
           let fxy = (f `apply` (PRIM(Prim b y))) `apply` (PRIM(Prim a x))
           showParen (d > 1) <$>
-            showStr "case " <.> pp2 0 xy <.> showStr (printf "of (%s,%s) → " x y) <.> pp2 2 fxy
+            showStr "case " <.> pp2 0 xy <.> showStr (printf " of (%s,%s) → " x y) <.> pp2 2 fxy
 
     pp2 :: Int -> Expr a -> Supply Name ShowS
     pp2 d (Not (Exists a f)) = do

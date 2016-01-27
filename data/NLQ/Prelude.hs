@@ -25,7 +25,9 @@ module NLQ.Prelude
 
 import           Prelude hiding (Word,abs,lex,not,(*),($),(<$),($>))
 import           Control.Arrow (first)
+import           Control.Applicative ((<|>))
 import           Control.Monad (when)
+import           Control.Monad.State (State,evalState,get,put)
 import           Data.Char (isSpace)
 import           Data.List (intersperse)
 import           Data.Maybe (isJust,fromJust)
@@ -40,10 +42,10 @@ import qualified NLQ.Syntax.Backward        as Bwd
 import qualified NLQ.Syntax.Forward         as Fwd
 import           NLQ.Semantics              as X
 import           NLQ.Semantics.Postulate    as X
-import           Text.Parsec
+import           Text.Parsec (parse,many1,ParseError)
 import           Text.Parsec.Token
-import           Text.Parsec.Language
-import           Text.Parsec.String
+import           Text.Parsec.Language (haskellStyle,haskellDef)
+import           Text.Parsec.String (Parser)
 import           Language.Haskell.TH (lookupValueName,Exp(..),Lit(..))
 import qualified Language.Haskell.TH as TH
 import           Language.Haskell.TH.Quote (QuasiQuoter(..))
@@ -119,23 +121,25 @@ instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
 
 -- ** Type and DSL for lexicon entries
 
-data Meanings (b :: Type) = Meanings String [Expr (H b)]
+data Meanings t = Meanings String [(Expr t,Expr t)]
 
-instance Show (Meanings b) where
+
+instance Show (Meanings t) where
   show (Meanings str terms) =
     concat (intersperse "\n" (map show terms))
 
 
-putMeanings :: Meanings b -> IO ()
+putMeanings :: Meanings t -> IO ()
 putMeanings (Meanings str terms) =
   do putStrLn str; putLength (length terms); putAll [] terms
   where
     putLength 0 = do putStrLn (red "0")
     putLength n = do putStrLn (show n)
     putAll _  [    ] = return ()
-    putAll vs (x:xs) = do
+    putAll vs ((x,y):xs) = do
       let v = show x
-      putStrLn ((if v `elem` vs then red else green) v)
+      let w = show y
+      putStrLn ((if v `elem` vs then red else green) (v ++ "\n-> " ++ w))
       putAll (v:vs) xs
 
 
@@ -143,14 +147,32 @@ putMeanings (Meanings str terms) =
 red   str = "\x1b[31m" ++ str ++ "\x1b[0m"
 green str = "\x1b[32m" ++ str ++ "\x1b[0m"
 
-parseBwd :: Combine a (Entry x) => String -> SType b -> a -> Meanings b
-parseBwd str b arg = Meanings str terms_HS
+parseBwd :: Combine a (Entry x) => String -> SType b -> a -> Meanings (H b)
+parseBwd str b arg = Meanings str (zip terms_HS1 terms_HS2)
   where
-    Entry x arg' = combine arg
+    arg1         = evalState (mkArg x) (words (fixWS str))
+    Entry x arg2 = combine arg
     terms_NL     = Bwd.findAll (x :%⊢ SStO b)
-    terms_HS     = map (\f -> fromHask (h b) (eta f arg')) terms_NL
+    terms_HS1    = map (\f -> fromHask (h b) (eta f arg1)) terms_NL
+    terms_HS2    = map (\f -> fromHask (h b) (eta f arg2)) terms_NL
+
+    mkArg :: SStructI x -> State [String] (Hask (HI x))
+    mkArg (SStI    a  ) = do (n:ns) <- get; put ns; return (n ∷ h a)
+    mkArg (SDIA  k x  ) = mkArg x
+    mkArg  SB           = return (EXPR())
+    mkArg  SC           = return (EXPR())
+    mkArg (SUNIT k    ) = return (EXPR())
+    mkArg (SPROD k x y) = (,) <$> mkArg x <*> mkArg y
 
 
+fixWS :: String -> String
+fixWS [] = []
+fixWS (' ':' ':xs) = fixWS (' ':xs)
+fixWS ('(':    xs) = fixWS xs
+fixWS (')':    xs) = fixWS xs
+fixWS ('<':    xs) = fixWS xs
+fixWS ('>':    xs) = fixWS xs
+fixWS ( x :    xs) = x : fixWS xs
 
 
 -- ** QuasiQuoter for Backward-Chaining Proof Search
@@ -169,25 +191,17 @@ nlq = QuasiQuoter
         Right exp -> exp
 
       strExp = LitE (StringL (fixWS (dropWhile isSpace str)))
-        where
-        fixWS :: String -> String
-        fixWS [] = []
-        fixWS (' ':' ':xs) = fixWS (' ':xs)
-        fixWS ('(':    xs) = fixWS xs
-        fixWS (')':    xs) = fixWS xs
-        fixWS ('<':    xs) = fixWS xs
-        fixWS ('>':    xs) = fixWS xs
-        fixWS ( x :    xs) = x : fixWS xs
 
 nlqAll :: Name -> TH.Q Exp
 nlqAll s = do
   list <- go 0
-  return (AppE (AppE (VarE 'mapM_) (VarE 'putMeanings)) (ListE list))
+  return (AppE (VarE 'sequence_) (ListE list))
   where
     go :: Int -> TH.Q [Exp]
     go n = do m <- lookupValueName (s ++ show n)
               case m of
-                Just x  -> do xs <- go (n + 1); return (VarE x : xs)
+                Just x  -> do xs <- go (n + 1)
+                              return (AppE (VarE 'putMeanings) (VarE x) : xs)
                 Nothing -> return []
 
 -- n = do
