@@ -1,0 +1,113 @@
+\begin{figure}[h]
+  \begin{mdframed}
+    \centering
+    \vspace*{1\baselineskip}
+    \(\!
+      \begin{aligned}
+        &\text{Pol}(α)        &&\mapsto{-} \\
+        &\text{Pol}(B\impl A) &&\mapsto{-}
+      \end{aligned}
+      \quad
+      \begin{aligned}
+        \\
+        &\text{Pol}(A\impr B) &&\mapsto{-}
+      \end{aligned}
+    \)
+    \\[1\baselineskip]
+    \(\!
+    \cancel{
+      \AXC{}
+      \RightLabel{Ax}
+      \UIC{$\struct{α}\fCenter\struct{α}$}
+      \DisplayProof
+    }
+    \)
+    \\[1\baselineskip]
+    \(\!
+    \color{gray}
+    \text{if}\ \text{Pol}(α) = {+}
+    \left\lbrace
+      \quad
+      \begin{aligned}
+        \\
+        \AXC{}
+        \RightLabel{Ax$^R$}
+        \UIC{$\struct{α}\fCenter\focus{α}$}
+        \DisplayProof
+        \\[1\baselineskip]
+      \end{aligned}
+      \quad
+      \normalcolor
+      \middle\vert
+      \normalcolor
+      \quad
+      \begin{aligned}
+        \\
+        \AXC{}
+        \RightLabel{Ax$^L$}
+        \UIC{$\focus{α}\fCenter\struct{α}$}
+        \DisplayProof
+        \\[1\baselineskip]
+      \end{aligned}
+      \quad
+    \right\rbrace
+    \normalcolor
+    \text{if}\ \text{Pol}(α) = {-}
+    \)
+    \\[1\baselineskip]
+    \(\!
+    \text{if}\ \text{Pol}(A) = {+}
+    \left\lbrace
+      \quad
+      \begin{aligned}
+        \\
+        \AXC{$Γ\fCenter\focus{A}$}
+        \RightLabel{Foc$^R$}
+        \UIC{$Γ\fCenter\struct{A}$}
+        \DisplayProof
+        \\[1\baselineskip]
+        \AXC{$\struct{A}\fCenter Δ$}
+        \RightLabel{Unf$^L$}
+        \UIC{$\focus{A}\fCenterΔ$}
+        \DisplayProof
+        \\[1\baselineskip]
+      \end{aligned}
+      \quad
+      \middle\vert
+      \quad
+      \begin{aligned}
+        \\
+        \AXC{$\focus{A}\fCenterΔ$}
+        \RightLabel{Foc$^L$}
+        \UIC{$\struct{A}\fCenter Δ$}
+        \DisplayProof
+        \\[1\baselineskip]
+        \AXC{$Γ\fCenter\struct{A}$}
+        \RightLabel{Unf$^R$}
+        \UIC{$Γ\fCenter\focus{A}$}
+        \DisplayProof
+        \\[1\baselineskip]
+      \end{aligned}
+      \quad
+    \right\rbrace
+    \text{if}\ \text{Pol}(A) = {-}
+    \)
+    \\[1\baselineskip]
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\focus{A}$}
+      \AXC{$\focus{B}\fCenter Δ$}
+      \RightLabel{L$\impr$}
+      \BIC{$\focus{A\impr B}\fCenter Γ\impr Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\focus{A}$}
+      \AXC{$\focus{B}\fCenter Δ$}
+      \RightLabel{L$\impl$}
+      \BIC{$\focus{B\impl A}\fCenter Δ\impl Γ$}
+    \end{pfbox}
+    \vspace*{1\baselineskip}
+  \end{mdframed}
+  \caption{Changes to the display calculus
+    from~\autoref{fig:nl-display-calculus}, implementing focusing.}
+  \label{fig:nl-focused-display-calculus}
+\end{figure}
