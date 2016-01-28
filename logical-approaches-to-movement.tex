@@ -1,66 +1,127 @@
-\section{Logical Approaches to Movement}%
+\section{Logical approaches to movement}%
 \label{sec:movement-and-quantifier-raising}
-
-In the previous section, we discussed the framework of monadic
-semantics and extensible effects. This framework is extremely
-powerful. As mentioned, it provides a flexible and powerful framework
-for a large spectrum of complex natural language phenomena such as
-context, intensionality, expressives and quantification.
-
 \todo{Discuss: division of labour---do you want to analyse a phenomeon
 as syntactic or as semantic?}
 \todo{Discuss: the $q(A,B,C)$ operator as specification of
   quantification as a syntactic phenomenon.}
 \todo{Discuss: tweaking the polarities to obtain scope ambiguity.}
 
-\subsection{Quantifier Movement}
-In this section, we will study quantification in more detail.
+In this section, we will discuss logical approaches to
+quantification. We will start out by describing the problem of
+quantification. Then we will discuss the choice between semantic and
+syntactic approaches. Next, we will discuss the existing semantic
+approaches to quantifier raising, and why they are inadequate. We will
+then discuss various syntactic approaches to quantifier raising, and
+finish by making our own contributions.
+
+\subsection{Quantification in natural language}
 Quantification is the problem of analysing scope-taking expressions in
 natural language. For instance, the canonical interpretation for a
 sentence such as ``Everyone laughs'' is:
 \[
   \forall{x}.\PERSON(x)\supset\LAUGH(x)
 \]
-The easiest way to obtain these semantics in NL is to assign
-`everyone' the type $\S\impl\IV$---i.e.\ make it a higher-order
-function that takes verb phrase in need of a subject, and scopes over
-it. With this type, we can assign `everyone' the interpretation
-$\lambda{k}.\forall{x}.\PERSON(x)\supset(k\;x)$, and derive the above
-semantics as expected.
-
-However, we run into problems as soon as we try to apply the above
-solution to quantifiers in object position, such as in ``John saw
-everyone''. Because $\S\impl(\NP\impr\S)$---unfolding the IV used
-above---scopes over a verb phrase in need of a subject, we cannot use
-it here. In the \emph{associative} Lambek calculus, we can use the
-deceptively similar looking type $(\S\impl\NP)\impr\S$---a similarity
-which extended the popularity of the associative Lambek calculus way
-past its due date. Meanwhile, in NL, we have to devise a type which
-actually reflects the sentence structure, such as $\TV\impr\IV$. Using
-this type, we can assign `everyone' a second interpretation,
-$\lambda{k}.\lambda{x}.\forall{y}.\PERSON(y)\supset(k\;y\;x)$, which
-gives us the following interpretation for our example:
+The problem here, is that the quantifier ``everyone'' is ostensibly an
+NP. However, in the given semantics, it is taking scope over
+``laughs''. A more obvious version of this problem can be seen in
+``John [saw everyone]'', where the quantifier is more deeply nested in
+the parse tree:
 \[
   \forall{y}.\PERSON(y)\supset\PAST(\SEE(\JOHN,y))
 \]
-The need for multiple definitions for `everyone' aside, there are more
-problems with this approach. For instance, in natural language we
-observe a phenomenon known as `scope ambiguity', which is to say that
-sentences containing multiple quantifiers are ambiguous. For instance,
-``Everyone loves someone'' has two interpretations:
+The problem becomes even more interesting when you consider sentences
+with multiple quantifiers. Here we observe a phenomenon known as
+\emph{scope ambiguity}. The canonical example is the phrase ``Everyone
+loves someone'', which has the following interpretations:
 \begin{alignat*}{3}
   &\forall x.\PERSON(x) \,&\supset \,&\exists y.\PERSON(y) \,&\wedge  \,&\LIKE(x,y)\\
   &\exists y.\PERSON(y) \,&\wedge  \,&\forall x.\PERSON(x) \,&\supset \,&\LIKE(x,y)
 \end{alignat*}
-However, with our current definitions for `everyone'---and a similar
-definition for `someone'---we can only derive the first of these
-interpretations. Now, we could imagine giving a third definition for
-`everyone' and `someone', with the type $(\S\impl\IV)\impr(\TV\impr\IV)$,
-which would allow us to define object quantifiers taking scope over
-subject quantifiers. However, there are many other cases---think of
-ditransitive verbs, or verb phrases modified by some number of
-adverbs. Clearly, this way lies madness.
 
+There are several easy ways to obtain these semantics within the
+type-logical grammar that we have established in
+\autoref{sec:introduction} and \autoref{sec:lexical-ambiguity}.
+One approach, due to \citet{montague1973}, is to assign NP the
+semantic type $(\e\t)\t$. This way, we can define the lexicon as
+follows:
+\begin{alignat*}{3}
+  &\text{john}     &&= \lambda k. k\;\JOHN                          \\
+  &\text{everyone} &&= \lambda k. \forall x. \PERSON(x)\supset k\;x \\
+  &\text{laughs}   &&= \lambda x. x\;\LAUGH
+\end{alignat*}
+We can even build in scope ambiguity by assigning ``loves'' an
+  ambiguous type---e.g., using the extension from
+  \autoref{sec:lexical-ambiguity}, we assign it the type $\TV\&\TV$,
+  and define it as:
+\[
+  \text{loves} = \lambda k_2. \lambda k_1.
+  (k_1\;(\lambda x.k_2\;(\lambda y.\LOVE(x,y))), k_2\;(\lambda y.k_1\;(\lambda x.\LOVE(x,y)))
+\]
+However, somehow it feels wrong to manually build scope ambiguity into
+every verb: it is a universal property of language, so it should not
+be encoded in the lexicon, but in our type-logical grammar.
+
+It is also quite odd that we give ``john''---which by all measures is
+not a quantifier---the freedom to act as a quantifier. And because we
+do not distinguish between quantificational and non-quantificational
+NPs, we are left with a large amount of scope ambiguity---spurious
+ambiguity. For instance, the sentences ``Mary likes John'' will be
+considered ambiguous, with both interpretations equal to $\LIKE(\MARY,
+\JOHN)$. \citet{hendriks1993} a solution to this problem, developing a
+framework in which terms are lifted into quantificational terms only
+when this is needed.
+\todo{How does \citet{hendriks1993} deal with scope ambiguity?}
+
+\vspace*{1\baselineskip}
+
+Another approach---popular in associative Lambek calculi---is to use
+higher-order syntactic types. For instance, we can assign ``everyone''
+the syntactic type $\S\impl\IV$. This also gives us the semantic type
+$(\e\t)\t$, and therefore we are able to assign it the same term as
+before. This works perfectly for sentences with subject-quantifiers,
+and it \emph{does} distinguish between quantificational and
+non-quantificational NPs, but it has one downside: it does not work
+for sentences with object-quantifiers.
+In the \emph{associative} Lambek calculus, we can use the similar
+looking type $(\S\impl\NP)\impr\S$---a similarity which extended the
+popularity of the associative Lambek calculus way past its due
+date. Meanwhile, in NL, we have to devise a type which actually
+reflects the sentence structure, such as $\TV\impr\IV$. Using
+this type, we can assign ``everyone'' a second interpretation:
+\[
+  \text{everyone} = \lambda k.\lambda x.\forall y.\PERSON(y)\supset(k\;y\;x)
+\]
+The need for multiple definitions for `everyone' aside, there are more
+problems with this approach: with our current definitions for
+``everyone''---and similar definitions for ``someone''---we can only
+derive the first of the two expected interpretations for ``Everyone
+likes someone''.
+Now, we could imagine giving a third definition for ``everyone'' and
+``someone'', with the type $(\TV\impr((\S\impl\IV)\impr\IV))$, which
+would allow us to define object quantifiers taking scope over subject
+quantifiers. However, there are many other cases---think of
+ditransitive verbs, or verb phrases modified by some number of
+adverbs. Clearly, this is not an elegant solution, as we are basically
+hard-coding the structures that quantifiers can take scope over in
+their types.
+
+\vspace*{1\baselineskip}
+
+One interesting aspect of the two approaches we have discussed so far
+is that they very clearly divide in a semantic and a syntactic
+approach. The first approach was implemented in the translation to
+semantic types, and in the lexicon. The second approach was
+implemented entirely within the syntactic calculus. With any
+linguistic phenomenon this is an important question: do we consider it
+to be syntactic or semantic in nature? With quantification, the
+community seems divided. In this thesis, we will approach the problem
+of quantification as a syntactic phenomenon. Therefore, in the
+next section we will discuss some of the approaches to quantification
+as a semantic problem, and their limitations. Following this, we will
+discuss various approaches to quantification as a syntactic problem,
+discuss their weaknesses, and try to amend these.
+
+\begin{comment}
 In the following section, we will discuss semantic approaches to the
 problem of quantification and why these solutions are generally
 inadequate.
@@ -184,6 +245,7 @@ described above for CPS- and monadic translations. Additionally, they
 do not form a monad. Instead, they form something known as an indexed
 monad, which has two additional type-level parameters, meaning $\eta$
 and $\star$ get the following types:
+\todo{Remove references to monads.}
 \[
   \eta : A\ra\mathbb{M}\;i\;i\;A
   \qquad
@@ -205,6 +267,19 @@ scope islands in the syntactic calculus, based on work by
 
 \subsubsection{NL$_\lambda$, NL$_{\text{CL}}$ and NL$_{\text{IBC}}$}
 \label{sec:nl-lambda-nl-cl-and-nl-ibc}
+
+\citet{barker2007} and \citet{barker2015} describe an extension to NL
+which they call NL$_\lambda$ or NL$_{\text{QR}}$. The main
+contribution of this extension is the idea to encode quantifier
+raising
+
+
+
+
+
+
+
+
 In their \citeyear{barker2015} book, \citeauthor{barker2015} describe
 an extension of NL which they call NL$_\lambda$. The main insight in
 the formulation of this calculus was this: in type-logical grammar,
@@ -301,6 +376,13 @@ logical manner---though their system is undecidable. They extend NL by
 a second modality $\{\himpr,\hprod,\himpl\}$, add three primitive
 structural constants $\{\I,\B,\C\}$, and add the following structural
 rules:
+\[
+  \begin{aligned}
+    &\I &&\equiv\lambda x.x           \\
+    &\B &&\equiv\lambda x y z.x (y z) \\
+    &\C &&\equiv\lambda x y z.x  z y
+  \end{aligned}
+\]
 \begin{center}
   \begin{pfbox}
     \AXC{$X\fCenter Y$}
@@ -313,9 +395,43 @@ rules:
     \UIC{$Y\hprod((\B\prod X)\prod Z)\fCenter W$}
   \end{pfbox}
   \begin{pfbox}
-    \AXC{$(X\prod Y)\hprod Z\fCenter W$}
+    \AXC{$(X\hprod Y)\prod Z\fCenter W$}
     \doubleLine\RightLabel{\C}
     \UIC{$X\hprod((\C\prod Y)\prod Z)\fCenter W$}
+  \end{pfbox}
+\end{center}
+\begin{center}
+  \begin{pfbox}
+    \AXC{$X\fCenter Y$}
+    \doubleLine\RightLabel{\I}
+    \UIC{$\I\hprod X\fCenter Y$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$X\prod(Z\hprod Y)\fCenter W$}
+    \doubleLine\RightLabel{\B}
+    \UIC{$((\B\prod X)\prod Z)\hprod Y\fCenter W$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$(Y\hprod X)\prod Z\fCenter W$}
+    \doubleLine\RightLabel{\C}
+    \UIC{$((\C\prod Y)\prod Z)\hprod X\fCenter W$}
+  \end{pfbox}
+\end{center}
+\begin{center}
+  \begin{pfbox}
+    \AXC{$X\fCenter Y$}
+    \doubleLine\RightLabel{\I}
+    \UIC{$\I\hprod X\fCenter Y$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$X\prod(Y\hprod Z)\fCenter W$}
+    \doubleLine\RightLabel{\B}
+    \UIC{$((\B\prod X)\prod Y)\hprod Z\fCenter W$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$(X\hprod Z)\prod Y\fCenter W$}
+    \doubleLine\RightLabel{\C}
+    \UIC{$((\C\prod X)\prod Y)\hprod Z\fCenter W$}
   \end{pfbox}
 \end{center}
 They call the result NL$_{\text{CL}}$ (and, occasionally,
@@ -840,3 +956,4 @@ always solve this using the extension for ambiguity (\&).
 
 \input{fig-extension-infixation}
 \input{fig-extension-extraction}
+\end{comment}
