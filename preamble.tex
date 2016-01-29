@@ -122,6 +122,7 @@
 \def\e        {\ensuremath{\mathbf{e}}}%
 \def\t        {\ensuremath{\mathbf{t}}}%
 \def\lamET    {\ensuremath{\lambda^{\ra}_{\{\e,\t\}}}}%
+\def\lamPET   {\ensuremath{\lambda^{\ra\times}_{\{\e,\t\}}}}%
 \def\S        {\text{S}}%
 \def\N        {\text{N}}%
 \def\NP       {\text{NP}}%
@@ -200,9 +201,8 @@
 \providecommand{\note}[1]{%
   \ifthenelse%
   {\boolean{notes}}%
-  {{\color{green}\textbf{NOTE:~}#1}}%
+  {{\color{blue}\textbf{Note:~}#1}}%
   {}}
-
 
 % rules from the Haskell code
 \newcommand{\AxR}[1]{\AXC{}\RightLabel{Ax$^L$}\UIC{$#1$}}%

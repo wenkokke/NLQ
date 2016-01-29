@@ -1,11 +1,5 @@
 \section{Logical approaches to movement}%
 \label{sec:movement-and-quantifier-raising}
-\todo{Discuss: division of labour---do you want to analyse a phenomeon
-as syntactic or as semantic?}
-\todo{Discuss: the $q(A,B,C)$ operator as specification of
-  quantification as a syntactic phenomenon.}
-\todo{Discuss: tweaking the polarities to obtain scope ambiguity.}
-
 In this section, we will discuss logical approaches to
 quantification. We will start out by describing the problem of
 quantification. Then we will discuss the choice between semantic and
@@ -70,6 +64,7 @@ considered ambiguous, with both interpretations equal to $\LIKE(\MARY,
 \JOHN)$. \citet{hendriks1993} a solution to this problem, developing a
 framework in which terms are lifted into quantificational terms only
 when this is needed.
+
 \todo{How does \citet{hendriks1993} deal with scope ambiguity?}
 
 \vspace*{1\baselineskip}
@@ -121,46 +116,29 @@ as a semantic problem, and their limitations. Following this, we will
 discuss various approaches to quantification as a syntactic problem,
 discuss their weaknesses, and try to amend these.
 
-\begin{comment}
-In the following section, we will discuss semantic approaches to the
-problem of quantification and why these solutions are generally
-inadequate.
-Next, we will discuss the approach to quantification taken by
-\citet{barker2007}. We will then reformulate this approach as an
-extension of display NL that maintains the properties we are
-interested in---i.e. admissibility of cut, and a decidable and
-complete proof search procedure. In \autoref{sec:scope-islands} we
-will discuss an extension which can be used to treat a phenomenon
-known as `scope islands'. And finally, we will discuss some other
-forms of movement---infixation and extraction---and show how they can
-be used to analyse sentences with gaps.
 
-\subsubsection{Continuation-Passing Style}
+\subsection{Continuations and scope taking}
+\label{sec:continuations-and-scope-taking}
 \citet{barker2002,barker2004} advocates the use of continuations in
 natural language semantics. He does this with several case studies,
-one of which is quantification. The gist of this is as follows:
+one of which is quantification. The gist of his story is as follows:
 
-As mentioned before, the utterance ``John saw everyone,'' the
-function-argument structure `(sees everyone) john', but we associate
-it with the interpretation $\forall
-x.\PERSON(x)\supset\SEE(\JOHN,x)$. This means that the expression
-`everyone,' which is deeply nested in the parse tree, must somehow
-scope over the entire expression.
-\citeauthor{barker2004} proposes to solve this problem by applying a
-non-recursive continuation-passing style (CPS) translation to the
-lexicon. He lifts expressions of type $A$ into the type $(A\ra R)\ra
-R$ for some answer type $R$:
-\begin{alignat*}{3}
-  &\text{john}     &&= \lambda k. k\;\JOHN\\
-  &\text{sees}     &&= \lambda k. k\;\SEE
-  \intertext{%
-    He then uses this freedom to define `everyone' as a lifted expression
-    of type `\e', with $R$ instantiated to `\t':
-  }
-  &\text{everyone} &&= \lambda k. \forall x.\PERSON(x)\supset k\;x
-\end{alignat*}
-In addition, he defines a translation on terms, replacing function
-application with a method of combining CPS-translated terms:\footnote{%
+As mentioned before, in the sentence ``John [saw everyone]'', the
+deeply nested quantifier ``everyone'' must take scope over the
+remainder of the sentence. Instead of translating NP to the higher-order
+type $(\e\t)\t$, \citeauthor{barker2002} proposes to lift \emph{every
+  type}, consistently, using a technique from computer science known
+as continuation-passing style (CPS) translation. After translating the
+syntactic terms, he applies a CPS-translation, lifting expressions of
+type $A$ into the type $(A\ra R)\ra R$ for some answer type $R$. He
+assumes that the function-argument structure that is the result of
+the translation to syntactic terms is constructed using only variables
+and function application,\footnote{%
+  This is equivalent to restricting the syntactic calculus to the
+  applicative, i.e.\ Ajdukiewicz-Bar-Hillel fragment
+  \citep[see][ch.\ 1.1-1.5, AB-grammars]{moot2012}.
+}
+and defines the translation as follows:\footnote{%
   It should be noted that \citeauthor{barker2004}'s initial solution
   uses some directional information to ensure that scope-takers are
   always processed in a left-to-right order, instead of always
@@ -168,58 +146,257 @@ application with a method of combining CPS-translated terms:\footnote{%
   This distinction, however, becomes irrelevant once he introduces the
   ambiguous translation, and therefore I have chosen not to include it.
 }
-\[
-  \overline{M\;N}= \lambda k. \overline{N}\;(\lambda
-  n.\overline{M}\;(\lambda m.k\;(m\;n)))
-\]
-
-However, the analysis of quantification as a semantic phenomenon has
-several issues. The first of these is already mentioned by
-\citet{barker2004}: scope ambiguity. The sentence ``Everyone likes
-someone'', is ambiguous:
 \begin{alignat*}{3}
-  &\forall x.\PERSON(x) \,&\supset \,&\exists y.\PERSON(y) \,&\wedge  \,&\LIKE(x,y)\\
-  &\exists y.\PERSON(y) \,&\wedge  \,&\forall x.\PERSON(x) \,&\supset \,&\LIKE(x,y)
+  &\overline{x}    &&= x\\
+  &\overline{M\;N} &&= \lambda k. \overline{N}\;(\lambda n.\overline{M}\;(\lambda m.k\;(m\;n)))
 \end{alignat*}
+This translation is applied to the function-argument structure
+\emph{before} lexical definitions are inserted.
+In addition, the lexical items have to be lifted manually for this to
+work---although the lifting is a much simpler process:
+\begin{alignat*}{3}
+  &\text{john}     &&= \lambda k. k\;\JOHN                          \\
+  &\text{everyone} &&= \lambda k. \forall x. \PERSON(x)\supset k\;x \\
+  &\text{laughs}   &&= \lambda k. k\;\LAUGH                         \\
+  &\text{loves}    &&= \lambda k. k\;\LOVE
+\end{alignat*}
+However, this analysis of quantification has several issues. The first
+of these is already mentioned by \citet{barker2004}: scope ambiguity.
 The solution provided by \citet{barker2002,barker2004} will only
-derive the first of these meanings. Barker solves this problem by
-adding another possible translation for function application, thereby
-making the CPS-translation ambiguous:
+derive the surface-scope interpretation of ``Everyone loves
+someone''. Barker solves this problem by making the CPS-translation
+ambiguous, adding another possible translation for function
+application:
 \begin{alignat*}{3}
-  &\overline{M\;N} &&= \lambda k. \overline{N}\;(\lambda
-  n.\overline{M}\;(\lambda m.k\;(m\;n)))\\
-  &\overline{M\;N} &&= \lambda k. \overline{M}\;(\lambda
-  m.\overline{N}\;(\lambda n.k\;(m\;n)))
+  &\overline{x}    &&= x\\
+  &\overline{M\;N} &&= \lambda k. \overline{N}\;(\lambda n.\overline{M}\;(\lambda m.k\;(m\;n)))\\
+  &\overline{M\;N} &&= \lambda k. \overline{M}\;(\lambda m.\overline{N}\;(\lambda n.k\;(m\;n)))
 \end{alignat*}
-There are several problems with this solution. First of all, this
-results in a huge amount of spurious ambiguity. A sentence with $n$
-words has $n-1$ function applications, and will therefore have
-$2^{(n-1)}$ ``different'' interpretations. However, the ambiguity is
-only relevant for scope-takers. In the motivating example, ``likes''
-is not a scope taker. Nevertheless, there are two possible
-translations for ``likes someone'', resulting in \emph{four}
-interpretations for the sentence where we only want two.
+\note{Barker's CPS-translation \emph{is} recursive. However, he has a
+  strange way of presenting it. Instead of performing the translation
+  on the function-argument structure, he defines a new type of
+  application, and hides the recursion in there.}
+This does solve the problem at hand, and derives both the
+surface-scope and the inverse-scope interpretations. However, this
+solution results in a huge amount of spurious ambiguity.
+A sentence with $n$ words has $n-1$ function applications, and will
+therefore have $2^{(n-1)}$ interpretations. But this ambiguity is only
+relevant for scope-takers.
+In the motivating example, ``loves'' is not a scope
+taker. Nevertheless, it is treated as one, which means there are two
+possible translations for ``loves someone'', resulting in four
+interpretations for the sentence where we only want two. This
+ambiguity grows exponentially with the length of the sentence.
 
-Secondly, using an ambiguous translation clearly makes our
-CPS-translation incompatible with our monadic translation, unless we
-are willing to ambiguously translate all our effects. But doing so is
-risky, as a right-to-left interpretation may not be desirable for
-effects other than quantification. For instance, a right-to-left
-interpretation of the state monad for anaphora resolution will allow
-sentences such as ``He$_i$ gave a book to John$_i$.''
+% Secondly, using an ambiguous translation clearly makes our
+% CPS-translation incompatible with our monadic translation, unless we
+% are willing to ambiguously translate all our effects. But doing so
+% is risky, as a right-to-left interpretation may not be desirable for
+% effects other than quantification. For instance, a right-to-left
+% interpretation of the state monad for anaphora resolution will allow
+% sentences such as ``He$_i$ gave a book to John$_i$.''
 
 \vspace*{1\baselineskip}
 
-In more recent work, \citet{moortgat2009,moortgat2012} integrate CPS-semantics into
-the syntactic calculus. The result is the Lambek-Grishin (LG)
-calculus, a bilinear variant of NL, with semantics inspired on
-\citeauthor{parigot1992}'s $\lambda\mu$-calculus
-(\citeyear{parigot1992}). LG is a beautifully symmetric calculus, and
-display NL, as used in this thesis is, is directly based from it. The
-integrated CPS-semantics give some interesting opportunities, for
-instance the ability to give quantifiers such as `everyone' the type
-$(NP\oslash N)\otimes N$---a pair of a determiner and a noun---and
-give them the desired scope-taking semantics.
+Instead of performing a separate CPS translation on the semantic
+terms, \citet{bastenhof2012}, \citet{moortgat2012}---based on work by
+\citet{girard1991} and \citet{curien2000}---integrate the
+CPS-semantics with the syntactic calculus. The result of this work is
+the focused Lambek-Grishin (LG) calculus, a bilinear variant of NL,
+with semantics inspired on \citepos{parigot1992}
+$\lambda\mu$-calculus. Focused NL, as presented in this thesis, is a
+fragment of focused LG. Below we will present the CPS-semantics for
+the the product-free NL fragment of focused LG. First of all, the
+translation on types. Let $A^R= A\ra R$:
+\[
+  \begin{aligned}
+    &\llbracket\alpha\rrbracket^+ &&=
+    \begin{cases}
+      \phantom{((}\tr[\alpha] &\mbox{if } \text{Pol}(\alpha)\equiv{+}\\
+      ((\tr[\alpha])^R)^R &\mbox{if } \text{Pol}(\alpha)\equiv{-}\\
+    \end{cases}
+    \quad
+    &&\llbracket\alpha\rrbracket^- &&=
+    (\tr[\alpha])^R
+    \\
+    &\llbracket A\impr B\rrbracket^+  &&=
+    (\llbracket A\rrbracket^+\times\llbracket B\rrbracket^-)^R
+    \quad
+    &&\llbracket A\impr B\rrbracket^- &&=
+    \llbracket A\rrbracket^+\times\llbracket B\rrbracket^-
+    \\
+    &\llbracket B\impl A\rrbracket^+  &&=
+    (\llbracket B\rrbracket^-\times\llbracket A\rrbracket^+)^R
+    \quad
+    &&\llbracket B\impl A\rrbracket^- &&=
+    \llbracket B\rrbracket^-\times\llbracket A\rrbracket^+
+  \end{aligned}
+\]
+We extend this translation to structures by translating \emph{all}
+structural connectives as product types. We translate atomic
+\emph{positive} structures using $\llbracket\cdot\rrbracket^+$, and
+atomic \emph{negative} structures using
+$\llbracket\cdot\rrbracket^-$. We extend it to sequents as follows:
+\[
+  \begin{aligned}
+    &\llbracket\:{Γ}\:\fCenter\:{Δ}\;\rrbracket &&=
+    \llbracket{Γ}\rrbracket\fCenter\llbracket{Δ}\rrbracket^R
+    \\
+    &\llbracket\focus{A}\fCenter\:{Δ}\;\rrbracket &&=
+    \llbracket{Δ}\rrbracket\fCenter\llbracket{A}\rrbracket^-
+    \\
+    &\llbracket\:{Γ}\:\fCenter\focus{B}\rrbracket &&=
+    \llbracket{Γ}\rrbracket\fCenter\llbracket{B}\rrbracket^+
+  \end{aligned}
+\]
+As the translations on sequents and types makes the CPS-semantics for
+focused NL a somewhat obtuse, we will present them a little more
+explicitly that usual. Below, we will give the full derivations for
+the translations of the focusing and unfocusing rules, and some
+examples for the remaining rules.
+
+Note that for \emph{positive} $A$, $\llbracket{A}\rrbracket^- \equiv
+(\llbracket{A}\rrbracket^+)^R$, and for \emph{negative} $A$,
+$\llbracket{A}\rrbracket^+ \equiv (\llbracket{A}\rrbracket^-)^R$.
+Using these facts, we can give the focusing and defocusing rules a
+valid term labelling. In fact, the left focusing and unfocusing rules
+are the \emph{only} rules whose translation involves abstraction and
+application:
+\begin{center}
+  \renewcommand{\arraystretch}{1}
+  \begin{tabular}{c c}
+    \multicolumn{1}{l}{Foc$^R$:} & \multicolumn{1}{l}{Foc$^L$:}
+    \\
+    \begin{pfbox}
+      \AXC{$\llbracket x:Γ\fCenter \focus{M:A} \rrbracket$}
+      \UIC{$x:\llbracket Γ\rrbracket\fCenter M:\llbracket A\rrbracket^+$}
+      \RightLabel{$\equiv$}
+      \UIC{$x:\llbracket Γ\rrbracket\fCenter M:\llbracket A\rrbracket^{-R}$}
+      \UIC{$\llbracket x:Γ\fCenter M:\struct{A} \rrbracket$}
+    \end{pfbox}
+    &
+    \begin{pfbox}
+      \AXC{}\RightLabel{Ax}
+      \UIC{$k:\llbracket A\rrbracket^{-R}\fCenter k:\llbracket A\rrbracket^{-R}$}
+      \AXC{$\llbracket\focus{M:A}\fCenter x:Δ\rrbracket$}
+      \UIC{$\llbracket x:Δ\rrbracket\fCenter\llbracket M:A\rrbracket^-$}
+      \RightLabel{$\ra$E}
+      \BIC{$k:\llbracket A\rrbracket^{-R}\prod x:\llbracket Δ\rrbracket\fCenter (k\;M):R$}
+      \RightLabel{$\ra$I}
+      \UIC{$k:\llbracket A\rrbracket^{-R}\fCenter (\lambda x.k\;M):\llbracket Δ\rrbracket^R$}
+      \RightLabel{$\equiv$}
+      \UIC{$k:\llbracket A\rrbracket^+\fCenter (\lambda x.k\;M):\llbracket Δ\rrbracket^R$}
+      \UIC{$\llbracket k:\struct{A}\fCenter (\lambda x.k\;M):Δ\rrbracket$}
+    \end{pfbox}
+    \\
+    \multicolumn{1}{l}{Unf$^R$:} & \multicolumn{1}{l}{Unf$^L$:}
+    \\
+    \begin{pfbox}
+      \AXC{$\llbracket x:Γ\fCenter\struct{M:A}\rrbracket$}
+      \UIC{$\llbracket x:Γ\rrbracket\fCenter M:\llbracket A\rrbracket^{-R}$}
+      \RightLabel{$\equiv$}
+      \UIC{$\llbracket x:Γ\rrbracket\fCenter M:\llbracket A\rrbracket^+$}
+      \UIC{$\llbracket x:Γ\fCenter\focus{M:A}\rrbracket$}
+    \end{pfbox}
+    &
+    \begin{pfbox}
+      \AXC{$\llbracket x:\struct{A}\fCenter M:Δ\rrbracket$}
+      \UIC{$x:\llbracket A\rrbracket^+\fCenter M:\llbracket Δ\rrbracket^R$}
+      \AXC{}\RightLabel{Ax}\UIC{$y:\llbracket Δ\rrbracket\fCenter y:\llbracket Δ\rrbracket$}
+      \RightLabel{$\ra$E}
+      \BIC{$x:\llbracket A\rrbracket^+\prod y:\llbracket Δ\rrbracket\fCenter (M\;y):R$}
+      \RightLabel{Comm.}
+      \UIC{$y:\llbracket Δ\rrbracket\prod x:\llbracket A\rrbracket^+\fCenter (M\;y):R$}
+      \RightLabel{$\ra$I}
+      \UIC{$y:\llbracket Δ\rrbracket\fCenter\llbracket (\lambda x.M\;y):A\rrbracket^{+R}$}
+      \RightLabel{$\equiv$}
+      \UIC{$y:\llbracket Δ\rrbracket\fCenter (\lambda x.M\;y):\llbracket A\rrbracket^-$}
+      \UIC{$\llbracket\focus{(\lambda x.M\;y):A}\fCenter y:Δ\rrbracket$}
+    \end{pfbox}
+  \end{tabular}
+\end{center}
+As for the rest of the rules: both of the axioms, and both the right
+rules, simply translate to the identity function. The left rules
+create pairs. For instance, L$\impr$, translates as follows:
+\begin{center}
+  \begin{pfbox}
+    \AXC{}\RightLabel{Ax}\UIC{$
+      z:\llbracket Γ\rrbracket\times\llbracket Δ \rrbracket
+      \fCenter
+      z:\llbracket Γ\rrbracket\times\llbracket Δ \rrbracket$}
+    \AXC{$\llbracket x:Γ\fCenter\focus{M:A} \rrbracket$}
+    \UIC{$x:\llbracket Γ\rrbracket\fCenter M:\llbracket A\rrbracket^+$}
+    \AXC{$\llbracket \focus{N:B}\fCenter y:Δ\rrbracket$}
+    \UIC{$y:\llbracket Δ\rrbracket\fCenter N:\llbracket B\rrbracket^-$}
+    \RightLabel{$\times$I}
+    \BIC{$
+      x:\llbracket Γ\rrbracket\prod y:\llbracket Δ \rrbracket
+      \fCenter
+      (M,N):\llbracket A\rrbracket^+\times\llbracket B\rrbracket^-$}
+    \RightLabel{$\times$E}
+    \BIC{$
+      z:\llbracket Γ\rrbracket\times\llbracket Δ \rrbracket
+      \fCenter
+      (\case{z}{x}{y}{(M,N)}):\llbracket A\rrbracket^+\times\llbracket B\rrbracket^-$}
+    \UIC{$\llbracket \focus{(\case{z}{x}{y}{(M,N)}):A\impr B}\fCenter z:Γ\impr Δ \rrbracket$}
+  \end{pfbox}
+\end{center}
+And finally, the residuation rules perform permutations of the context.
+
+% \begin{center}
+%   \begin{pfbox}
+%     \AXC{}
+%     \RightLabel{Ax$^R$}
+%     \UIC{$x:\struct{α}\fCenter \focus{x:α}$}
+%   \end{pfbox}
+%   \begin{pfbox}
+%     \AXC{}
+%     \RightLabel{Ax$^L$}
+%     \UIC{$\focus{k:α}\fCenter k:\struct{α}$}
+%   \end{pfbox}
+%
+%   \begin{pfbox}
+%     \AXC{$Γ\fCenter\struct{A}\impr\struct{B}$}
+%     \RightLabel{R$\impr$}
+%     \UIC{$Γ\fCenter\struct{A\impr B}$}
+%   \end{pfbox}
+%
+%   \begin{pfbox}
+%     \AXC{$Γ\fCenter\struct{B}\impl\struct{A}$}
+%     \RightLabel{R$\impl$}
+%     \UIC{$Γ\fCenter\struct{B\impl A}$}
+%   \end{pfbox}
+%
+%   \begin{pfbox}
+%     \AXC{$Γ_2\fCenter Γ_1\impr Δ$}
+%     \doubleLine\RightLabel{Res$\impr\prod$}
+%     \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
+%   \end{pfbox}
+%   \begin{pfbox}
+%     \AXC{$Γ_1\fCenter Δ\impl Γ_2$}
+%     \doubleLine\RightLabel{Res$\impl\prod$}
+%     \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
+%   \end{pfbox}
+% \end{center}
+
+
+\subsection{Logical approaches to quantifier movement}
+\todo{Discuss: the $q(A,B,C)$ operator as specification of
+  quantification as a syntactic phenomenon.}
+
+\begin{comment}
+\todo{Discuss: tweaking the polarities to obtain scope ambiguity.}
+
+In more recent work, \citet{moortgat2009,moortgat2012} integrate
+CPS-semantics into the syntactic calculus. The result is the
+Lambek-Grishin (LG) calculus, a bilinear variant of NL, with semantics
+inspired on \citepos{parigot1992}'s $\lambda\mu$-calculus.
+LG is a beautifully symmetric calculus, and display NL, as used in
+this thesis is, is directly based from it. The integrated
+CPS-semantics give some interesting opportunities, for instance the
+ability to give quantifiers such as `everyone' the type $(NP\oslash
+N)\otimes N$---a pair of a determiner and a noun---and give them the
+desired scope-taking semantics.
 
 \vspace*{1\baselineskip}
 

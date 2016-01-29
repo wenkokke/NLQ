@@ -8,7 +8,7 @@ calculus for NL based on work by \citet{moortgat2009,moortgat2012} and
 display calculus over sequent calculus.
 In \autoref{sec:translation-to-lamET} we will relate our display
 calculus back to the framework discussed in \autoref{sec:introduction},
-by defining a translation from our display calculus back to \lamET.
+by defining a translation from our display calculus back to \lamPET.
 And finally, in \autoref{sec:focusing-and-spurious-ambiguity}, discuss
 the problem of spurious ambiguity, and address this by developing an
 extension to display calculus, using polarities and focusing
@@ -209,6 +209,13 @@ cut-formula. For L$\impr$ and R$\impr$, this is done as follows:
   \end{pfbox}
 \end{center}
 And likewise for L$\impl$ and R$\impl$.
+\note{\citet[][p.\ 83]{vanbenthem1995} discusses an additional
+  constraint, namely that the ``trace'' in structural rules has to
+  decrease. This discussion, however, relates to sequent
+  calculus. Neither \citet{belnap1982} nor \citet{gore1998} discuss
+  this property, which leads me to believe that this follows from the
+  constraints on display calculus rules.
+}
 
 
 \subsection{Why use display calculus?}
@@ -385,8 +392,6 @@ which this unification could succeed.
 
 \subsection{Terms for display NL}
 \label{sec:translation-to-lamET}
-
-
 In the previous sections, we defined a display calculus which is
 equivalent to our natural deduction formulation of NL from
 \autoref{sec:introduction}. However, there is still one thing missing
@@ -416,11 +421,19 @@ with products. Anticipating future needs, we also extend it with
 units.
 
 The term labelling for display NL is presented in
-\autoref{fig:nl-display-calculus-to-lamET}. The lambda terms are
-typed by the translations of the  formulas from display NL. As is
-usual when translating sequent calculus to natural deduction, our term
-labelling employs substitution, which was defined in
+\autoref{fig:nl-display-calculus-to-lamET}. The lambda terms are typed
+by the translations of the formulas from display NL. As is usual when
+translating sequent calculus to natural deduction, our term labelling
+employs substitution, which was defined in
 \autoref{sec:simple-type-logical-grammar}.
+\note{When I look at \citet[][ch.\ 6]{capelletti2007}, I do not see a
+  resemblance with what I am defining in this section. The only
+  likeness I see is that we both write our label our syntactic rules
+  with semantic terms. On the other hand, \citet[][ch.\
+  6]{capelletti2007} does define spurious ambiguity w.r.t.\ the
+  semantic calculus. Therefore, I have inserted a reference to his
+  work in \autoref{sec:focusing-and-spurious-ambiguity}.
+}
 
 \input{fig-nl-display-calculus-to-lamET}
 
@@ -485,7 +498,6 @@ lexical definitions---the values for mary, likes and bill---from a
 
 \subsection{Focusing and spurious ambiguity}
 \label{sec:focusing-and-spurious-ambiguity}
-
 In \autoref{sec:nl-as-a-display-calculus}, we briefly touched upon
 spurious ambiguity. We investigated the spurious ambiguity inherent in
 the axiom, but we never gave a formal definition of spurious
@@ -503,7 +515,7 @@ for which the normal-forms are equal.
 We can refine the above definition of spurious ambiguity, by referring
 to the semantic interpretation \citep{capelletti2007,bastenhof2013}.
 Below is a diagram representing the function which interprets
-syntactic terms, where `$\tr$' is the translation from NL to \lamET,
+syntactic terms, where `$\tr$' is the translation from NL to \lamPET,
 and `lex' is the function that inserts the lexical definitions for
 words:\footnote{%
   Note that the second node is often considered to be \emph{linear}
@@ -543,7 +555,8 @@ types of certain polarities, forcing the proofs into a normal form.
 For complex types, this polarity is based on the main connective, but
 for atomic types, polarities are assigned. The choice of polarity
 affects the types of ambiguity that we choose to allow---this will be
-discussed further in \autoref{sec:cps-semantics}.\footnote{%
+discussed further in
+\autoref{sec:continuations-and-scope-taking}.\footnote{%
   For the remainder of this thesis, we will discuss extension in their
   focused form, and include the polarities of any new type. Should you
   wish to remove focusing, you can simply rewrite the focused sequents
