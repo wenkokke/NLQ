@@ -20,7 +20,7 @@ module NLQ.Prelude
        (Word,Entry(..),(∷),(<$),($>),lex,lex_,id
        ,S,N,NP,PP,INF,A,IV,TV,QW,QS,NS
        ,Boolean(..)
-       ,Combine(..),nlq,nlqAll,parseBwd,module X) where
+       ,Combine(..),nlq,allNLQ,parseBwd,module X) where
 
 
 import           Prelude hiding (Word,abs,lex,not,(*),($),(<$),($>))
@@ -129,7 +129,7 @@ data Meanings t = Meanings String [(Expr t,Expr t)]
 
 instance Show (Meanings t) where
   show (Meanings str terms) =
-    concat (intersperse "\n" (map show terms))
+    concat (intersperse "\n" (map (show.snd) terms))
 
 
 putMeanings :: Meanings t -> IO ()
@@ -195,8 +195,8 @@ nlq = QuasiQuoter
 
       strExp = LitE (StringL (fixWS (dropWhile isSpace str)))
 
-nlqAll :: Name -> TH.Q Exp
-nlqAll s = do
+allNLQ :: Name -> TH.Q Exp
+allNLQ s = do
   list <- go 0
   return (AppE (VarE 'sequence_) (ListE list))
   where

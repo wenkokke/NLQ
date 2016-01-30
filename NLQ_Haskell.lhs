@@ -3,32 +3,34 @@
 %include lhs2TeX.fmt
 %options ghci -idata -fobject-code
 
-%format E        = "\mathbf{e}"
-%format T        = "\mathbf{t}"
-%format ET       = E T
-%format EET      = E ET
-%format TET      = T ET
-%format TT       = T T
-%format TTT      = T TT
-%format ET_T     = "(" ET ")" T
-%format forall x = "\forall_{" x "}"
-%format exists x = "\exists_{" x "}"
-%format of       = "\mathit{of}"
-%format of_      = "\mathit{of}"
-%format <$       = "\triangleleft"
-%format $>       = "\triangleright"
-%format ∷        = ::
-%format :->      = ":\rightarrow"
-%format :←       = "\slash"
-%format :→       = "\backslash"
-%format :⇃       = "\downharpoonleft"
-%format :⇂       = "\downharpoonright"
-%format :⇨       = "\fatbslash"
-%format :&       = "\mathbin{\&}"
-%format ∧        = "\mathbin{\wedge}"
-%format ⊃        = "\mathbin{\supset}"
-%format Res      = "\Diamond\!\!"
-%format Q a b c  = "\mathbf{Q}(" c "\!\!\fatslash" "(" a "\fatbslash" b ")" ")"
+%format E         = "\mathbf{e}"
+%format T         = "\mathbf{t}"
+%format ET        = E T
+%format EET       = E ET
+%format TET       = T ET
+%format TT        = T T
+%format TTT       = T TT
+%format ET_T      = "(" ET ")" T
+%format forall x  = "\forall_{" x "}"
+%format exists x  = "\exists_{" x "}"
+%format of        = "\mathit{of}"
+%format of_       = "\mathit{of}"
+%format <$        = "\triangleleft"
+%format $>        = "\triangleright"
+%format ∷         = ::
+%format :->       = ":\rightarrow"
+%format :←        = "\slash"
+%format :→        = "\backslash"
+%format :⇃        = "\downharpoonleft"
+%format :⇂        = "\downharpoonright"
+%format :⇨        = "\fatbslash"
+%format :&        = "\mathbin{\&}"
+%format ∧         = "\mathbin{\wedge}"
+%format ⊃         = "\mathbin{\supset}"
+%format DelW      = "\Diamond^W\!\!"
+%format DelS      = "\Diamond^S\!\!"
+%format QW a b c  = "\mathbf{Q}^W(" "(" b "\!\!\fatslash" a ")" "\fatbslash" c ")"
+%format QS a b c  = "\mathbf{Q}^S(" "(" b "\!\!\fatslash" a ")" "\fatbslash" c ")"
 
 %%% TODO UPDATE NUMBER MANUALLY -- SIGH
 \setcounter{page}{66}
@@ -141,27 +143,28 @@ define a small lexicon of proper nouns, verbs and nouns:
 > alice     = lex "alice"
 >
 > run, leave :: Word IV
-> run       = lex "run"     ;  runs    = run
-> leave     = lex "leave"   ;  leaves  = leave
+> run       = lex "run"      ;  runs    = run
+> leave     = lex "leave"    ;  leaves  = leave
 >
 > read, see, like, serve, fear, know :: Word TV
-> read      = lex "read"    ;  reads   = read
-> see       = lex "see"     ;  sees    = see
-> like      = lex "like"    ;  likes   = like
-> serve     = lex "serve"   ;  serves  = serve
-> fear      = lex "fear"    ;  fears   = fear
-> know      = lex "know"    ;  knows   = know
+> read      = lex "read"     ;  reads   = read
+> see       = lex "see"      ;  sees    = see
+> like      = lex "like"     ;  likes   = like
+> serve     = lex "serve"    ;  serves  = serve
+> fear      = lex "fear"     ;  fears   = fear
+> know      = lex "know"     ;  knows   = know
 >
-> say :: Word (IV :← Res S)
-> say       = lex "say"     ; says     = say
+> say :: Word (IV :← DelW S)
+> say       = lex "say"      ; says     = say
 >
 > person, waiter, fox, book, author, ocean :: Word N
-> person    = lex "person"  ; people   = plural <$ person
-> waiter    = lex "waiter"  ; waiters  = plural <$ waiter
-> fox       = lex "fox"     ; foxes    = plural <$ fox
-> book      = lex "book"    ; books    = plural <$ book
-> author    = lex "author"  ; authors  = plural <$ author
-> ocean     = lex "ocean"   ; oceans   = plural <$ ocean
+> person    = lex "person"   ; people    = plural <$ person
+> waiter    = lex "waiter"   ; waiters   = plural <$ waiter
+> fox       = lex "fox"      ; foxes     = plural <$ fox
+> book      = lex "book"     ; books     = plural <$ book
+> author    = lex "author"   ; authors   = plural <$ author
+> ocean     = lex "ocean"    ; oceans    = plural <$ ocean
+> country   = lex "country"  ; countries = plural <$ country
 
 \\
 If you ever get an error like the error given below, you have probably
@@ -195,9 +198,12 @@ So, if you write, e.g.\ a lexical entry of type |N| using |lex_|, you
 will be expected to provide something of type |Expr E -> Expr T|:
 \\
 
-> a, some, every :: Word (Q NP S S :← N)
+> a, some :: Word (QS NP S S :← N)
 > a         = some
 > some      = lex_ (\f g -> exists E (\x -> f x ∧ g x))
+>
+> no, every :: Word (QW NP S S :← N)
+> no        = lex_ (\f g -> not (exists E (\x -> f x ∧ g x)))
 > every     = lex_ (\f g -> forall E (\x -> f x ⊃ g x))
 
 \\
@@ -212,9 +218,9 @@ typed, we cannot use Haskell's function application. Instead,
 application, written |<$| and |$>|:
 \\
 
-> someone, everyone :: Word (Q NP S S)
-> someone   = some  <$ person
-> everyone  = every <$ person
+> somebody  = some  <$ person  ; someone   = somebody
+> nobody    = no    <$ person  ; noone     = nobody
+> everybody = every <$ person  ; everyone  = everybody
 
 \\
 This was the same |<$| that was used in the definitions of the plural
@@ -273,7 +279,7 @@ Next, we define the double/parasitic quantifiers |same| and
 predefined, as is its negation:
 \\
 
-> same, different :: Word (Q (Q A (NP :⇨ S) (NP :⇨ S)) S S)
+> same, different :: Word (QW (QW A (S :⇦ NP) (S :⇦ NP)) S S)
 > same      = lex_ same'
 >   where
 >   same' k = exists E (\z -> k (\k' x -> k' (\f y -> f y :∧ y ≡ z) x))
@@ -289,8 +295,8 @@ in its two possible types, i.e.\ whether its going to insert its
 clause into a right or a left gap. The semantics, however, stay the
 same:
 
-> type WHICH1 = Q NP NP ((N :→ N) :← (NP :⇃ S))
-> type WHICH2 = Q NP NP ((N :→ N) :← (S :⇂ NP))
+> type WHICH1 = QW NP NP ((N :→ N) :← (NP :⇃ S))
+> type WHICH2 = QW NP NP ((N :→ N) :← (S :⇂ NP))
 >
 > which :: Word (WHICH1 :& WHICH2)
 > which = lex_ (which' , which')
@@ -312,8 +318,8 @@ parser, |parseBwd|.
 For instance, in the first example, ``john runs'' is taken, and turned
 into the Haskell expression |parseBwd S (john,runs)|. The input string
 is taken as a right-branching parse tree, so any left branches have to
-be explicitly written. In addition, any scope islands can be written
-as |<...>|.
+be explicitly written. In addition, \emph{weak} scope islands are
+written as |<...>|, and strong scope islands are written as |<<...>>|.
 
 Secondly, with some lhs2\TeX\ magic, I have inserted the results of
 the examples in listings below them. These listings list the precise
@@ -397,29 +403,43 @@ What follows is a list of examples, and their interpretations:
 
 \begin{lstlisting} \perform{s18} \end{lstlisting}
 
-> s19 = [nlq| mary reads a book                which  john likes |]
+> s19 = [nlq| mary says <someone likes bill> |]
 
 \begin{lstlisting} \perform{s19} \end{lstlisting}
 
-> s20 = [nlq| mary reads a book (the author of which) john likes |]
+> s20 = [nlq| everyone says <someone likes bill> |]
 
 \begin{lstlisting} \perform{s20} \end{lstlisting}
 
-> s21 = [nlq| mary sees foxes   |]
+> s21 = [nlq| mary reads a book                which  john likes |]
 
 \begin{lstlisting} \perform{s21} \end{lstlisting}
 
-> s22 = [nlq| mary sees the fox |]
+> s22 = [nlq| mary reads a book (the author of which) john likes |]
 
 \begin{lstlisting} \perform{s22} \end{lstlisting}
 
-> s23 = [nlq| mary sees a   fox |]
+> s23 = [nlq| mary sees foxes   |]
 
 \begin{lstlisting} \perform{s23} \end{lstlisting}
 
-> s24 = [nlq| alice reads a book (the author of which) fears the ocean |]
+> s24 = [nlq| mary sees the fox |]
 
 \begin{lstlisting} \perform{s24} \end{lstlisting}
+
+> s25 = [nlq| mary sees a   fox |]
+
+\begin{lstlisting} \perform{s25} \end{lstlisting}
+
+> s26 = [nlq| alice reads a book (the author of which) fears the ocean |]
+
+\begin{lstlisting} \perform{s26} \end{lstlisting}
+
+\begin{comment}
+
+> main = $(allNLQ "s")
+
+\end{comment}
 
 \end{appendices}
 \end{document}

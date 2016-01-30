@@ -23,6 +23,8 @@ thesisFileList =
   , "preamble.tex"
   , "fig-*.tex"
   , "cover.png"
+  , "NLQ_Agda.lagda"
+  , "NLQ_Haskell.lhs"
   ]
 
 slidesFileList :: [FilePattern]
@@ -106,9 +108,22 @@ main =
       command_ [Cwd "_build", EchoStdout True] "pdflatex" [lcl]
 
     toBuild "NLQ_Haskell.tex" %> \out -> do
-      let src = fromBuild (out -<.> "lhs")
+      let src = out -<.> "lhs"
       need [src]
       command_ [Cwd ".", EchoStdout True] "lhs2TeX" [src,"-o",out]
+
+    -- compile NLQ_Haskell.lhs with GHC
+    toBuild ("NLQ_Haskell" <.> exe) %> \out -> do
+      let
+        src = out -<.> "lhs"
+        lcl = fromBuild src
+      need [src]
+      command_ [Cwd "_build", EchoStdout True] "ghc" ["-i../data","--make",lcl]
+
+    -- run the generated Haskell file
+    phony "run" $ do
+      need [toBuild ("NLQ_Haskell" <.> exe)]
+      command_ [Cwd "_build", Shell, EchoStdout True] ("./NLQ_Haskell" <.> exe) []
 
     -- copy files into the _build directory
     let static = map toBuild (thesisFileList ++ slidesFileList)
