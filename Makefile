@@ -2,10 +2,9 @@ MAKEFLAGS=B
 DELEGATE=./buildfile.hs
 
 default:
-	@$(DELEGATE)
+	@ghc --make $(DELEGATE) -rtsopts -with-rtsopts=-I0 -outputdir=_build -o _build/build
+	@_build/build
 
 %:
-	@$(DELEGATE) $@
-
-
-# ghc --make buildfile.hs -rtsopts -with-rtsopts=-I0 -outputdir=_build -o _build/build && _build/build "$@"
+	@ghc --make $(DELEGATE) -rtsopts -with-rtsopts=-I0 -outputdir=_build -o _build/build
+	@_build/build "$@"
