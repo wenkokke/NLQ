@@ -201,7 +201,7 @@ ambiguity grows exponentially with the length of the sentence.
 Instead of performing a separate CPS translation on the semantic
 terms, \citet{bastenhof2012}, \citet{moortgat2012}---based on work by
 \citet{girard1991} and \citet{curien2000}---integrate the
-CPS-semantics with the syntactic calculus. The result of this work is
+CPS-semantics into the syntactic calculus. The result of this work is
 the focused Lambek-Grishin (LG) calculus, a bilinear variant of NL,
 with semantics inspired on \citepos{parigot1992}
 $\lambda\mu$-calculus. Focused NL, as presented in this thesis, is a
@@ -239,14 +239,14 @@ atomic \emph{negative} structures using
 $\llbracket\cdot\rrbracket^-$. We extend it to sequents as follows:
 \[
   \begin{aligned}
-    &\llbracket\:{Γ}\:\fCenter\:{Δ}\;\rrbracket &&=
-    \llbracket{Γ}\rrbracket\fCenter\llbracket{Δ}\rrbracket^R
+    &\llbracket\;\,{Γ}\,\,\fCenter\:\,{Δ}\:\,\rrbracket &&=
+    \llbracket{Γ\:}\rrbracket\fCenter\llbracket{Δ}\rrbracket^R
     \\
-    &\llbracket\focus{A}\fCenter\:{Δ}\;\rrbracket &&=
+    &\llbracket\focus{A}\fCenter\,\,{Δ}\:\,\rrbracket &&=
     \llbracket{Δ}\rrbracket\fCenter\llbracket{A}\rrbracket^-
     \\
-    &\llbracket\:{Γ}\:\fCenter\focus{B}\rrbracket &&=
-    \llbracket{Γ}\rrbracket\fCenter\llbracket{B}\rrbracket^+
+    &\llbracket\;\,{Γ}\,\,\fCenter\focus{B}\;\!\rrbracket &&=
+    \llbracket{Γ\:}\rrbracket\fCenter\llbracket{B}\rrbracket^+
   \end{aligned}
 \]
 As the translations on sequents and types makes the CPS-semantics for
@@ -343,63 +343,79 @@ create pairs. For instance, L$\impr$, translates as follows:
 \end{center}
 And finally, the residuation rules perform permutations of the context.
 
-% \begin{center}
-%   \begin{pfbox}
-%     \AXC{}
-%     \RightLabel{Ax$^R$}
-%     \UIC{$x:\struct{α}\fCenter \focus{x:α}$}
-%   \end{pfbox}
-%   \begin{pfbox}
-%     \AXC{}
-%     \RightLabel{Ax$^L$}
-%     \UIC{$\focus{k:α}\fCenter k:\struct{α}$}
-%   \end{pfbox}
-%
-%   \begin{pfbox}
-%     \AXC{$Γ\fCenter\struct{A}\impr\struct{B}$}
-%     \RightLabel{R$\impr$}
-%     \UIC{$Γ\fCenter\struct{A\impr B}$}
-%   \end{pfbox}
-%
-%   \begin{pfbox}
-%     \AXC{$Γ\fCenter\struct{B}\impl\struct{A}$}
-%     \RightLabel{R$\impl$}
-%     \UIC{$Γ\fCenter\struct{B\impl A}$}
-%   \end{pfbox}
-%
-%   \begin{pfbox}
-%     \AXC{$Γ_2\fCenter Γ_1\impr Δ$}
-%     \doubleLine\RightLabel{Res$\impr\prod$}
-%     \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
-%   \end{pfbox}
-%   \begin{pfbox}
-%     \AXC{$Γ_1\fCenter Δ\impl Γ_2$}
-%     \doubleLine\RightLabel{Res$\impl\prod$}
-%     \UIC{$Γ_1\prod Γ_2\fCenter Δ$}
-%   \end{pfbox}
-% \end{center}
+The beauty of this CPS-translation is that you can tweak which terms
+are interpreted as values and which as co-values. For instance,
+\citet{moortgat2012} choose to assign S \emph{negative} polarity
+(co-value), and the rest of the atomic types positive polarity
+(value). With such an assignment, you can obtain the following
+results:
+\begin{gather*}
+  \text{john}:\struct\NP\prod\text{leaves}:\struct\IV\fCenter\struct\S
+  \\
+  \downmapsto
+  \\
+  (\lambda k. \text{leaves}\;(\text{john},k))
+\end{gather*}%
+Note that the verb gets access to the top continuation. This is useful
+when interpreting multiple utterances.
 
-
-\subsection{Logical approaches to quantifier movement}
-\todo{Discuss: the $q(A,B,C)$ operator as specification of
-  quantification as a syntactic phenomenon.}
-
-\begin{comment}
-\todo{Discuss: tweaking the polarities to obtain scope ambiguity.}
-
-In more recent work, \citet{moortgat2009,moortgat2012} integrate
-CPS-semantics into the syntactic calculus. The result is the
-Lambek-Grishin (LG) calculus, a bilinear variant of NL, with semantics
-inspired on \citepos{parigot1992}'s $\lambda\mu$-calculus.
-LG is a beautifully symmetric calculus, and display NL, as used in
-this thesis is, is directly based from it. The integrated
-CPS-semantics give some interesting opportunities, for instance the
-ability to give quantifiers such as `everyone' the type $(NP\oslash
-N)\otimes N$---a pair of a determiner and a noun---and give them the
-desired scope-taking semantics.
+We can take top-level scope from any function which returns someone
+with a positive type:
+\begin{gather*}
+  \text{john}:\struct\NP\prod
+  \text{finds}:\struct\TV\prod
+  \text{a}:\struct{\NP\impl\N}\prod
+  \text{unicorn}:\struct\N\fCenter\struct\S
+  \\
+  \downmapsto
+  \\
+  (\lambda k. \text{some}\;((\lambda y. \text{finds}\;((\text{john},k),y)),\text{unicorn}))
+\end{gather*}%
+We get exactly the scope ambiguity we would expect in natural
+language:
+\begin{gather*}
+  \text{every}:\struct{\NP\impl\N}\prod\text{person}:\struct\N\prod
+  \text{loves}:\struct\TV\prod\text{some}:\struct{\NP\impl\N}\prod
+  \text{person}:\struct\N\fCenter\struct\S
+  \\
+  \downmapsto
+  \\
+  (\lambda k. \text{every}\;((\lambda x. \text{some}\;((\lambda y.\text{loves}\;((x , k) , y)) , \text{person})) , \text{person}))
+  \\
+  (\lambda k. \text{some}\;((\lambda x. \text{every}\;((\lambda y. \text{loves}\;((y , k) , x)) , \text{person})) , \text{person}))
+\end{gather*}
+In this system, the scope-taking occurs when e.g.\ %
+$\struct{\NP\impl\N}\prod\struct\N$ is merged into $NP$. The polarity
+assignment allows for the following derivation, which will insert the
+quantifier in the top scope:
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$p:\struct\N\fCenter\focus{p:\N}$}
+  \AXC{$x:\struct\NP\fCenter M:Γ$}
+  \RightLabel{Unf$^L$}
+  \UIC{$\focus{(\lambda x.M\;y):\NP}\fCenter y:Γ$}
+  \RightLabel{L$\impl$}
+  \BIC{$\focus{(\case{z}{y}{p}{(\lambda x.M\;y,p)}):\NP\impl\N}\fCenter z:Γ\impl\struct\N$}
+  \RightLabel{Foc$^L$}
+  \UIC{$k:\struct{\NP\impl\N}\fCenter
+    (\lambda z.k\;(\case{z}{y}{p}{(\lambda x.M\;y,p)})):Γ\impl\struct\N$}
+\end{pfblock}
+Because the result type is positive, we can unfocus. This causes the
+ambiguity: we can choose between starting out with ``every person'' or
+``some person''.\footnote{%
+  Because NLQ uses a direct translation, instead of the CPS
+  translation, this ambiguity would be spurious ambiguity. Therefore,
+  NLQ assigns uniform \emph{negative} polarities, which prevents this
+  type of ambiguity.
+}
+In addition, when we add logical products to the calculus (as
+\citeauthor{moortgat2012} do) we can write the types of ``everyone''
+and ``someone'' as $(\NP\impl\N)\otimes\N$, and obtain the same
+scope-taking behaviour.
 
 \vspace*{1\baselineskip}
 
+\todo{Rewrite: see notes.}
 \citepos{barker2004} CPS-translation and \citepos{moortgat2012}
 CPS-semantics both suffer from two related problems:
 \begin{enumerate}
@@ -410,8 +426,7 @@ CPS-semantics both suffer from two related problems:
 \item Both cannot encode \emph{delimiters} past which a nested
   expression cannot take scope. However, in natural language we find
   evidence for scope islands\footnote{%
-    We will discuss scope islands in
-    \autoref{sec:movement-and-quantifier-raising}.
+    We will discuss scope islands in \autoref{sec:movement-and-quantifier-raising}.
   }, from which quantifiers cannot escape.
 \end{enumerate}
 These are the hallmark of \emph{delimited} or \emph{composable}
@@ -441,6 +456,29 @@ interesting to examine, we will choose to keep our solution entirely
 syntactic. In the next section we will present quantifier movement and
 scope islands in the syntactic calculus, based on work by
 \citet{moortgat1996}, \citet{barker2007} and \citet{barker2015}.
+
+
+
+
+\subsection{Logical approaches to quantifier movement}
+\todo{Discuss: the $q(A,B,C)$ operator as specification of
+  quantification as a syntactic phenomenon.}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{comment}
 
 \subsubsection{NL$_\lambda$, NL$_{\text{CL}}$ and NL$_{\text{IBC}}$}
 \label{sec:nl-lambda-nl-cl-and-nl-ibc}
