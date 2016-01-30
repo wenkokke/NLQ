@@ -117,8 +117,12 @@ discuss various approaches to quantification as a syntactic problem,
 discuss their weaknesses, and try to amend these.
 
 
-\subsection{Continuations and scope taking}
+\subsection{Semantic approaches to scope taking}
 \label{sec:continuations-and-scope-taking}
+
+
+
+\subsubsection{Continuation-passing style translation}
 \citet{barker2002,barker2004} advocates the use of continuations in
 natural language semantics. He does this with several case studies,
 one of which is quantification. The gist of his story is as follows:
@@ -196,8 +200,9 @@ ambiguity grows exponentially with the length of the sentence.
 % interpretation of the state monad for anaphora resolution will allow
 % sentences such as ``He$_i$ gave a book to John$_i$.''
 
-\vspace*{1\baselineskip}
 
+
+\subsubsection{Focused, polarised semantics}
 Instead of performing a separate CPS translation on the semantic
 terms, \citet{bastenhof2012}, \citet{moortgat2012}---based on work by
 \citet{girard1991} and \citet{curien2000}---integrate the
@@ -413,18 +418,21 @@ In addition, when we add logical products to the calculus (as
 and ``someone'' as $(\NP\impl\N)\otimes\N$, and obtain the same
 scope-taking behaviour.
 
-\vspace*{1\baselineskip}
 
+
+\subsubsection{Limitations: scope islands, strong and weak quantifiers}
 \citepos{moortgat2012} CPS-semantics give a beautiful solution to the
-problem of spurious ambiguity in type-logical grammar and
+problem of spurious ambiguity both in proof search \emph{and} in
 CPS-translation. However, their solution---and
 \citepos{barker2002}---still suffers from two related problems:
 \begin{enumerate}
 \item Both require a \emph{static} choice of answer type. This
-  means that the answer type cannot change throughout the program.
+  means that the answer type (referred to as $R$ above) cannot change
+  throughout the program.
 \item Both cannot encode \emph{delimiters} past which a nested
   expression cannot take scope.
 \end{enumerate}
+
 The first of these two is a problem when analysing sentences such as
 ``Alice read a book [the author of which] feared the ocean''. The
 indented interpretation of this sentence is:\footnote{%
@@ -441,14 +449,83 @@ indented interpretation of this sentence is:\footnote{%
   \exists x.(\BOOK(x)\wedge \FEAR(\iota(\lambda
   y.(\OF(x,\AUTHOR,y))),\iota(\lambda z.\OCEAN(z))))\wedge\READ(\ALICE,x)
 \]
-The system NLQ---and other, similar systems---is capable of deriving
+The system NLQ, and other, similar systems are capable of deriving
 these semantics, by having ``which'' take scope at the top of the
 embedded clause ``the author of which''. It will take this function,
-which has type $\e\e$, apply it to the existentially quantifier
-variable, and insert the result in the subject of the gapped sentence
+which has type $\e\e$, apply it to the existentially quantified
+variable, and insert the result as the subject of the gapped sentence
 ``\_ feared the ocean''. As this involves a quantifier taking scope at
 the top of an NP node, instead of the usual S node, it is unclear how
 the aforementioned approaches could derive this interpretation.
+
+The second is the problem of scope restriction. There are many
+different forms of scope restriction in natural language
+\citep[see][]{szabolcsi2000}, but one of the clearest examples to me
+is a phrase such as ``Mary said everyone left''. If we assume that
+``everyone'', as a quantifier, can take scope at the top-level, we get
+the following interpretation:
+\[
+  \forall{x}.\PERSON(x)\supset\PAST(\SAY(\MARY,\PAST(\LEAVE(x))))
+\]
+The embedded clause ``everyone left'' is also a sentence, so everyone
+should also be able to take scope there, giving us the following
+semantics:
+\[
+  \PAST(\SAY(\MARY,\forall{x}.\PERSON(x)\supset\PAST(\LEAVE(x))))
+\]
+There is, however, something off about the first interpretation for
+the sentence, where everyone takes scope at the top-level. If we think
+about what the two logical formulas mean, the first one means that
+Mary made a speech act, in which she declared ``everyone left''. The
+second interpretation, however, states that for each person Mary made
+a \emph{separate} speech act, in which she declared that that
+particular person had left.
+
+There is more to the story of delimiters: for a sentence such as
+``Everyone said someone left'', we expect a reading similar to the
+second reading above:
+\[
+  \forall{x}.\PERSON(x)\supset\PAST(\SAY(x,\exists{y}.\PERSON(x)\wedge\PAST(\LEAVE(y))))
+\]
+This would mean that there is one particular person, and everyone said
+that that person had left. However, in this case, it does not seem
+absurd to also allow the other reading:
+\[
+  \forall{x}.\PERSON(x)\supset(\exists{y}.\PERSON(x)\wedge\PAST(\SAY(x,\PAST(\LEAVE(y)))))
+\]
+That is to say: everyone said that someone has left, but they may be
+talking about different people.
+This phenomenon is known as \emph{strong} vs. \emph{weak} quantifiers;
+the hypothesis is that quantifiers, based on their strength, may be
+able to scope out of a scope island. Neither
+\citet{barker2002,barker2004} nor \citet{moortgat2012} can analyse
+these phenomena.
+
+
+
+\subsubsection{Continuation hierarchy and scope}
+\citet{kiselyov2014} present an elegant solution to the problem of
+strong and weak quantifiers: they set up a framework in which
+expressions can be CPS-translated repeatedly, whereby expressions that
+are lifted more often are stronger than expressions that are lifted
+fewer times. They proceed by showing that in this framework they can
+account for scope islands, scope ambiguity without over-generation,
+and \emph{any number} of quantifier strengths.\footnote{%
+  We are not aware of any work in linguistics that shows that more
+  than two strengths are necessary. Nonetheless,
+  \citepos{kiselyov2014} general solution is quite nice.
+}
+They obtain both scope ambiguity and scope islands by their mechanism
+of quantifier strength. Scope ambiguity is obtained by varying the
+quantifier strengths, i.e.\ for ``Everyone loves someone'' we have
+``Everyone$_2$ loves someone$_1$'' and  ``Everyone$_1$ loves
+someone$_2$'', where the strength of the quantifier determines the
+scope. Scope islands are implemented by means of semantic operator,
+which lowers the quantifier strength of its argument by a certain
+amount, therefore preventing weak quantifiers from out-scoping it.
+It is, however, unclear whether or not this framework can handle
+changing answer types.
+
 
 
 

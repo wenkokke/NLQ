@@ -38,27 +38,18 @@
 \usepackage{appendix}
 \usepackage{stmaryrd}
 \setlength{\mathindent}{0cm}
-%\usepackage[utf8]{inputenc}
-%\usepackage{newunicodechar}
-%\newunicodechar{∃}{\ensuremath{\exists}}
-%\newunicodechar{∄}{\ensuremath{\nexists}}
-%\newunicodechar{∀}{\ensuremath{\forall}}
-%\newunicodechar{∧}{\ensuremath{\wedge}}
-%\newunicodechar{⊃}{\ensuremath{\supset}}
-%\newunicodechar{λ}{\ensuremath{\lambda}}
-%\newunicodechar{≡}{\ensuremath{\equiv}}
-%\newunicodechar{≢}{\ensuremath{\not\equiv}}
-%\newunicodechar{¬}{\ensuremath{\neg}}
 \usepackage{comment}
 \usepackage{listings}
+\usepackage{lstautogobble}
 \lstset{
-  frame=leftline,
-  basicstyle=\ttfamily\small,
-  breaklines=true,
-  breakatwhitespace=true,
-  inputencoding=utf8,
-  extendedchars=true,
-  literate=
+  autogobble        = true,
+  frame             = leftline,
+  basicstyle        = \ttfamily\small,
+  breaklines        = true,
+  breakatwhitespace = true,
+  inputencoding     = utf8,
+  extendedchars     = true,
+  literate          =
    {∃}{{\ensuremath{\exists}}}1
    {∄}{{\ensuremath{\nexists}}}1
    {∀}{{\ensuremath{\forall}}}1
@@ -211,19 +202,19 @@ The functions |forall E|, |exists E|, |∧| and |⊃| are defined in
 |NLQ.Prelude|.
 
 Now that we have definitions for |some|, |every|, and |person| it
-would be a shame if we could not simply give the definitions by
-applying the one to the other. However, since words are directionally
-typed, we cannot use Haskell's function application. Instead,
-|NLQ.Prelude| provides you with two directional versions of
-application, written |<$| and |$>|:
+would be a shame if we could not simply give definitions for somebody,
+everybody, and so on, by applying the one to the other. However,
+since words are directionally typed, we cannot use Haskell's
+function application. Instead, |NLQ.Prelude| provides you with two
+directional versions of application, written |<$| and |$>|:
 \\
 
-> somebody  = some  <$ person  ; someone   = somebody
-> nobody    = no    <$ person  ; noone     = nobody
-> everybody = every <$ person  ; everyone  = everybody
+> somebody  = some   <$ person  ; someone   = somebody
+> nobody    = no     <$ person  ; noone     = nobody
+> everybody = every  <$ person  ; everyone  = everybody
 
 \\
-This was the same |<$| that was used in the definitions of the plural
+This is the same |<$| that was used in the definitions of the plural
 nouns above. In fact, |plural| is simply a word---albeit a somewhat
 complex one:
 \\
@@ -329,111 +320,165 @@ What follows is a list of examples, and their interpretations:
 
 > s0  = [nlq| john runs |]
 
-\begin{lstlisting} \perform{s0} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s0}
+\end{lstlisting}
 
 > s1  = [nlq| john    likes mary     |]
 
-\begin{lstlisting} \perform{s1} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s1}
+\end{lstlisting}
 
 > s2  = [nlq| someone likes mary     |]
 
-\begin{lstlisting} \perform{s2} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s2}
+\end{lstlisting}
 
 > s3  = [nlq| john    likes everyone |]
 
-\begin{lstlisting} \perform{s3} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s3}
+\end{lstlisting}
 
 > s4  = [nlq| someone likes everyone |]
 
-\begin{lstlisting} \perform{s4} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s4}
+\end{lstlisting}
 
 > s5  = [nlq| (the           waiter) serves everyone |]
 
-\begin{lstlisting} \perform{s5} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s5}
+\end{lstlisting}
 
 > s6  = [nlq| (the same      waiter) serves everyone |]
 
-\begin{lstlisting} \perform{s6} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s6}
+\end{lstlisting}
 
 > s7  = [nlq| (a   different waiter) serves everyone |]
 
-\begin{lstlisting} \perform{s7} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s7}
+\end{lstlisting}
 
 > s8  = [nlq| mary  wants           to leave |]
 
-\begin{lstlisting} \perform{s8} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s8}
+\end{lstlisting}
 
 > s9  = [nlq| mary (wants john)     to leave |]
 
-\begin{lstlisting} \perform{s9} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s9}
+\end{lstlisting}
 
 > s10 = [nlq| mary (wants everyone) to leave |]
 
-\begin{lstlisting} \perform{s10} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s10}
+\end{lstlisting}
 
 > s11 = [nlq| mary  wants           to like bill |]
 
-\begin{lstlisting} \perform{s11} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s11}
+\end{lstlisting}
 
 > s12 = [nlq| mary (wants john)     to like bill |]
 
-\begin{lstlisting} \perform{s12} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s12}
+\end{lstlisting}
 
 > s13 = [nlq| mary (wants everyone) to like bill |]
 
-\begin{lstlisting} \perform{s13} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s13}
+\end{lstlisting}
 
 > s14 = [nlq| mary  wants           to like someone |]
 
-\begin{lstlisting} \perform{s14} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s14}
+\end{lstlisting}
 
 > s15 = [nlq| mary (wants john)     to like someone |]
 
-\begin{lstlisting} \perform{s15} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s15}
+\end{lstlisting}
 
 > s16 = [nlq| mary (wants everyone) to like someone |]
 
-\begin{lstlisting} \perform{s16} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s16}
+\end{lstlisting}
 
 > s17 = [nlq| mary says <john     likes bill> |]
 
-\begin{lstlisting} \perform{s17} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s17}
+\end{lstlisting}
 
 > s18 = [nlq| mary says <everyone likes bill> |]
 
-\begin{lstlisting} \perform{s18} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s18}
+\end{lstlisting}
 
 > s19 = [nlq| mary says <someone likes bill> |]
 
-\begin{lstlisting} \perform{s19} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s19}
+\end{lstlisting}
 
 > s20 = [nlq| everyone says <someone likes bill> |]
 
-\begin{lstlisting} \perform{s20} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s20}
+\end{lstlisting}
 
 > s21 = [nlq| mary reads a book                which  john likes |]
 
-\begin{lstlisting} \perform{s21} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s21}
+\end{lstlisting}
 
 > s22 = [nlq| mary reads a book (the author of which) john likes |]
 
-\begin{lstlisting} \perform{s22} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s22}
+\end{lstlisting}
 
 > s23 = [nlq| mary sees foxes   |]
 
-\begin{lstlisting} \perform{s23} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s23}
+\end{lstlisting}
 
 > s24 = [nlq| mary sees the fox |]
 
-\begin{lstlisting} \perform{s24} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s24}
+\end{lstlisting}
 
 > s25 = [nlq| mary sees a   fox |]
 
-\begin{lstlisting} \perform{s25} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s25}
+\end{lstlisting}
 
 > s26 = [nlq| alice reads a book (the author of which) fears the ocean |]
 
-\begin{lstlisting} \perform{s26} \end{lstlisting}
+\begin{lstlisting}%
+\perform{s26}
+\end{lstlisting}
 
 \begin{comment}
 
