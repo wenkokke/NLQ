@@ -421,6 +421,7 @@ scope-taking behaviour.
 
 
 \subsubsection{Limitations: scope islands, strong and weak quantifiers}
+\label{sec:limitations-scope-islands-strong-and-weak-quantifiers}
 \citepos{moortgat2012} CPS-semantics give a beautiful solution to the
 problem of spurious ambiguity both in proof search \emph{and} in
 CPS-translation. However, their solution---and
@@ -528,63 +529,127 @@ changing answer types.
 
 
 
+\subsection{Syntactic approaches to scope}
+\label{sec:syntactic-approaches-to-scope}
+The idea of using structural postulates to treat scope is, by now,
+rather old. \citet{morrill1994}, for instance, introduces the
+$\uparrow$ and $\downarrow$ connectives for discontinuous
+constituents.
 
-\begin{comment}
-These are the hallmark of \emph{delimited} or \emph{composable}
-continuations \citep{danvy1990}. However, while delimited
-continuations seem extremely promising, they are still not entirely
-without problems. They still suffer from the problem of ambiguity, as
-described above for CPS- and monadic translations. Additionally, they
-do not form a monad. Instead, they form something known as an indexed
-monad, which has two additional type-level parameters, meaning $\eta$
-and $\star$ get the following types:
-\todo{Remove references to monads.}
-\[
-  \eta : A\ra\mathbb{M}\;i\;i\;A
-  \qquad
-  \star: (A\ra\mathbb{M}\;j\;k\;B)\ra\mathbb{M}\;i\;j\;A\ra\mathbb{M}\;i\;k\;B
-\]
-This makes sense: since we now allow the answer type of the
-continuation to change, we need to add indices to keep track of the
-input and output answer type. However, the downside of this is that
-since we need these additional parameters, we cannot simply
-CPS-translate to delimited continuations---if we use a delimited
-continuation indexed monad in our semantics, this will have to be
-reflected in our syntactic calculus.
+\citet{moortgat1996} discusses two key techniques for extending
+logics with structural postulates, while maintaining control of where
+these apply: \emph{multimodality} and \emph{licensing}.
+Multimodality, in essence, means that when we add a new structural
+postulate---e.g.\ associativity for our product---we add it to a
+\emph{new} copy of the connective. This way, we maintain the results
+we had for our logic without the structural postulate, and we keep our
+structural postulates from interfering.
+Licensing, on the other hand, means restricting access to new
+modalities, or new structural rules. This technique is employed, for
+instance, by \citet{girard1987} to restrict the access to contraction
+and weakening in full linear logic.
 
-While such a solution using delimited continuations may still be
-interesting to examine, we will choose to keep our solution entirely
-syntactic. In the next section we will present quantifier movement and
-scope islands in the syntactic calculus, based on work by
-\citet{moortgat1996}, \citet{barker2007} and \citet{barker2015}.
+Another contribution in \citet{moortgat1996} is the description of the
+$q(A,B,C)$ connective---a first attempt to formalise which theorems
+should be derivable for a syntactic implementation of quantification.
+\citeauthor{moortgat1996} writes:
+\begin{quote}
+  As a first approximation, [below we present] the connective $q(A, B,
+  C)$ for `in situ' binding [..]. Use of a formula $q(A,B,C)$ binds a
+  variable x of type A, where the resource A is substituted for [..]
+  $q(A, B, C)$ in the binding domain B. Using $q(A,B,C)$ turns the
+  binding domain B into C. In the generalized quantifier case we have
+  typing $q(np, s, s)$ where it happens that $B = C = s$.
+\end{quote}
+\begin{pfblock}
+  \AXC{$Δ[x:A]\fCenter M:B$}
+  \AXC{$Γ[y:C]\fCenter N:D$}
+  \RightLabel{$q$L}
+  \BIC{$Γ[Δ[z:q(A,B,C)]]\fCenter \sub{N}{z\;(\lambda x.M)}{y}:D$}
+\end{pfblock}
+He then proceeds to give an implementation of this connective in terms
+of more primitive, logical rules, by adding the following structural
+postulates:
+\begin{align}
+  \tag{P0}
+  \di A
+  &\longleftrightarrow
+  A\hprod\mathbf{t}
+  \label{eqn:mmp0}
+  \\
+  \tag{P1}
+  (A\hprod B)\prod C
+  &\longleftrightarrow
+  A\hprod\langle l\rangle(B\prod C)
+  \label{eqn:mmp1}
+  \\
+  \tag{P2}
+  A\prod(B\hprod C)
+  &\longleftrightarrow
+  B\hprod\langle r\rangle(A\prod C)
+  \label{eqn:mmp2}
+\end{align}
+These postulates allow the system to:
+\begin{enumerate*}[label=(\arabic*)]
+\item take a formula marked with a $\di$ (the quantifying license);
+\item turn the $\di$ it into a trace (\textbf{t}), thereby unlocking a
+  \emph{hollow} product (the quantifying modality); and
+\item iteratively move the formula upwards, leaving a trail of
+  $\langle l\rangle$s and $\langle r\rangle$s.
+\end{enumerate*}
+He defines the $q(A,B,C)$ connective as $(B\impl_w A)\impr_w C$ (where
+$w$ is, once again, the quantifying modality). Once the quantifier
+reaches a position where it can be reduced---for quantifiers
+$q(np,s,s)$ this is usually the top---we can reduce it using
+L$\impl_w$ and R$\impr_w$.
 
+Note that contrary to most linguistic frameworks, in which quantifier
+movement conceived of as leaving a trace, and moving is strictly
+upwards (i.e.\ quantifier raising), in this framework it ends up being
+characterised by upwards movement followed by downwards movement
+\emph{along the same path}---i.e.\ scope-taking followed by the
+insertion of the newly bound variable.
 
-
-
-\subsection{Logical approaches to quantifier movement}
-\todo{Discuss: the $q(A,B,C)$ operator as specification of
-  quantification as a syntactic phenomenon.}
+As the derivations given in \citet{moortgat1996} are almost identical
+to contemporary derivations given using NL$_{\text{IBC}}$ and NLQ, and
+both will be discussed in later sections, we will refrain from
+presenting such a derivation here.
 
 \subsubsection{NL$_\lambda$, NL$_{\text{CL}}$ and NL$_{\text{IBC}}$}
 \label{sec:nl-lambda-nl-cl-and-nl-ibc}
-
 \citet{barker2007} and \citet{barker2015} describe an extension to NL
-which they call NL$_\lambda$ or NL$_{\text{QR}}$. The main
-contribution of this extension is the idea to encode quantifier
-raising
+which they call NL$_\lambda$ (sometimes NL$_{\text{QR}}$). Its main
+contributions over \citet{moortgat1996} are the introduction of
+\emph{parasitic scope}---a syntactic mechanism to capture the
+variables bound by another quantifier---and a related refinement of
+\citepos{moortgat1996} $q(A,B,C)$ and $q$L. This contributions---as
+paraphrased by us to fit \citepos{moortgat1996} notation---consists of
+a binary connective $q(A,B)$, and a deconstruction of the old $q$L
+into $q$L and $q$R (where $Σ'$ is some variation of $Σ$):
+\begin{center}
+  \begin{pfbox}
+    \AXC{$Σ'\fCenter q(A,B)$}
+    \AXC{$Γ[C]\fCenter Δ$}
+    \RightLabel{$q$L}
+    \BIC{$Γ[Σ[q(A,B,C)]]\fCenter Δ$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$Σ[A]\fCenter B$}
+    \RightLabel{$q$R}
+    \UIC{$Σ'\fCenter q(A,B)$}
+  \end{pfbox}
+\end{center}
+\note{If you have a reference to a framework which does bound
+  variable capture in a safe way, and which predates NL$_\lambda$,
+  please let me know.}
+We will discuss parasitic scope, and the motivation for this
+deconstruction, more extensively in the context of NLQ
+(\autoref{sec:parasitic scope}), but first we will introduce
+NL$_\lambda$.
 
-
-
-
-
-
-
-
-In their \citeyear{barker2015} book, \citeauthor{barker2015} describe
-an extension of NL which they call NL$_\lambda$. The main insight in
-the formulation of this calculus was this: in type-logical grammar,
-the antecedent encodes a constituency tree, therefore we can simply
-encode quantifier raising in our logic.
+The basis for the way in which NL$_\lambda$ represents quantifier
+movement is the following tree transformation, which is often used to
+represent quantifier raising:
 \begin{center}
   \vspace*{0.5\baselineskip}
   \begin{minipage}{0.3\linewidth}
@@ -593,7 +658,7 @@ encode quantifier raising in our logic.
     \end{tikzpicture}
   \end{minipage}%
   \begin{minipage}{0.02\linewidth}
-    $\equiv$
+    $\longleftrightarrow$
   \end{minipage}%
   \begin{minipage}{0.4\linewidth}
     \begin{tikzpicture}
@@ -601,53 +666,66 @@ encode quantifier raising in our logic.
     \end{tikzpicture}
   \end{minipage}
 \end{center}
-To achieve this, they add a new modality to NL---that is to say, a
-copy of the rules for $\{\impr,\prod,\impl\}$ applying to three new
-connectives $\{\himpr,\hprod,\himpl\}$---and the following (somewhat
-controversial) equivalence on structures:
-\[
-  \Sigma[\Delta]\equiv\Delta\circ\lambda x.\Sigma[x]
-\]
-This equivalence is intuitive, and works as expected. For instance,
-using display NL extended with this equivalence, we can easily give a
-derivation for ``John likes everyone,'' using the type
-$\S\himpl(\NP\himpr\S)$ for quantifiers:
-\begin{pfblock}
-  \AXC{$\vdots$}\noLine
-  \UIC{$\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{\NP}
-    \fCenter\struct{\S}$}
-  \RightLabel{$\lambda$}
-  \UIC{$\struct{\NP}\hprod\lambda{x}.
-    (\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod x)\fCenter\struct{\S}$}
-  \RightLabel{Res$\hprod\himpr$}
-  \UIC{$\lambda{x}.(\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x})
-    \fCenter\struct{\NP}\himpr\struct{\S}$}
-  \RightLabel{R$\himpr$}
-  \UIC{$\lambda{x}.(\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x})
-    \fCenter\struct{\NP\himpr\S}$}
-  \AXC{}\RightLabel{Ax}\UIC{$\struct{S}\fCenter\struct{S}$}
-  \BIC{$\struct{\S\himpl(\NP\himpr\S)}\fCenter\struct{\S}\himpl\lambda{x}.
-    (\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod x)$}
-  \RightLabel{Res$\himpl\:\hprod$}
-  \UIC{$\struct{\S\himpl(\NP\himpr\S)}\hprod\lambda{x}.
-    (\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod x)\fCenter\struct{\S}$}
-  \RightLabel{$\lambda$}
-  \UIC{$\struct{\NP}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{\S\himpl
-      (\NP\himpr\S)}\fCenter\struct{\S}$}
-\end{pfblock}
-Note that contrary to most linguistic frameworks, in which quantifier
-movement is strictly upwards (i.e.\ quantifier raising), in this
-framework it ends up being characterised by upwards movement followed
-by downwards movement \emph{along the same path}---i.e.\ scope-taking
-followed by the insertion of the newly bound variable.
+\citeauthor{barker2015} implement this transformation informally by
+extending the syntax for structures with a binding construct
+$\lambda{x}.(\ldots x \ldots)$ and a new modality
+$\{\himpr,\hprod,\himpl\}$, and adopting the following structural
+postulate:
+\begin{align}
+  \tag{\lambda}
+  Σ[Δ]\longleftrightarrowΔ\hprod\lambda x.Σ[x]
+  \label{eqn:lambda}
+\end{align}
+This results in an ad-hoc, but intuitive implementation of the
+$q(A,B,C)$ connective: it encodes (at least) the upward movement that
+\citeauthor{moortgat1996} encodes with \eqref{eqn:mmp1} and
+\eqref{eqn:mmp2}, with the inserted variable serving as the trace
+inserted by \eqref{eqn:mmp0}.
 
-One problem with this framework, however, is the use of a binding
-construct in the syntax for structures, which makes it quite difficult
-to formalise.
-In addition, if we take the equivalence at face value, we end up with
-a logic in which we can do all kinds of unpleasant things. For
-instance, since contexts are defined as structures with a hole, we
-could raise quantifiers past one another, indefinitely:
+The implementation feels intuitive because, if you read the structural
+products as function applications, \eqref{eqn:lambda} is reminiscent
+of (linear) lambda abstraction. If we ``$\beta$-reduce'', the
+extracted structure is passed back to the function, and placed back
+where it was extracted from. For some reason, though---perhaps to
+ensure compatibility with \citet{moortgat1996}, or with the notion of
+quantifier-raising to the top-left node?---\citet{barker2007} chooses
+to place the extracted structure to the left of the product, making it
+a flipped function application.
+
+In NL$_\lambda$, $q(A,B) = A\himpr B$, and $q(A,B,C) = C\himpl
+q(A,B)$. This way, $q$L and $q$R can be informally implemented in
+display NL extended with \eqref{eqn:lambda} and
+$\{\himpr,\hprod,\himpl\}$ as follows:\footnote{%
+  Note that we can drop the outermost context $\Gamma$ from the
+  specification in display NL, due to the display property.
+}
+\begin{center}
+  \begin{pfbox}
+    \AXC{$\lambda{x}.Σ[x]\fCenter\struct{A\himpr B}$}
+    \AXC{$\struct{C}\fCenter Δ$}
+    \RightLabel{L$\himpl$}
+    \BIC{$\struct{C\himpl(A\himpr B)}\fCenter Δ\himpl\lambda{x}.Σ[x]$}
+    \RightLabel{Res$\himpl\hprod$}
+    \UIC{$\struct{C\himpl(A\himpr B)}\hprod\lambda{x}.Σ[x]\fCenter Δ$}
+    \RightLabel{\eqref{eqn:lambda}}
+    \UIC{$Σ[\struct{C\himpl(A\himpr B)}]\fCenter Δ$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$Σ[\struct{A}]\fCenter\struct{B}$}
+    \RightLabel{\eqref{eqn:lambda}}
+    \UIC{$\struct{A}\hprod\lambda{x}.Σ[x]\fCenter\struct{B}$}
+    \RightLabel{Res$\hprod\himpr$}
+    \UIC{$\lambda{x}.Σ[x]\fCenter\struct{A}\himpr\struct{B}$}
+    \RightLabel{R$\himpr$}
+    \UIC{$\lambda{x}.Σ[x]\fCenter\struct{A\himpr B}$}
+  \end{pfbox}
+\end{center}
+
+As far as exactness is concerned, however, \eqref{eqn:lambda} admits
+much more than just $q$L and $q$R. And some of it is\ldots\ odd.
+For instance, since contexts are defined as structures with a hole, we
+can raise two quantifiers past one another, indefinitely:
+\vspace*{-1\baselineskip}
 \begin{pfblock}
   \AXC{$\vdots$}\noLine
   \UIC{$\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{z}.(\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{y}.({z}\hprod\lambda{x}.({y}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x})))\fCenter\struct{\S}$}
@@ -660,6 +738,7 @@ could raise quantifiers past one another, indefinitely:
 \end{pfblock}
 Or, as \citet{barker2015} note, we could lift variables out of the
 scope of their binder:
+\vspace*{-1\baselineskip}
 \begin{pfblock}
   \AXC{$\vdots$}\noLine
   \UIC{${x}\hprod\lambda{y}.(\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{x}.(\struct{{\S\impl(\NP\impr\S)}}\prod\struct{(\NP\impr\S)\impl\NP}\prod{y}))\fCenter\struct{\S}$}
@@ -668,55 +747,111 @@ scope of their binder:
   \RightLabel{$\lambda$}
   \UIC{$\struct{{\S\impl(\NP\impr\S)}}\prod\struct{(\NP\impr\S)\impl\NP}\prod\struct{{\S\impl(\NP\impr\S)}}\fCenter\struct{\S}$}
 \end{pfblock}
-Needless to say, any logic extended with this equivalence loses a
-number of pleasant properties, one of which is decidable proof
-search. However, in chapter 17 of their book, \citeauthor{barker2015}
-do a great job of capturing the essence of the $\lambda$-rule in a
-logical manner---though their system is undecidable. They extend NL by
-a second modality $\{\himpr,\hprod,\himpl\}$, add three primitive
-structural constants $\{\I,\B,\C\}$, and add the following structural
-rules:
-\[
-  \begin{aligned}
-    &\I &&\equiv\lambda x.x           \\
-    &\B &&\equiv\lambda x y z.x (y z) \\
-    &\C &&\equiv\lambda x y z.x  z y
-  \end{aligned}
-\]
-\begin{center}
-  \begin{pfbox}
-    \AXC{$X\fCenter Y$}
-    \doubleLine\RightLabel{\I}
-    \UIC{$X\hprod\I\fCenter Y$}
-  \end{pfbox}
-  \begin{pfbox}
-    \AXC{$X\prod(Y\hprod Z)\fCenter W$}
-    \doubleLine\RightLabel{\B}
-    \UIC{$Y\hprod((\B\prod X)\prod Z)\fCenter W$}
-  \end{pfbox}
-  \begin{pfbox}
-    \AXC{$(X\hprod Y)\prod Z\fCenter W$}
-    \doubleLine\RightLabel{\C}
-    \UIC{$X\hprod((\C\prod Y)\prod Z)\fCenter W$}
-  \end{pfbox}
-\end{center}
-\begin{center}
-  \begin{pfbox}
-    \AXC{$X\fCenter Y$}
-    \doubleLine\RightLabel{\I}
-    \UIC{$\I\hprod X\fCenter Y$}
-  \end{pfbox}
-  \begin{pfbox}
-    \AXC{$X\prod(Z\hprod Y)\fCenter W$}
-    \doubleLine\RightLabel{\B}
-    \UIC{$((\B\prod X)\prod Z)\hprod Y\fCenter W$}
-  \end{pfbox}
-  \begin{pfbox}
-    \AXC{$(Y\hprod X)\prod Z\fCenter W$}
-    \doubleLine\RightLabel{\C}
-    \UIC{$((\C\prod Y)\prod Z)\hprod X\fCenter W$}
-  \end{pfbox}
-\end{center}
+While none of this is necessarily problematic for the logical
+properties of NL$_\lambda$, as one can probably show that none of
+these gimmicky derivations will ever lead to a valid proof, it is
+\emph{devastating} for naive algorithms for proof search, and
+needlessly complicates meta-logical proofs such as the completeness of
+proof search, or cut-elimination.
+In addition, the use of a binding construct in the syntax for
+structures makes the system very difficult to formalise or reason
+about---something which perhaps shows in the nonspecific terms in
+which the system is presented.
+
+\vspace*{1\baselineskip}
+
+In refining NL$_\lambda$, \citeauthor{barker2015} create
+NL$_{\text{CL}}$ (often NL$_{\text{IBC}}$). The idea of this system is
+to deconstruct the complex structure of the linear lambda by encoding
+the combinators \I, \B\ and \C, which make up the linear lambda
+calculus. This manner of encoding combinator calculi---including
+\I\B\C---was extensively studied by \citet{finger2001}.
+For their version, \citeauthor{barker2015} keep the new modality
+$\{\himpr,\hprod,\himpl\}$, and further extend this system with three
+structural constants, $\{\I,\B,\C\}$, and the following structural
+postulates:
+\begin{align}
+  \tag{\I}
+  A
+  &\longleftrightarrow
+  A\hprod\I
+  \label{eqn:bsp0}
+  \\
+  \tag{\C}
+  (X\hprod Y)\prod Z
+  &\longleftrightarrow
+  X\hprod((\C\prod Y)\prod Z)
+  \label{eqn:bsp1}
+  \\
+  \tag{\B}
+  X\prod(Y\hprod Z)
+  &\longleftrightarrow
+  Y\hprod((\B\prod X)\prod Z)
+  \label{eqn:bsp2}
+\end{align}
+Quirky flipped-application notation aside, these postulates encode
+exactly the reduction behaviours of the combinators \I, \B\ and \C:
+\begin{alignat*}{3}
+  &\I x     &&\equiv x       \\
+  &\B x y z &&\equiv x (y z) \\
+  &\C x y z &&\equiv x  z y
+\end{alignat*}
+In the resulting calculus, quantifier raising can be done in much the
+same way as in NL$_\lambda$---though the new version is ever so
+slightly more verbose:\footnote{%
+  Inverted applications of the \I, \B\ and \C\ rules are marked with a prime.
+}
+\input{fig-example-quantifier-raising}
+One of the advantages of this formalisation is that it gets rid of the
+awkward binding construct in the syntax of structures. In addition, it
+formalises the intuition that quantifiers can only move past
+\emph{solid} products. However, it is not entirely free of
+problems. One of the more glaring problems is that using this
+encoding, any expression can be the subject of quantifier raising. For
+instance, in ``John likes Mary,'' we could choose to raise the verb:
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$\struct{{(\NP\impr\S)\impl\NP}}\hprod(\B\prod\struct{\NP})
+    \prod((\C\prod\I)\prod\struct{\NP})\fCenter\struct{\S}$}\noLine
+  \UIC{$\vdots$}\noLine
+  \UIC{$\struct{\NP}\prod\struct{{(\NP\impr\S)\impl\NP}}\prod\struct{\NP}\fCenter\struct{\S}$}
+\end{pfblock}
+Since verbs are usually not considered scope-takers, it is unlikely
+that raising the verb would lead to anything other then having to
+lower it again. However, the fact that we leave it open as an
+opportunity is wasted computational effort; while all futile attempts
+at raising and lowering will lead to a loop, and therefore spare us
+the spurious ambiguity, there are still a great deal of futile
+attempts to be made.
+
+Another problem is the $\I$-rule. It allows us to introduce an
+arbitrary amount of \I's, which causes a \emph{growing} loop in our
+proof search procedure:
+\begin{pfblock}
+  \AXC{$\vdots$}\noLine
+  \UIC{$((\struct{\NP}\prod\struct{\NP\impr\S})\hprod\I)\hprod\I\fCenter\struct{\S}$}
+  \RightLabel{$\I'$}
+  \UIC{$(\struct{\NP}\prod\struct{\NP\impr\S})\hprod\I\fCenter\struct{\S}$}
+  \RightLabel{$\I'$}
+  \UIC{$\struct{\NP}\prod\struct{\NP\impr\S}\fCenter\struct{\S}$}
+\end{pfblock}
+This means that NL$_{\text{CL}}$, while closer, is still
+undecidable. In the following section, we will present the first
+extension for NLQ, and address this issue of decidability.
+
+\subsubsection{\I\B\C\ for NLQ}
+In this section we will present a set of structural postulates, based
+on \citepos{barker2015} NL$_{\text{CL}}$, for which proof search is
+decidable.
+But first, we will remove the quirky reversed nature of the hollow
+product ($\hprod$), and make the connection with combinator calculus
+explicit:\footnote{%
+  The downside of this is that we raise quantifiers to the top-right
+  node instead of the top-left---something which makes no difference,
+  but may feel unintuitive to people who are used to reading from
+  left-to-right.
+}
+\note{This is a horrible, horrible mistake, isn't it?}
 \begin{center}
   \begin{pfbox}
     \AXC{$X\fCenter Y$}
@@ -734,109 +869,54 @@ rules:
     \UIC{$((\C\prod X)\prod Y)\hprod Z\fCenter W$}
   \end{pfbox}
 \end{center}
-They call the result NL$_{\text{CL}}$ (and, occasionally,
-NL$_{\text{IBC}}$). In this calculus, quantifier raising can be done
-in much the same way as in NL$_\lambda$---though the new version is
-ever so slightly more verbose:\footnote{%
-  Inverted applications of the \I, \B\ and \C\ rules are marked with a prime.
-}
-\input{fig-example-quantifier-raising}
-One of the advantages of this formalisation is that it gets rid of the
-awkward binding construct in the syntax of structures. In addition, it
-makes it clear that quantifiers can only move past \emph{solid}
-products. However, it is not entirely free of problems. One of the
-more glaring problems is that using this encoding, any expression can
-be the subject of quantifier raising. For instance, in ``John likes
-Mary,'' we could choose to raise the verb:
-\begin{pfblock}
-  \AXC{$\vdots$}\noLine
-  \UIC{$\struct{{(\NP\impr\S)\impl\NP}}\hprod(\B\prod\struct{\NP})
-    \prod((\C\prod\I)\prod\struct{\NP})\fCenter\struct{\S}$}\noLine
-  \UIC{$\vdots$}\noLine
-  \UIC{$\struct{\NP}\prod\struct{{(\NP\impr\S)\impl\NP}}\prod\struct{\NP}\fCenter\struct{\S}$}
-\end{pfblock}
-Since verbs are usually not considered scope-takers, it is unlikely
-that raising the verb would lead to anything other then lowering it
-again. However, the fact that we leave it open as an opportunity is
-wasted computational effort; while all futile attempts at raising and
-lowering will lead to a loop, and therefore spare us the spurious
-ambiguity, there are still a great deal of futile attempts to be made.
-
-Another problem is the $\I'$-rule. It allows us to introduce an
-arbitrary amount of \I's, which causes a \emph{growing} loop in our
-proof search procedure:
-\begin{pfblock}
-  \AXC{$\vdots$}\noLine
-  \UIC{$((\struct{\NP}\prod\struct{\NP\impr\S})\hprod\I)\hprod\I\fCenter\struct{\S}$}
-  \RightLabel{$\I'$}
-  \UIC{$(\struct{\NP}\prod\struct{\NP\impr\S})\hprod\I\fCenter\struct{\S}$}
-  \RightLabel{$\I'$}
-  \UIC{$\struct{\NP}\prod\struct{\NP\impr\S}\fCenter\struct{\S}$}
-\end{pfblock}
-I propose to handle both of these issues with one simple addition. The
-idea is to add a new unary connective, $\q[A]$, which represents a
-license to perform quantifier raising. Since we want to replace the
-problematic $\I'$-rule, we will choose the structural version of our
-quantifying license to be a \emph{hollow} product with a right-hand
-unit. On the other side, since we do not want logical products, we
-will keep $\q[A]$ it as an atomic logical connective. This gives us
-the following logical left rule:
-\begin{pfblock}
-  \AXC{$\struct{A}\hprod\I\fCenter Δ$}
-  \RightLabel{L\I}
-  \UIC{$\struct{\q[A]}\fCenter Δ$}
-\end{pfblock}
-The appropriate right rule is easily derived from the conventional
-display calculus rules for products and units---though I do not imagine
-we will generally want to see quantifying licenses in our output type:
-\begin{pfblock}
-  \AXC{$Γ\fCenter\struct{B}$}
-  \RightLabel{R\I}
-  \UIC{$Γ\hprod\I\fCenter\struct{\q[B]}$}
-\end{pfblock}
+Now, in the previous section we mentioned that NL$_{\text{IBC}}$ has
+two major flaws: it does not license quantifier raising, and it is
+undecidable.
+We propose to handle both of these issues with one simple
+addition. The idea is to add a new unary connective, $\q[A]$, which
+represents a \emph{license} to perform quantifier raising. Since we
+want to replace the problematic $\I$-rule, we will choose the
+structural version of our quantifying license to be a \emph{hollow}
+product with unit as its left-hand argument.
+On the other side, since we do not necessarily want logical products,
+we will keep $\q[A]$ it as an atomic logical connective. This gives us
+the following logical left and right rules:
+\begin{center}
+  \begin{pfbox}
+    \AXC{$\I\hprod\struct{A}\fCenter Δ$}
+    \RightLabel{L\I}
+    \UIC{$\struct{\q[A]}\fCenter Δ$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$Γ\fCenter\struct{B}$}
+    \RightLabel{R\I}
+    \UIC{$\I\hprodΓ\fCenter\struct{\q[B]}$}
+  \end{pfbox}
+\end{center}
 And indeed, the pair obeys all constraints imposed by display
 calculus, including a valid proof for \textbf{C8}:
+\vspace*{-1\baselineskip}
 \begin{pfblock}
   \AXC{$Γ\fCenter\struct{A}$}
-  \AXC{$\struct{A}\hprod\I\fCenter Δ$}
+  \AXC{$\I\hprod\struct{A}\fCenter Δ$}
   \RightLabel{Res$\hprod\himpl$}
-  \UIC{$\struct{A}\fCenter Δ\himpl\I$}
+  \UIC{$\struct{A}\fCenter\I\himpr Δ$}
   \RightLabel{Cut}
-  \BIC{$Γ\fCenter Δ\himpl\I$}
+  \BIC{$Γ\fCenter\I\himpr Δ$}
   \RightLabel{Res$\himpl\hprod$}
-  \UIC{$Γ\hprod\I\fCenter Δ$}
+  \UIC{$\I\hprod Γ\fCenter Δ$}
 \end{pfblock}
-Note that we keep the $\I$-rule, though we rename it $\I^-$ to
+Note that we must keep the $\I$-rule, though we rename it $\I^-$ to
 emphasise that it can now only \emph{remove} $\I$s. The full
 extension, including semantics, and focused rules, can be found in
 \autoref{fig:extension-quantifier-raising}. The semantics are rather
 trivial: we simply translate all constants as units, and translate
-$\q[A]$ as $A$, inserting and removing the right unit as needed.
+$\q[A]$ as $A$, inserting and removing the left unit as needed.
 
 \input{fig-extension-quantifier-raising}
 
-The extension presented so far for quantifier raising is pretty good:
-because we have removed all growing loops in structural rules, it now
-has a decidable and complete procedure for proof search, and it neatly
-captures quantifier movement---i.e.\ moving upwards, taking scope,
-binding a variable, and moving that variable back down. However, it
-still has one problem: spurious ambiguity. Imagine a sentence with two
-quantifiers $P$ and $Q$, respectively \emph{one} and \emph{two} places
-removed from the top of the syntax tree. The ambiguity that we want is
-``do we raise $P$ first, or do we raise $Q$ first?'' However, in
-addition to these possibilities, we now also have to possibility to
-raise $Q$ one step, then raise $P$, and then raise $Q$ a second
-step---semantically, this is equivalent to raising $P$, then
-$Q$. NL$_\lambda$---if you only allow quantifier raising past solid
-products---does not have this problem.
-
-\citet[][chapter 17.6]{barker2015} examine the restrictions that need
-to be put on the $\lambda$-rule in order to be able to translate
-NL$_\lambda$ to NL$_{\text{CL}}$. In order to keep our structural
-rules simple, and our calculus free of structural lambdas, I opt to go
-the other way around, and see how close we can get to defining the
-$\lambda$-rule in our calculus in \autoref{fig:extension-quantifier-raising}.
-For this, we will need the following definitions:
+What remains now is to show that we have indeed implemented $q$L and
+$q$R. For this, we will need the following definitions:
 \begin{center}
   $\text{Context}\;Σ\coloneqq\Box\vsep Σ\prodl Γ\vsep Γ\prodr Σ$\\
   \begin{minipage}{0.45\linewidth}
@@ -873,72 +953,60 @@ Given these definitions, we can show that the following rule for
 quantifier movement is admissible, by induction on the structure of
 the context:
 \begin{pfblock}
-  \AXC{$\struct{A}\hprod\trace(Σ)\fCenter Δ$}
+  \AXC{$\trace(Σ)\hprod\struct{A}\fCenter Δ$}
   \doubleLine\RightLabel{$\uparrow\downarrow$}
   \UIC{$Σ[\struct{\q[A]}]\fCenter Δ$}
 \end{pfblock}
-This new rule is very close to \citeauthor{barker2015}'s equivalence,
-with as its only difference that the quantifying license is now built
-into it:
+Note that this new rule is very close to \citeauthor{barker2015}'s
+\eqref{eqn:lambda}, with as its only difference that their version is
+flipped, and ours has a quantifying license built into it:
 \[
-  \Sigma[\Delta]\equiv\Delta\circ\lambda x.\Sigma[x]
+  Σ[Δ]\longleftrightarrow Δ\hprod\lambda x.Σ[x]
   \qquad
-  Σ[\struct{\q[A]}]\equiv\struct{A}\hprod\trace(Σ)
+  Σ[\struct{\q[A]}]\longleftrightarrow \trace(Σ)\hprod\struct{A}
 \]
-In fact, if you interpret the products as function applications, and
-the constants $\{\I,\B,\C\}$ as the combinators, as \citet{barker2015}
-intended, then the right-hand side expressions are equivalent.\footnote{%
-  As an aside: what we set out to encode were contexts with holes that
-  are unique---plugging should never duplicate or forget
-  information. So the $\lambda$-terms in NL$_\lambda$ were implicitly
-  linear. The combinators $\I$, $\B$ and $\C$ correspond precisely to
-  the linear lambda calculus. However, the combinator language is far
-  easier to encode than linear binding constructs.
-}
 Proof search with this derived rule is still complete; it merely
-enforces that the entire quantifier raising or lowering is done in one
-go.\todo{No proof.}
+enforces that the entire quantifier raising or lowering is done in a
+single movement, as the quantifying license is consumed by the
+application. Interestingly, $\uparrow\downarrow$ also has the
+sub-formula property. This means that $\uparrow\downarrow$ can serve
+as a normal-form for L\I, R\I, $\I^-$, \B\ \emph{and} \C, and that proof
+search with $\uparrow\downarrow$ is both complete \emph{and}
+decidable!
 
-In their discussion of decidability, \citet{barker2015} derive the
-`expansion' and `reduction' rules which more-or-less correspond to
-the two directions of the equivalence, or the two directions of our
-$\uparrow\downarrow$-rule. They then combine these rules with
-L$\himpl$ and R$\himpr$, respectively, yielding the
-$\himpl\,\text{L}_\lambda$ and $\himpr\text{R}_\lambda$ rules. The
-advantage of these combined rules is that they obey the sub-formula
-property, and are therefore suited to naive backward-chaining proof
-search. We can do a similar thing using our $\uparrow\downarrow$-rule:
+Onwards: in their discussion of decidability, \citet{barker2015}
+derive `expansion' and `reduction' rules which more-or-less correspond
+to the two directions of \eqref{eqn:lambda}. They then combine these
+rules with L$\himpl$ and R$\himpr$, yielding $q$L and $q$R (which they
+call $\himpl\,\text{L}_\lambda$ and $\himpr\text{R}_\lambda$). We can
+do the same, using $\uparrow\downarrow$:
 \begin{center}
   \begin{pfbox}
-    \AXC{$\trace(Σ)\fCenter\struct{A\himpr B}$} \AXC{$\struct{C}\fCenter Δ$}
-    \RightLabel{\qup}
-    \BIC{$Σ[\struct{\q[C\himpl(A\himpr B)]}]\fCenter Δ$}
+    \AXC{$\trace(Σ)\fCenter\struct{B\himpl A}$} \AXC{$\struct{C}\fCenter Δ$}
+    \RightLabel{$q$L}
+    \BIC{$Σ[\struct{\q[(B\himpl A)\himpr C]}]\fCenter Δ$}
   \end{pfbox}
   \begin{pfbox}
     \AXC{$Σ[\struct{A}]\fCenter\struct{B}$}
-    \RightLabel{\qdown}
-    \UIC{$\trace(Σ)\fCenter\struct{A\himpr B}$}
+    \RightLabel{$q$R}
+    \UIC{$\trace(Σ)\fCenter\struct{B\himpl A}$}
   \end{pfbox}
 \end{center}
-While proof search with these rules is decidable, it is no longer
-complete. However, it \emph{is} complete for the fragment of display
-NL where all types involving a quantifying license are of the form
-$\q[C\himpl(A\himpr B)]$, which is what we can reasonably expect from
-natural language.
-In addition, proof search using these rules is no longer plagued by
-the spurious ambiguity that resulted from the $\B$ and $\C$
-rules---and, to boot, we can write proofs involving quantifier
-movement in a much more succinct manner:
+If we permit ourselves the assumption that all quantifiers in natural
+language can be described by $q(A,B,C)$---not an unreasonable
+assumption, albeit not one we enforce---then q$L$ and q$R$ too can
+serve as normal-forms. And, to boot, we use them to write proofs
+involving quantifier movement in a much more succinct manner:
 \begin{pfblock}
   \AXC{$\vdots$}\noLine
   \UIC{$\struct{\NP}\prod\textsc{loves}\prod\struct{\NP}\fCenter\struct{\S}$}
   \RightLabel{\qdown}
-  \UIC{$\trace(\Box\prod\textsc{loves}\prod\struct{\NP})\fCenter\struct{{\NP\himpr\S}}$}
+  \UIC{$\trace(\Box\prod\textsc{loves}\prod\struct{\NP})\fCenter\struct{{\S\himpl\NP}}$}
   \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
   \RightLabel{\qup}
   \BIC{$\textsc{everyone}\prod\textsc{loves}\prod\struct{\NP}\fCenter\struct{\S}$}
   \RightLabel{\qdown}
-  \UIC{$\trace(\textsc{everyone}\prod\textsc{loves}\prod\Box)\fCenter\struct{{\NP\himpr\S}}$}
+  \UIC{$\trace(\textsc{everyone}\prod\textsc{loves}\prod\Box)\fCenter\struct{{\S\himpl\NP}}$}
   \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
   \RightLabel{\qup}
   \BIC{$\textsc{everyone}\prod\textsc{loves}\prod\textsc{someone}\fCenter\struct{\S}$}
@@ -959,8 +1027,14 @@ we choose to fold or unfold an application of `trace', we will
 explicitly mark this as an application of rewriting by equality
 (`$=$').
 
+In its current shape, NLQ is capable of analysing sentences with
+changing answer types---something which is problematic to many
+semantic approaches to quantifier raising (see
+\autoref{sec:limitations-scope-islands-strong-and-weak-quantifiers})
+
 \input{fig-example-changing-answer-type}
 
+\begin{comment}
 \subsubsection{Parasitic scope}
 Parasitic scope is a interesting mechanism, put forward by
 \citet{barker2007}, which allows expressions to capture another
@@ -1213,28 +1287,28 @@ perform a structural function (movement) and they add an additional,
 unrelated meaning to the quantificational slash ($\himpr$):
 \begin{center}
   \begin{pfbox}
-    \AXC{$\Sigma[A\prod{B}]\fCenter{C}$}
+    \AXC{$Σ[A\prod{B}]\fCenter{C}$}
     \RightLabel{R$_{\text{rgap}}$}
-    \UIC{$\Sigma[A]\fCenter{B\himpr{C}}$}
+    \UIC{$Σ[A]\fCenter{B\himpr{C}}$}
   \end{pfbox}
   \begin{pfbox}
-    \AXC{$\Sigma[B\prod{A}]\fCenter{C}$}
+    \AXC{$Σ[B\prod{A}]\fCenter{C}$}
     \RightLabel{R$_{\text{lgap}}$}
-    \UIC{$\Sigma[A]\fCenter{B\himpr{C}}$}
+    \UIC{$Σ[A]\fCenter{B\himpr{C}}$}
   \end{pfbox}
 \end{center}
 These rules are very similar to the rules we can derive for our
 infixation arrows:
 \begin{center}
   \begin{pfbox}
-    \AXC{$\Sigma[\Gamma\prod\struct{B}]\fCenter\struct{C}$}
+    \AXC{$Σ[Γ\prod\struct{B}]\fCenter\struct{C}$}
     \RightLabel{R${\downharpoonright}$}
-    \UIC{$\Sigma[\Gamma]\fCenter\struct{C\downharpoonright{B}}$}
+    \UIC{$Σ[Γ]\fCenter\struct{C\downharpoonright{B}}$}
   \end{pfbox}
   \begin{pfbox}
-    \AXC{$\Sigma[\struct{B}\prod\Gamma]\fCenter\struct{C}$}
+    \AXC{$Σ[\struct{B}\prodΓ]\fCenter\struct{C}$}
     \RightLabel{R${\downharpoonleft}$}
-    \UIC{$\Sigma[\Gamma]\fCenter\struct{B\downharpoonleft{C}}$}
+    \UIC{$Σ[Γ]\fCenter\struct{B\downharpoonleft{C}}$}
   \end{pfbox}
 \end{center}
 However, there are two important distinctions:

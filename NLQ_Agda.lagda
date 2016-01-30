@@ -59,7 +59,50 @@ thesis, due to constraints on the Agda language.
 In the first part of this appendix, we will formalise the syntactic
 calculus, NLQ. Then, in the second part, we will implement a
 translation from proofs in NLQ to terms in Agda, giving us some form
-of semantics.
+of semantics. But first, we will discuss our motivation in deciding to
+formalise our work.
+
+\subsection{Motivation}
+Why would we want to formalise type-logical grammars using proof
+assistants? One good reason is that it allows us to write formally
+verified proofs about the theoretical properties of our type-logical
+grammars. But not only that---it allows us to directly run our proofs
+as programs. For instance, we can directly run the translation from
+NLQ to Agda, presented in this paper, to investigate what kind of
+derivations result in what kind of semantics, \textit{and} be
+confident in its correctness. In addition, we will be able to use any
+interactive theorem prover that our proof assistant of choice provides
+to experiment with and give proofs in our type-logical grammar.
+
+Why, then, would we want to use Agda instead of a more established
+proof assistant such as, for instance, Coq? There are several good
+reasons, but we believe that the syntactic freedom offered by Agda is
+the most important.
+It is this freedom that allows us to write machine-checkable proofs,
+formatted in a way which is very close to the way one would otherwise
+typeset proofs, and which are highly readable compared to other
+machine-checked proofs. This is true to a lesser extend for the
+formalisation presented in this appendix, since we forgo a number of
+features that generally make Agda code more readable in order to stay
+as close as possible to the Haskell implementation in appendix B.
+However, we do feel that, the Agda verification of the theory
+presented here can be of great use in understanding thxe Haskell code.
+
+The addition of these proofs means that we can be confident that the
+proofs \textit{as they are published} are correct, and that they are
+necessarily complete---for though we can hide some of the less
+interesting definitions from the final paper, we cannot omit them from
+the source.
+In addition, some of the Agda proofs serve as explicit and fully
+formal versions of proofs that were merely hinted at in the thesis.
+Other Agda proofs serve as justification for Haskell functions which
+circumvent the type-system---as Agda's type system is vastly more
+powerful than that of Haskell.
+
+Finally, because there is a correspondence between the published
+proofs and the code, it becomes very easy for the reader to start up a
+proof environment and inspect the proofs interactively in order to
+further their understanding of the presented work.
 
 
 \subsection{NLQ, Syntactic Calculus}
@@ -121,8 +164,8 @@ rules, defining all the copies at the same time.
     Solid   : Kind             -- solid       {⇒, ∙, ⇐}
     Quan    : Strength → Kind  -- hollow      {⇨, ∘, ⇦}
     Delim   : Strength → Kind  -- reset       {◇, □}
-    MovExt  : Kind             -- extraction  {↿, ↾, ◇↑, □↑}
-    MovIfx  : Kind             -- infixation  {⇃, ⇂, ◇↓, □↓}
+    Ext     : Kind             -- extraction  {↿, ↾, ◇↑, □↑}
+    Ifx     : Kind             -- infixation  {⇃, ⇂, ◇↓, □↓}
 
   data Type : Set where
     El     : Atom  → Type
@@ -151,11 +194,11 @@ rules, defining all the copies at the same time.
   pattern _⇦_  b a  = ImpL   (Quan Weak)   b a
   pattern QW   a    = UnitL  (Quan Weak)   a
   pattern ◇_   a    = Dia    (Delim Weak)  a
-  pattern ◇↑_  a    = Dia    MovExt        a
-  pattern ◇↓_  a    = Dia    MovIfx        a
+  pattern ◇↑_  a    = Dia    Ext           a
+  pattern ◇↓_  a    = Dia    Ifx           a
   pattern □_   a    = Box    (Delim Weak)  a
-  pattern □↑_  a    = Box    MovExt        a
-  pattern □↓_  a    = Box    MovIfx        a
+  pattern □↑_  a    = Box    Ext           a
+  pattern □↓_  a    = Box    Ifx           a
 
   pattern _↿_  a b  = ◇↑ □↑ (a ⇒ b)
   pattern _↾_  b a  = ◇↑ □↑ (b ⇐ a)
@@ -191,13 +234,13 @@ polarity:
   pattern _∙_  x y  = PROD   Solid         x y
   pattern _∘_  x y  = PROD   (Quan Weak)   x y
   pattern ◆_   x    = DIA    (Delim Weak)  x
-  pattern ◆↑_  x    = DIA    MovExt        x
-  pattern ◆↓_  x    = DIA    MovIfx        x
+  pattern ◆↑_  x    = DIA    Ext           x
+  pattern ◆↓_  x    = DIA    Ifx           x
 
   pattern I         = UNIT   (Quan Weak)
   pattern ■_   x    = BOX    (Delim Weak)  x
-  pattern ■↑_  x    = BOX    MovExt        x
-  pattern ■↓_  x    = BOX    MovIfx        x
+  pattern ■↑_  x    = BOX    Ext           x
+  pattern ■↓_  x    = BOX    Ifx           x
 \end{code}
 \\
 Since there is no pretty way to write the box we used for focusing in
@@ -389,11 +432,11 @@ synonyms:
   pattern _⇨>_  x y  = IMPR2  (Quan Weak)   x y
   pattern _⇦>_  y x  = IMPL2  (Quan Weak)   y x
   pattern ◆>_   x    = DIA1   (Delim Weak)  x
-  pattern ◆↓>_  x    = DIA1   MovExt        x
-  pattern ◆↑>_  x    = DIA1   MovIfx        x
+  pattern ◆↓>_  x    = DIA1   Ext           x
+  pattern ◆↑>_  x    = DIA1   Ifx           x
   pattern ■>_   x    = BOX1   (Delim Weak)  x
-  pattern ■↓>_  x    = BOX1   MovExt        x
-  pattern ■↑>_  x    = BOX1   MovIfx        x
+  pattern ■↓>_  x    = BOX1   Ext           x
+  pattern ■↑>_  x    = BOX1   Ifx           x
 \end{code}
 \\
 And we do the same for sequents:
@@ -869,36 +912,36 @@ translation on proofs:
         impRR   f    *′ = f *′
         impLL   f g  *′ = λ h → g *′ ∘ h ∘ f *′
         impLR   f    *′ = f *′
-        resRP   f    *′ = λ{ (x , y)  → (f *′)  y   x   }
-        resLP   f    *′ = λ{ (x , y)  → (f *′)  x   y   }
-        resPR   f    *′ = λ{  y   x   → (f *′) (x , y)  }
-        resPL   f    *′ = λ{  x   y   → (f *′) (x , y)  }
-        withL1  f    *′ = λ{ (x , y)  → (f *′)  x }
-        withL2  f    *′ = λ{ (x , y)  → (f *′)  y }
-        withR   f g  *′ = λ x → ((f *′) x , (g *′) x)
+        resRP   f    *′ = λ{ (x , y)  → (f *′)  y   x          }
+        resLP   f    *′ = λ{ (x , y)  → (f *′)  x   y          }
+        resPR   f    *′ = λ{  y   x   → (f *′) (x , y)         }
+        resPL   f    *′ = λ{  x   y   → (f *′) (x , y)         }
+        withL1  f    *′ = λ{ (x , y)  → (f *′)  x              }
+        withL2  f    *′ = λ{ (x , y)  → (f *′)  y              }
+        withR   f g  *′ = λ{  x       → ((f *′) x , (g *′) x)  }
         diaL    f    *′ = f *′
         diaR    f    *′ = f *′
         boxL    f    *′ = f *′
         boxR    f    *′ = f *′
         resBD   f    *′ = f *′
         resDB   f    *′ = f *′
-        unitLL  f    *′ = λ{  x       → (f *′) (_ , x)  }
-        unitLR  f    *′ = λ{ (_ , x)  → (f *′)  x       }
-        unitLI  f    *′ = λ{ (_ , x)  → (f *′)  x       }
-        dnB     f    *′ = λ{ ( ((_ , x) , y) , z)  → (f *′) (x , (y , z)) }
-        upB     f    *′ = λ{ ( x , y   , z)  → (f *′) ( ((_ , x) , y) , z) }
-        dnC     f    *′ = λ{ ( ((_ , x) , z) , y)  → (f *′) ((x , y) , z) }
-        upC     f    *′ = λ{ ((x , y)  , z)  → (f *′) ( ((_ , x) , z) , y) }
-        dnI*    f    *′ = λ{ ((_ , x) , y) → (f *′) (x , y) }
-        upI*    f    *′ = λ{ (x , y) → (f *′) ((_ , x) , y)}
-        extRR   f    *′ = λ{ ( x , y   , z)  → (f *′) ((x , y) , z)  }
-        extLR   f    *′ = λ{ ((x , z)  , y)  → (f *′) ((x , y) , z)  }
-        extLL   f    *′ = λ{ ((z , y)  , x)  → (f *′) ( z , y  , x)  }
-        extRL   f    *′ = λ{ ( y , z   , x)  → (f *′) ( z , y  , x)  }
-        ifxRR   f    *′ = λ{ ((x , y)  , z)  → (f *′) ( x , y  , z)  }
-        ifxLR   f    *′ = λ{ ((x , y)  , z)  → (f *′) ((x , z) , y)  }
-        ifxLL   f    *′ = λ{ ( z , y   , x)  → (f *′) ((z , y) , x)  }
-        ifxRL   f    *′ = λ{ ( z , y   , x)  → (f *′) ( y , z  , x)  }
+        unitLL  f    *′ = λ{  x                   → (f *′) (_ , x)              }
+        unitLR  f    *′ = λ{ (_ , x)              → (f *′)  x                   }
+        unitLI  f    *′ = λ{ (_ , x)              → (f *′)  x                   }
+        dnB     f    *′ = λ{ (((_ , x) , y) , z)  → (f *′) (x , (y , z))        }
+        dnC     f    *′ = λ{ (((_ , x) , z) , y)  → (f *′) ((x , y) , z)        }
+        dnI*    f    *′ = λ{  ((_ , x) , y)       → (f *′) (x , y)              }
+        upB     f    *′ = λ{ ( x , y  , z)        → (f *′) (((_ , x) , y) , z)  }
+        upC     f    *′ = λ{ ((x , y) , z)        → (f *′) (((_ , x) , z) , y)  }
+        upI*    f    *′ = λ{  (x , y)             → (f *′) ((_ , x) , y)        }
+        extRR   f    *′ = λ{ ( x , y  , z)        → (f *′) ((x , y) , z)        }
+        extLR   f    *′ = λ{ ((x , z) , y)        → (f *′) ((x , y) , z)        }
+        extLL   f    *′ = λ{ ((z , y) , x)        → (f *′) ( z , y  , x)        }
+        extRL   f    *′ = λ{ ( y , z  , x)        → (f *′) ( z , y  , x)        }
+        ifxRR   f    *′ = λ{ ((x , y) , z)        → (f *′) ( x , y  , z)        }
+        ifxLR   f    *′ = λ{ ((x , y) , z)        → (f *′) ((x , z) , y)        }
+        ifxLL   f    *′ = λ{ ( z , y  , x)        → (f *′) ((z , y) , x)        }
+        ifxRL   f    *′ = λ{ ( z , y  , x)        → (f *′) ( y , z  , x)        }
 \end{code}
 
 
@@ -912,7 +955,7 @@ negative polarity:
 \begin{code}
 module Example where
   open import Data.Product using (_,_)
-  open import Relation.Binary.PropositionalEquality using (refl) renaming (_≡_ to _↦_)
+  open import Relation.Binary.PropositionalEquality using (refl; _≡_)
 \end{code}
 \end{comment}
 \begin{code}
@@ -995,11 +1038,9 @@ And finally, we translate our syntactic proof, insert the lexical
 entries, and normalise, et voil\`{a}! We have our semantics:
 \\[1\baselineskip]
 \begin{code}
-  sem0 : Bool
-  sem0 = (syn0 *) (mary , sees , foxes)
-
-  red0 : sem0 ↦ exists (λ f → forAll (λ x → f x ⊃ (fox x ∧ see mary x)))
-  red0 = refl
+  sem0  : (syn0 *) (mary , sees , foxes)
+        ≡ exists (λ f → forAll (λ x → f x ⊃ (fox x ∧ see mary x)))
+  sem0  = refl
 \end{code}
 
 \end{appendices}

@@ -8,6 +8,7 @@
 %format ET        = E T
 %format EET       = E ET
 %format TET       = T ET
+%format ETT       = E TT
 %format TT        = T T
 %format TTT       = T TT
 %format ET_T      = "(" ET ")" T
@@ -87,9 +88,9 @@ singletons library, it is quite possible to do verification.
 The reason that we have implemented a Haskell version as well as an
 Agda version of NLQ, is because while Agda excels at verification, it
 is quite a slow language, and we want to do proof search. The Haskell
-version, on the other hand, has very good performance when it comes to
-proof search. However, writing proofs in Haskell is tedious, and in
-some instances (mostly when contexts are used) the Haskell version of
+version has very good performance when it comes to proof
+search. However, writing proofs in Haskell is tedious, and in some
+instances (mostly when contexts are used) the Haskell version of
 an Agda proof will require the use of |unsafeCoerce|---though all
 instances of |unsafeCoerce| can be removed when |InjectiveTypeFamilies|
 are released.
@@ -110,18 +111,18 @@ Once we've done this, we can start the lexicon.
 \subsection{The Lexicon}
 
 The main function to construct lexical entries, is the function |lex|,
-which has the following type:
-\begin{lstlisting}
-  lex :: (SingI a) => Name -> Word a
-\end{lstlisting}
-That is to say, it takes a |Name|---which is just a string---and
-returns a |Word| of type |a|.\footnote{%
+which has the following type:\footnote{%
   The |SingI| typeclass is the class of types which have a singleton
   associated with them---a term-level representation of a type, or a
   type-level representation for a term, depending on your
   perspective. All syntactic types have singleton instances associated
   with them.
 }
+\begin{lstlisting}
+  lex :: (SingI a) => Name -> Word a
+\end{lstlisting}
+That is to say, it takes a |Name|---which is just a string---and
+returns a |Word| of type |a|.
 However, since the type |a| only occurs in the result-type, it
 important to always explicitly write the type. For instance, below we
 define a small lexicon of proper nouns, verbs and nouns:
@@ -134,28 +135,28 @@ define a small lexicon of proper nouns, verbs and nouns:
 > alice     = lex "alice"
 >
 > run, leave :: Word IV
-> run       = lex "run"      ;  runs    = run
-> leave     = lex "leave"    ;  leaves  = leave
+> run       = lex "run"                         ; runs       = run
+> leave     = lex "leave"                       ; leaves     = leave
 >
 > read, see, like, serve, fear, know :: Word TV
-> read      = lex "read"     ;  reads   = read
-> see       = lex "see"      ;  sees    = see
-> like      = lex "like"     ;  likes   = like
-> serve     = lex "serve"    ;  serves  = serve
-> fear      = lex "fear"     ;  fears   = fear
-> know      = lex "know"     ;  knows   = know
->
-> say :: Word (IV :← DelW S)
-> say       = lex "say"      ; says     = say
+> read      = flip <$ lex "read"                ; reads      = read
+> see       = flip <$ lex "see"                 ; sees       = see
+> like      = flip <$ lex "like"                ; likes      = like
+> serve     = flip <$ lex "serve"               ; serves     = serve
+> fear      = flip <$ lex "fear"                ; fears      = fear
+> know      = flip <$ lex "know"                ; knows      = know
 >
 > person, waiter, fox, book, author, ocean :: Word N
-> person    = lex "person"   ; people    = plural <$ person
-> waiter    = lex "waiter"   ; waiters   = plural <$ waiter
-> fox       = lex "fox"      ; foxes     = plural <$ fox
-> book      = lex "book"     ; books     = plural <$ book
-> author    = lex "author"   ; authors   = plural <$ author
-> ocean     = lex "ocean"    ; oceans    = plural <$ ocean
-> country   = lex "country"  ; countries = plural <$ country
+> person    = lex "person"                      ; people     = plural <$ person
+> waiter    = lex "waiter"                      ; waiters    = plural <$ waiter
+> fox       = lex "fox"                         ; foxes      = plural <$ fox
+> book      = lex "book"                        ; books      = plural <$ book
+> author    = lex "author"                      ; authors    = plural <$ author
+> ocean     = lex "ocean"                       ; oceans     = plural <$ ocean
+> country   = lex "country"                     ; countries  = plural <$ country
+>
+> say :: Word (IV :← DelW S)
+> say       = lex_ (\y x -> ("say" ∷ ETT) x y)  ; says = say
 
 \\
 If you ever get an error like the error given below, you have probably
@@ -169,8 +170,8 @@ forgotten to give an explicit type for a lexicon entry:
     In the expression: lex "alice"
     In an equation for `alice': alice = lex "alice"
 \end{lstlisting}
-At this point, it is best to ignore the plural definitions, they will
-make sense soon enough.
+At this point, it is best to ignore the |plural| definitions and the
+A |flip| function; they will make sense soon enough.
 
 \vspace*{1\baselineskip}
 
@@ -219,12 +220,20 @@ nouns above. In fact, |plural| is simply a word---albeit a somewhat
 complex one:
 \\
 
-> moreThanOne :: (Expr E -> Expr T)  -> Expr T
-> moreThanOne f = exists E (\x -> exists E (\y -> f x ∧ f y ∧ x ≢ y))
->
 > plural :: Word (NS :← N)
 > plural = lex_
 >   (\f g -> exists ET (\h -> moreThanOne h ∧ forall E (\x -> h x ⊃ (f x ∧ g x))))
+>   where
+>     moreThanOne :: (Expr E -> Expr T)  -> Expr T
+>     moreThanOne f = exists E (\x -> exists E (\y -> f x ∧ f y ∧ x ≢ y))
+
+\\
+Using the same technique, we can define a simple function which flips
+the arguments on transitive verbs to make the semantics more satisfactory:
+\\
+
+> flip :: Word (TV :← TV)
+> flip = lex_ (\tv y x -> tv x y)
 
 \\
 Note that the definition of |plural| uses an existential quantifying
@@ -233,8 +242,8 @@ higher-order logic, so |forall x| and |exists x| take an extra
 argument to determine which type they quantify over.
 This type has to be provided using a singleton. There are a number of
 predefined singletons for semantic types, amongst which are |E|, |T|,
-|ET|, |EET|, |TET|, |TT|, |TTT| and |ET_T|, but if you need to form
-your own, you can use |:->| to create function types.
+|ET|, |EET|, |ETT|, |TET|, |TT|, |TTT| and |ET_T|, but if you need to
+form your own, you can use |:->| to create function types.
 
 Right, let's carry on, and define some simple function words. Note
 that we are defining |the| as a postulate, since we do not really want
@@ -285,6 +294,7 @@ Haskell, we use |type|-declarations to split up the type for |which|
 in its two possible types, i.e.\ whether its going to insert its
 clause into a right or a left gap. The semantics, however, stay the
 same:
+\\
 
 > type WHICH1 = QW NP NP ((N :→ N) :← (NP :⇃ S))
 > type WHICH2 = QW NP NP ((N :→ N) :← (S :⇂ NP))
@@ -309,8 +319,8 @@ parser, |parseBwd|.
 For instance, in the first example, ``john runs'' is taken, and turned
 into the Haskell expression |parseBwd S (john,runs)|. The input string
 is taken as a right-branching parse tree, so any left branches have to
-be explicitly written. In addition, \emph{weak} scope islands are
-written as |<...>|, and strong scope islands are written as |<<...>>|.
+be explicitly written. In addition, \emph{weak} delimiters are written
+as |<...>|, and \emph{strong} delimiters are written as |<<...>>|.
 
 Secondly, with some lhs2\TeX\ magic, I have inserted the results of
 the examples in listings below them. These listings list the precise

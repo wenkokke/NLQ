@@ -10,7 +10,7 @@
         \RightLabel{\qdown}
         \UIC{$
           \trace(\textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\Box)
-          \fCenter\struct{\NP \himpr\NP}$}
+          \fCenter\struct{\NP\himpl\NP}$}
         \AXC{$\vdots$}\noLine
         \UIC{$
           \NP\prod\textsc{feared}\prod\textsc{the}\prod\textsc{ocean}\fCenter\struct{\S}$}
@@ -41,15 +41,15 @@
         \RightLabel{\qdown}
         \UIC{$
           \trace(\textsc{alice}\prod\textsc{read}\prod\Box)
-          \fCenter\struct{\NP\himpr\S}$}
+          \fCenter\struct{\S\himpl\NP}$}
         \AXC{}\RightLabel{Ax}\UIC{$\struct\S\fCenter\struct\S$}
         \RightLabel{\qup}
         \BIC{$
-          \textsc{alice}\prod\textsc{read}\prod\q[\S\himpl(\NP\himpr\S)]
+          \textsc{alice}\prod\textsc{read}\prod\q[(\S\himpl\NP)\himpr\S]
           \fCenter\struct{\S}$}
         \RightLabel{DP}
         \UIC{$
-          \q[\S\himpl(\NP\himpr\S)]
+          \q[(\S\himpl\NP)\himpr\S]
           \fCenter\textsc{read}\impr(\textsc{alice}\impr\struct{\S})$}
         \RightLabel{L$\impl$}
         \BIC{$

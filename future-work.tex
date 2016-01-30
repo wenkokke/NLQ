@@ -286,3 +286,29 @@ This handler will remove the expressive effect, and tuples the
 expressive content with the at-issue content. In general, handlers
 allow us to remove effects from the set of effects step-by-step until
 we once again end up with an effect-free value.
+
+\vspace*{1\baselineskip}
+
+Interestingly, we named two limitations of the CPS-translation
+approach to quantification: the inability to change the answer type,
+and the inability to encode delimiters. These are the hallmark of
+\emph{delimited} or \emph{composable} continuations
+\citep{danvy1990}. However, while delimited continuations seem
+extremely promising, they are still not entirely without
+problems. They still suffer from the problem of ambiguity, as
+described above for CPS- and monadic translations. Additionally, they
+do not form a monad. Instead, they form something known as an indexed
+monad, which has two additional type-level parameters, meaning $\eta$
+and $\star$ get the following types:
+\[
+  \eta : A\ra\mathbb{M}\;i\;i\;A
+  \qquad
+  \star: (A\ra\mathbb{M}\;j\;k\;B)\ra\mathbb{M}\;i\;j\;A\ra\mathbb{M}\;i\;k\;B
+\]
+This makes sense: since we now allow the answer type of the
+continuation to change, we need to add indices to keep track of the
+input and output answer type. However, the downside of this is that
+since we need these additional parameters, we cannot simply
+CPS-translate to delimited continuations---if we use a delimited
+continuation indexed monad in our semantics, this will have to be
+reflected in our syntactic calculus.

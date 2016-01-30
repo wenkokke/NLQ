@@ -19,33 +19,33 @@
     \end{minipage}
     \\[1\baselineskip]
     (copy of rules for $\{\impr,\prod,\impl\}$ from
-    \autoref{fig:display-calculus} for $\{\himpr,\hprod,\himpl\}$)
+    \autoref{fig:nl-display-calculus} for $\{\himpr,\hprod,\himpl\}$)
     \\[1\baselineskip]
     \begin{pfbox}
-      \AXC{$\struct{A}\hprod\I\fCenter Δ$}
+      \AXC{$\I\hprod\struct{A}\fCenter Δ$}
       \RightLabel{L\I}
       \UIC{$\struct{\q[A]}\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
       \AXC{$Γ\fCenter\focus{B}$}
       \RightLabel{R\I}
-      \UIC{$Γ\hprod\I\fCenter\focus{\q[B]}$}
+      \UIC{$\I\hprodΓ\fCenter\focus{\q[B]}$}
     \end{pfbox}
     \begin{pfbox}
       \AXC{$Γ\fCenter Δ$}
       \RightLabel{$\I^-$}
-      \UIC{$Γ\hprod\I\fCenter Δ$}
+      \UIC{$\I\hprod Γ\fCenter Δ$}
     \end{pfbox}
     \\[1\baselineskip]
     \begin{pfbox}
       \AXC{$Γ_1\prod(Γ_2\hprod Γ_3)\fCenter Δ$}
       \doubleLine\RightLabel{\B}
-      \UIC{$Γ_2\hprod((\B\prod Γ_1)\prod Γ_3)\fCenter Δ$}
+      \UIC{$((\B\prod Γ_1)\prod Γ_2)\hprod Γ_3\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
-      \AXC{$(Γ_1\hprod Γ_2)\prod Γ_3\fCenter Δ$}
+      \AXC{$(Γ_1\hprod Γ_3)\prod Γ_2\fCenter Δ$}
       \doubleLine\RightLabel{\C}
-      \UIC{$Γ_1\hprod((\C\prod Γ_2)\prod Γ_3)\fCenter Δ$}
+      \UIC{$((\C\prod Γ_1)\prod Γ_2)\hprod Γ_3\fCenter Δ$}
     \end{pfbox}
     \\[1\baselineskip]
     \hrulefill
@@ -65,22 +65,22 @@
     $\{\himpr,\hprod,\himpl\}$)
     \\[1\baselineskip]
     \begin{pfbox}
-      \AXC{$x:\struct{A}\hprod\I\fCenter M:Δ$}
+      \AXC{$x:\I\hprod\struct{A}\fCenter M:Δ$}
       \RightLabel{L\I}
-      \UIC{$y:\struct{\q[A]}\fCenter \sub{M}{(y,())}{x}:Δ$}
+      \UIC{$y:\struct{\q[A]}\fCenter \sub{M}{((),y)}{x}:Δ$}
     \end{pfbox}
     \begin{pfbox}
       \AXC{$x:Γ\fCenter\focus{M:B}$}
       \RightLabel{R\I}
-      \UIC{$y:Γ\hprod\I\fCenter\focus{\sub{M}{\fst{y}}{x}:\q[B]}$}
+      \UIC{$y:\I\hprod Γ\fCenter\focus{\sub{M}{\snd{y}}{x}:\q[B]}$}
     \end{pfbox}
     \begin{pfbox}
       \AXC{$x:Γ\fCenter M:Δ$}
       \RightLabel{$\I^-$}
-      \UIC{$y:Γ\hprod\I\fCenter \sub{M}{\fst{y}}{x}:Δ$}
+      \UIC{$y:\I\hprodΓ\fCenter \sub{M}{\snd{y}}{x}:Δ$}
     \end{pfbox}
     \\[1\baselineskip]
-    (where $\fst{x}=\case{x}{y}{z}{y}$)
+    (where $\snd{p}=\case{p}{x}{y}{y}$)
     \\[1\baselineskip]
     (\B\ and \C\ translate to various combinations of associativity,
     commutativity, $\emptyset$E and weakening)
@@ -88,7 +88,7 @@
     \vspace*{\baselineskip}
   \end{mdframed}
   \caption{
-    Extension of calculus in \autoref{fig:display-calculus} which
+    Extension of calculus in \autoref{fig:nl-display-calculus} which
     supports quantifier raising.}%
   \label{fig:extension-quantifier-raising}
 \end{figure}

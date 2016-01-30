@@ -34,6 +34,7 @@ pattern EET = E :-> ET
 pattern TT  = T :-> T
 pattern TTT = T :-> TT
 pattern TET = T :-> ET
+pattern ETT = E :-> TT
 
 
 class    UnivI t  where univ :: Univ t
