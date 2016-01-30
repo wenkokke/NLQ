@@ -50,6 +50,7 @@ singletons [d|
     DIA  :: Kind -> StructI -> StructI
     B    :: StructI
     C    :: StructI
+    I'   :: StructI
     UNIT :: Kind -> StructI
     PROD :: Kind -> StructI -> StructI -> StructI
     deriving (Eq,Show)
@@ -90,7 +91,7 @@ promote [d|
 
   trace :: Strength -> Context -> StructI
   trace k HOLE      = UNIT (Quan k)
-  trace k (DelW1 x) = DIA (Delim Weak) (trace k x)
+  trace k (DelW1 x) = PROD Solid I' (DIA (Delim Weak) (trace k x))
   trace k (x :∙> y) = PROD Solid (PROD Solid B x) (trace k y)
   trace k (x :<∙ y) = PROD Solid (PROD Solid C (trace k x)) y
 
@@ -214,7 +215,7 @@ sPlug (x :%∙> y) z = SPROD SSolid x (sPlug y z)
 
 sTrace :: SStrength k -> SContext x -> SStructI (Trace k x)
 sTrace k       SHOLE      = SUNIT (SQuan k)
-sTrace SStrong (SDelW1 x) = SDIA (SDelim SWeak) (sTrace SStrong x)
+sTrace SStrong (SDelW1 x) = SPROD SSolid SI' (SDIA (SDelim SWeak) (sTrace SStrong x))
 sTrace k       (x :%∙> y) = SPROD SSolid (SPROD SSolid SB x) (sTrace k y)
 sTrace k       (x :%<∙ y) = SPROD SSolid (SPROD SSolid SC (sTrace k x)) y
 
@@ -240,7 +241,7 @@ sFollow ((SC :%∙ x) :%∙ y)      = case sFollow x of
 sFollow ((SB :%∙ x) :%∙ y)      = case sFollow y of
   Just (Trail k y Refl)        -> Just (Trail k (x :%∙> y) Refl)
   _                            -> Nothing
-sFollow (SDIA (SDelim SWeak) x) = case sFollow x of
+sFollow (SI' :%∙ (SDIA (SDelim SWeak) x)) = case sFollow x of
   Just (Trail k x Refl)        -> Just (Trail k (SDelW1 x) Refl)
   _                            -> Nothing
 sFollow _                       = Nothing
@@ -360,8 +361,8 @@ data Syn :: Sequent -> * where
   DnC    :: Syn ((PROD (Quan k) x y) :∙ z :⊢ w) -> Syn (PROD (Quan k) ((C :∙ x) :∙ z) y :⊢ w)
   UpC    :: Syn (PROD (Quan k) ((C :∙ x) :∙ z) y :⊢ w) -> Syn ((PROD (Quan k) x y) :∙ z :⊢ w)
 
-  UpE    :: Syn (PROD (Quan Strong) (DELW x) y :⊢ w) -> Syn (DELW (PROD (Quan Strong) x y) :⊢ w)
-  DnE    :: Syn (DELW (PROD (Quan Strong) x y) :⊢ w) -> Syn (PROD (Quan Strong) (DELW x) y :⊢ w)
+  UpI'   :: Syn (PROD (Quan Strong) (I' :∙ DELW x) y :⊢ w) -> Syn (DELW (PROD (Quan Strong) x y) :⊢ w)
+  DnI'   :: Syn (DELW (PROD (Quan Strong) x y) :⊢ w) -> Syn (PROD (Quan Strong) (I' :∙ DELW x) y :⊢ w)
 
 
 instance Show (SSequent s) where
@@ -382,9 +383,9 @@ deriving instance Show (Syn s)
 up :: SStrength k -> SContext x
    -> Syn (Plug x y :⊢ z) -> Syn (PROD (Quan k) (Trace k x) y :⊢ z)
 up k       SHOLE      f = UnitLI f
-up k       (x :%<∙ y) f = DnC (ResLP (unsafeCoerce (up k x (ResPL (unsafeCoerce f)))))
-up k       (x :%∙> y) f = DnB (ResRP (unsafeCoerce (up k y (ResPR (unsafeCoerce f)))))
-up SStrong (SDelW1 x) f = DnE (ResBD (unsafeCoerce (up SStrong x (ResDB (unsafeCoerce f)))))
+up k       (x :%<∙ y) f = DnC  (ResLP (unsafeCoerce (up k x (ResPL (unsafeCoerce f)))))
+up k       (x :%∙> y) f = DnB  (ResRP (unsafeCoerce (up k y (ResPR (unsafeCoerce f)))))
+up SStrong (SDelW1 x) f = DnI' (ResBD (unsafeCoerce (up SStrong x (ResDB (unsafeCoerce f)))))
 up SWeak   (SDelW1 x) f = error "up: `strong' context used with `weak' quantifier"
 
 down :: SStrength k -> SContext x
@@ -406,7 +407,7 @@ down k x f = unsafeCoerce (init x (unsafeCoerce (move x f)))
     move (x :%<∙ y) f = ResLP (unsafeCoerce (move x (ResPL (UpC (unsafeCoerce f)))))
     move (x :%∙> y) f = ResRP (unsafeCoerce (move y (ResPR (UpB (unsafeCoerce f)))))
     move (SDelW1 x) f = case k %~ SStrong of
-      Proved Refl    -> ResBD (unsafeCoerce (move x (ResDB (UpE (unsafeCoerce f)))))
+      Proved Refl    -> ResBD (unsafeCoerce (move x (ResDB (UpI' (unsafeCoerce f)))))
       _              -> error "down: `strong' context used with `weak' quantifier"
 
 qrL :: SStrength k -> SContext x

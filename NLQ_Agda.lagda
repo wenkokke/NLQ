@@ -113,19 +113,23 @@ that we can later-on use e.g.\ the abstract right implication
 rules, defining all the copies at the same time.
 \\[1\baselineskip]
 \begin{code}
+  data Strength : Set where
+    Weak    : Strength
+    Strong  : Strength
+
   data Kind : Set where
-    Sol  : Kind -- solid       {⇒, ∙, ⇐}
-    Hol  : Kind -- hollow      {⇨, ∘, ⇦}
-    Res  : Kind -- reset       {◇, □}
-    Ext  : Kind -- extraction  {↿, ↾, ◇↑, □↑}
-    Ifx  : Kind -- infixation  {⇃, ⇂, ◇↓, □↓}
+    Solid   : Kind             -- solid       {⇒, ∙, ⇐}
+    Quan    : Strength → Kind  -- hollow      {⇨, ∘, ⇦}
+    Delim   : Strength → Kind  -- reset       {◇, □}
+    MovExt  : Kind             -- extraction  {↿, ↾, ◇↑, □↑}
+    MovIfx  : Kind             -- infixation  {⇃, ⇂, ◇↓, □↓}
 
   data Type : Set where
     El     : Atom  → Type
     Dia    : Kind  → Type  → Type
     Box    : Kind  → Type  → Type
-    _&_     : Type → Type → Type
-    UnitR  : Kind  → Type  → Type
+    _&_    : Type → Type → Type
+    UnitL  : Kind  → Type  → Type
     ImpR   : Kind  → Type  → Type  → Type
     ImpL   : Kind  → Type  → Type  → Type
 \end{code}
@@ -139,31 +143,26 @@ rules, defining all the copies at the same time.
   infixr 9 ◇_  □_ ◇↓_ □↓_ ◇↑_ □↑_
 \end{code}
 \end{comment}
-\begin{multicols}{2}
+\\[1\baselineskip]
 \begin{code}
-  pattern _⇐_  b a  = ImpL   Sol  b a
-  pattern _⇒_  a b  = ImpR   Sol  a b
+  pattern _⇐_  b a  = ImpL   Solid         b a
+  pattern _⇒_  a b  = ImpR   Solid         a b
+  pattern _⇨_  a b  = ImpR   (Quan Weak)   a b
+  pattern _⇦_  b a  = ImpL   (Quan Weak)   b a
+  pattern QW   a    = UnitL  (Quan Weak)   a
+  pattern ◇_   a    = Dia    (Delim Weak)  a
+  pattern ◇↑_  a    = Dia    MovExt        a
+  pattern ◇↓_  a    = Dia    MovIfx        a
+  pattern □_   a    = Box    (Delim Weak)  a
+  pattern □↑_  a    = Box    MovExt        a
+  pattern □↓_  a    = Box    MovIfx        a
 
-  pattern _⇨_  a b  = ImpR   Hol  a b
-  pattern _⇦_  b a  = ImpL   Hol  b a
-  pattern Q    a    = UnitR  Hol  a
-  pattern ◇_   a    = Dia    Res  a
-  pattern ◇↑_  a    = Dia    Ext  a
-  pattern ◇↓_  a    = Dia    Ifx  a
-  pattern □_   a    = Box    Res  a
-  pattern □↑_  a    = Box    Ext  a
-  pattern □↓_  a    = Box    Ifx  a
-\end{code}
-\end{multicols}
-\begin{multicols}{2}
-\begin{code}
   pattern _↿_  a b  = ◇↑ □↑ (a ⇒ b)
   pattern _↾_  b a  = ◇↑ □↑ (b ⇐ a)
   pattern _⇃_  a b  = (◇↓ □↓ a) ⇒ b
   pattern _⇂_  b a  = b ⇐ (◇↓ □↓ a)
 \end{code}
-\end{multicols}
-\noindent
+\\
 We use the same trick in defining structures, and merge Struct$^{+}$
 and Struct$^{-}$ together into a single datatype indexed by a
 polarity:
@@ -173,6 +172,7 @@ polarity:
     ·_·   : ∀ {p} → Type → Struct p
     B     : Struct +
     C     : Struct +
+    I*    : Struct +
     DIA   : Kind → Struct +  → Struct +
     UNIT  : Kind → Struct +
     PROD  : Kind → Struct +  → Struct +  → Struct +
@@ -186,21 +186,20 @@ polarity:
   infixr 9 ◆_  ■_ ◆↓_ ■↓_ ◆↑_ ■↑_
 \end{code}
 \end{comment}
-\begin{multicols}{2}
+\\[1\baselineskip]
 \begin{code}
-  pattern _∙_  x y  = PROD   Sol  x y
-  pattern _∘_  x y  = PROD   Hol  x y
-  pattern ◆_   x    = DIA    Res  x
-  pattern ◆↑_  x    = DIA    Ext  x
-  pattern ◆↓_  x    = DIA    Ifx  x
+  pattern _∙_  x y  = PROD   Solid         x y
+  pattern _∘_  x y  = PROD   (Quan Weak)   x y
+  pattern ◆_   x    = DIA    (Delim Weak)  x
+  pattern ◆↑_  x    = DIA    MovExt        x
+  pattern ◆↓_  x    = DIA    MovIfx        x
 
-  pattern I         = UNIT   Hol
-  pattern ■_   x    = BOX    Res  x
-  pattern ■↑_  x    = BOX    Ext  x
-  pattern ■↓_  x    = BOX    Ifx  x
+  pattern I         = UNIT   (Quan Weak)
+  pattern ■_   x    = BOX    (Delim Weak)  x
+  pattern ■↑_  x    = BOX    MovExt        x
+  pattern ■↓_  x    = BOX    MovIfx        x
 \end{code}
-\end{multicols}
-\noindent
+\\
 Since there is no pretty way to write the box we used for focusing in
 Unicode, we will have to go with an ugly way:
 \\[1\baselineskip]
@@ -229,7 +228,7 @@ And finally, we need to extend our concept of polarity to
         Pol′ (Dia   _ _)    = +
         Pol′ (Box   _ _)    = -
         Pol′ (_ & _)        = +
-        Pol′ (UnitR _ _)    = +
+        Pol′ (UnitL _ _)    = +
         Pol′ (ImpR  _ _ _)  = -
         Pol′ (ImpL  _ _ _)  = -
 \end{code}
@@ -249,51 +248,59 @@ for the polarity of the type \AgdaBound{a}/\AgdaBound{b}:
 \end{comment}
 \begin{code}
   data NLQ_ : Sequent → Set where
-    axElR   : ∀ {b}         → Pol(b) ≡ +  → NLQ · El b · ⊢[ El b ]
-    axElL   : ∀ {a}         → Pol(a) ≡ -  → NLQ [ El a ]⊢ · El a ·
-    unfR    : ∀ {x b}       → Pol(b) ≡ -  → NLQ x ⊢ · b ·  → NLQ x ⊢[ b ]
-    unfL    : ∀ {a y}       → Pol(a) ≡ +  → NLQ · a · ⊢ y  → NLQ [ a ]⊢ y
-    focR    : ∀ {x b}       → Pol(b) ≡ +  → NLQ x ⊢[ b ]   → NLQ x ⊢ · b ·
-    focL    : ∀ {a y}       → Pol(a) ≡ -  → NLQ [ a ]⊢ y   → NLQ · a · ⊢ y
+    axElR   : ∀ {b}          → Pol(b) ≡ +  → NLQ · El b · ⊢[ El b ]
+    axElL   : ∀ {a}          → Pol(a) ≡ -  → NLQ [ El a ]⊢ · El a ·
+    unfR    : ∀ {x b}        → Pol(b) ≡ -  → NLQ x ⊢ · b ·  → NLQ x ⊢[ b ]
+    unfL    : ∀ {a y}        → Pol(a) ≡ +  → NLQ · a · ⊢ y  → NLQ [ a ]⊢ y
+    focR    : ∀ {x b}        → Pol(b) ≡ +  → NLQ x ⊢[ b ]   → NLQ x ⊢ · b ·
+    focL    : ∀ {a y}        → Pol(a) ≡ -  → NLQ [ a ]⊢ y   → NLQ · a · ⊢ y
 
-    impRL   : ∀ {k x y a b} → NLQ x ⊢[ a ]  → NLQ [ b ]⊢ y  → NLQ [ ImpR k a b ]⊢ IMPR k x y
-    impRR   : ∀ {k x a b}   → NLQ x ⊢ IMPR k · a · · b ·   → NLQ x ⊢ · ImpR k a b ·
-    impLL   : ∀ {k x y a b} → NLQ x ⊢[ a ]  → NLQ [ b ]⊢ y  → NLQ [ ImpL k b a ]⊢ IMPL k y x
-    impLR   : ∀ {k x a b}   → NLQ x ⊢ IMPL k · b · · a ·   → NLQ x ⊢ · ImpL k b a ·
-    resRP   : ∀ {k x y z}   → NLQ y ⊢ IMPR k x z  → NLQ PROD k x y ⊢ z
-    resPR   : ∀ {k x y z}   → NLQ PROD k x y ⊢ z  → NLQ y ⊢ IMPR k x z
-    resLP   : ∀ {k x y z}   → NLQ x ⊢ IMPL k z y  → NLQ PROD k x y ⊢ z
-    resPL   : ∀ {k x y z}   → NLQ PROD k x y ⊢ z  → NLQ x ⊢ IMPL k z y
+    impRL   : ∀ {k x y a b}  → NLQ x ⊢[ a ]  → NLQ [ b ]⊢ y  → NLQ [ ImpR k a b ]⊢ IMPR k x y
+    impRR   : ∀ {k x a b}    → NLQ x ⊢ IMPR k · a · · b ·   → NLQ x ⊢ · ImpR k a b ·
+    impLL   : ∀ {k x y a b}  → NLQ x ⊢[ a ]  → NLQ [ b ]⊢ y  → NLQ [ ImpL k b a ]⊢ IMPL k y x
+    impLR   : ∀ {k x a b}    → NLQ x ⊢ IMPL k · b · · a ·   → NLQ x ⊢ · ImpL k b a ·
+    resRP   : ∀ {k x y z}    → NLQ y ⊢ IMPR k x z  → NLQ PROD k x y ⊢ z
+    resPR   : ∀ {k x y z}    → NLQ PROD k x y ⊢ z  → NLQ y ⊢ IMPR k x z
+    resLP   : ∀ {k x y z}    → NLQ x ⊢ IMPL k z y  → NLQ PROD k x y ⊢ z
+    resPL   : ∀ {k x y z}    → NLQ PROD k x y ⊢ z  → NLQ x ⊢ IMPL k z y
 
-    withL1 : ∀ {a1 a2 y}   → NLQ [ a1 ]⊢ y  → NLQ · a1 & a2 · ⊢ y
-    withL2 : ∀ {a1 a2 y}   → NLQ [ a2 ]⊢ y  → NLQ · a1 & a2 · ⊢ y
-    withR  : ∀ {b1 b2 x}   → NLQ x ⊢ · b1 · → NLQ x ⊢ · b2 · → NLQ x ⊢[ b1 & b2 ]
+    withL1 : ∀ {a1 a2 y}     → NLQ [ a1 ]⊢ y  → NLQ · a1 & a2 · ⊢ y
+    withL2 : ∀ {a1 a2 y}     → NLQ [ a2 ]⊢ y  → NLQ · a1 & a2 · ⊢ y
+    withR  : ∀ {b1 b2 x}     → NLQ x ⊢ · b1 · → NLQ x ⊢ · b2 · → NLQ x ⊢[ b1 & b2 ]
 
-    diaL    : ∀ {k a y}     → NLQ DIA k · a · ⊢ y  → NLQ · Dia k a · ⊢ y
-    diaR    : ∀ {k x b}     → NLQ x ⊢[ b ]         → NLQ DIA k x ⊢[ Dia k b ]
-    boxL    : ∀ {k a y}     → NLQ [ a ]⊢ y         → NLQ [ Box k a ]⊢ BOX k y
-    boxR    : ∀ {k x b}     → NLQ x ⊢ BOX k · b ·  → NLQ x ⊢ · Box k b ·
-    resBD   : ∀ {k x y}     → NLQ x ⊢ BOX k y      → NLQ DIA k x ⊢ y
-    resDB   : ∀ {k x y}     → NLQ DIA k x ⊢ y      → NLQ x ⊢ BOX k y
+    diaL    : ∀ {k a y}      → NLQ DIA k · a · ⊢ y  → NLQ · Dia k a · ⊢ y
+    diaR    : ∀ {k x b}      → NLQ x ⊢[ b ]         → NLQ DIA k x ⊢[ Dia k b ]
+    boxL    : ∀ {k a y}      → NLQ [ a ]⊢ y         → NLQ [ Box k a ]⊢ BOX k y
+    boxR    : ∀ {k x b}      → NLQ x ⊢ BOX k · b ·  → NLQ x ⊢ · Box k b ·
+    resBD   : ∀ {k x y}      → NLQ x ⊢ BOX k y      → NLQ DIA k x ⊢ y
+    resDB   : ∀ {k x y}      → NLQ DIA k x ⊢ y      → NLQ x ⊢ BOX k y
 
-    unitRL  : ∀ {k y a}     → NLQ PROD k · a · (UNIT k) ⊢ y → NLQ · UnitR k a · ⊢ y
-    unitRR  : ∀ {k x b}     → NLQ x ⊢[  b ]  → NLQ PROD k x (UNIT k) ⊢[ UnitR k b ]
-    unitRI  : ∀ {k x y}     → NLQ x ⊢   y    → NLQ PROD k x (UNIT k) ⊢ y
+    unitLL  : ∀ {k y a}      → NLQ PROD k (UNIT k) · a · ⊢ y → NLQ · UnitL k a · ⊢ y
+    unitLR  : ∀ {k x b}      → NLQ x ⊢[  b ]  → NLQ PROD k (UNIT k) x ⊢[ UnitL k b ]
+    unitLI  : ∀ {k x y}      → NLQ x ⊢   y    → NLQ PROD k (UNIT k) x ⊢ y
 
-    dnB     : ∀ {x y z w}   → NLQ x ∙ (y ∘ z) ⊢ w        → NLQ y ∘ ((B ∙ x) ∙ z) ⊢ w
-    dnC     : ∀ {x y z w}   → NLQ (x ∘ y) ∙ z ⊢ w        → NLQ x ∘ ((C ∙ y) ∙ z) ⊢ w
-    upB     : ∀ {x y z w}   → NLQ y ∘ ((B ∙ x) ∙ z) ⊢ w  → NLQ x ∙ (y ∘ z) ⊢ w
-    upC     : ∀ {x y z w}   → NLQ x ∘ ((C ∙ y) ∙ z) ⊢ w  → NLQ (x ∘ y) ∙ z ⊢ w
+    dnB     : ∀ {x y z w k}  → NLQ x ∙ (PROD (Quan k) y z) ⊢ w
+            → NLQ PROD (Quan k) ((B ∙ x) ∙ y) z ⊢ w
+    upB     : ∀ {x y z w k}  → NLQ PROD (Quan k) ((B ∙ x) ∙ y) z ⊢ w
+            → NLQ x ∙ (PROD (Quan k) y z) ⊢ w
+    dnC     : ∀ {x y z w k}  → NLQ (PROD (Quan k) x y) ∙ z ⊢ w
+            → NLQ PROD (Quan k) ((C ∙ x) ∙ z) y ⊢ w
+    upC     : ∀ {x y z w k}  → NLQ PROD (Quan k) ((C ∙ x) ∙ z) y ⊢ w
+            → NLQ (PROD (Quan k) x y) ∙ z ⊢ w
+    upI*    : ∀ {x y w}      → NLQ (PROD (Quan Strong) (I* ∙ (◆ x)) y ⊢ w)
+            → NLQ (◆ (PROD (Quan Strong) x y) ⊢ w)
+    dnI*    : ∀ {x y w}      → NLQ (◆ (PROD (Quan Strong) x y) ⊢ w)
+            → NLQ (PROD (Quan Strong) (I* ∙ (◆ x)) y ⊢ w)
 
-    extRR   : ∀ {x y z w}   → NLQ ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NLQ (x ∙ (y ∙ ◆↑ z) ⊢ w)
-    extLR   : ∀ {x y z w}   → NLQ ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NLQ ((x ∙ ◆↑ z) ∙ y ⊢ w)
-    extLL   : ∀ {x y z w}   → NLQ (◆↑ z ∙ (y ∙ x) ⊢ w)  → NLQ ((◆↑ z ∙ y) ∙ x ⊢ w)
-    extRL   : ∀ {x y z w}   → NLQ (◆↑ z ∙ (y ∙ x) ⊢ w)  → NLQ (y ∙ (◆↑ z ∙ x) ⊢ w)
+    extRR   : ∀ {x y z w}    → NLQ ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NLQ (x ∙ (y ∙ ◆↑ z) ⊢ w)
+    extLR   : ∀ {x y z w}    → NLQ ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NLQ ((x ∙ ◆↑ z) ∙ y ⊢ w)
+    extLL   : ∀ {x y z w}    → NLQ (◆↑ z ∙ (y ∙ x) ⊢ w)  → NLQ ((◆↑ z ∙ y) ∙ x ⊢ w)
+    extRL   : ∀ {x y z w}    → NLQ (◆↑ z ∙ (y ∙ x) ⊢ w)  → NLQ (y ∙ (◆↑ z ∙ x) ⊢ w)
 
-    ifxRR   : ∀ {x y z w}   → NLQ (x ∙ (y ∙ ◆↓ z) ⊢ w)  → NLQ ((x ∙ y) ∙ ◆↓ z ⊢ w)
-    ifxLR   : ∀ {x y z w}   → NLQ ((x ∙ ◆↓ z) ∙ y ⊢ w)  → NLQ ((x ∙ y) ∙ ◆↓ z ⊢ w)
-    ifxLL   : ∀ {x y z w}   → NLQ ((◆↓ z ∙ y) ∙ x ⊢ w)  → NLQ (◆↓ z ∙ (y ∙ x) ⊢ w)
-    ifxRL   : ∀ {x y z w}   → NLQ (y ∙ (◆↓ z ∙ x) ⊢ w)  → NLQ (◆↓ z ∙ (y ∙ x) ⊢ w)
+    ifxRR   : ∀ {x y z w}    → NLQ (x ∙ (y ∙ ◆↓ z) ⊢ w)  → NLQ ((x ∙ y) ∙ ◆↓ z ⊢ w)
+    ifxLR   : ∀ {x y z w}    → NLQ ((x ∙ ◆↓ z) ∙ y ⊢ w)  → NLQ ((x ∙ y) ∙ ◆↓ z ⊢ w)
+    ifxLL   : ∀ {x y z w}    → NLQ ((◆↓ z ∙ y) ∙ x ⊢ w)  → NLQ (◆↓ z ∙ (y ∙ x) ⊢ w)
+    ifxRL   : ∀ {x y z w}    → NLQ (y ∙ (◆↓ z ∙ x) ⊢ w)  → NLQ (◆↓ z ∙ (y ∙ x) ⊢ w)
 \end{code}
 \\
 Using these axiomatic rules, we can define derived rules. For
@@ -367,33 +374,28 @@ inserting this in place of the hole:
 In accordance with our approach in the previous sections, we recover
 more specific (and prettier) context-constructors using pattern
 synonyms:
-\begin{multicols}{2}
+\\[1\baselineskip]
 \begin{code}
-  pattern _<∙_  x y  = PROD1  Sol  x y
-  pattern _<⇒_  x y  = IMPR2  Sol  x y
-  pattern _<⇐_  y x  = IMPL1  Sol  y x
-  pattern _<∘_  x y  = PROD1  Hol  x y
-  pattern _<⇨_  x y  = IMPR1  Hol  x y
-  pattern _<⇦_  y x  = IMPL1  Hol  y x
-  pattern _∙>_  x y  = PROD2  Sol  x y
-  pattern _⇒>_  x y  = IMPR2  Sol  x y
-  pattern _⇐>_  y x  = IMPL1  Sol  y x
-  pattern _∘>_  x y  = PROD2  Hol  x y
-  pattern _⇨>_  x y  = IMPR2  Hol  x y
-  pattern _⇦>_  y x  = IMPL2  Hol  y x
+  pattern _<∙_  x y  = PROD1  Solid         x y
+  pattern _<⇒_  x y  = IMPR2  Solid         x y
+  pattern _<⇐_  y x  = IMPL1  Solid         y x
+  pattern _<∘_  x y  = PROD1  (Quan Weak)   x y
+  pattern _<⇨_  x y  = IMPR1  (Quan Weak)   x y
+  pattern _<⇦_  y x  = IMPL1  (Quan Weak)   y x
+  pattern _∙>_  x y  = PROD2  Solid         x y
+  pattern _⇒>_  x y  = IMPR2  Solid         x y
+  pattern _⇐>_  y x  = IMPL1  Solid         y x
+  pattern _∘>_  x y  = PROD2  (Quan Weak)   x y
+  pattern _⇨>_  x y  = IMPR2  (Quan Weak)   x y
+  pattern _⇦>_  y x  = IMPL2  (Quan Weak)   y x
+  pattern ◆>_   x    = DIA1   (Delim Weak)  x
+  pattern ◆↓>_  x    = DIA1   MovExt        x
+  pattern ◆↑>_  x    = DIA1   MovIfx        x
+  pattern ■>_   x    = BOX1   (Delim Weak)  x
+  pattern ■↓>_  x    = BOX1   MovExt        x
+  pattern ■↑>_  x    = BOX1   MovIfx        x
 \end{code}
-\end{multicols}
-\begin{multicols}{2}
-\begin{code}
-  pattern ◆>_   x    = DIA1   Res  x
-  pattern ◆↓>_  x    = DIA1   Ext  x
-  pattern ◆↑>_  x    = DIA1   Ifx  x
-  pattern ■>_   x    = BOX1   Res  x
-  pattern ■↓>_  x    = BOX1   Ext  x
-  pattern ■↑>_  x    = BOX1   Ifx  x
-\end{code}
-\end{multicols}
-\noindent
+\\
 And we do the same for sequents:
 \\[1\baselineskip]
 \begin{code}
@@ -533,7 +535,7 @@ polarity $p$:
   St : ∀ {p} → Type → Struct p
   St { p = + } ( Dia    k  a   )  = DIA   k (St a)
   St { p = - } ( Box    k  a   )  = BOX   k (St a)
-  St { p = + } ( UnitR  k  a   )  = PROD  k (St a) (UNIT k)
+  St { p = + } ( UnitL  k  a   )  = PROD  k (UNIT k) (St a)
   St { p = - } ( ImpR   k  a b )  = IMPR  k (St a) (St b)
   St { p = - } ( ImpL   k  b a )  = IMPL  k (St b) (St a)
   St { p = _ } a                  = · a ·
@@ -550,7 +552,7 @@ this knowledge:
   lem-Neg-St ( Dia    k  a    ) ()
   lem-Neg-St ( Box    k  a    ) n = refl
   lem-Neg-St ( a & b          ) ()
-  lem-Neg-St ( UnitR  k  a    ) ()
+  lem-Neg-St ( UnitL  k  a    ) ()
   lem-Neg-St ( ImpR   k  a b  ) n = refl
   lem-Neg-St ( ImpL   k  b a  ) n = refl
 
@@ -559,7 +561,7 @@ this knowledge:
   lem-Pos-St ( Dia    k  a    ) p = refl
   lem-Pos-St ( Box    k  a    ) ()
   lem-Pos-St ( a & b          ) p = refl
-  lem-Pos-St ( UnitR  k  a    ) p = refl
+  lem-Pos-St ( UnitL  k  a    ) p = refl
   lem-Pos-St ( ImpR   k  a b  ) ()
   lem-Pos-St ( ImpL   k  b a  ) ()
 \end{code}
@@ -579,7 +581,7 @@ structuralise either the antecedent, the succedent, or both:
     stL { a = Dia    k  a    } f = diaL (resBD (stL (resDB f)))
     stL { a = Box    k  a    } f = f
     stL { a = a & b          } f = f
-    stL { a = UnitR  k  a    } f = unitRL (resLP (stL (resPL f)))
+    stL { a = UnitL  k  a    } f = unitLL (resRP (stL (resPR f)))
     stL { a = ImpR   k  a b  } f = f
     stL { a = ImpL   k  b a  } f = f
 
@@ -588,7 +590,7 @@ structuralise either the antecedent, the succedent, or both:
     stR { b = Dia    k  a    } f = f
     stR { b = Box    k  a    } f = boxR (resDB (stR (resBD f)))
     stR { b = a & b          } f = f
-    stR { b = UnitR  k  a    } f = f
+    stR { b = UnitL  k  a    } f = f
     stR { b = ImpR   k  a b  } f = impRR (resPR (stR (resLP (stL (resPL (resRP f))))))
     stR { b = ImpL   k  b a  } f = impLR (resPL (stR (resRP (stL (resPR (resLP f))))))
 \end{code}
@@ -641,7 +643,7 @@ structuralise, and continue:\footnote{%
     axR′ { b = Dia    k  a    } p = diaR axR
     axR′ { b = Box    k  a    } ()
     axR′ { b = a & b          } p = withR (stR (withL1 axL)) (stR (withL2 axL))
-    axR′ { b = UnitR  k  a    } p = unitRR axR
+    axR′ { b = UnitL  k  a    } p = unitLR axR
     axR′ { b = ImpR   k  a b  } ()
     axR′ { b = ImpL   k  b a  } ()
 
@@ -650,7 +652,7 @@ structuralise, and continue:\footnote{%
     axL′ { a = Dia    k  a    } ()
     axL′ { a = Box    k  a    } n = boxL axL
     axL′ { a = a & b          } ()
-    axL′ { a = UnitR  k  a    } ()
+    axL′ { a = UnitL  k  a    } ()
     axL′ { a = ImpR   k  a b  } n = impRL axR axL
     axL′ { a = ImpL   k  b a  } n = impLL axR axL
 \end{code}
@@ -674,8 +676,8 @@ products:
       where
         _[_]′ : ∙-Ctxt → Struct + → Struct +
         ( HOLE        ) [ z ]′ = z
-        ( PROD1  x y  ) [ z ]′ = PROD Sol    (x [ z ]′) y
-        ( PROD2  x y  ) [ z ]′ = PROD Sol x  (y [ z ]′)
+        ( PROD1  x y  ) [ z ]′ = PROD Solid    (x [ z ]′) y
+        ( PROD2  x y  ) [ z ]′ = PROD Solid x  (y [ z ]′)
 \end{code}
 \\
 For these contexts, we can define the \AgdaFunction{trace} function,
@@ -684,35 +686,35 @@ which inserts the correct trace of \textbf{I}'s, \textbf{B}'s and
 \\[1\baselineskip]
 \begin{code}
   trace : ∙-Ctxt → Struct +
-  trace ( HOLE        )  = UNIT Hol
-  trace ( PROD1  x y  )  = PROD Sol (PROD Sol C (trace x)) y
-  trace ( PROD2  x y  )  = PROD Sol (PROD Sol B x) (trace y)
+  trace ( HOLE        )  = UNIT (Quan Weak)
+  trace ( PROD1  x y  )  = PROD Solid (PROD Solid C (trace x)) y
+  trace ( PROD2  x y  )  = PROD Solid (PROD Solid B x) (trace y)
 \end{code}
 \\
 And using the \AgdaFunction{trace} function, we can define upwards and
 downwards quantifier movement:
 \\[1\baselineskip]
 \begin{code}
-  q↑ : ∀ {y b c} → ∀ x → NLQ trace(x) ⊢[ b ] → NLQ [ c ]⊢ y → NLQ x [ · Q (c ⇦ b) · ] ⊢ y
-  q↑ x f g = ↑ x (resLP (focL refl (impLL f g)))
+  q↑ : ∀ {y b c} → ∀ x → NLQ trace(x) ⊢[ b ] → NLQ [ c ]⊢ y → NLQ x [ · QW (b ⇨ c) · ] ⊢ y
+  q↑ x f g = ↑ x (resRP (focL refl (impRL f g)))
     where
-    ↑ : ∀ {a z} x → NLQ · a · ∘ trace(x) ⊢ z → NLQ x [ · Q a · ] ⊢ z
+    ↑ : ∀ {a z} x → NLQ trace(x) ∘ · a · ⊢ z → NLQ x [ · QW a · ] ⊢ z
     ↑ x f = init x (move x f)
       where
-      init  : ∀ {a z} (x : ∙-Ctxt) → NLQ x [ · a · ∘ I ] ⊢ z → NLQ x [ · Q a · ] ⊢ z
-      init  ( HOLE        ) f = unitRL f
+      init  : ∀ {a z} (x : ∙-Ctxt) → NLQ x [ I ∘ · a · ] ⊢ z → NLQ x [ · QW a · ] ⊢ z
+      init  ( HOLE        ) f = unitLL f
       init  ( PROD1  x y  ) f = resLP (init x (resPL f))
       init  ( PROD2  x y  ) f = resRP (init y (resPR f))
-      move  : ∀ {y z} (x : ∙-Ctxt) → NLQ y ∘ trace(x) ⊢ z → NLQ x [ y ∘ I ] ⊢ z
+      move  : ∀ {y z} (x : ∙-Ctxt) → NLQ trace(x) ∘ y ⊢ z → NLQ x [ I ∘ y ] ⊢ z
       move  ( HOLE        ) f = f
       move  ( PROD1  x y  ) f = resLP (move x (resPL (upC f)))
       move  ( PROD2  x y  ) f = resRP (move y (resPR (upB f)))
 
-  q↓ : ∀ {a b} → ∀ x → NLQ x [ · a · ] ⊢ · b · → NLQ trace(x) ⊢ · a ⇨ b ·
-  q↓ x f = impRR (resPR (↓ x f))
+  q↓ : ∀ {a b} → ∀ x → NLQ x [ · a · ] ⊢ · b · → NLQ trace(x) ⊢ · b ⇦ a ·
+  q↓ x f = impLR (resPL (↓ x f))
     where
-    ↓ : ∀ {y z} x → NLQ x [ y ] ⊢ z → NLQ y ∘ trace(x) ⊢ z
-    ↓ ( HOLE        ) f = unitRI f
+    ↓ : ∀ {y z} x → NLQ x [ y ] ⊢ z → NLQ trace(x) ∘ y ⊢ z
+    ↓ ( HOLE        ) f = unitLI f
     ↓ ( PROD1  x y  ) f = dnC (resLP (↓ x (resPL f)))
     ↓ ( PROD2  x y  ) f = dnB (resRP (↓ y (resPR f)))
 \end{code}
@@ -820,7 +822,7 @@ becomes units, etc.
         Dia    _  a    *′ = a *′
         Box    _  a    *′ = a *′
         (a & b)        *′ = a *′ × b *′
-        UnitR  _  a    *′ = a *′
+        UnitL  _  a    *′ = a *′
         ImpR   _  a b  *′ = a *′ → b *′
         ImpL   _  b a  *′ = a *′ → b *′
 
@@ -831,6 +833,7 @@ becomes units, etc.
         · a ·         *′ = a *
         B             *′ = ⊤
         C             *′ = ⊤
+        I*            *′ = ⊤
         DIA   _  x    *′ = x *′
         UNIT  _       *′ = ⊤
         PROD  _  x y  *′ = x *′ × y *′
@@ -879,13 +882,15 @@ translation on proofs:
         boxR    f    *′ = f *′
         resBD   f    *′ = f *′
         resDB   f    *′ = f *′
-        unitRL  f    *′ = λ{  x       → (f *′) (x , _)  }
-        unitRR  f    *′ = λ{ (x , _)  → (f *′)  x       }
-        unitRI  f    *′ = λ{ (x , _)  → (f *′)  x       }
-        dnB     f    *′ = λ{ ( y , (_ , x) , z)  → (f *′) ( x , y  , z) }
-        dnC     f    *′ = λ{ ( x , (_ , y) , z)  → (f *′) ((x , y) , z) }
-        upB     f    *′ = λ{ ( x , y   , z)  → (f *′) ( y , (_ , x) , z) }
-        upC     f    *′ = λ{ ((x , y)  , z)  → (f *′) ( x , (_ , y) , z) }
+        unitLL  f    *′ = λ{  x       → (f *′) (_ , x)  }
+        unitLR  f    *′ = λ{ (_ , x)  → (f *′)  x       }
+        unitLI  f    *′ = λ{ (_ , x)  → (f *′)  x       }
+        dnB     f    *′ = λ{ ( ((_ , x) , y) , z)  → (f *′) (x , (y , z)) }
+        upB     f    *′ = λ{ ( x , y   , z)  → (f *′) ( ((_ , x) , y) , z) }
+        dnC     f    *′ = λ{ ( ((_ , x) , z) , y)  → (f *′) ((x , y) , z) }
+        upC     f    *′ = λ{ ((x , y)  , z)  → (f *′) ( ((_ , x) , z) , y) }
+        dnI*    f    *′ = λ{ ((_ , x) , y) → (f *′) (x , y) }
+        upI*    f    *′ = λ{ (x , y) → (f *′) ((_ , x) , y)}
         extRR   f    *′ = λ{ ( x , y   , z)  → (f *′) ((x , y) , z)  }
         extLR   f    *′ = λ{ ((x , z)  , y)  → (f *′) ((x , y) , z)  }
         extLL   f    *′ = λ{ ((z , y)  , x)  → (f *′) ( z , y  , x)  }
@@ -962,7 +967,7 @@ there is no real reason to invest in all this machinery:
   MARY SEES FOXES : Struct +
   MARY   = · El NP ·
   SEES   = · (El NP ⇒ El S) ⇐ El NP ·
-  FOXES  = · Q(El S ⇦ (El NP ⇨ El S)) ·
+  FOXES  = · QW((El S ⇦ El NP) ⇨ El S) ·
 \end{code}
 \\
 A proof for this sentence is easily given:

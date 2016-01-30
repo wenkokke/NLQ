@@ -36,6 +36,7 @@ type family HI x where
   HI (DIA k x)    = HI x
   HI  B           = ()
   HI  C           = ()
+  HI  I'          = ()
   HI (UNIT k)     = ()
   HI (PROD k x y) = (HI x, HI y)
 
@@ -132,12 +133,12 @@ eta (IfxRL f)   = \(y,(z,x)) -> eta f (z,(y,x))
 eta (UnitLL  f) = \x -> eta f (EXPR(),x)
 eta (UnitLR  f) = \(_,x) -> eta f x
 eta (UnitLI  f) = \(_,x) -> eta f x
-eta (DnB f)     = \(((_,x),y),z) -> eta f (x,(y,z))
-eta (DnC f)     = \(((_,x),z),y) -> eta f ((x,y),z)
-eta (UpB f)     = \(x,(y,z)) -> eta f (((EXPR(),x),y),z)
-eta (DnE f)     = \x -> eta f x
-eta (UpC f)     = \((x,y),z) -> eta f (((EXPR(),x),z),y)
-eta (UpE f)     = \x -> eta f x
+eta (DnB  f)     = \(((_,x),y),z) -> eta f (x,(y,z))
+eta (DnC  f)     = \(((_,x),z),y) -> eta f ((x,y),z)
+eta (UpB  f)     = \(x,(y,z)) -> eta f (((EXPR(),x),y),z)
+eta (DnI' f)     = \((_,x),y) -> eta f (x,y)
+eta (UpC  f)     = \((x,y),z) -> eta f (((EXPR(),x),z),y)
+eta (UpI' f)     = \(x,y) -> eta f ((EXPR(),x),y)
 
 
 
@@ -183,12 +184,12 @@ etaM (IfxRL f)   = \(y,(z,x)) -> etaM f (z,(y,x))
 etaM (UnitLL  f) = \x -> etaM f (EXPR(),x)
 etaM (UnitLR  f) = \(_,x) -> etaM f x
 etaM (UnitLI  f) = \(_,x) -> etaM f x
-etaM (DnB f)     = \(((_,x),y),z) -> etaM f (x,(y,z))
-etaM (DnC f)     = \(((_,x),z),y) -> etaM f ((x,y),z)
-etaM (DnE f)     = \x -> etaM f x
-etaM (UpB f)     = \(x,(y,z)) -> etaM f (((EXPR(),x),y),z)
-etaM (UpC f)     = \((x,y),z) -> etaM f (((EXPR(),x),z),y)
-etaM (UpE f)     = \x -> etaM f x
+etaM (DnB  f)    = \(((_,x),y),z) -> etaM f (x,(y,z))
+etaM (DnC  f)    = \(((_,x),z),y) -> etaM f ((x,y),z)
+etaM (DnI' f)     = \((_,x),y) -> etaM f (x,y)
+etaM (UpB  f)    = \(x,(y,z)) -> etaM f (((EXPR(),x),y),z)
+etaM (UpC  f)    = \((x,y),z) -> etaM f (((EXPR(),x),z),y)
+etaM (UpI' f)     = \(x,y) -> etaM f ((EXPR(),x),y)
 
 -- -}
 -- -}
