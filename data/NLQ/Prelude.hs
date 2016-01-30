@@ -18,7 +18,7 @@
 {-# LANGUAGE FunctionalDependencies #-}
 module NLQ.Prelude
        (Word,Entry(..),(∷),(<$),($>),lex,lex_,id
-       ,S,N,NP,PP,INF,A,IV,TV,Q,NS
+       ,S,N,NP,PP,INF,A,IV,TV,QW,QS,NS
        ,Boolean(..)
        ,Combine(..),nlq,nlqAll,parseBwd,module X) where
 
@@ -36,13 +36,12 @@ import           Data.Singletons.Decide ((:~:)(..))
 import           Data.Singletons.Prelude (SingI(..))
 import           Data.Singletons.Prelude.List ((:++))
 import qualified Data.Singletons.Prelude.List as SL
-import           NLQ.Syntax.Base            as X hiding (Q,Atom(..))
+import           NLQ.Syntax.Base            as X hiding (QW,QS,Atom(..))
 import qualified NLQ.Syntax.Base            as Syn (Atom(..))
 import qualified NLQ.Syntax.Backward        as Bwd
-import qualified NLQ.Syntax.Forward         as Fwd
 import           NLQ.Semantics              as X
 import           NLQ.Semantics.Postulate    as X
-import           Text.Parsec (parse,many1,ParseError)
+import           Text.Parsec (parse,try,many1,between,ParseError)
 import           Text.Parsec.Token
 import           Text.Parsec.Language (haskellStyle,haskellDef)
 import           Text.Parsec.String (Parser)
@@ -51,16 +50,17 @@ import qualified Language.Haskell.TH as TH
 import           Language.Haskell.TH.Quote (QuasiQuoter(..))
 
 
-type S       = El 'Syn.S
-type N       = El 'Syn.N
-type NP      = El 'Syn.NP
-type PP      = El 'Syn.PP
-type INF     = El 'Syn.INF
-type A       = N  :← N
-type IV      = NP :→ S
-type TV      = IV :← NP
-type Q a b c = UnitR KHol (c :⇦ (a :⇨ b))
-type NS      = Q NP S S
+type S        = El 'Syn.S
+type N        = El 'Syn.N
+type NP       = El 'Syn.NP
+type PP       = El 'Syn.PP
+type INF      = El 'Syn.INF
+type A        = N  :← N
+type IV       = NP :→ S
+type TV       = IV :← NP
+type QW a b c = QLW ((b :⇦ a) :⇨ c)
+type QS a b c = QLS ((b :⤆ a) :⤇ c)
+type NS       = QS NP S S
 
 
 type Word  a = Entry (StI a)
@@ -103,15 +103,18 @@ instance (Boolean b) => Boolean (a -> b) where
 
 -- ** Backward-Chaining Proof Search
 
+data Del (k :: Strength) (a :: *) where
+  MkDel :: SStrength k -> a -> Del k a
+
 class Combine a b | a -> b where
   combine :: a -> b
 
 instance Combine (Entry t) (Entry t) where
   combine = id
 
-instance (Combine x (Entry a)) => Combine [x] (Entry (DIA KRes a)) where
-  combine [x] = case combine x of
-    (Entry a r) -> Entry (SDIA SKRes a) r
+instance (Combine x (Entry a)) => Combine (Del k x) (Entry (DIA (Delim k) a)) where
+  combine (MkDel k x) = case combine x of
+    (Entry a r) -> Entry (SDIA (SDelim k) a) r
 
 instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
          => Combine (x1,x2) (Entry (a1 :∙ a2)) where
@@ -204,29 +207,31 @@ nlqAll s = do
                               return (AppE (VarE 'putMeanings) (VarE x) : xs)
                 Nothing -> return []
 
--- n = do
---   bwds1 <- traverse lookupValueName (map (("s"++).show) [0..n])
---   let bwds2 = map (VarE . fromJust) (takeWhile isJust bwds1)
---   return (AppE (AppE (VarE 'mapM_) (VarE 'putResult)) (ListE bwds2))
-
 parseTree :: String -> Either ParseError (TH.Q Exp)
 parseTree = parse (whiteSpace *> pTree1) ""
   where
-    TokenParser{whiteSpace,identifier,parens,angles} = makeTokenParser haskellStyle
+    TokenParser{whiteSpace,identifier,parens,symbol,angles} = makeTokenParser haskellStyle
     LanguageDef{reservedNames} = haskellDef
 
     pTree1 :: Parser (TH.Q Exp)
-    pTree1 = tuple <$> many1 (pWord <|> pReset <|> parens pTree1)
+    pTree1 = tuple <$> many1 (pWord <|> (try pDelS <|> pDelW) <|> parens pTree1)
       where
       tuple :: [TH.Q Exp] -> TH.Q Exp
       tuple xs = do xs <- sequence xs
                     return (foldr1 (\x y -> TupE [x,y]) xs)
 
-    pReset :: Parser (TH.Q Exp)
-    pReset = reset <$> angles pTree1
+    pDelW :: Parser (TH.Q Exp)
+    pDelW = reset <$> angles pTree1
       where
       reset :: TH.Q Exp -> TH.Q Exp
-      reset x = ListE . (:[]) <$> x
+      reset x = AppE (AppE (ConE 'MkDel) (ConE 'SWeak)) <$> x
+
+    pDelS :: Parser (TH.Q Exp)
+    pDelS = reset <$> doubleAngles pTree1
+      where
+      reset :: TH.Q Exp -> TH.Q Exp
+      reset x = AppE (AppE (ConE 'MkDel) (ConE 'SStrong)) <$> x
+      doubleAngles p = between (symbol "<<") (symbol ">>") p
 
     pWord  :: Parser (TH.Q Exp)
     pWord  = do x <- identifier

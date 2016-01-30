@@ -175,7 +175,7 @@ truth-conditional (or ``at-issue'') content, and expressive content:
   }
   \text{john}  &= \eta\;\JOHN\\
   \text{walks} &= \lambda y\;x.(\lambda x'.(\lambda y'.\eta(\WALK(x,y)))\star y)\star x\\
-  \text{the}   &= \lambda f.(\lambda f'.\iota(f'))\star f\footnotemark\\
+  \text{the}   &= \lambda f.(\lambda f'.\iota(f'))\star f\\
   \text{dog}   &= \eta\;\DOG\\
   \intertext{%
     We treat `damn' as an identity function in its at-issue
@@ -185,15 +185,6 @@ truth-conditional (or ``at-issue'') content, and expressive content:
   }
   \text{damn} &= \lambda f.(\lambda f'.(\lambda().\eta\;f')\star\text{tell}(\DAMN(f')))\star f
 \end{align*}
-\footnotetext{%
-  The semantics for `the' are commonly given in terms of a function
-  called `$\iota$', known as the ``definite description operator.''
-  Given a set, this operator returns its unique inhabitant. Depending
-  on the exact semantics you want for this operator, it can either be
-  implemented monadically, as a side-effect, or using
-  quantification. For this example, it is best to think of `$\iota$'
-  as a function of the type $(\e\t)\e$.
-}%
 The entire utterance ``I walked the damn dog'' then reduces as follows:
 \[
   (\text{walks}\;(\text{the}\;(\text{damn}\;\text{dog}))\;\text{john})

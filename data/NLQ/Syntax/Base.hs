@@ -22,19 +22,24 @@ singletons [d|
     INF :: Atom
     deriving (Eq,Show)
 
+  data Strength :: * where
+    Strong :: Strength
+    Weak   :: Strength
+    deriving (Eq,Show)
+
   data Kind :: * where
-    KSol :: Kind
-    KHol :: Kind
-    KRes :: Kind
-    KIfx :: Kind
-    KExt :: Kind
+    Solid  :: Kind
+    Quan   :: Strength -> Kind
+    Delim  :: Strength -> Kind
+    MovIfx :: Kind
+    MovExt :: Kind
     deriving (Eq,Show)
 
   data Type :: * where
     El    :: Atom -> Type
     Dia   :: Kind -> Type -> Type
     Box   :: Kind -> Type -> Type
-    UnitR :: Kind -> Type -> Type
+    UnitL :: Kind -> Type -> Type
     (:&)  :: Type -> Type -> Type
     ImpR  :: Kind -> Type -> Type -> Type
     ImpL  :: Kind -> Type -> Type -> Type
@@ -64,8 +69,10 @@ singletons [d|
 
   data Context :: * where
     HOLE  :: Context
+    DelW1 :: Context -> Context
     (:<∙) :: Context -> StructI -> Context
     (:∙>) :: StructI -> Context -> Context
+    deriving (Eq,Show)
 
   |]
 
@@ -77,113 +84,99 @@ promote [d|
 
   plug :: Context -> StructI -> StructI
   plug HOLE      z = z
-  plug (x :<∙ y) z = PROD KSol (plug x z) y
-  plug (x :∙> y) z = PROD KSol x (plug y z)
+  plug (DelW1 x) z = DIA (Delim Weak) (plug x z)
+  plug (x :<∙ y) z = PROD Solid (plug x z) y
+  plug (x :∙> y) z = PROD Solid x (plug y z)
 
-  trace :: Context -> StructI
-  trace HOLE      = UNIT KHol
-  trace (x :∙> y) = PROD KSol (PROD KSol B x) (trace y)
-  trace (x :<∙ y) = PROD KSol (PROD KSol C (trace x)) y
+  trace :: Strength -> Context -> StructI
+  trace k HOLE      = UNIT (Quan k)
+  trace k (DelW1 x) = DIA (Delim Weak) (trace k x)
+  trace k (x :∙> y) = PROD Solid (PROD Solid B x) (trace k y)
+  trace k (x :<∙ y) = PROD Solid (PROD Solid C (trace k x)) y
 
   |]
 
 
 deriving instance Ord Atom
+deriving instance Ord Strength
 deriving instance Ord Kind
 deriving instance Ord Type
 deriving instance Ord StructI
 deriving instance Ord StructO
 deriving instance Ord Sequent
-deriving instance Bounded Kind
-deriving instance Enum Kind
 
 kinds :: [Kind]
-kinds = [minBound..maxBound]
-
-
-infix  1 ⊢
-infixr 3 ∙
-
-class Product a b c | a b -> c where
-  (∙) :: a -> b -> c
-instance Product (SStructI x) (SStructI y) (SStructI (x :∙ y)) where
-  x ∙ y = x :%∙ y
-instance Product (SType a) (SStructI y) (SStructI (StI a :∙ y)) where
-  a ∙ y = SStI a :%∙ y
-instance Product (SStructI x) (SType b) (SStructI (x :∙ StI b)) where
-  x ∙ b = x :%∙ SStI b
-instance Product (SType a) (SType b) (SStructI (StI a :∙ StI b)) where
-  a ∙ b = SStI a :%∙ SStI b
-
-class Turnstile a b c | a b -> c where
-  (⊢) :: a -> b -> c
-instance Turnstile (SStructI x) (SStructO y) (SSequent (x :⊢ y)) where
-  x ⊢ y = x :%⊢ y
-instance Turnstile (SType a) (SStructO y) (SSequent (StI a :⊢ y)) where
-  a ⊢ y = SStI a :%⊢ y
-instance Turnstile (SStructI x) (SType b) (SSequent (x :⊢ StO b)) where
-  x ⊢ b = x :%⊢ SStO b
-instance Turnstile (SType a) (SType b) (SSequent (StI a :⊢ StO b)) where
-  a ⊢ b = SStI a :%⊢ SStO b
-
-
+kinds = [Solid,Quan Weak,Quan Strong,Delim Weak,Delim Strong,MovIfx,MovExt]
 
 infixr 3 :∙, :%∙
 infixr 7 :→, :%→
 infixl 7 :←, :%←
 
-type    x  :∙ y =  PROD  KSol  x y
-pattern x  :∙ y =  PROD  KSol  x y
-pattern x :%∙ y = SPROD SKSol  x y
-type    x  :→ y =  ImpR  KSol  x y
-pattern x  :→ y =  ImpR  KSol  x y
-pattern x :%→ y = SImpR SKSol  x y
-type    y  :← x =  ImpL  KSol  y x
-pattern y  :← x =  ImpL  KSol  y x
-pattern y :%← x = SImpL SKSol  y x
+type    x  :∙ y =  PROD  Solid  x y
+pattern x  :∙ y =  PROD  Solid  x y
+pattern x :%∙ y = SPROD SSolid  x y
+type    x  :→ y =  ImpR  Solid  x y
+pattern x  :→ y =  ImpR  Solid  x y
+pattern x :%→ y = SImpR SSolid  x y
+type    y  :← x =  ImpL  Solid  y x
+pattern y  :← x =  ImpL  Solid  y x
+pattern y :%← x = SImpL SSolid  y x
 
-type     QR x =  UnitR  KHol x
-pattern  QR x =  UnitR  KHol x
-pattern SQR x = SUnitR SKHol x
+type     QLW x =  UnitL  (Quan Weak) x
+pattern  QLW x =  UnitL  (Quan Weak) x
+pattern SQLW x = SUnitL (SQuan SWeak) x
 
-type     I =  UNIT  KHol
-pattern  I =  UNIT  KHol
-pattern SI = SUNIT SKHol
+type     QLS x =  UnitL  (Quan Strong) x
+pattern  QLS x =  UnitL  (Quan Strong) x
+pattern SQLS x = SUnitL (SQuan SStrong) x
 
-type    x  :∘ y =  PROD  KHol x y
-pattern x  :∘ y =  PROD  KHol x y
-pattern x :%∘ y = SPROD SKHol x y
-type    x  :⇨ y =  ImpR  KHol x y
-pattern x  :⇨ y =  ImpR  KHol x y
-pattern x :%⇨ y = SImpR SKHol x y
-type    y  :⇦ x =  ImpL  KHol y x
-pattern y  :⇦ x =  ImpL  KHol y x
-pattern y :%⇦ x = SImpL SKHol y x
+type    x  :∘ y =  PROD  (Quan  Weak) x y
+pattern x  :∘ y =  PROD  (Quan  Weak) x y
+pattern x :%∘ y = SPROD (SQuan SWeak) x y
+type    x  :⇨ y =  ImpR  (Quan  Weak) x y
+pattern x  :⇨ y =  ImpR  (Quan  Weak) x y
+pattern x :%⇨ y = SImpR (SQuan SWeak) x y
+type    y  :⇦ x =  ImpL  (Quan  Weak) y x
+pattern y  :⇦ x =  ImpL  (Quan  Weak) y x
+pattern y :%⇦ x = SImpL (SQuan SWeak) y x
 
-type     Q a b c =  QR (c  :⇦ (a  :⇨ b))
-pattern  Q a b c =  QR (c  :⇦ (a  :⇨ b))
-pattern SQ a b c = SQR (c :%⇦ (a :%⇨ b))
+type    x  :○ y =  PROD  (Quan  Strong) x y
+pattern x  :○ y =  PROD  (Quan  Strong) x y
+pattern x :%○ y = SPROD (SQuan SStrong) x y
+type    x  :⤇ y =  ImpR  (Quan  Strong) x y
+pattern x  :⤇ y =  ImpR  (Quan  Strong) x y
+pattern x :%⤇ y = SImpR (SQuan SStrong) x y
+type    y  :⤆ x =  ImpL  (Quan  Strong) y x
+pattern y  :⤆ x =  ImpL  (Quan  Strong) y x
+pattern y :%⤆ x = SImpL (SQuan SStrong) y x
 
-type     Res a =  Dia  KRes a
-pattern  Res a =  Dia  KRes a
-pattern SRes a = SDia SKRes a
-type     RES x =  DIA  KRes x
-pattern  RES x =  DIA  KRes x
-pattern SRES x = SDIA SKRes x
+type     DelW a =  Dia  (Delim  Weak) a
+pattern  DelW a =  Dia  (Delim  Weak) a
+pattern SDelW a = SDia (SDelim SWeak) a
+type     DELW x =  DIA  (Delim  Weak) x
+pattern  DELW x =  DIA  (Delim  Weak) x
+pattern SDELW x = SDIA (SDelim SWeak) x
 
-type     Ifx a =  Dia  KIfx ( Box  KIfx a)
-pattern  Ifx a =  Dia  KIfx ( Box  KIfx a)
-pattern SIfx a = SDia SKIfx (SBox SKIfx a)
-type     IFX x =  DIA  KIfx x
-pattern  IFX x =  DIA  KIfx x
-pattern SIFX x = SDIA SKIfx x
+type     DelS a =  Dia  (Delim  Strong) a
+pattern  DelS a =  Dia  (Delim  Strong) a
+pattern SDelS a = SDia (SDelim SStrong) a
+type     DELS x =  DIA  (Delim  Strong) x
+pattern  DELS x =  DIA  (Delim  Strong) x
+pattern SDELS x = SDIA (SDelim SStrong) x
 
-type     Ext a =  Dia  KExt ( Box  KExt a)
-pattern  Ext a =  Dia  KExt ( Box  KExt a)
-pattern SExt a = SDia SKExt (SBox SKExt a)
-type     EXT x =  DIA  KExt x
-pattern  EXT x =  DIA  KExt x
-pattern SEXT x = SDIA SKExt x
+type     Ifx a =  Dia  MovIfx ( Box  MovIfx a)
+pattern  Ifx a =  Dia  MovIfx ( Box  MovIfx a)
+pattern SIfx a = SDia SMovIfx (SBox SMovIfx a)
+type     IFX x =  DIA  MovIfx x
+pattern  IFX x =  DIA  MovIfx x
+pattern SIFX x = SDIA SMovIfx x
+
+type     Ext a =  Dia  MovExt ( Box  MovExt a)
+pattern  Ext a =  Dia  MovExt ( Box  MovExt a)
+pattern SExt a = SDia SMovExt (SBox SMovExt a)
+type     EXT x =  DIA  MovExt x
+pattern  EXT x =  DIA  MovExt x
+pattern SEXT x = SDIA SMovExt x
 
 type    a  :⇃ b = ( Ext a)  :→ b
 pattern a  :⇃ b = ( Ext a)  :→ b
@@ -204,40 +197,57 @@ pattern b :%↾ a = SIfx (b :%← a)
 -- * Operations on Types and Structures
 
 data Focus (z :: StructI) :: * where
-     Focus :: SContext x -> SStructI y -> Plug x y :~: z -> Focus z
+     Focus :: SStrength k -> SContext x -> SStructI y -> Plug x y :~: z -> Focus z
+
+deriving instance (Show (Focus z))
 
 data Trail (z :: StructI) :: * where
-     Trail :: SContext x -> Trace x :~: z -> Trail z
+     Trail :: SStrength k -> SContext x -> Trace k x :~: z -> Trail z
+
+deriving instance (Show (Trail z))
 
 sPlug :: SContext x -> SStructI z -> SStructI (Plug x z)
 sPlug SHOLE      z = z
-sPlug (x :%<∙ y) z = SPROD SKSol (sPlug x z) y
-sPlug (x :%∙> y) z = SPROD SKSol x (sPlug y z)
+sPlug (SDelW1 x) z = SDIA (SDelim SWeak) (sPlug x z)
+sPlug (x :%<∙ y) z = SPROD SSolid (sPlug x z) y
+sPlug (x :%∙> y) z = SPROD SSolid x (sPlug y z)
 
-sTrace :: SContext x -> SStructI (Trace x)
-sTrace SHOLE      = SI
-sTrace (x :%∙> y) = SPROD SKSol (SPROD SKSol SB x) (sTrace y)
-sTrace (x :%<∙ y) = SPROD SKSol (SPROD SKSol SC (sTrace x)) y
+sTrace :: SStrength k -> SContext x -> SStructI (Trace k x)
+sTrace k       SHOLE      = SUNIT (SQuan k)
+sTrace SStrong (SDelW1 x) = SDIA (SDelim SWeak) (sTrace SStrong x)
+sTrace k       (x :%∙> y) = SPROD SSolid (SPROD SSolid SB x) (sTrace k y)
+sTrace k       (x :%<∙ y) = SPROD SSolid (SPROD SSolid SC (sTrace k x)) y
 
 sFocus :: SStructI x -> [Focus x]
-sFocus x = Focus SHOLE x Refl : sFocus' x
+sFocus x = Focus SWeak SHOLE x Refl : sFocus' x
   where
     sFocus' :: SStructI x -> [Focus x]
-    sFocus' (x :%∙ y) = (inl <$> sFocus x) ++ (inr <$> sFocus y)
+    sFocus' (x :%∙ y) = (inx <$> sFocus x) ++ (iny <$> sFocus y)
       where
-        inl (Focus x z Refl) = Focus (x :%<∙ y) z Refl
-        inr (Focus y z Refl) = Focus (x :%∙> y) z Refl
-    sFocus' x         = []
+        inx (Focus k x z Refl) = Focus k (x :%<∙ y) z Refl
+        iny (Focus k y z Refl) = Focus k (x :%∙> y) z Refl
+    sFocus' (SDIA (SDelim SWeak) (x :: SStructI x)) = (inx <$> sFocus x)
+      where
+        inx :: Focus x -> Focus (DIA (Delim Weak) x)
+        inx (Focus k x z Refl) = Focus SStrong (SDelW1 x) z Refl
+    sFocus' x = []
 
 sFollow :: SStructI x -> Maybe (Trail x)
-sFollow  SI                = Just (Trail SHOLE Refl)
-sFollow ((SC :%∙ x) :%∙ y) = case sFollow x of
-  Just (Trail x Refl)     -> Just (Trail (x :%<∙ y) Refl)
-  _                       -> Nothing
-sFollow ((SB :%∙ x) :%∙ y) = case sFollow y of
-  Just (Trail y Refl)     -> Just (Trail (x :%∙> y) Refl)
-  _                       -> Nothing
-sFollow _                  = Nothing
+sFollow  (SUNIT (SQuan k))      = Just (Trail k SHOLE Refl)
+sFollow ((SC :%∙ x) :%∙ y)      = case sFollow x of
+  Just (Trail k x Refl)        -> Just (Trail k (x :%<∙ y) Refl)
+  _                            -> Nothing
+sFollow ((SB :%∙ x) :%∙ y)      = case sFollow y of
+  Just (Trail k y Refl)        -> Just (Trail k (x :%∙> y) Refl)
+  _                            -> Nothing
+sFollow (SDIA (SDelim SWeak) x) = case sFollow x of
+  Just (Trail k x Refl)        -> Just (Trail k (SDelW1 x) Refl)
+  _                            -> Nothing
+sFollow _                       = Nothing
+
+
+testFocus :: Bool
+testFocus = length (sFocus (SStI (SEl SNP) :%∙ (SStI ((SEl SNP) :%→ (SEl SS))))) == 3
 
 
 
@@ -245,7 +255,7 @@ sFollow _                  = Nothing
 
 data Pos :: Type -> * where
   Pos_Dia    :: Pos (Dia k a)
-  Pos_UnitR  :: Pos (UnitR k a)
+  Pos_UnitL  :: Pos (UnitL k a)
   Pos_With   :: Pos (a1 :& a2)
 
 data Neg :: Type -> * where
@@ -259,7 +269,7 @@ pol (SEl a)       = Right Neg_El
 pol (_ :%& _)     = Left  Pos_With
 pol (SDia _ _)    = Left  Pos_Dia
 pol (SBox _ _)    = Right Neg_Box
-pol (SUnitR _ _)  = Left  Pos_UnitR
+pol (SUnitL _ _)  = Left  Pos_UnitL
 pol (SImpR _ _ _) = Right Neg_ImpR
 pol (SImpL _ _ _) = Right Neg_ImpL
 
@@ -267,20 +277,25 @@ pol (SImpL _ _ _) = Right Neg_ImpL
 
 -- * Instances
 
-instance Show (SAtom    s) where show = show . fromSing
-instance Show (SKind    s) where show = show . fromSing
-instance Show (SType    s) where show = show . fromSing
-instance Show (SStructI s) where show = show . fromSing
+instance Show (SAtom     s) where show = show . fromSing
+instance Show (SStrength s) where show = show . fromSing
+instance Show (SKind     s) where show = show . fromSing
+instance Show (SType     s) where show = show . fromSing
+instance Show (SStructI  s) where show = show . fromSing
+instance Show (SContext  s) where show = show . fromSing
 
-instance Eq (SAtom    s) where x == y = fromSing x == fromSing y
-instance Eq (SKind    s) where x == y = fromSing x == fromSing y
-instance Eq (SType    s) where x == y = fromSing x == fromSing y
-instance Eq (SStructI s) where x == y = fromSing x == fromSing y
+instance Eq (SAtom     s) where x == y = fromSing x == fromSing y
+instance Eq (SStrength s) where x == y = fromSing x == fromSing y
+instance Eq (SKind     s) where x == y = fromSing x == fromSing y
+instance Eq (SType     s) where x == y = fromSing x == fromSing y
+instance Eq (SStructI  s) where x == y = fromSing x == fromSing y
+instance Eq (SContext  s) where x == y = fromSing x == fromSing y
 
-instance Ord (SAtom    s) where compare x y = compare (fromSing x) (fromSing y)
-instance Ord (SKind    s) where compare x y = compare (fromSing x) (fromSing y)
-instance Ord (SType    s) where compare x y = compare (fromSing x) (fromSing y)
-instance Ord (SStructI s) where compare x y = compare (fromSing x) (fromSing y)
+instance Ord (SAtom     s) where compare x y = compare (fromSing x) (fromSing y)
+instance Ord (SStrength s) where compare x y = compare (fromSing x) (fromSing y)
+instance Ord (SKind     s) where compare x y = compare (fromSing x) (fromSing y)
+instance Ord (SType     s) where compare x y = compare (fromSing x) (fromSing y)
+instance Ord (SStructI  s) where compare x y = compare (fromSing x) (fromSing y)
 
 
 type family ToList (x :: StructI) :: [StructI] where
@@ -336,14 +351,17 @@ data Syn :: Sequent -> * where
   ExtLL   :: Syn ((EXT z :∙ y) :∙ x :⊢ w) -> Syn (EXT z :∙ (y :∙ x) :⊢ w)
   ExtRL   :: Syn (y :∙ (EXT z :∙ x) :⊢ w) -> Syn (EXT z :∙ (y :∙ x) :⊢ w)
 
-  UnitRL :: Syn (PROD k (StI a) (UNIT k) :⊢ y) -> Syn (StI (UnitR k a) :⊢ y)
-  UnitRR :: Syn (x :⊢> b) -> Syn (PROD k x (UNIT k) :⊢> UnitR k b)
-  UnitRI :: Syn (x :⊢ y) -> Syn (PROD k x (UNIT k) :⊢ y)
+  UnitLL :: Syn (PROD k (UNIT k) (StI a) :⊢ y) -> Syn (StI (UnitL k a) :⊢ y)
+  UnitLR :: Syn (x :⊢> b) -> Syn (PROD k (UNIT k) x :⊢> UnitL k b)
+  UnitLI :: Syn (x :⊢ y) -> Syn (PROD k (UNIT k) x :⊢ y)
 
-  DnB    :: Syn (x :∙ (y :∘ z) :⊢ w) -> Syn (y :∘ ((B :∙ x) :∙ z) :⊢ w)
-  UpB    :: Syn (y :∘ ((B :∙ x) :∙ z) :⊢ w) -> Syn (x :∙ (y :∘ z) :⊢ w)
-  DnC    :: Syn ((x :∘ y) :∙ z :⊢ w) -> Syn (x :∘ ((C :∙ y) :∙ z) :⊢ w)
-  UpC    :: Syn (x :∘ ((C :∙ y) :∙ z) :⊢ w) -> Syn ((x :∘ y) :∙ z :⊢ w)
+  DnB    :: Syn (x :∙ (PROD (Quan k) y z) :⊢ w) -> Syn (PROD (Quan k) ((B :∙ x) :∙ y) z :⊢ w)
+  UpB    :: Syn (PROD (Quan k) ((B :∙ x) :∙ y) z :⊢ w) -> Syn (x :∙ (PROD (Quan k)  y z) :⊢ w)
+  DnC    :: Syn ((PROD (Quan k) x y) :∙ z :⊢ w) -> Syn (PROD (Quan k) ((C :∙ x) :∙ z) y :⊢ w)
+  UpC    :: Syn (PROD (Quan k) ((C :∙ x) :∙ z) y :⊢ w) -> Syn ((PROD (Quan k) x y) :∙ z :⊢ w)
+
+  UpE    :: Syn (PROD (Quan Strong) (DELW x) y :⊢ w) -> Syn (DELW (PROD (Quan Strong) x y) :⊢ w)
+  DnE    :: Syn (DELW (PROD (Quan Strong) x y) :⊢ w) -> Syn (PROD (Quan Strong) (DELW x) y :⊢ w)
 
 
 instance Show (SSequent s) where
@@ -361,34 +379,46 @@ deriving instance Show (Syn s)
 
 -- * Quantifier Raising
 
+up :: SStrength k -> SContext x
+   -> Syn (Plug x y :⊢ z) -> Syn (PROD (Quan k) (Trace k x) y :⊢ z)
+up k       SHOLE      f = UnitLI f
+up k       (x :%<∙ y) f = DnC (ResLP (unsafeCoerce (up k x (ResPL (unsafeCoerce f)))))
+up k       (x :%∙> y) f = DnB (ResRP (unsafeCoerce (up k y (ResPR (unsafeCoerce f)))))
+up SStrong (SDelW1 x) f = DnE (ResBD (unsafeCoerce (up SStrong x (ResDB (unsafeCoerce f)))))
+up SWeak   (SDelW1 x) f = error "up: `strong' context used with `weak' quantifier"
 
-up :: SContext x -> Syn (Plug x y :⊢ z) -> Syn (y :∘ Trace x :⊢ z)
-up SHOLE      f = UnitRI f
-up (x :%<∙ y) f = DnC (ResLP (unsafeCoerce (up x (ResPL (unsafeCoerce f)))))
-up (x :%∙> y) f = DnB (ResRP (unsafeCoerce (up y (ResPR (unsafeCoerce f)))))
-
-down :: SContext x -> Syn (StI a :∘ Trace x :⊢ z) -> Syn (Plug x (StI (QR a)) :⊢ z)
-down x f = unsafeCoerce (init x (unsafeCoerce (move x f)))
+down :: SStrength k -> SContext x
+     -> Syn (PROD (Quan k) (Trace k x) (StI a) :⊢ z)
+     -> Syn (Plug x (StI (UnitL (Quan k) a)) :⊢ z)
+down k x f = unsafeCoerce (init x (unsafeCoerce (move x f)))
   where
-    init :: SContext x -> Syn (Plug x (StI a :∘ I) :⊢ y) -> Syn (Plug x (StI (QR a)) :⊢ y)
-    init SHOLE      f = UnitRL f
+    init :: SContext x
+         -> Syn (Plug x (PROD (Quan k) (UNIT (Quan k)) (StI a)) :⊢ y)
+         -> Syn (Plug x (StI (UnitL (Quan k) a)) :⊢ y)
+    init SHOLE      f = UnitLL f
     init (x :%<∙ y) f = ResLP (unsafeCoerce (init x (ResPL (unsafeCoerce f))))
     init (x :%∙> y) f = ResRP (unsafeCoerce (init y (ResPR (unsafeCoerce f))))
-    move :: SContext x -> Syn (y :∘ Trace x :⊢ z) -> Syn (Plug x (y :∘ I) :⊢ z)
+    init (SDelW1 x) f = ResBD (unsafeCoerce (init x (ResDB (unsafeCoerce f))))
+    move :: SContext x
+         -> Syn (PROD (Quan k) (Trace k x) y :⊢ z)
+         -> Syn (Plug x (PROD (Quan k) (UNIT (Quan k)) y) :⊢ z)
     move SHOLE      f = f
     move (x :%<∙ y) f = ResLP (unsafeCoerce (move x (ResPL (UpC (unsafeCoerce f)))))
     move (x :%∙> y) f = ResRP (unsafeCoerce (move y (ResPR (UpB (unsafeCoerce f)))))
+    move (SDelW1 x) f = case k %~ SStrong of
+      Proved Refl    -> ResBD (unsafeCoerce (move x (ResDB (UpE (unsafeCoerce f)))))
+      _              -> error "down: `strong' context used with `weak' quantifier"
 
-qrL :: SContext x
-    -> Syn (Trace x :⊢> b)
+qrL :: SStrength k -> SContext x
+    -> Syn (Trace k x :⊢> b)
     -> Syn (c :<⊢ y)
-    -> Syn (Plug x (StI (QR (c :⇦ b))) :⊢ y)
-qrL x f g = unsafeCoerce (down x (ResLP (FocL Neg_ImpL (ImpLL f g))))
+    -> Syn (Plug x (StI (UnitL (Quan k) (ImpR (Quan k) b c))) :⊢ y)
+qrL k x f g = unsafeCoerce (down k x (ResRP (FocL Neg_ImpR (ImpRL f g))))
 
-qrR :: SContext x
+qrR :: SStrength k -> SContext x
     -> Syn (Plug x (StI a) :⊢ StO b)
-    -> Syn (Trace x :⊢ StO (a :⇨ b))
-qrR x f = ImpRR (ResPR (up x f))
+    -> Syn (Trace k x :⊢ StO (ImpL (Quan k) b a))
+qrR k x f = ImpLR (ResPL (up k x f))
 
 
 -- * Forgetful version of `Syn` type for easy deriving of Ord
@@ -408,7 +438,7 @@ data USyn
    | UResBD  USyn      | UResDB  USyn
    | UIfxRR  USyn      | UIfxLR  USyn | UIfxLL  USyn      | UIfxRL USyn
    | UExtRR  USyn      | UExtLR  USyn | UExtLL  USyn      | UExtRL USyn
-   | UUnitRL USyn      | UUnitRR USyn | UUnitRI USyn
+   | UUnitLL USyn      | UUnitLR USyn | UUnitLI USyn
    | UDnB    USyn      | UUpB    USyn | UDnC    USyn      | UUpC USyn
    deriving (Eq,Ord)
 
@@ -444,9 +474,9 @@ forget (ExtRR  f)   = UExtRR  (forget f)
 forget (ExtLR  f)   = UExtLR  (forget f)
 forget (ExtLL  f)   = UExtLL  (forget f)
 forget (ExtRL  f)   = UExtRL  (forget f)
-forget (UnitRL f)   = UUnitRL (forget f)
-forget (UnitRR f)   = UUnitRR (forget f)
-forget (UnitRI f)   = UUnitRI (forget f)
+forget (UnitLL f)   = UUnitLL (forget f)
+forget (UnitLR f)   = UUnitLR (forget f)
+forget (UnitLI f)   = UUnitLI (forget f)
 forget (DnB    f)   = UDnB    (forget f)
 forget (UpB    f)   = UUpB    (forget f)
 forget (DnC    f)   = UDnC    (forget f)
@@ -454,3 +484,10 @@ forget (UpC    f)   = UUpC    (forget f)
 
 instance Ord (Syn s) where
   f `compare` g = forget f `compare` forget g
+
+
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}

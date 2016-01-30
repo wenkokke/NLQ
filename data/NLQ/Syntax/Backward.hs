@@ -145,40 +145,23 @@ search ss = do
     extRL (SEXT z :%∙ (y :%∙ x) :%⊢ w) = ExtRL <$> loop (y :%∙ (SEXT z :%∙ x) :%⊢ w)
     extRL _                            = empty
 
-    -- no need to search with these rules, since qrL and qrR are complete
-    {-
-    unitL,unitR,unitI :: SSequent s -> Search m (Syn s)
-    unitL (SStI (SUnitR k a) :%⊢ y)                = UnitRL <$> prog (SPROD k (SStI a) (SUNIT k) :%⊢ y)
-    unitL _                                        = empty
-    unitR (SPROD k1 x (SUNIT k2) :%⊢> SUnitR k3 b) = case (k1 %~ k2,k1 %~ k3) of
-          (Proved Refl,Proved Refl)               -> UnitRR <$> prog (x :%⊢> b)
-          _                                       -> empty
-    unitR _                                        = empty
-    unitI (SPROD k1 x (SUNIT k2) :%⊢ y)            = case k1 %~ k2 of
-          Proved Refl                             -> UnitRI <$> prog (x :%⊢ y)
-          _                                       -> empty
-    unitI _                                        = empty
-    -}
-    {-
-    dnB, dnC, upB, upC :: SSequent s -> Search m (Syn s)
-    upB (x :%∙ (y :%∘ z) :%⊢ w)          = UpB <$> loop (y :%∘ ((SB :%∙ x) :%∙ z) :%⊢ w)
-    upB _                                = empty
-    dnB (y :%∘ ((SB :%∙ x) :%∙ z) :%⊢ w) = DnB <$> loop (x :%∙ (y :%∘ z) :%⊢ w)
-    dnB _                                = empty
-    upC ((x :%∘ y) :%∙ z :%⊢ w)          = UpC <$> loop (x :%∘ ((SC :%∙ y) :%∙ z) :%⊢ w)
-    upC _                                = empty
-    dnC (x :%∘ ((SC :%∙ y) :%∙ z) :%⊢ w) = DnC <$> loop ((x :%∘ y) :%∙ z :%⊢ w)
-    dnC _                                = empty
-    -}
-
     qrL',qrR' :: SSequent s -> Search m (Syn s)
-    qrL' (x :%⊢ y)              = msum (app <$> sFocus x)
+    qrL' (x :%⊢ y) = msum (app <$> sFocus x)
       where
-        app (Focus x (SStI (SQR (c :%⇦ b))) Refl)
-                                = qrL x <$> prog (sTrace x :%⊢> b) <*> prog (c :%<⊢ y)
-        app _                   = empty
-    qrL' _                      = empty
-    qrR' (x :%⊢ SStO (a :%⇨ b)) = msum (maybeToList (app <$> sFollow x))
+        app (Focus k3 x (SStI (SUnitL (SQuan k1) (SImpR (SQuan k2) b c))) Refl)
+          = case k1 %~ k2 of
+            Proved Refl -> case k3 of
+              SWeak     -> qrL k1 x <$> prog (sTrace k1 x :%⊢> b) <*> prog (c :%<⊢ y)
+              SStrong   -> case k1 of
+                SWeak   -> empty
+                SStrong -> qrL k1 x <$> prog (sTrace k1 x :%⊢> b) <*> prog (c :%<⊢ y)
+            _           -> empty
+        app _   = empty
+    qrL'    _   = empty
+
+    qrR' (x :%⊢ SStO (SImpL (SQuan k1) b a)) = msum (maybeToList (app <$> sFollow x))
       where
-        app (Trail x Refl)      = qrR x <$> prog (sPlug x (SStI a) :%⊢ SStO b)
-    qrR' _                      = empty
+        app (Trail k2 x Refl) = case k1 %~ k2 of
+          Proved Refl -> qrR k1 x <$> prog (sPlug x (SStI a) :%⊢ SStO b)
+          _           -> empty
+    qrR'  _            = empty

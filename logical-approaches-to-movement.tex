@@ -415,20 +415,44 @@ scope-taking behaviour.
 
 \vspace*{1\baselineskip}
 
-\todo{Rewrite: see notes.}
-\citepos{barker2004} CPS-translation and \citepos{moortgat2012}
-CPS-semantics both suffer from two related problems:
+\citepos{moortgat2012} CPS-semantics give a beautiful solution to the
+problem of spurious ambiguity in type-logical grammar and
+CPS-translation. However, their solution---and
+\citepos{barker2002}---still suffers from two related problems:
 \begin{enumerate}
 \item Both require a \emph{static} choice of answer type. This
-  means that the answer type cannot change throughout the
-  program. However, there are examples which demonstrate the need for
-  allowing dynamic answer types.
+  means that the answer type cannot change throughout the program.
 \item Both cannot encode \emph{delimiters} past which a nested
-  expression cannot take scope. However, in natural language we find
-  evidence for scope islands\footnote{%
-    We will discuss scope islands in \autoref{sec:movement-and-quantifier-raising}.
-  }, from which quantifiers cannot escape.
+  expression cannot take scope.
 \end{enumerate}
+The first of these two is a problem when analysing sentences such as
+``Alice read a book [the author of which] feared the ocean''. The
+indented interpretation of this sentence is:\footnote{%
+  The semantics for `the' are commonly given in terms of a function
+  called `$\iota$', known as the ``definite description operator.''
+  Given a set, this operator returns its unique inhabitant. Depending
+  on the exact semantics you want for this operator, it can either be
+  implemented as a side-effect (e.g.\ using monadic semantics), or
+  using quantification. For this example, it does not matter which
+  solution we choose, so think of `$\iota$' as a function of the type
+  $(\e\t)\e$.
+}
+\[
+  \exists x.(\BOOK(x)\wedge \FEAR(\iota(\lambda
+  y.(\OF(x,\AUTHOR,y))),\iota(\lambda z.\OCEAN(z))))\wedge\READ(\ALICE,x)
+\]
+The system NLQ---and other, similar systems---is capable of deriving
+these semantics, by having ``which'' take scope at the top of the
+embedded clause ``the author of which''. It will take this function,
+which has type $\e\e$, apply it to the existentially quantifier
+variable, and insert the result in the subject of the gapped sentence
+``\_ feared the ocean''. As this involves a quantifier taking scope at
+the top of an NP node, instead of the usual S node, it is unclear how
+the aforementioned approaches could derive this interpretation.
+
+
+
+\begin{comment}
 These are the hallmark of \emph{delimited} or \emph{composable}
 continuations \citep{danvy1990}. However, while delimited
 continuations seem extremely promising, they are still not entirely
@@ -463,22 +487,6 @@ scope islands in the syntactic calculus, based on work by
 \subsection{Logical approaches to quantifier movement}
 \todo{Discuss: the $q(A,B,C)$ operator as specification of
   quantification as a syntactic phenomenon.}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\begin{comment}
 
 \subsubsection{NL$_\lambda$, NL$_{\text{CL}}$ and NL$_{\text{IBC}}$}
 \label{sec:nl-lambda-nl-cl-and-nl-ibc}

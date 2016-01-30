@@ -47,19 +47,21 @@ s14 = [nlq| mary  wants           to like someone |]
 s15 = [nlq| mary (wants john)     to like someone |]
 s16 = [nlq| mary (wants everyone) to like someone |]
 
-s17 = [nlq| mary says <john     likes bill> |]
-s18 = [nlq| mary says <everyone likes bill> |]
+s17 = [nlq| mary     says <john     likes bill> |]
+s18 = [nlq| mary     says <everyone likes bill> |]
+s19 = [nlq| someone  says <everyone likes bill> |]
+s20 = [nlq| mary     says <someone likes bill> |]
+s21 = [nlq| everyone says <someone likes bill> |]
 
-s19 = [nlq| mary reads a book                which  john likes |]
-s20 = [nlq| mary reads a book (the author of which) john likes |]
+s22 = [nlq| mary reads a book                which  john likes |]
+s23 = [nlq| mary reads a book (the author of which) john likes |]
 
-s21 = [nlq| mary sees foxes   |]
-s22 = [nlq| mary sees the fox |]
-s23 = [nlq| mary sees a   fox |]
+s24 = [nlq| mary sees foxes   |]
+s25 = [nlq| mary sees the fox |]
+s26 = [nlq| mary sees a   fox |]
 
-s24 = [nlq| alice reads a book (the author of which) fears the ocean |]
-
-s25 = [nlq| alice knows who leaves |]
+s27 = [nlq| alice reads a book (the author of which) fears the ocean |]
+s28 = [nlq| alice knows who leaves |]
 ~~~
 
 In the examples above, `[nlq| ... |]` is a template Haskell script,
@@ -136,7 +138,7 @@ are:
         S | N | NP | INF | PP |
         A :→ B | B :← A |                     -- direct composition
         A :& B |                              -- ambiguity
-        A :⇨ B | B :⇦ A | Q A B C | Res A |   -- quantifier raising, scope islands
+        A :⇨ B | B :⇦ A | QW A B C | Res A |  -- quantifier raising, scope islands
         A :⇃ B | B :⇂ A |                     -- extraction
         A :↿ B | B :↾ A                       -- infixation
 
@@ -145,7 +147,7 @@ In addition, we define the following aliases:
     A  := N  :← N
     IV := NP :→ S
     TV := IV :← NP
-    NS := Q NP S S
+    NS := QW NP S S
 
 ~~~{.haskell}
 john, mary, bill, alice :: Word NP
@@ -168,7 +170,7 @@ serve     = lex "serve"  ; serves = serve
 fear      = lex "fear"   ; fears  = fear
 know      = lex "know"   ; knows  = know
 
-say :: Word (IV :← Res S)
+say :: Word (IV :← DelW S)
 say       = lex "say"    ; says   = say
 ~~~
 
@@ -183,13 +185,16 @@ ocean     = lex "ocean"  ; oceans  = plural ocean
 ~~~
 
 ~~~{.haskell}
-a, some, every :: Word (Q NP S S :← N)
-a         = some
-some      = lex_ (\f g -> exists E (\x -> f x ∧ g x))
-every     = lex_ (\f g -> forall E (\x -> f x ⊃ g x))
+a, some :: Word (QS NP S S :← N)
+a     = some
+some  = lex_ (\f g -> exists E (\x -> f x ∧ g x))
 
-someone, everyone :: Word (Q NP S S)
+every :: Word (QW NP S S :← N)
+every = lex_ (\f g -> forall E (\x -> f x ⊃ g x))
+
+someone  :: Word (QS NP S S)
 someone   = some  <$ person
+everyone :: Word (QW NP S S)
 everyone  = every <$ person
 ~~~
 
@@ -210,7 +215,7 @@ wants     = want
 ~~~
 
 ~~~{.haskell}
-same, different :: Word (Q (Q A (NP :⇨ S) (NP :⇨ S)) S S)
+same, different :: Word (QW (QW A (S :⇦ NP) (S :⇦ NP)) S S)
 same      = lex_ same'
   where
   same' k = exists E (\z -> k (\k' x -> k' (\f y -> f y :∧ y ≡ z) x))
@@ -221,8 +226,8 @@ different = lex_ diff1
 ~~~
 
 ~~~{.haskell}
-type WHICH1 = Q NP NP ((N :→ N) :← (NP :⇃ S))
-type WHICH2 = Q NP NP ((N :→ N) :← (S :⇂ NP))
+type WHICH1 = QW NP NP ((N :→ N) :← (NP :⇃ S))
+type WHICH2 = QW NP NP ((N :→ N) :← (S :⇂ NP))
 
 which :: Word (WHICH1 :& WHICH2)
 which = lex_ (which' , which')
@@ -231,8 +236,8 @@ which = lex_ (which' , which')
 ~~~
 
 ~~~{.haskell}
-type WHO1 = (Q NP S S) :← (NP :⇃ S)
-type WHO2 = (Q NP S S) :← (S :⇂ NP)
+type WHO1 = (QW NP S S) :← (NP :⇃ S)
+type WHO2 = (QW NP S S) :← (S :⇂ NP)
 
 who :: Word (WHO1 :& WHO2)
 who = lex_ (who' , who')

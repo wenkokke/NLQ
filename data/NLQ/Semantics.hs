@@ -27,7 +27,7 @@ type family H a where
   H (Dia k a)    = H a
   H (Box k a)    = H a
   H (a :& b)     = (H a, H b)
-  H (UnitR k a)  = H a
+  H (UnitL k a)  = H a
   H (ImpR k a b) = H a -> H b
   H (ImpL k b a) = H a -> H b
 
@@ -59,7 +59,7 @@ withH (SEl SINF)     k = k
 withH (SDia _ a)     k = withH a k
 withH (SBox _ a)     k = withH a k
 withH (a :%& b)      k = withH a (withH b k)
-withH (SUnitR _ a)   k = withH a k
+withH (SUnitL _ a)   k = withH a k
 withH (SImpR  _ a b) k = withH a (withH b k)
 withH (SImpL  _ b a) k = withH a (withH b k)
 
@@ -129,13 +129,16 @@ eta (IfxRR f)   = \(x,(y,z)) -> eta f ((x,y),z)
 eta (IfxLR f)   = \((x,z),y) -> eta f ((x,y),z)
 eta (IfxLL f)   = \((z,y),x) -> eta f (z,(y,x))
 eta (IfxRL f)   = \(y,(z,x)) -> eta f (z,(y,x))
-eta (UnitRL  f) = \x -> eta f (x,EXPR())
-eta (UnitRR  f) = \(x,_) -> eta f x
-eta (UnitRI  f) = \(x,_) -> eta f x
-eta (DnB f)     = \(y,((_,x),z)) -> eta f (x,(y,z))
-eta (DnC f)     = \(x,((_,y),z)) -> eta f ((x,y),z)
-eta (UpB f)     = \(x,(y,z)) -> eta f (y,((EXPR(),x),z))
-eta (UpC f)     = \((x,y),z) -> eta f (x,((EXPR(),y),z))
+eta (UnitLL  f) = \x -> eta f (EXPR(),x)
+eta (UnitLR  f) = \(_,x) -> eta f x
+eta (UnitLI  f) = \(_,x) -> eta f x
+eta (DnB f)     = \(((_,x),y),z) -> eta f (x,(y,z))
+eta (DnC f)     = \(((_,x),z),y) -> eta f ((x,y),z)
+eta (UpB f)     = \(x,(y,z)) -> eta f (((EXPR(),x),y),z)
+eta (DnE f)     = \x -> eta f x
+eta (UpC f)     = \((x,y),z) -> eta f (((EXPR(),x),z),y)
+eta (UpE f)     = \x -> eta f x
+
 
 
 -- ** Translation from syntactic terms into monadic semantic terms
@@ -177,13 +180,15 @@ etaM (IfxRR f)   = \(x,(y,z)) -> etaM f ((x,y),z)
 etaM (IfxLR f)   = \((x,z),y) -> etaM f ((x,y),z)
 etaM (IfxLL f)   = \((z,y),x) -> etaM f (z,(y,x))
 etaM (IfxRL f)   = \(y,(z,x)) -> etaM f (z,(y,x))
-etaM (UnitRL  f) = \x -> etaM f (x,EXPR())
-etaM (UnitRR  f) = \(x,_) -> etaM f x
-etaM (UnitRI  f) = \(x,_) -> etaM f x
-etaM (DnB f)     = \(y,((_,x),z)) -> etaM f (x,(y,z))
-etaM (DnC f)     = \(x,((_,y),z)) -> etaM f ((x,y),z)
-etaM (UpB f)     = \(x,(y,z)) -> etaM f (y,((EXPR(),x),z))
-etaM (UpC f)     = \((x,y),z) -> etaM f (x,((EXPR(),y),z))
+etaM (UnitLL  f) = \x -> etaM f (EXPR(),x)
+etaM (UnitLR  f) = \(_,x) -> etaM f x
+etaM (UnitLI  f) = \(_,x) -> etaM f x
+etaM (DnB f)     = \(((_,x),y),z) -> etaM f (x,(y,z))
+etaM (DnC f)     = \(((_,x),z),y) -> etaM f ((x,y),z)
+etaM (DnE f)     = \x -> etaM f x
+etaM (UpB f)     = \(x,(y,z)) -> etaM f (((EXPR(),x),y),z)
+etaM (UpC f)     = \((x,y),z) -> etaM f (((EXPR(),x),z),y)
+etaM (UpE f)     = \x -> etaM f x
 
 -- -}
 -- -}
