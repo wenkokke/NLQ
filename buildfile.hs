@@ -137,6 +137,8 @@ main =
     phony "clean" $ do
       putNormal "Cleaning files in _build"
       removeFilesAfter "_build" ["//*"]
+      putNormal "Cleaning files in auto"
+      removeFilesAfter "auto" ["//*"]
       putNormal "Cleaning temporary Agda files"
       removeFilesAfter "." ["NLQ_Agda.agdai"]
       putNormal "Cleaning temporary Haskell files"
