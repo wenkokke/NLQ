@@ -726,7 +726,6 @@ As far as exactness is concerned, however, \eqref{eqn:lambda} admits
 much more than just $q$L and $q$R. And some of it is\ldots\ odd.
 For instance, since contexts are defined as structures with a hole, we
 can raise two quantifiers past one another, indefinitely:
-\vspace*{-1\baselineskip}
 \begin{pfblock}
   \AXC{$\vdots$}\noLine
   \UIC{$\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{z}.(\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{y}.({z}\hprod\lambda{x}.({y}\prod\struct{(\NP\impr\S)\impl\NP}\prod{x})))\fCenter\struct{\S}$}
@@ -739,7 +738,6 @@ can raise two quantifiers past one another, indefinitely:
 \end{pfblock}
 Or, as \citet{barker2015} note, we could lift variables out of the
 scope of their binder:
-\vspace*{-1\baselineskip}
 \begin{pfblock}
   \AXC{$\vdots$}\noLine
   \UIC{${x}\hprod\lambda{y}.(\struct{{\S\impl(\NP\impr\S)}}\hprod\lambda{x}.(\struct{{\S\impl(\NP\impr\S)}}\prod\struct{(\NP\impr\S)\impl\NP}\prod{y}))\fCenter\struct{\S}$}
@@ -896,7 +894,6 @@ the following logical left and right rules:
 \end{center}
 And indeed, the pair obeys all constraints imposed by display
 calculus, including a valid proof for \textbf{C8}:
-\vspace*{-1\baselineskip}
 \begin{pfblock}
   \AXC{$Γ\fCenter\struct{A}$}
   \AXC{$\I\hprod\struct{A}\fCenter Δ$}
@@ -1012,7 +1009,6 @@ involving quantifier movement in a much more succinct manner:
   \RightLabel{\qup}
   \BIC{$\textsc{everyone}\prod\textsc{loves}\prod\textsc{someone}\fCenter\struct{\S}$}
 \end{pfblock}
-\vspace*{-1\baselineskip}
 \begin{gather*}
   \downmapsto
   \\
@@ -1213,7 +1209,6 @@ given below:
     \langle\textsc{everyone}\prod\textsc{left}\rangle
     \fCenter\struct{\S}$}
 \end{pfblock}
-\vspace*{-1\baselineskip}
 \begin{gather*}
   \downmapsto
   \\
@@ -1236,12 +1231,13 @@ same time isolates it from its surrounding context.
 \subsubsection{Strong versus weak quantifiers}
 There is one phenomenon that we, so far, have not addressed: the
 distinction between strong and weak quantifiers. Evidence for this
-distinction is discussed in \autoref{sec:limitations}. Let us briefly
-examine the data again. The problem is that there is a difference in
-behaviour with respect to scope islands between two categories of
-quantifiers: strong quantifier (which include indefinites) and weak
-quantifiers (which includes universals). For instance, in ``Mary said
-everyone left'', we expect only the local-scope reading:
+distinction was discussed in \autoref{sec:limitations}, but let us
+briefly examine the data again. The problem is that there is a
+difference in behaviour with respect to scope islands between two
+categories of quantifiers: strong quantifier (which include
+indefinites) and weak quantifiers (which includes universals). For
+instance, in ``Mary said everyone left'', we expect only the
+local-scope reading:
 \[
   \PAST(\SAY(\MARY,\forall{x}.\PERSON(x)\supset\PAST(\LEAVE(x))))
 \]
@@ -1270,13 +1266,89 @@ given by \citet{moortgat2012} to cover NLQ, and allow indefinites to
 take top-level scope \emph{semantically}. We will discuss both
 solutions below.
 
-\todo{Discuss: extension implemented, which distinguishes between
-  strong and weak quantifiers and adds $\I^*$-rules for \emph{strong}
-  quantifiers.}
+\paragraph*{Escaping islands with I$^*$}
+Much in the style with \citet{finger2001} and \citepos{barker2015}
+encoding of linear lambda calculus with \I, \B\ and \C, we can add a
+new combinator to encode scoping out of scope islands. For this, we
+will use the $\I^*$ combinator, which is the identity \emph{over
+functions}. First, we do not want to allow \emph{just any} quantifier
+to scope out of a delimiter. Therefore, we will split the existing
+quantifier modality into two separate modalities: weak quantifiers
+($\{\himpr^w,\hprod^w,\himpl^w\}$) and strong quantifiers
+($\{\himpr^s,\hprod^s,\himpl^s\}$), with copies of our existing rules
+for these connectives for both. We then add the new combinator $\I^*$
+to our structure syntax, and add the following structural rule:
+\begin{pfblock}
+  \AXC{$\langle Γ_1\hprod^s Γ_2 \rangle\fCenter Δ$}
+  \doubleLine\RightLabel{$\I^*$}
+  \UIC{$(\I^*\prod\langle Γ_1 \rangle)\hprod^s Γ_2\fCenter Δ$}
+\end{pfblock}
+This rule encodes exactly the reduction behaviour of the
+$\I^*$-combinator:
+\[
+  \I^*\;xy\equiv xy
+\]
+Using this approach, we can easily obtain the desired interpretations
+for ``Everyone said someone left'', since ``someone''---a strong
+quantifier---can now scope out of the scope island put up by
+``said''. As an added benefit, the explicit distinction between strong
+and weak quantifiers allows parasitic scope-takers to target only weak
+quantifiers, preventing the system from assigning a sentence-internal
+reading to the following sentence (as NL$_\lambda$ does):
+\begin{itemize}
+\item[(*)] ``The same waiter served someone''
+\end{itemize}
 
-\todo{Discuss: extension sketched, which uses the CPS-semantics
-  described in a previous section, to have indefinites take
-  wide-scope, free of syntactic constraints.}
+If it turns out to be necessary to define some form of scope islands
+from which even \emph{strong} quantifiers cannot escape, one can
+easily extend this approach by also splitting the diamond/box pair
+used for scope islands into strong and weak versions, and updating the
+$\I^*$-rule to allow strong quantifiers to scope out of weak islands
+only.
+
+This solution, including the extension with strong and weak delimiters
+is implemented in both the Agda and the Haskell verification of NLQ.
+
+\paragraph{Indefinites and CPS-semantics}
+\citet{szabolcsi2000} writes that ``[i]ndefinites acquire their
+existential scope in a manner that does not involve movement and is
+essentially syntactically unconstrained.'' In light of this, it seems
+unlikely that we will have to extend our syntactic solution to include
+islands from which indefinites cannot escape---and our syntactic
+solution to weak versus strong quantifiers seems cumbersome.
+
+It seems that a \emph{combined} solution is in order to solve the
+distinction between strong and weak quantifiers. Our \I\B\C-postulates
+serve us just fine for quantifiers such as ``everyone'', which really
+do seem to take scope by syntactic movement. However, for indefinites,
+a \emph{semantic} solution seems in order.
+It is here that we recall that \citet{bastenhof2012},
+\citet{moortgat2012} have defined beautiful CPS-semantics for focused
+NL.
+We can easily extend this translation to cover our new structural
+postulates---we simply translate constants as units, and our logical
+left-unit $\q[A]$ as $A$, as before. If we now adopt
+\citepos{moortgat2012} polarisation, we get \emph{three} derivations
+for ``Everyone said someone left'':\footnote{%
+  If we want to assign ``someone'' the type $(\NP\impl\N)\otimes\N$,
+  which has the expected quantificational effect, then we need to add
+  products to NLQ.
+}
+\begin{enumerate}
+\item We start by collapsing ``someone'' (which has it take top-level
+  scope), continue by having ``everyone'' take scope (using our
+  encoding of quantifier movement), and only then collapse the main
+  clause ``\_ said \_'';
+\item We start by having ``everyone'' take scope, then collapse
+  ``someone'' (which has it take top-level scope), and once again by
+  collapsing the main clause; or
+\item We start by having ``everyone'' take scope, and then collapse
+  \emph{the main clause}, thereby forcing ``someone'' to take scope in
+  the embedded clause instead.
+\end{enumerate}
+This solution is implemented in the Agda verification of NLQ, and the
+final section of appendix A discusses the extended CPS-translation in
+more detail.
 
 \subsection{Infixation and Extraction}
 In the previous sections, we have discussed quantifier movement, which

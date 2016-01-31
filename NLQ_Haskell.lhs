@@ -34,7 +34,7 @@
 %format QS a b c  = "\mathbf{Q}^S(" "(" b "\!\!\fatslash" a ")" "\fatbslash" c ")"
 
 %%% TODO UPDATE NUMBER MANUALLY -- SIGH
-\setcounter{page}{66}
+\setcounter{page}{76}
 
 \usepackage{appendix}
 \usepackage{stmaryrd}
