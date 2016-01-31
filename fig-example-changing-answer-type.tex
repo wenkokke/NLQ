@@ -2,7 +2,7 @@
   \begin{figure}
     \begin{mdframed}
       \centering
-      \begin{pfblock}[0.74]
+      \begin{pfblock}[0.72]
         \AXC{$\vdots$}\noLine
         \UIC{$
           \textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\struct\NP
@@ -10,18 +10,18 @@
         \RightLabel{\qdown}
         \UIC{$
           \trace(\textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\Box)
-          \fCenter\struct{\NP\himpl\NP}$}
+          \fCenter\struct{q(\NP,\NP)}$}
         \AXC{$\vdots$}\noLine
         \UIC{$
           \NP\prod\textsc{feared}\prod\textsc{the}\prod\textsc{ocean}\fCenter\struct{\S}$}
         \RightLabel{DP}
         \UIC{$
-          \textsc{feared}\prod\textsc{the}\prod\textsc{ocean}\fCenter\struct{\NP\impr\S}$}
+          \textsc{feared}\prod\textsc{the}\prod\textsc{ocean}\fCenter\struct{q(\NP,\S)}$}
         \AXC{$\vdots$}\noLine
         \UIC{$\struct{\N\impr\N}\fCenter\textsc{book}\impr\struct\N$}
         \RightLabel{L$\impl$}
         \BIC{$
-          \struct{(\N\impr\N)\impl(\NP\impr\S)}
+          \struct{(\N\impr\N)\impl(q(\NP,\S))}
           \fCenter(\textsc{book}\impr\struct\N)\impl
           (\textsc{feared}\prod\textsc{the}\prod\textsc{ocean})$}
         \RightLabel{\qup}
@@ -41,15 +41,15 @@
         \RightLabel{\qdown}
         \UIC{$
           \trace(\textsc{alice}\prod\textsc{read}\prod\Box)
-          \fCenter\struct{\S\himpl\NP}$}
+          \fCenter\struct{q(\NP,\S)}$}
         \AXC{}\RightLabel{Ax}\UIC{$\struct\S\fCenter\struct\S$}
         \RightLabel{\qup}
         \BIC{$
-          \textsc{alice}\prod\textsc{read}\prod\q[(\S\himpl\NP)\himpr\S]
+          \textsc{alice}\prod\textsc{read}\prod\struct{q(\NP,\S,\S)}
           \fCenter\struct{\S}$}
         \RightLabel{DP}
         \UIC{$
-          \q[(\S\himpl\NP)\himpr\S]
+          q(\NP,\S,\S)
           \fCenter\textsc{read}\impr(\textsc{alice}\impr\struct{\S})$}
         \RightLabel{L$\impl$}
         \BIC{$

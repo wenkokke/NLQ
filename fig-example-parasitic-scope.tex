@@ -8,12 +8,12 @@
         \AXC{$\vdots$}\noLine
         \UIC{$\struct{\NP}\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
         \RightLabel{\qdown}
-        \UIC{$\trace(\Box\prodl\textsc{served}\prod\struct{\NP})\fCenter\struct{\NP\himpr\S}$}
+        \UIC{$\trace(\Box\prodl\textsc{served}\prod\struct{\NP})\fCenter\struct{q(\NP,\S)}$}
         \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
         \RightLabel{\qup}
-        \BIC{$\struct{\q[\S\himpl(\NP\himpr\S)]}\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
+        \BIC{$\struct{q(\NP,\S,\S)}\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
         \RightLabel{DP}
-        \UIC{$\struct{\q[\S\himpl(\NP\himpr\S)]}\fCenter\struct{\S}\impl(\textsc{served}\prod\struct{\NP})$}
+        \UIC{$\struct{q(\NP,\S,\S)}\fCenter\struct{\S}\impl(\textsc{served}\prod\struct{\NP})$}
         \RightLabel{L$\impl$}
         \BIC{$\textsc{a}\fCenter(\struct{\S}\impl(\textsc{served}\prod\struct{\NP}))\impl\struct{\N}$}
         \RightLabel{DP}
@@ -23,21 +23,21 @@
         \RightLabel{DP}
         \UIC{$(\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
         \RightLabel{\qdown}
-        \UIC{$\trace((\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box)\fCenter\struct{\NP\himpr\S}$}
+        \UIC{$\trace((\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box)\fCenter\struct{q(\NP,\S)}$}
         \RightLabel{$=$}
-        \UIC{$(\B\prod\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prod(\B\prod\textsc{served})\prod\I)\fCenter\struct{\NP\himpr\S}$}
+        \UIC{$(\B\prod(\textsc{a}\prod\struct{\A}\prod\textsc{waiter}))\prod\trace(\textsc{served}\prodr\Box)\fCenter\struct{q(\NP,\S)}$}
         \RightLabel{\qdown}
-        \UIC{$\trace((\B\prodr\textsc{a}\prodr\Box\prodl\textsc{waiter})\prodl(\B\prod\textsc{served})\prod\I)\fCenter\struct{\A\himpr(\NP\himpr\S)}$}
+        \UIC{$\trace((\B\prod(\textsc{a}\prod\Box\prod\textsc{waiter}))\prod\trace(\textsc{served}\prodr\Box))\fCenter\struct{q(\A,q(\NP,\S))}$}
         \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
         \RightLabel{\qup}
-        \BIC{$(\B\prod\textsc{a}\prod\q[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\prod\textsc{waiter})\prod(\B\prod\textsc{served})\prod\I\fCenter\struct{\NP\himpr\S}$}
+        \BIC{$(\B\prod(\textsc{a}\prod\struct{(q(q(\A,q(\NP,\S),q(\NP,\S)),\S,\S))}\prod\textsc{waiter}))\prod\trace(\textsc{served}\prodr\Box)\fCenter\struct{q(\NP,\S)}$}
         \RightLabel{$=$}
-        \UIC{$\trace((\textsc{a}\prod\q[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box)\fCenter\struct{\NP\himpr\S}$}
+        \UIC{$\trace((\textsc{a}\prod\struct{(q(q(\A,q(\NP,\S),q(\NP,\S)),\S,\S))}\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box)\fCenter\struct{q(\NP,\S)}$}
         \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
         \RightLabel{\qup}
-        \BIC{$(\textsc{a}\prod\q[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\prod\textsc{waiter})\prod\textsc{served}\prod\textsc{everyone}\fCenter\struct{\S}$}
+        \BIC{$(\textsc{a}\prod\struct{(q(q(\A,q(\NP,\S),q(\NP,\S)),\S,\S))}\prod\textsc{waiter})\prod\textsc{served}\prod\textsc{everyone}\fCenter\struct{\S}$}
         \RightLabel{\qdown}
-        \UIC{$\trace((\textsc{a}\prodr\Box\prodl\textsc{waiter})\prodl\textsc{served}\prod\textsc{everyone})\fCenter\q[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\himpr\S$}
+        \UIC{$\trace((\textsc{a}\prodr\Box\prodl\textsc{waiter})\prodl\textsc{served}\prod\textsc{everyone})\fCenter\struct{(q(q(\A,q(\NP,\S),q(\NP,\S)),\S,\S))}\himpr\S$}
         \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
         \RightLabel{\qup}
         \BIC{$(\textsc{a}\prod\textsc{different}\prod\textsc{waiter})\prod\textsc{served}\prod\textsc{everyone}\fCenter\struct{\S}$}
@@ -61,7 +61,3 @@
     \label{fig:parasitic-scope}
   \end{figure}
 \end{landscape}
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: t
-%%% End:

@@ -839,7 +839,7 @@ This means that NL$_{\text{CL}}$, while closer, is still
 undecidable. In the following section, we will present the first
 extension for NLQ, and address this issue of decidability.
 
-\subsubsection{\I\B\C\ for NLQ}
+\subsubsection{IBC for NLQ}
 In this section we will present a set of structural postulates, based
 on \citepos{barker2015} NL$_{\text{CL}}$, for which proof search is
 decidable.
@@ -1034,8 +1034,9 @@ semantic approaches to quantifier raising (see
 
 \input{fig-example-changing-answer-type}
 
-\begin{comment}
-\subsubsection{Parasitic scope}
+
+
+\subsubsection{Parasitic scope, double quantifiers}
 Parasitic scope is a interesting mechanism, put forward by
 \citet{barker2007}, which allows expressions to capture another
 quantifier's scope. Using this mechanism, a parasitic expression can
@@ -1047,21 +1048,25 @@ context and the bound variable $x$ as arguments:
   \forall{x}.\PERSON(x)\supset(k\ldots{x})
 \]
 The mechanism depends crucially on two properties:\footnote{%
-  Though I do not rule out the possibility that the mechanism can
-  exists under different circumstances.
+  Though I do not rule out the possibility that a similar the
+  mechanism can exists under different circumstances.
 }
 \begin{enumerate*}[label=(\arabic*)]
 \item quantification must be (at least) a two-step process; and
 \item the `function' that becomes the argument of the quantifier must
   be represented in the type.
 \end{enumerate*}
-NL$_\lambda$ (obviously) respects these requirements: we have
-$\himpl\text{L}_\lambda$ (or $\qup$) and $\himpr\text{R}_\lambda$ (or
-$\qdown$), and the type of the `function' that is quantifier-over is
-represented as ${A}\himpr{B}$. Using this, we can write a quantifier
-which targets the type of raised quantifiers. For instance,
+Both NLQ and NL$_\lambda$ respects these requirements: we have $\qup$
+and $\qdown$, and the type of the `function' that is quantifier-over
+is represented $q(A,B)$, which is implemented as a function-type in
+both cases. Using this, we can write a quantifier which targets the
+type of raised quantifiers. For instance,
 \[
-  \q[(\NP\himpr\S)\himpl(\ldots\himpr(\NP\himpr\S))]
+  q(\ldots,q(\NP,\S),q(\NP,\S))
+\]
+In NLQ, this is is implemented by the following type:
+\[
+  \q[((\S\himpl\NP)\himpl\ldots)\himpr(\S\himpl\NP)]
 \]
 Canonical examples of such quantifiers are expressions such as `same'
 and `different', as used in the sentence ``The same waiter served
@@ -1097,7 +1102,11 @@ access to the variable bound by that quantifier. In order to derive
 these semantics, we use a different type for parasitic quantifiers---a
 double quantifier:
 \[
-  \q[\S\himpl(\quad{\q[(\NP\himpr\S)\himpl(\quad{\ldots}\quad\himpr(\NP\himpr\S))]}\quad\himpr\S)]
+  q(q(\ldots,q(\NP,\S),q(\NP,\S)),\S,\S)
+\]
+In NLQ, this is implemented by the following type:
+\[
+  \q[(\S\himpl\quad{\q[((\S\himpl\NP)\himpl\quad\ldots\quad)\himpr(\S\himpl\NP)]})\quad\himpr\S]
 \]
 Such double quantification has some interesting aspects. First of all,
 one might expect huge amounts of quantifier ambiguity. However,
@@ -1126,11 +1135,11 @@ given in \autoref{fig:parasitic-scope-lexicon}
       \renewcommand*{\arraystretch}{1}
       \begin{array}{l c l}
         \text{a}
-        &:& \tr[{(\q[\S\himpl(\NP\himpr\S)]\impl\N)}]\\
+        &:& \tr[{(q(\NP,\S,\S)\impl\N)}]\\
         &=& \lambda n. \lambda k. \exists x. n\;x\wedge k\;x\\
 
         \text{different}
-        &:& \tr[{(\q[\S\himpl(\q[(\NP\himpr\S)\himpl(\A\himpr(\NP\himpr\S))]\himpr\S)])}]\\
+        &:& \tr[{(q(q(\A,q(\NP,\S),q(\NP,\S)),\S,\S))}]\\
         &=& \lambda k. \exists f. (\forall x.\forall y.\nexists z.f\;z\;x\wedge f\;z\;y)\;\wedge\\
         & & k\;(\lambda k'.\lambda x.k'\;(\lambda g.\lambda y.g\;y\wedge f\;x\;y)\;x)\\
 
@@ -1143,7 +1152,7 @@ given in \autoref{fig:parasitic-scope-lexicon}
         &=& \lambda y.\lambda x.\PAST(\SERVE(x,y))\\
 
         \text{everyone}
-        &:& \tr[{(\q[\S\himpl(\NP\himpr\S)])}]\\
+        &:& \tr[{(q(\NP,\S,\S))}]\\
         &=& \lambda k.\forall x.\PERSON(x)\supset k\;x
       \end{array}
     \]
@@ -1156,55 +1165,31 @@ given in \autoref{fig:parasitic-scope-lexicon}
 %
 
 
-\subsubsection{Scope islands}
+
+\subsubsection{Islands and diamonds}
 \label{sec:scope-islands}
-
-One phenomenon we have not discussed so far is that of scope
-restriction, or `scope islands'. There are many different forms of
-scope restriction in natural language, but one of the clearest
-examples to me is a phrase such as ``Mary said everyone left''. If we
-assigned `said' the type $(\NP\impr\S)\impl\S$---since it takes a
-sentence as its right argument---we get the following readings:
-\begin{gather*}
-  \PAST(\SAY(\MARY,\forall{x}.\PAST(\LEAVE(x))))\\
-  \forall{x}.\PAST(\SAY(\MARY,\PAST(\LEAVE(x))))
-\end{gather*}
-The reason we get scope ambiguity here is not because we have several
-quantifiers, but because the quantifier `everybody' can take scope at
-two different positions:
-\begin{enumerate*}[label=(\arabic*)]
-\item at the top of the embedded clause; and
-\item at the top of the sentence.
-\end{enumerate*}
-
-There is, however, something off about the second interpretation for
-the sentence. If we think about what the two logical formulas mean,
-the first one means that Mary made a speech act, in which she declared
-``everyone left''. The second interpretation, however, states that for
-each person Mary made a \emph{separate} speech act, in which she
-declared that that particular person had left.
-
-Our goal for this section is to develop an extension to display NL
-which can be used to give `to say' a type which blocks the second
-interpretation---creating an island from which scope takers cannot
-escape.
+In \autoref{sec:limitations-scope-islands-strong-and-weak-quantifiers}
+we briefly discussed scope islands. Our goal for this section is to
+develop an extension to \I\B\C\ for NLQ,  which can be used to give
+`to say' a type which blocks the wide-scope interpretation for the
+universal quantifier---creating an island from which it cannot escape.
 
 The solution to this problem is rather simple: we have previously
 discussed that quantifiers are to be restricted to moving upwards and
 downwards past \emph{solid products}. So what we should do is simply
 insert a structural connective which is not a solid product.
 From the literature on display calculus we can easily take a
-description of what a unary residuated connective should look like, and
-add this to the calculus. In \autoref{fig:extension-scope-islands} we
-describe such an extension, adding a dual pair of unary residuated
+description of what a unary residuated connective should look like,
+and add this to the calculus. In \autoref{fig:extension-scope-islands}
+we describe such an extension, adding a dual pair of unary residuated
 connectives, $\di$ and $\sq$.\footnote{%
   Note that these connectives have nothing to do with the unary
   connectives from modal logic, which are unfortunately also often
   called $\di$ and $\sq$.
 }
-%
+
 \input{fig-extension-scope-islands}
-%
+
 Using the newly defined connectives, we can assign `said' the type
 $(\NP\impr\S)\impl\di\S$. Instead of taking a sentence-argument from
 the right, `said' now takes a \emph{closed-off} sentence---a scope
@@ -1248,6 +1233,15 @@ same time isolates it from its surrounding context.
 
 
 
+\subsubsection{Strong versus weak quantifiers}
+\todo{Discuss: extension implemented, which distinguishes between
+  strong and weak quantifiers and adds $\I^*$-rules for \emph{strong}
+  quantifiers.}
+
+\todo{Discuss: extension sketched, which uses the CPS-semantics
+  described in a previous section, to have indefinites take
+  wide-scope, free of syntactic constraints.}
+
 \subsection{Infixation and Extraction}
 In the previous sections, we have discussed quantifier movement, which
 is characterised by upwards movement, and insertion of a trace. In
@@ -1277,7 +1271,6 @@ extraction.
 \todo{Motivating example of infixation.}
 
 \todo{Motivating example of extraction.}
-
 
 \subsubsection{Reasoning with Gaps}
 \citet[][chapter 17.10]{barker2015} adopts two new inference rules in
@@ -1330,4 +1323,3 @@ always solve this using the extension for ambiguity (\&).
 
 \input{fig-extension-infixation}
 \input{fig-extension-extraction}
-\end{comment}
