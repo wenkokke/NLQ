@@ -5,15 +5,11 @@
 {-# LANGUAGE TypeOperators  #-}
 {-# LANGUAGE ImplicitParams #-}
 module NLQ.Semantics
-       (HS,HI,HO,H,withHS,withHI,withHO,withH,hs,hi,ho,h,eta,Lift,etaM) where
+       (HS,HI,HO,H,withHS,withHI,withHO,withH,hs,hi,ho,h,eta) where
 
 
-import           Control.Monad ((>=>))
-import           Data.Proxy (Proxy(..))
-
-import qualified NLQ.Syntax.Base as NL
-import           NLQ.Syntax.Base
-import           NLQ.Semantics.Postulate as X
+import NLQ.Syntax.Base
+import NLQ.Semantics.Postulate as X
 
 
 -- ** Translation from Syntactic Types into Semantic Types
@@ -51,6 +47,7 @@ type family HS s where
   HS (x :⊢> b)    = HI x -> H  b
   HS (a :<⊢ y)    = H  a -> HO y
 
+
 withH :: SType t -> (UnivI (H t) => a) -> a
 withH (SEl SS)       k = k
 withH (SEl SN)       k = k
@@ -83,15 +80,13 @@ withHS (x :%⊢  y)    k = withHI x (withHO y k)
 withHS (x :%⊢> b)    k = withHI x (withH  b k)
 withHS (a :%<⊢ y)    k = withH  a (withHO y k)
 
-h :: SType t -> Univ (H t)
-h t = withH t univ
 
+h  :: SType t -> Univ (H t)
+h  t = withH t univ
 hi :: SStructI x -> Univ (HI x)
 hi x = withHI x univ
-
 ho :: SStructO y -> Univ (HO y)
 ho y = withHO y univ
-
 hs :: SSequent s -> Univ (HS s)
 hs s = withHS s univ
 
@@ -139,57 +134,6 @@ eta (UpB  f)     = \(x,(y,z)) -> eta f (((EXPR(),x),y),z)
 eta (DnI' f)     = \((_,x),y) -> eta f (x,y)
 eta (UpC  f)     = \((x,y),z) -> eta f (((EXPR(),x),z),y)
 eta (UpI' f)     = \(x,y) -> eta f ((EXPR(),x),y)
-
-
-
--- ** Translation from syntactic terms into monadic semantic terms
-
-type family Lift m a where
-  Lift m (a -> b) = Lift m a -> m (Lift m b)
-  Lift m (a  , b) = (Lift m a , Lift m b)
-  Lift m a        = a
-
-etaM :: (Monad m, ?m :: Proxy m) => Syn s -> Lift m (Hask (HS s))
-etaM (AxR   _)   = \x -> return x
-etaM (AxL   _)   = \x -> return x
-etaM (UnfR  _ f) = etaM f
-etaM (UnfL  _ f) = etaM f
-etaM (FocR  _ f) = etaM f
-etaM (FocL  _ f) = etaM f
-etaM (WithL1  f) = \(x,y) -> etaM f x
-etaM (WithL2  f) = \(x,y) -> etaM f y
-etaM (WithR f g) = \x -> (,) <$> etaM f x <*> etaM g x
-etaM (ImpRL f g) = \h -> return (etaM f >=> h >=> etaM g)
-etaM (ImpLL f g) = \h -> return (etaM f >=> h >=> etaM g)
-etaM (ImpRR f)   = etaM f
-etaM (ImpLR f)   = etaM f
-etaM (ResRP f)   = \(x,y) -> do f <- etaM f y; f x
-etaM (ResLP f)   = \(x,y) -> do f <- etaM f x; f y
-etaM (ResPR f)   = \y -> return (\x -> etaM f (x,y))
-etaM (ResPL f)   = \x -> return (\y -> etaM f (x,y))
-etaM (DiaL  f)   = etaM f
-etaM (DiaR  f)   = etaM f
-etaM (BoxL  f)   = etaM f
-etaM (BoxR  f)   = etaM f
-etaM (ResBD f)   = etaM f
-etaM (ResDB f)   = etaM f
-etaM (ExtRR f)   = \((x,y),z) -> etaM f (x,(y,z))
-etaM (ExtLR f)   = \((x,y),z) -> etaM f ((x,z),y)
-etaM (ExtLL f)   = \(z,(y,x)) -> etaM f ((z,y),x)
-etaM (ExtRL f)   = \(z,(y,x)) -> etaM f (y,(z,x))
-etaM (IfxRR f)   = \(x,(y,z)) -> etaM f ((x,y),z)
-etaM (IfxLR f)   = \((x,z),y) -> etaM f ((x,y),z)
-etaM (IfxLL f)   = \((z,y),x) -> etaM f (z,(y,x))
-etaM (IfxRL f)   = \(y,(z,x)) -> etaM f (z,(y,x))
-etaM (UnitLL  f) = \x -> etaM f (EXPR(),x)
-etaM (UnitLR  f) = \(_,x) -> etaM f x
-etaM (UnitLI  f) = \(_,x) -> etaM f x
-etaM (DnB  f)    = \(((_,x),y),z) -> etaM f (x,(y,z))
-etaM (DnC  f)    = \(((_,x),z),y) -> etaM f ((x,y),z)
-etaM (DnI' f)     = \((_,x),y) -> etaM f (x,y)
-etaM (UpB  f)    = \(x,(y,z)) -> etaM f (((EXPR(),x),y),z)
-etaM (UpC  f)    = \((x,y),z) -> etaM f (((EXPR(),x),z),y)
-etaM (UpI' f)     = \(x,y) -> etaM f ((EXPR(),x),y)
 
 -- -}
 -- -}

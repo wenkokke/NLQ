@@ -3,40 +3,28 @@
 {-# LANGUAGE RankNTypes             #-}
 {-# LANGUAGE TypeFamilies           #-}
 {-# LANGUAGE TypeOperators          #-}
-{-# LANGUAGE ImplicitParams         #-}
-{-# LANGUAGE KindSignatures         #-}
 {-# LANGUAGE NamedFieldPuns         #-}
 {-# LANGUAGE RecordWildCards        #-}
 {-# LANGUAGE TemplateHaskell        #-}
-{-# LANGUAGE PatternSynonyms        #-}
 {-# LANGUAGE FlexibleContexts       #-}
 {-# LANGUAGE FlexibleInstances      #-}
-{-# LANGUAGE AllowAmbiguousTypes    #-}
-{-# LANGUAGE ScopedTypeVariables    #-}
 {-# LANGUAGE UndecidableInstances   #-}
-{-# LANGUAGE MultiParamTypeClasses  #-}
 {-# LANGUAGE FunctionalDependencies #-}
 module NLQ.Prelude
        (Word,Entry(..),(∷),(<$),($>),lex,lex_,id
        ,S,N,NP,PP,INF,A,IV,TV,QW,QS,NS
-       ,Boolean(..)
        ,Combine(..),nlq,allNLQ,parseBwd,module X) where
 
 
 import           Prelude hiding (Word,abs,lex,not,(*),($),(<$),($>))
 import           Control.Arrow (first)
 import           Control.Applicative ((<|>))
-import           Control.Monad (when)
 import           Control.Monad.State (State,evalState,get,put)
 import           Data.Char (isSpace)
 import           Data.List (intersperse)
 import           Data.Maybe (isJust,fromJust)
-import           Data.Proxy (Proxy(..))
-import           Data.Singletons.Decide ((:~:)(..))
 import           Data.Singletons.Prelude (SingI(..))
-import           Data.Singletons.Prelude.List ((:++))
-import qualified Data.Singletons.Prelude.List as SL
-import           NLQ.Syntax.Base            as X hiding (QW,QS,Atom(..))
+import           NLQ.Syntax.Base            as X hiding (Atom(..))
 import qualified NLQ.Syntax.Base            as Syn (Atom(..))
 import qualified NLQ.Syntax.Backward        as Bwd
 import           NLQ.Semantics              as X
@@ -50,6 +38,9 @@ import qualified Language.Haskell.TH as TH
 import           Language.Haskell.TH.Quote (QuasiQuoter(..))
 
 
+
+-- * Synonyms for syntactic types
+
 type S        = El 'Syn.S
 type N        = El 'Syn.N
 type NP       = El 'Syn.NP
@@ -59,9 +50,13 @@ type A        = N  :← N
 type IV       = NP :→ S
 type TV       = IV :← NP
 type QW a b c = QLW ((b :⇦ a) :⇨ c)
-type QS a b c = QLS ((b :⤆ a) :⤇ c)
+type QS a b c = QLS (ImpR (Quan Strong) (ImpL (Quan Strong) b a) c)
 type NS       = QS NP S S
 
+
+
+
+-- * Words and "lexical entries"
 
 type Word  a = Entry (StI a)
 data Entry x = Entry (SStructI x) (Hask (HI x))
@@ -87,18 +82,6 @@ instance Show (Entry x) where
 (Entry (SStI _) x) $> (Entry (SStI (_ :%→ b)) f) = Entry (SStI b) (f x)
 
 
--- * Boolean types, and generalised `past tense` modifier
-
-class Boolean a where
-  past :: UnivI a => Hask a -> Hask a
-  past (x :: Hask a) = past_ (univ :: Univ a) x
-  past_ :: Univ  a -> Hask a -> Hask a
-
-instance Boolean T where
-  past_ T = "past" ∷ TT
-
-instance (Boolean b) => Boolean (a -> b) where
-  past_ (a :-> b) f x = past_ b (f x)
 
 
 -- ** Backward-Chaining Proof Search
@@ -122,15 +105,15 @@ instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
     (Entry x f, Entry y g) -> withHI x (withHI y (Entry (x :%∙ y) (f, g)))
 
 
--- ** Type and DSL for lexicon entries
+
+
+-- * Machinery for printing results
 
 data Meanings t = Meanings String [(Expr t,Expr t)]
-
 
 instance Show (Meanings t) where
   show (Meanings str terms) =
     concat (intersperse "\n" (map (show.snd) terms))
-
 
 putMeanings :: Meanings t -> IO ()
 putMeanings (Meanings str terms) =
@@ -144,8 +127,6 @@ putMeanings (Meanings str terms) =
       let w = show y
       putStrLn ((if v `elem` vs then red else green) (v ++ "\n-> " ++ w))
       putAll (v:vs) xs
-
-
 
 red   str = "\x1b[31m" ++ str ++ "\x1b[0m"
 green str = "\x1b[32m" ++ str ++ "\x1b[0m"
@@ -178,7 +159,9 @@ fixWS ('>':    xs) = fixWS xs
 fixWS ( x :    xs) = x : fixWS xs
 
 
--- ** QuasiQuoter for Backward-Chaining Proof Search
+
+
+-- ** QuasiQuoter for backward-chaining proof search
 
 nlq :: QuasiQuoter
 nlq = QuasiQuoter
@@ -241,50 +224,6 @@ parseTree = parse (whiteSpace *> pTree1) ""
                     go (Just xn) = return (VarE xn)
                     go  Nothing  = fail ("unknown name '"++x'++"'")
                 return (xn >>= go)
-
-
--- ** Forward-Chaining Proof Search (Experimental)
-{-
-parseFwd :: SType b -> Entries xs ->  IO ()
-parseFwd (b :: SType b) (xs :: Entries xs) = do
-  let
-    prfs1 :: [Fwd.TypedBy xs b]
-    prfs1 = Fwd.findAll (typeofs xs) b
-    prfs2 :: [String]
-    prfs2 = map go prfs1
-
-    go (Fwd.TypedBy x Refl f) =
-      case joinTree x xs of
-      Entry _ g -> show (runHask (abs (eta (x :%⊢ SStO b) f)) (Cons g Nil))
-
-  print (length prfs2)
-  mapM_ putStrLn prfs2
-
-infixr 4 ∷; (∷) = SCons; (·) = SNil
-
-data Entries (xs :: [StructI]) where
-  SNil  :: Entries '[]
-  SCons :: Entry x -> Entries xs -> Entries (x ': xs)
-
-typeofs :: Entries xs -> SL.SList xs
-typeofs  SNil                  = SL.SNil
-typeofs (SCons (Entry x _) xs) = SL.SCons x (typeofs xs)
-
-joinTree :: SStructI x -> Entries (ToList x) -> Entry x
-joinTree (SStI a) (SCons x SNil) = x
-joinTree (SDIA k x) env = entryDIA k (joinTree x env)
-  where
-    entryDIA :: SKind k -> Entry x -> Entry (DIA k x)
-    entryDIA k (Entry x r) = Entry (SDIA k x) r
-joinTree (SPROD k x y) env = entryPROD k (joinTree x xs) (joinTree y ys)
-  where
-    (xs,ys) = sBreak (fromJust (sToList x)) env
-    sBreak :: SL.SList xs -> Entries (xs :++ ys) -> (Entries xs, Entries ys)
-    sBreak  SL.SNil                 env  = (SNil, env)
-    sBreak (SL.SCons _ xs) (SCons x env) = first (SCons x) (sBreak xs env)
-    entryPROD :: SKind k -> Entry x -> Entry y -> Entry (PROD k x y)
-    entryPROD k (Entry x f) (Entry y g)  =
-      Entry (SPROD k x y) (withHI x (withHI y (pair(f,g))))
 
 -- -}
 -- -}

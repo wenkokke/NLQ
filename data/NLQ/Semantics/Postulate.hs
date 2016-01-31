@@ -13,7 +13,9 @@ import Data.Void (Void)
 import Text.Printf (printf)
 
 
--- ** Semantic Types
+
+
+-- ** Semantic Types/Universe
 
 infixr 4 :*
 infixr 2 :->
@@ -53,6 +55,8 @@ withUniv E         e = e
 withUniv T         e = e
 
 
+
+
 -- ** Semantic expressions with meaning postulates
 
 infixl 9 :$
@@ -76,19 +80,6 @@ data Expr (a :: *) where
   EXPR :: UnivI a => EXPR a -> Expr a
 
 
-apply :: Expr (a -> b) -> Expr a -> Expr b
-EXPR f `apply` x =      (f    x)
-PRIM f `apply` x = PRIM (f :$ x)
-
-caseof :: Expr (a  , b) -> Expr (b -> a -> c) -> Expr c
-caseof (EXPR (x, y)) (EXPR f) = case f y of { EXPR g -> g x ; PRIM g -> PRIM (g :$ x) }
-caseof xy            f        = PRIM (CaseOf xy f)
-
-proj1 :: (UnivI a, UnivI b) => Expr (a , b) -> Expr a
-proj1 xy = caseof xy (EXPR(\y -> EXPR(\x -> x)))
-
-proj2 :: (UnivI a, UnivI b) => Expr (a , b) -> Expr b
-proj2 xy = caseof xy (EXPR(\y -> EXPR(\x -> y)))
 
 
 -- ** Type Reconstruction
@@ -107,7 +98,21 @@ instance TypeOf Expr where
 
 
 
--- * Smart constructors
+-- * Tiny "Lambda/Logic DSL"
+
+apply :: Expr (a -> b) -> Expr a -> Expr b
+EXPR f `apply` x =      (f    x)
+PRIM f `apply` x = PRIM (f :$ x)
+
+caseof :: Expr (a  , b) -> Expr (b -> a -> c) -> Expr c
+caseof (EXPR (x, y)) (EXPR f) = case f y of { EXPR g -> g x ; PRIM g -> PRIM (g :$ x) }
+caseof xy            f        = PRIM (CaseOf xy f)
+
+proj1 :: (UnivI a, UnivI b) => Expr (a , b) -> Expr a
+proj1 xy = caseof xy (EXPR(\y -> EXPR(\x -> x)))
+
+proj2 :: (UnivI a, UnivI b) => Expr (a , b) -> Expr b
+proj2 xy = caseof xy (EXPR(\y -> EXPR(\x -> y)))
 
 not :: Hask T -> Hask T
 not (EXPR(True))  = EXPR(False)
@@ -119,8 +124,6 @@ exists a f = withUniv a (Exists a (\x -> f (toHask a x)))
 
 forall :: Univ a -> (Hask a -> Hask T) -> Hask T
 forall a f = withUniv a (ForAll a (\x -> f (toHask a x)))
-
-
 
 infix  6 ≢, ≡
 infixr 4 ∧
@@ -144,19 +147,7 @@ x ≡ y = x :≡ y
 x ≢ y = x :≢ y
 
 
--- ** Pretty-Printing Expressions
 
-infix  6 :≢, :≡
-infixr 4 :∧
-infixr 2 :⊃
-
-pattern x :≢ y     = Not (x :≡ y)
-pattern x :≡ y     = PRIM (Prim (E :-> E :-> T)   "≡" :$ x :$ y)
-pattern Not  x     = PRIM (Prim (T :-> T)         "¬" :$ x)
-pattern x :∧ y     = PRIM (Prim (T :-> T :-> T)   "∧" :$ x :$ y)
-pattern x :⊃ y     = PRIM (Prim (T :-> T :-> T)   "⊃" :$ x :$ y)
-pattern ForAll t f = PRIM (Prim ((t :-> T) :-> T) "∀" :$ EXPR f)
-pattern Exists t f = PRIM (Prim ((t :-> T) :-> T) "∃" :$ EXPR f)
 
 
 -- ** Internalising and externalising expressions
@@ -189,7 +180,22 @@ toHask (a :-> b) f     =
   \x -> toHask b (apply f (fromHask a x))
 
 
--- ** Showing expressions
+
+
+
+-- ** Pretty-Printing Expressions
+
+infix  6 :≢, :≡
+infixr 4 :∧
+infixr 2 :⊃
+
+pattern x :≢ y     = Not (x :≡ y)
+pattern x :≡ y     = PRIM (Prim (E :-> E :-> T)   "≡" :$ x :$ y)
+pattern Not  x     = PRIM (Prim (T :-> T)         "¬" :$ x)
+pattern x :∧ y     = PRIM (Prim (T :-> T :-> T)   "∧" :$ x :$ y)
+pattern x :⊃ y     = PRIM (Prim (T :-> T :-> T)   "⊃" :$ x :$ y)
+pattern ForAll t f = PRIM (Prim ((t :-> T) :-> T) "∀" :$ EXPR f)
+pattern Exists t f = PRIM (Prim ((t :-> T) :-> T) "∃" :$ EXPR f)
 
 instance Show (Expr t) where
   showsPrec d x = evalSupply (pp2 d x) ns

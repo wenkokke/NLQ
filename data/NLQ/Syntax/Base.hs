@@ -31,8 +31,8 @@ singletons [d|
     Solid  :: Kind
     Quan   :: Strength -> Kind
     Delim  :: Strength -> Kind
-    MovIfx :: Kind
-    MovExt :: Kind
+    Ifx :: Kind
+    Ext :: Kind
     deriving (Eq,Show)
 
   data Type :: * where
@@ -107,7 +107,7 @@ deriving instance Ord StructO
 deriving instance Ord Sequent
 
 kinds :: [Kind]
-kinds = [Solid,Quan Weak,Quan Strong,Delim Weak,Delim Strong,MovIfx,MovExt]
+kinds = [Solid,Quan Weak,Quan Strong,Delim Weak,Delim Strong,Ifx,Ext]
 
 infixr 3 :∙, :%∙
 infixr 7 :→, :%→
@@ -141,16 +141,6 @@ type    y  :⇦ x =  ImpL  (Quan  Weak) y x
 pattern y  :⇦ x =  ImpL  (Quan  Weak) y x
 pattern y :%⇦ x = SImpL (SQuan SWeak) y x
 
-type    x  :○ y =  PROD  (Quan  Strong) x y
-pattern x  :○ y =  PROD  (Quan  Strong) x y
-pattern x :%○ y = SPROD (SQuan SStrong) x y
-type    x  :⤇ y =  ImpR  (Quan  Strong) x y
-pattern x  :⤇ y =  ImpR  (Quan  Strong) x y
-pattern x :%⤇ y = SImpR (SQuan SStrong) x y
-type    y  :⤆ x =  ImpL  (Quan  Strong) y x
-pattern y  :⤆ x =  ImpL  (Quan  Strong) y x
-pattern y :%⤆ x = SImpL (SQuan SStrong) y x
-
 type     DelW a =  Dia  (Delim  Weak) a
 pattern  DelW a =  Dia  (Delim  Weak) a
 pattern SDelW a = SDia (SDelim SWeak) a
@@ -165,33 +155,26 @@ type     DELS x =  DIA  (Delim  Strong) x
 pattern  DELS x =  DIA  (Delim  Strong) x
 pattern SDELS x = SDIA (SDelim SStrong) x
 
-type     Ifx a =  Dia  MovIfx ( Box  MovIfx a)
-pattern  Ifx a =  Dia  MovIfx ( Box  MovIfx a)
-pattern SIfx a = SDia SMovIfx (SBox SMovIfx a)
-type     IFX x =  DIA  MovIfx x
-pattern  IFX x =  DIA  MovIfx x
-pattern SIFX x = SDIA SMovIfx x
+type     IFX x =  DIA  Ifx x
+pattern  IFX x =  DIA  Ifx x
+pattern SIFX x = SDIA SIfx x
+type     EXT x =  DIA  Ext x
+pattern  EXT x =  DIA  Ext x
+pattern SEXT x = SDIA SExt x
 
-type     Ext a =  Dia  MovExt ( Box  MovExt a)
-pattern  Ext a =  Dia  MovExt ( Box  MovExt a)
-pattern SExt a = SDia SMovExt (SBox SMovExt a)
-type     EXT x =  DIA  MovExt x
-pattern  EXT x =  DIA  MovExt x
-pattern SEXT x = SDIA SMovExt x
+type    a  :⇃ b = ( Dia  Ext ( Box  Ext a))  :→ b
+pattern a  :⇃ b = ( Dia  Ext ( Box  Ext a))  :→ b
+pattern a :%⇃ b = (SDia SExt (SBox SExt a)) :%→ b
+type    b  :⇂ a = b  :←  Dia  Ext ( Box  Ext a)
+pattern b  :⇂ a = b  :←  Dia  Ext ( Box  Ext a)
+pattern b :%⇂ a = b :%← SDia SExt (SBox SExt a)
 
-type    a  :⇃ b = ( Ext a)  :→ b
-pattern a  :⇃ b = ( Ext a)  :→ b
-pattern a :%⇃ b = (SExt a) :%→ b
-type    b  :⇂ a = b  :←  Ext a
-pattern b  :⇂ a = b  :←  Ext a
-pattern b :%⇂ a = b :%← SExt a
-
-type    a  :↿ b =  Ifx (a  :→ b)
-pattern a  :↿ b =  Ifx (a  :→ b)
-pattern a :%↿ b = SIfx (a :%→ b)
-type    b  :↾ a =  Ifx (b  :← a)
-pattern b  :↾ a =  Ifx (b  :← a)
-pattern b :%↾ a = SIfx (b :%← a)
+type    a  :↿ b =  Dia  Ifx ( Box  Ifx (a  :→ b))
+pattern a  :↿ b =  Dia  Ifx ( Box  Ifx (a  :→ b))
+pattern a :%↿ b = SDia SIfx (SBox SIfx (a :%→ b))
+type    b  :↾ a =  Dia  Ifx ( Box  Ifx (b  :← a))
+pattern b  :↾ a =  Dia  Ifx ( Box  Ifx (b  :← a))
+pattern b :%↾ a = SDia SIfx (SBox SIfx (b :%← a))
 
 
 
@@ -299,17 +282,6 @@ instance Ord (SType     s) where compare x y = compare (fromSing x) (fromSing y)
 instance Ord (SStructI  s) where compare x y = compare (fromSing x) (fromSing y)
 
 
-type family ToList (x :: StructI) :: [StructI] where
-  ToList (StI  a    ) = (StI a ': '[])
-  ToList (DIA  k x  ) = ToList x
-  ToList (PROD k x y) = ToList x :++ ToList y
-
-
-sToList :: SStructI x -> Maybe (SList (ToList x))
-sToList x@(SStI  a)     = Just (SCons x SNil)
-sToList   (SDIA  k x)   = sToList x
-sToList   (SPROD k x y) = (%:++) <$> sToList x <*> sToList y
-sToList   _             = Nothing
 
 
 -- * Proofs
@@ -363,6 +335,8 @@ data Syn :: Sequent -> * where
 
   UpI'   :: Syn (PROD (Quan Strong) (I' :∙ DELW x) y :⊢ w) -> Syn (DELW (PROD (Quan Strong) x y) :⊢ w)
   DnI'   :: Syn (DELW (PROD (Quan Strong) x y) :⊢ w) -> Syn (PROD (Quan Strong) (I' :∙ DELW x) y :⊢ w)
+
+
 
 
 instance Show (SSequent s) where
@@ -420,6 +394,8 @@ qrR :: SStrength k -> SContext x
     -> Syn (Plug x (StI a) :⊢ StO b)
     -> Syn (Trace k x :⊢ StO (ImpL (Quan k) b a))
 qrR k x f = ImpLR (ResPL (up k x f))
+
+
 
 
 -- * Forgetful version of `Syn` type for easy deriving of Ord
