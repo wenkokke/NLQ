@@ -13,6 +13,7 @@
 \setcounter{page}{50}
 
 \def\lamET{\lambda^{\rightarrow}_{\{\mathbf{e},\mathbf{t}\}}}%
+\DeclareUnicodeCharacter{7487}{$^R$}
 \DeclareUnicodeCharacter{8852}{$\sqcup$}
 \DeclareUnicodeCharacter{8704}{$\forall$}
 \DeclareUnicodeCharacter{8866}{$\vdash$}
@@ -171,14 +172,12 @@ rules, defining all the copies at the same time.
     El     : Atom  → Type
     Dia    : Kind  → Type  → Type
     Box    : Kind  → Type  → Type
-    _&_    : Type → Type → Type
     UnitL  : Kind  → Type  → Type
     ImpR   : Kind  → Type  → Type  → Type
     ImpL   : Kind  → Type  → Type  → Type
 \end{code}
 \begin{comment}
 \begin{code}
-  infix  6 _&_
   infixl 7 _⇐_ _⇦_
   infixr 7 _⇒_ _⇨_
   infix  7 _⇃_ _⇂_
@@ -226,19 +225,17 @@ polarity:
 \begin{comment}
 \begin{code}
   infixr 3 _∙_ _∘_
-  infixr 9 ◆_  ■_ ◆↓_ ■↓_ ◆↑_ ■↑_
+  infixr 9 ◆↓_ ■↓_ ◆↑_ ■↑_
 \end{code}
 \end{comment}
 \\[1\baselineskip]
 \begin{code}
   pattern _∙_  x y  = PROD   Solid         x y
   pattern _∘_  x y  = PROD   (Quan Weak)   x y
-  pattern ◆_   x    = DIA    (Delim Weak)  x
+  pattern ⟨_⟩  x    = DIA    (Delim Weak)  x
   pattern ◆↑_  x    = DIA    Ext           x
   pattern ◆↓_  x    = DIA    Ifx           x
-
   pattern I         = UNIT   (Quan Weak)
-  pattern ■_   x    = BOX    (Delim Weak)  x
   pattern ■↑_  x    = BOX    Ext           x
   pattern ■↓_  x    = BOX    Ifx           x
 \end{code}
@@ -270,7 +267,6 @@ And finally, we need to extend our concept of polarity to
         Pol′ (El    a)      = Pol(a)
         Pol′ (Dia   _ _)    = +
         Pol′ (Box   _ _)    = -
-        Pol′ (_ & _)        = +
         Pol′ (UnitL _ _)    = +
         Pol′ (ImpR  _ _ _)  = -
         Pol′ (ImpL  _ _ _)  = -
@@ -307,10 +303,6 @@ for the polarity of the type \AgdaBound{a}/\AgdaBound{b}:
     resLP   : ∀ {k x y z}    → NLQ x ⊢ IMPL k z y  → NLQ PROD k x y ⊢ z
     resPL   : ∀ {k x y z}    → NLQ PROD k x y ⊢ z  → NLQ x ⊢ IMPL k z y
 
-    withL1 : ∀ {a1 a2 y}     → NLQ [ a1 ]⊢ y  → NLQ · a1 & a2 · ⊢ y
-    withL2 : ∀ {a1 a2 y}     → NLQ [ a2 ]⊢ y  → NLQ · a1 & a2 · ⊢ y
-    withR  : ∀ {b1 b2 x}     → NLQ x ⊢ · b1 · → NLQ x ⊢ · b2 · → NLQ x ⊢[ b1 & b2 ]
-
     diaL    : ∀ {k a y}      → NLQ DIA k · a · ⊢ y  → NLQ · Dia k a · ⊢ y
     diaR    : ∀ {k x b}      → NLQ x ⊢[ b ]         → NLQ DIA k x ⊢[ Dia k b ]
     boxL    : ∀ {k a y}      → NLQ [ a ]⊢ y         → NLQ [ Box k a ]⊢ BOX k y
@@ -330,10 +322,10 @@ for the polarity of the type \AgdaBound{a}/\AgdaBound{b}:
             → NLQ PROD (Quan k) ((C ∙ x) ∙ z) y ⊢ w
     upC     : ∀ {x y z w k}  → NLQ PROD (Quan k) ((C ∙ x) ∙ z) y ⊢ w
             → NLQ (PROD (Quan k) x y) ∙ z ⊢ w
-    upI*    : ∀ {x y w}      → NLQ (PROD (Quan Strong) (I* ∙ (◆ x)) y ⊢ w)
-            → NLQ (◆ (PROD (Quan Strong) x y) ⊢ w)
-    dnI*    : ∀ {x y w}      → NLQ (◆ (PROD (Quan Strong) x y) ⊢ w)
-            → NLQ (PROD (Quan Strong) (I* ∙ (◆ x)) y ⊢ w)
+    upI*    : ∀ {x y w}      → NLQ (PROD (Quan Strong) (I* ∙ ⟨ x ⟩) y ⊢ w)
+            → NLQ (⟨ PROD (Quan Strong) x y ⟩ ⊢ w)
+    dnI*    : ∀ {x y w}      → NLQ (⟨ PROD (Quan Strong) x y ⟩ ⊢ w)
+            → NLQ (PROD (Quan Strong) (I* ∙ ⟨ x ⟩) y ⊢ w)
 
     extRR   : ∀ {x y z w}    → NLQ ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NLQ (x ∙ (y ∙ ◆↑ z) ⊢ w)
     extLR   : ∀ {x y z w}    → NLQ ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NLQ ((x ∙ ◆↑ z) ∙ y ⊢ w)
@@ -594,7 +586,6 @@ this knowledge:
   lem-Neg-St ( El        a    ) n = refl
   lem-Neg-St ( Dia    k  a    ) ()
   lem-Neg-St ( Box    k  a    ) n = refl
-  lem-Neg-St ( a & b          ) ()
   lem-Neg-St ( UnitL  k  a    ) ()
   lem-Neg-St ( ImpR   k  a b  ) n = refl
   lem-Neg-St ( ImpL   k  b a  ) n = refl
@@ -603,7 +594,6 @@ this knowledge:
   lem-Pos-St ( El        a    ) p = refl
   lem-Pos-St ( Dia    k  a    ) p = refl
   lem-Pos-St ( Box    k  a    ) ()
-  lem-Pos-St ( a & b          ) p = refl
   lem-Pos-St ( UnitL  k  a    ) p = refl
   lem-Pos-St ( ImpR   k  a b  ) ()
   lem-Pos-St ( ImpL   k  b a  ) ()
@@ -623,7 +613,6 @@ structuralise either the antecedent, the succedent, or both:
     stL { a = El        a    } f = f
     stL { a = Dia    k  a    } f = diaL (resBD (stL (resDB f)))
     stL { a = Box    k  a    } f = f
-    stL { a = a & b          } f = f
     stL { a = UnitL  k  a    } f = unitLL (resRP (stL (resPR f)))
     stL { a = ImpR   k  a b  } f = f
     stL { a = ImpL   k  b a  } f = f
@@ -632,7 +621,6 @@ structuralise either the antecedent, the succedent, or both:
     stR { b = El        a    } f = f
     stR { b = Dia    k  a    } f = f
     stR { b = Box    k  a    } f = boxR (resDB (stR (resBD f)))
-    stR { b = a & b          } f = f
     stR { b = UnitL  k  a    } f = f
     stR { b = ImpR   k  a b  } f = impRR (resPR (stR (resLP (stL (resPL (resRP f))))))
     stR { b = ImpL   k  b a  } f = impLR (resPL (stR (resRP (stL (resPR (resLP f))))))
@@ -685,7 +673,6 @@ structuralise, and continue:\footnote{%
     axR′ { b = El        a    } p = axElR p
     axR′ { b = Dia    k  a    } p = diaR axR
     axR′ { b = Box    k  a    } ()
-    axR′ { b = a & b          } p = withR (stR (withL1 axL)) (stR (withL2 axL))
     axR′ { b = UnitL  k  a    } p = unitLR axR
     axR′ { b = ImpR   k  a b  } ()
     axR′ { b = ImpL   k  b a  } ()
@@ -694,7 +681,6 @@ structuralise, and continue:\footnote{%
     axL′ { a = El        a    } n = axElL n
     axL′ { a = Dia    k  a    } ()
     axL′ { a = Box    k  a    } n = boxL axL
-    axL′ { a = a & b          } ()
     axL′ { a = UnitL  k  a    } ()
     axL′ { a = ImpR   k  a b  } n = impRL axR axL
     axL′ { a = ImpL   k  b a  } n = impLL axR axL
@@ -864,7 +850,6 @@ becomes units, etc.
         El        a    *′ = a *
         Dia    _  a    *′ = a *′
         Box    _  a    *′ = a *′
-        (a & b)        *′ = a *′ × b *′
         UnitL  _  a    *′ = a *′
         ImpR   _  a b  *′ = a *′ → b *′
         ImpL   _  b a  *′ = a *′ → b *′
@@ -902,8 +887,8 @@ translation on proofs:
     TranslateProof = record { _* = _*′ }
       where
         _*′ : ∀ {s} → NLQ s → s *
-        axElR _      *′ = id
-        axElL _      *′ = id
+        axElR _      *′ = λ x → x
+        axElL _      *′ = λ x → x
         unfR  _ f    *′ = f *′
         unfL  _ f    *′ = f *′
         focR  _ f    *′ = f *′
@@ -916,9 +901,6 @@ translation on proofs:
         resLP   f    *′ = λ{ (x , y)  → (f *′)  x   y          }
         resPR   f    *′ = λ{  y   x   → (f *′) (x , y)         }
         resPL   f    *′ = λ{  x   y   → (f *′) (x , y)         }
-        withL1  f    *′ = λ{ (x , y)  → (f *′)  x              }
-        withL2  f    *′ = λ{ (x , y)  → (f *′)  y              }
-        withR   f g  *′ = λ{  x       → ((f *′) x , (g *′) x)  }
         diaL    f    *′ = f *′
         diaR    f    *′ = f *′
         boxL    f    *′ = f *′
@@ -946,42 +928,33 @@ translation on proofs:
 
 
 \subsection{Example}
-We will end the Agda formalisation with a small example. For this, we
-need to instantiate the syntax and semantics modules. We start by
-defining atomic types, and a concept of polarisation---everything has
-negative polarity:
-\\[1\baselineskip]
 \begin{comment}
 \begin{code}
-module Example where
-  open import Data.Product using (_,_)
-  open import Relation.Binary.PropositionalEquality using (refl; _≡_)
+module Prelude where
+  open import Data.Product                          public using (_,_)
+  open import Relation.Binary.PropositionalEquality public using (refl; _≡_)
 \end{code}
 \end{comment}
-\begin{code}
-  data Atom : Set where S N NP : Atom
-
-  PolarisedAtom : Polarised Atom
-  PolarisedAtom = record { Pol = λ _ → - }
-\end{code}
-\\
-If we want to translate these atomic types to Agda, we will need some
-target types. Agda has a built-in type for Booleans, but we are not
-really interested in computing anything, so we will simply postulate
+We will need some language to describe natural language semantics.
+Agda has a built-in type for Booleans, but we are not really
+interested in computing anything, so we will simply postulate
 everything:
 \\[1\baselineskip]
 \begin{code}
   postulate
+    Entity  : Set
     Bool    : Set
     exists  : {a : Set} → (a → Bool) → Bool
     forAll  : {a : Set} → (a → Bool) → Bool
     _⊃_     : Bool → Bool → Bool
     _∧_     : Bool → Bool → Bool
-
-    Entity  : Set
-    mary    : Entity
-    see     : Entity → Entity → Bool
-    fox     : Entity → Bool
+\end{code}
+\\
+We define the atomic types, their translation to Agda types, and a
+concept of polarity:
+\\[1\baselineskip]
+\begin{code}
+  data Atom : Set where S N NP : Atom
 \end{code}
 \\
 The translation function then follows, and with it we can instantiate
@@ -995,10 +968,23 @@ the syntax and semantics modules:
       S   *′ = Bool
       N   *′ = Entity → Bool
       NP  *′ = Entity
-
+\end{code}
+\begin{comment}
+\begin{code}
+module Example1 where
+  open Prelude
+\end{code}
+\end{comment}
+\begin{code}
+  PolarisedAtom : Polarised Atom
+  PolarisedAtom = record { Pol = λ _ → - }
+\end{code}
+\begin{comment}
+\begin{code}
   open Syntax     Atom PolarisedAtom
   open Semantics  Atom PolarisedAtom TranslateAtom
 \end{code}
+\end{comment}
 \\
 Then we define the syntactic types for our example sentence. There are
 much better ways to do this---building a lexicon, computing the
@@ -1022,11 +1008,16 @@ A proof for this sentence is easily given:
         (  impLL axR (impRL axR axL))))))) axL
 \end{code}
 \\
-We then give some definitions for our lexical entries. Of course,
-\AgdaPostulate{mary} already has a definition. The real work is done
-in the definition of \AgdaFunction{foxes}:
+We then postulate some primitive meanings, and use these to give some
+definitions for our lexical entries. The real work is done in the
+definition of \AgdaFunction{foxes}:
 \\[1\baselineskip]
 \begin{code}
+  postulate
+    mary    : Entity
+    see     : Entity → Entity → Bool
+    fox     : Entity → Bool
+
   sees : SEES *
   sees y x = see x y
 
@@ -1043,5 +1034,308 @@ entries, and normalise, et voil\`{a}! We have our semantics:
   sem0  = refl
 \end{code}
 
+\subsection{CPS-semantics and indefinites}
+We mentioned that one possible way of dealing with indefinites is to
+extend the CPS-semantics for focused NL, given earlier, to full NLQ.
+This would allow us to model quantifiers using the \textbf{IBC}-rules,
+but indefinites using a semantic CPS-translation. In order to do this,
+we are going to define the CPS-semantics for NLQ. We abstract in our
+module header, much like we did for our \AgdaModule{Semantics} module:
+\\[1\baselineskip]
+\begin{code}
+module CPS-Semantics
+  (Atom : Set) (R : Set)
+  (PolarisedAtom   : Polarised Atom)
+  (TranslateAtom   : Translate Atom Set)
+  where
+\end{code}
+\begin{comment}
+\begin{code}
+  open import Data.Unit    using (⊤; tt)
+  open import Data.Product using (_×_; _,_)
+  open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+  open Syntax Atom PolarisedAtom
+
+  infixl 1 _ᴿ
+\end{code}
+\end{comment}
+\\
+And we define some convenient syntax for continuation types:
+\\[1\baselineskip]
+\begin{code}
+  _ᴿ : Set → Set
+  a ᴿ = a → R
+\end{code}
+\\
+The most complex part of the CPS-translation is the polarity-driven
+translation on types, formalised below:
+\\[1\baselineskip]
+\begin{code}
+  ⟦_⟧_ : Type → Polarity → Set
+  ⟦  El      a    ⟧ + with Pol(a)
+  ⟦  El      a    ⟧ + | +  = a *
+  ⟦  El      a    ⟧ + | -  = a * ᴿ ᴿ
+  ⟦  Dia   k a    ⟧ +      = ⟦ a ⟧ +
+  ⟦  Box   k a    ⟧ +      = ⟦ a ⟧ - ᴿ
+  ⟦  UnitL k a    ⟧ +      = ⟦ a ⟧ +
+  ⟦  ImpR  k a b  ⟧ +      = ⟦ a ⟧ + × ⟦ b ⟧ - ᴿ
+  ⟦  ImpL  k b a  ⟧ +      = ⟦ b ⟧ - × ⟦ a ⟧ + ᴿ
+  ⟦  El      a    ⟧ -      = a * ᴿ
+  ⟦  Dia   k a    ⟧ -      = ⟦ a ⟧ + ᴿ
+  ⟦  Box   k a    ⟧ -      = ⟦ a ⟧ -
+  ⟦  UnitL k a    ⟧ -      = ⟦ a ⟧ + ᴿ
+  ⟦  ImpR  k a b  ⟧ -      = ⟦ a ⟧ + × ⟦ b ⟧ -
+  ⟦  ImpL  k b a  ⟧ -      = ⟦ b ⟧ - × ⟦ a ⟧ +
+\end{code}
+\\
+For structures and sequents, the translations are simple, and we can
+resort to using our previous \AgdaFunction{Translate} class. As
+mentioned, we simply translate \emph{all} structural connectives as
+products:
+\\[1\baselineskip]
+\begin{code}
+  instance
+    TranslateStruct : ∀ {p} → Translate (Struct p) Set
+    TranslateStruct {p} = record { _* = _*′ }
+      where
+      _*′ : ∀ {p} → Struct p → Set
+      _*′ {p} · a · = ⟦ a ⟧ p
+      B          *′ = ⊤
+      C          *′ = ⊤
+      I*         *′ = ⊤
+      DIA  k x   *′ = x *′
+      UNIT k     *′ = ⊤
+      PROD k x y *′ = x *′ × y *′
+      BOX  k x   *′ = x *′
+      IMPR k x y *′ = x *′ × y *′
+      IMPL k y x *′ = y *′ × x *′
+\end{code}
+\\
+And we translate sequents as Agda functions:
+\\[1\baselineskip]
+\begin{code}
+  instance
+    TranslateSequent : Translate Sequent Set
+    TranslateSequent = record { _* = _*′ }
+      where
+      _*′ : Sequent → Set
+      (  x  ⊢  y  ) *′ = x * → y * → R
+      ([ a ]⊢  y  ) *′ = y * → ⟦ a ⟧ -
+      (  x  ⊢[ b ]) *′ = x * → ⟦ b ⟧ +
+\end{code}
+\begin{comment}
+\begin{code}
+  unfR* : ∀ {x b} → Pol(b) ≡ - → (x ⊢ · b ·) * → (x ⊢[ b ]) *
+  unfR* {b = El      a  } pr f with Pol(a)
+  unfR* {b = El      a  } () f | +
+  unfR* {b = El      a  } pr f | - = λ x y → f x y
+  unfR* {b = Dia   _ b  } ()
+  unfR* {b = Box   _ b  } pr f     = λ x y → f x y
+  unfR* {b = UnitL _ b  } ()
+  unfR* {b = ImpR  _ a b} pr f     = λ x y → f x y
+  unfR* {b = ImpL  _ b a} pr f     = λ x y → f x y
+
+  unfL* : ∀ {a y} → Pol(a) ≡ + → (· a · ⊢ y) * → ([ a ]⊢ y) *
+  unfL* {a = El      a  } pr k with Pol(a)
+  unfL* {a = El      a  } pr k | + = λ x y → k y x
+  unfL* {a = El      a  } () k | -
+  unfL* {a = Dia   _ b  } pr k     = λ x y → k y x
+  unfL* {a = Box   _ b  } ()
+  unfL* {a = UnitL _ b  } pr k     = λ x y → k y x
+  unfL* {a = ImpR  _ a b} ()
+  unfL* {a = ImpL  _ b a} ()
+
+  focR* : ∀ {x b} → Pol(b) ≡ + → (x ⊢[ b ]) * → (x ⊢ · b ·) *
+  focR* {b = El      a  } pr f with Pol(a)
+  focR* {b = El      a  } pr f | + = λ x k → k (f x)
+  focR* {b = El      a  } () f | -
+  focR* {b = Dia   _ b  } pr f     = λ x k → k (f x)
+  focR* {b = Box   _ b  } ()
+  focR* {b = UnitL _ b  } pr f     = λ x k → k (f x)
+  focR* {b = ImpR  _ a b} ()
+  focR* {b = ImpL  _ b a} ()
+
+  focL* : ∀ {a y} → Pol(a) ≡ - → ([ a ]⊢ y) * → (· a · ⊢ y) *
+  focL* {a = El      a  } pr f with Pol(a)
+  focL* {a = El      a  } () f | +
+  focL* {a = El      a  } pr f | - = λ k x → k (f x)
+  focL* {a = Dia   _ b  } ()
+  focL* {a = Box   _ b  } pr f     = λ k x → k (f x)
+  focL* {a = UnitL _ b  } ()
+  focL* {a = ImpR  _ a b} pr f     = λ k x → k (f x)
+  focL* {a = ImpL  _ b a} pr f     = λ k x → k (f x)
+\end{code}
+\end{comment}
+\\
+The final part is the translation on proofs. All rules translate to
+permutations on product types, insert units or map functions over
+product types. The actual applications and abstractions are hiding in
+the functions \AgdaFunction{unfR*}, \AgdaFunction{unfL*},
+\AgdaFunction{focR*} and \AgdaFunction{focL*}, which correspond to the
+translations of the rules of the same name given earlier:
+\\[1\baselineskip]
+\begin{code}
+  instance
+    TranslateProof : ∀ {s} → Translate (NLQ s) (s *)
+    TranslateProof = record { _* = _*′ }
+      where
+      _*′ : ∀ {s} → NLQ s → s *
+      axElR _        *′ = λ x → x
+      axElL _        *′ = λ x → x
+      unfR  {x} {b} pr  f  *′ = unfR* {x} {b} pr (f *′)
+      unfL  {a} {y} pr  f  *′ = unfL* {a} {y} pr (f *′)
+      focR  {x} {b} pr  f  *′ = focR* {x} {b} pr (f *′)
+      focL  {a} {y} pr  f *′ = focL* {a} {y} pr (f *′)
+      impRL     f g  *′ = λ{(x , y) → ((f *′) x , (g *′) y)}
+      impRR     f    *′ = (f *′)
+      impLL     f g  *′ = λ{(x , y) → ((g *′) x , (f *′) y)}
+      impLR     f    *′ = (f *′)
+      resRP     f    *′ = λ{(x , y) z → (f *′) y (x , z)}
+      resPR     f    *′ = λ{y (x , z) → (f *′) (x , y) z}
+      resLP     f    *′ = λ{(x , y) z → (f *′) x (z , y)}
+      resPL     f    *′ = λ{x (z , y) → (f *′) (x , y) z}
+      diaL      f    *′ = f *′
+      diaR      f    *′ = f *′
+      boxL      f    *′ = f *′
+      boxR      f    *′ = f *′
+      resBD     f    *′ = f *′
+      resDB     f    *′ = f *′
+      unitLL    f    *′ = λ{ x → (f *′) (tt , x) }
+      unitLR    f    *′ = λ{ (tt , x) → (f *′) x }
+      unitLI    f    *′ = λ{ (tt , x) → (f *′) x }
+      dnB       f    *′ = λ{ (((tt , x) , y) , z) → (f *′) (x , (y , z)) }
+      upB       f    *′ = λ{ (x , (y , z)) → (f *′) (((tt , x) , y) , z) }
+      dnC       f    *′ = λ{ (((tt , x) , z) , y) → (f *′) ((x , y) , z) }
+      upC       f    *′ = λ{ ((x , y) , z) → (f *′) (((tt , x) , z) , y) }
+      upI*      f    *′ = λ{ (x , y) → (f *′) ((tt , x) , y) }
+      dnI*      f    *′ = λ{ ((tt , x) , y) → (f *′) (x , y) }
+      extRR     f    *′ = λ{ (x , (y , z)) → (f *′) ((x , y) , z) }
+      extLR     f    *′ = λ{ ((x , z) , y) → (f *′) ((x , y) , z) }
+      extLL     f    *′ = λ{ ((z , y) , x) → (f *′) (z , (y , x)) }
+      extRL     f    *′ = λ{ (y , (z , x)) → (f *′) (z , (y , x)) }
+      ifxRR     f    *′ = λ{ ((x , y) , z) → (f *′) (x , (y , z)) }
+      ifxLR     f    *′ = λ{ ((x , y) , z) → (f *′) ((x , z) , y) }
+      ifxLL     f    *′ = λ{ (z , (y , x)) → (f *′) ((z , y) , x) }
+      ifxRL     f    *′ = λ{ (z , (y , x)) → (f *′) (y , (z , x)) }
+\end{code}
+\begin{comment}
+\begin{code}
+module Example2 where
+  open Prelude
+\end{code}
+\end{comment}
+\\
+Once again, we demonstrate a small example. In this case, the example
+sentence will be ``Everyone said some guest left''. This sentence
+should have an ambiguous interpretation. We will use a CPS-translation
+for the indefinite ``some'' to obtain this ambiguity, counting on the
+scope ambiguity which we can obtain by setting the following
+polarities in focused NL:
+\\[1\baselineskip]
+\begin{code}
+  PolarisedAtom : Polarised Atom
+  PolarisedAtom = record { Pol = Pol′ }
+    where
+      Pol′ : Atom → Polarity
+      Pol′ S   = -
+      Pol′ N   = +
+      Pol′ NP  = +
+\end{code}
+\begin{comment}
+\begin{code}
+  open Syntax Atom PolarisedAtom
+  open CPS-Semantics Atom Bool PolarisedAtom TranslateAtom
+\end{code}
+\end{comment}
+\\
+We then define some types for the words in our sentence: we define
+``everyone'' as a syntactic quantifier, but define ``someone'' as a
+semantic, CPS-translated quantifier:
+\\[1\baselineskip]
+\begin{code}
+  EVERYONE  : Struct +
+  EVERYONE  = · QW((El S ⇦ El NP) ⇨ El S) ·
+  SAID      : Struct +
+  SAID      = · (El NP ⇒ El S) ⇐ (◇ El S) ·
+  SOME      : Struct +
+  SOME      = · El NP ⇐ El N ·
+  GUEST     : Struct +
+  GUEST     = · El N ·
+  LEFT      : Struct +
+  LEFT      = · El NP ⇒ El S ·
+\end{code}
+\\
+The result is that, while ``some'' cannot escape the scope island
+through syntactic movement, it nonetheless takes scope, through the
+CPS-translation. And, because of our chosen polarisation, there are
+three different derivations: in \AgdaFunction{syn1a}, we start by
+collapsing ``some guest'', then let ``everyone'' take scope, and only
+then collapse the sentence scope and resolve the embedded clause; in
+\AgdaFunction{syn1b}, we start by letting ``everyone''' take scope,
+then we collapse ``some guest''', and again end by collapsing the
+sentence scope and resolving the embedded clause; and, in
+\AgdaFunction{syn1c}, we again start by letting ``everyone'' take
+scope, but this time we collapse the sentence scope, and move to the
+embedded clause, \emph{before} we collapse ``some person''.
+\\[1\baselineskip]
+\begin{code}
+  syn1a  : NLQ EVERYONE ∙ SAID ∙ ⟨ ( SOME ∙ GUEST ) ∙ LEFT ⟩ ⊢ · El S ·
+  syn1a  =  resRP (resRP (resBD (resLP (resLP (focL refl (impLL axR
+         (  unfL refl (resPL (resDB (resPR (resPR
+         (  q↑ (PROD1 HOLE _) (unfR refl
+         (  q↓ (PROD1 HOLE _) (resRP (resLP (focL refl (impLL (diaR (unfR refl
+         (  resRP (focL refl (impRL axR axL))))) (impRL axR axL))))))) axL))))))))))))
+
+  syn1b  : NLQ EVERYONE ∙ SAID ∙ ⟨ ( SOME ∙ GUEST ) ∙ LEFT ⟩ ⊢ · El S ·
+  syn1b  =  q↑ (PROD1 HOLE _) (unfR refl
+         (  q↓ (PROD1 HOLE _) (resRP (resRP (resBD (resLP (resLP (focL refl
+         (  impLL axR (unfL refl (resPL (resDB (resPR (resLP (focL refl
+         (  impLL (diaR (unfR refl (resRP (focL refl (impRL axR axL)))))
+         (  impRL axR axL))))))))))))))))) axL
+
+  syn1c  : NLQ EVERYONE ∙ SAID ∙ ⟨ ( SOME ∙ GUEST ) ∙ LEFT ⟩ ⊢ · El S ·
+  syn1c  =  q↑ (PROD1 HOLE _) (unfR refl
+         (  q↓ (PROD1 HOLE _) (resRP (resLP (focL refl
+         (  impLL (diaR (unfR refl (resLP (resLP (focL refl
+         (  impLL axR (unfL refl (resPL (resRP (focL refl (impRL axR axL))))))
+         ))))) (impRL axR axL))))))) axL
+\end{code}
+\\
+In order to assign an interpretation to our derivations, we give some
+definitions for our lexical terms. These are now slightly more
+complicated, using the CPS-translated types:
+\\[1\baselineskip]
+\begin{code}
+  postulate
+    person  : Entity → Bool
+    guest   : Entity → Bool
+    say     : Entity → Bool → Bool
+    leave   : Entity → Bool
+
+  everyone             : EVERYONE *
+  everyone (f , k)     = forAll (λ x → person x ⊃ (f (k , x)))
+  said                 : SAID *
+  said ((x , k) , k')  = k (say x (k' (λ y → y)))
+  some                 : SOME *
+  some (k , f)         = exists (λ x → f x ∧ k x)
+  left                 : LEFT *
+  left (x , k)         = k (leave x)
+\end{code}
+\\
+And, when we compute our meanings---inserting the identity function in
+order to extract a meaning out of the continuation---we see that we
+get exactly the desired result:
+\\[1\baselineskip]
+\begin{code}
+  sem1a  : (syn1a *) (everyone , said , (some , guest) , left) (λ x → x)
+         ≡ exists (λ y → guest y ∧ forAll (λ x → person x ⊃ say x (leave y)))
+  sem1a  = refl
+  sem1b  : (syn1b *) (everyone , said , (some , guest) , left) (λ x → x)
+         ≡ forAll (λ x → person x ⊃ exists (λ y → guest y ∧ say x (leave y)))
+  sem1b  = refl
+  sem1c  : (syn1c *) (everyone , said , (some , guest) , left) (λ x → x)
+         ≡ forAll (λ x → person x ⊃ (say x (exists (λ y → guest y ∧ leave y))))
+  sem1c  = refl
+\end{code}
 \end{appendices}
 \end{document}

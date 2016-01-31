@@ -420,8 +420,9 @@ scope-taking behaviour.
 
 
 
-\subsubsection{Limitations: scope islands, strong and weak quantifiers}
-\label{sec:limitations-scope-islands-strong-and-weak-quantifiers}
+\subsubsection{Limitations: dynamic answer types, scope islands and
+  strong and weak quantifiers}
+\label{sec:limitations}
 \citepos{moortgat2012} CPS-semantics give a beautiful solution to the
 problem of spurious ambiguity both in proof search \emph{and} in
 CPS-translation. However, their solution---and
@@ -1029,8 +1030,7 @@ explicitly mark this as an application of rewriting by equality
 
 In its current shape, NLQ is capable of analysing sentences with
 changing answer types---something which is problematic to many
-semantic approaches to quantifier raising (see
-\autoref{sec:limitations-scope-islands-strong-and-weak-quantifiers})
+semantic approaches to quantifier raising (see \autoref{sec:limitations})
 
 \input{fig-example-changing-answer-type}
 
@@ -1168,11 +1168,11 @@ given in \autoref{fig:parasitic-scope-lexicon}
 
 \subsubsection{Islands and diamonds}
 \label{sec:scope-islands}
-In \autoref{sec:limitations-scope-islands-strong-and-weak-quantifiers}
-we briefly discussed scope islands. Our goal for this section is to
-develop an extension to \I\B\C\ for NLQ,  which can be used to give
-`to say' a type which blocks the wide-scope interpretation for the
-universal quantifier---creating an island from which it cannot escape.
+In \autoref{sec:limitations} we briefly discussed scope islands. Our
+goal for this section is to develop an extension to \I\B\C\ for NLQ,
+which can be used to give `to say' a type which blocks the wide-scope
+interpretation for the universal quantifier---creating an island from
+which it cannot escape.
 
 The solution to this problem is rather simple: we have previously
 discussed that quantifiers are to be restricted to moving upwards and
@@ -1234,6 +1234,42 @@ same time isolates it from its surrounding context.
 
 
 \subsubsection{Strong versus weak quantifiers}
+There is one phenomenon that we, so far, have not addressed: the
+distinction between strong and weak quantifiers. Evidence for this
+distinction is discussed in \autoref{sec:limitations}. Let us briefly
+examine the data again. The problem is that there is a difference in
+behaviour with respect to scope islands between two categories of
+quantifiers: strong quantifier (which include indefinites) and weak
+quantifiers (which includes universals). For instance, in ``Mary said
+everyone left'', we expect only the local-scope reading:
+\[
+  \PAST(\SAY(\MARY,\forall{x}.\PERSON(x)\supset\PAST(\LEAVE(x))))
+\]
+However, with ``Mary said someone left'', we expect both the
+local-scope and the wide-scope readings---the difference being that in
+the second reading, we can infer the existence of ``someone'':
+\begin{gather*}
+  \exists{x}.\PERSON(x)\wedge\PAST(\SAY(\MARY,\PAST(\LEAVE(x))))\\
+  \PAST(\SAY(\MARY,\exists{x}.\PERSON(x)\wedge\PAST(\LEAVE(x))))
+\end{gather*}
+More interestingly, with ``Everyone said someone left'', we expect to
+\emph{also} get scope ambiguity due to the two quantifiers---the
+difference there being that everyone may have said ``someone left'',
+but they all may have been referring to different people:
+\begin{gather*}
+  \exists{y}.\PERSON(y)\wedge\forall{x}.\PERSON(x)\supset\PAST(\SAY(x,\PAST(\LEAVE(y))))\\
+  \forall{x}.\PERSON(x)\supset\exists{y}.\PERSON(y)\wedge\PAST(\SAY(x,\PAST(\LEAVE(y))))\\
+  \forall{x}.\PERSON(x)\supset\PAST(\SAY(x,\exists{y}.\PERSON(y)\wedge\PAST(\LEAVE(y))))
+\end{gather*}
+There are two simple ways of getting NLQ to derive exactly these
+readings. The first is to extend the syntactic mechanisms for movement
+with a new combinator, analogous to \B\ and \C, which allows strong
+quantifiers to \emph{syntactically} move past \emph{weak} scope
+islands. The second solution would be to extend the CPS-semantics
+given by \citet{moortgat2012} to cover NLQ, and allow indefinites to
+take top-level scope \emph{semantically}. We will discuss both
+solutions below.
+
 \todo{Discuss: extension implemented, which distinguishes between
   strong and weak quantifiers and adds $\I^*$-rules for \emph{strong}
   quantifiers.}
