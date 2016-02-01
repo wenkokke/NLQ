@@ -165,8 +165,8 @@ rules, defining all the copies at the same time.
     Solid   : Kind             -- solid       {⇒, ∙, ⇐}
     Quan    : Strength → Kind  -- hollow      {⇨, ∘, ⇦}
     Delim   : Strength → Kind  -- reset       {◇, □}
-    Ext     : Kind             -- extraction  {↿, ↾, ◇↑, □↑}
-    Ifx     : Kind             -- infixation  {⇃, ⇂, ◇↓, □↓}
+    Ifx     : Kind             -- extraction  {↿, ↾, ◇↑, □↑}
+    Ext     : Kind             -- infixation  {⇃, ⇂, ◇↓, □↓}
 
   data Type : Set where
     El     : Atom  → Type
@@ -193,11 +193,11 @@ rules, defining all the copies at the same time.
   pattern _⇦_  b a  = ImpL   (Quan Weak)   b a
   pattern QW   a    = UnitL  (Quan Weak)   a
   pattern ◇_   a    = Dia    (Delim Weak)  a
-  pattern ◇↑_  a    = Dia    Ext           a
-  pattern ◇↓_  a    = Dia    Ifx           a
+  pattern ◇↑_  a    = Dia    Ifx           a
+  pattern ◇↓_  a    = Dia    Ext           a
   pattern □_   a    = Box    (Delim Weak)  a
-  pattern □↑_  a    = Box    Ext           a
-  pattern □↓_  a    = Box    Ifx           a
+  pattern □↑_  a    = Box    Ifx           a
+  pattern □↓_  a    = Box    Ext           a
 
   pattern _↿_  a b  = ◇↑ □↑ (a ⇒ b)
   pattern _↾_  b a  = ◇↑ □↑ (b ⇐ a)
@@ -233,11 +233,11 @@ polarity:
   pattern _∙_  x y  = PROD   Solid         x y
   pattern _∘_  x y  = PROD   (Quan Weak)   x y
   pattern ⟨_⟩  x    = DIA    (Delim Weak)  x
-  pattern ◆↑_  x    = DIA    Ext           x
-  pattern ◆↓_  x    = DIA    Ifx           x
+  pattern ◆↑_  x    = DIA    Ifx           x
+  pattern ◆↓_  x    = DIA    Ext           x
   pattern I         = UNIT   (Quan Weak)
-  pattern ■↑_  x    = BOX    Ext           x
-  pattern ■↓_  x    = BOX    Ifx           x
+  pattern ■↑_  x    = BOX    Ifx           x
+  pattern ■↓_  x    = BOX    Ext           x
 \end{code}
 \\
 Since there is no pretty way to write the box we used for focusing in
@@ -327,15 +327,15 @@ for the polarity of the type \AgdaBound{a}/\AgdaBound{b}:
     dnI*    : ∀ {x y w}      → NLQ (⟨ PROD (Quan Strong) x y ⟩ ⊢ w)
             → NLQ (PROD (Quan Strong) (I* ∙ ⟨ x ⟩) y ⊢ w)
 
-    extRR   : ∀ {x y z w}    → NLQ ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NLQ (x ∙ (y ∙ ◆↑ z) ⊢ w)
-    extLR   : ∀ {x y z w}    → NLQ ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NLQ ((x ∙ ◆↑ z) ∙ y ⊢ w)
-    extLL   : ∀ {x y z w}    → NLQ (◆↑ z ∙ (y ∙ x) ⊢ w)  → NLQ ((◆↑ z ∙ y) ∙ x ⊢ w)
-    extRL   : ∀ {x y z w}    → NLQ (◆↑ z ∙ (y ∙ x) ⊢ w)  → NLQ (y ∙ (◆↑ z ∙ x) ⊢ w)
+    ifxRR   : ∀ {x y z w}    → NLQ ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NLQ (x ∙ (y ∙ ◆↑ z) ⊢ w)
+    ifxLR   : ∀ {x y z w}    → NLQ ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NLQ ((x ∙ ◆↑ z) ∙ y ⊢ w)
+    ifxLL   : ∀ {x y z w}    → NLQ (◆↑ z ∙ (y ∙ x) ⊢ w)  → NLQ ((◆↑ z ∙ y) ∙ x ⊢ w)
+    ifxRL   : ∀ {x y z w}    → NLQ (◆↑ z ∙ (y ∙ x) ⊢ w)  → NLQ (y ∙ (◆↑ z ∙ x) ⊢ w)
 
-    ifxRR   : ∀ {x y z w}    → NLQ (x ∙ (y ∙ ◆↓ z) ⊢ w)  → NLQ ((x ∙ y) ∙ ◆↓ z ⊢ w)
-    ifxLR   : ∀ {x y z w}    → NLQ ((x ∙ ◆↓ z) ∙ y ⊢ w)  → NLQ ((x ∙ y) ∙ ◆↓ z ⊢ w)
-    ifxLL   : ∀ {x y z w}    → NLQ ((◆↓ z ∙ y) ∙ x ⊢ w)  → NLQ (◆↓ z ∙ (y ∙ x) ⊢ w)
-    ifxRL   : ∀ {x y z w}    → NLQ (y ∙ (◆↓ z ∙ x) ⊢ w)  → NLQ (◆↓ z ∙ (y ∙ x) ⊢ w)
+    extRR   : ∀ {x y z w}    → NLQ (x ∙ (y ∙ ◆↓ z) ⊢ w)  → NLQ ((x ∙ y) ∙ ◆↓ z ⊢ w)
+    extLR   : ∀ {x y z w}    → NLQ ((x ∙ ◆↓ z) ∙ y ⊢ w)  → NLQ ((x ∙ y) ∙ ◆↓ z ⊢ w)
+    extLL   : ∀ {x y z w}    → NLQ ((◆↓ z ∙ y) ∙ x ⊢ w)  → NLQ (◆↓ z ∙ (y ∙ x) ⊢ w)
+    extRL   : ∀ {x y z w}    → NLQ (y ∙ (◆↓ z ∙ x) ⊢ w)  → NLQ (◆↓ z ∙ (y ∙ x) ⊢ w)
 \end{code}
 \\
 Using these axiomatic rules, we can define derived rules. For
@@ -424,11 +424,11 @@ synonyms:
   pattern _⇨>_  x y  = IMPR2  (Quan Weak)   x y
   pattern _⇦>_  y x  = IMPL2  (Quan Weak)   y x
   pattern ◆>_   x    = DIA1   (Delim Weak)  x
-  pattern ◆↓>_  x    = DIA1   Ext           x
-  pattern ◆↑>_  x    = DIA1   Ifx           x
+  pattern ◆↓>_  x    = DIA1   Ifx           x
+  pattern ◆↑>_  x    = DIA1   Ext           x
   pattern ■>_   x    = BOX1   (Delim Weak)  x
-  pattern ■↓>_  x    = BOX1   Ext           x
-  pattern ■↑>_  x    = BOX1   Ifx           x
+  pattern ■↓>_  x    = BOX1   Ifx           x
+  pattern ■↑>_  x    = BOX1   Ext           x
 \end{code}
 \\
 And we do the same for sequents:
@@ -561,7 +561,7 @@ the isomorphism more easily:
 
 \subsubsection{Structuralising Types}
 Because each logical connective has a structural equivalent, it is
-possible---to a certain ifxend---structuralise logical connectives
+possible---to a certain extend---structuralise logical connectives
 en masse. The function \AgdaFunction{St} takes a type, and computes
 the maximally structuralised version of that type, given a target
 polarity $p$:
@@ -757,10 +757,10 @@ formalise the right infixation, allowing a structure with an
 infixation licence to move downwards past solid products:
 \\[1\baselineskip]
 \begin{code}
-  ifxR : ∀ {y z w} (x : ∙-Ctxt) → NLQ x [ y ∙ ◆↓ z ] ⊢ w → NLQ x [ y ] ∙ ◆↓ z ⊢ w
-  ifxR ( HOLE        ) f = f
-  ifxR ( PROD1  x y  ) f = ifxLR (resLP (ifxR x (resPL f)))
-  ifxR ( PROD2  x y  ) f = ifxRR (resRP (ifxR y (resPR f)))
+  extR : ∀ {y z w} (x : ∙-Ctxt) → NLQ x [ y ∙ ◆↓ z ] ⊢ w → NLQ x [ y ] ∙ ◆↓ z ⊢ w
+  extR ( HOLE        ) f = f
+  extR ( PROD1  x y  ) f = extLR (resLP (extR x (resPL f)))
+  extR ( PROD2  x y  ) f = extRR (resRP (extR y (resPR f)))
 \end{code}
 \\
 However, here we run into a slight problem. In this formalisation, we
@@ -775,7 +775,7 @@ define the following version of the rule:
 \begin{code}
   r⇂⁺  : ∀ {y b c} (x : ∙-Ctxt) (pr : Pol(b) ≡ +)
        → NLQ x [ y ∙ · b · ] ⊢ · c · →  NLQ x [ y ] ⊢ · c ⇂ b ·
-  r⇂⁺ {y} {b} x pr f = impLR (resPL (resRP (diaL (resPR (ifxR x (stop x f))))))
+  r⇂⁺ {y} {b} x pr f = impLR (resPL (resRP (diaL (resPR (extR x (stop x f))))))
     where
     stop : ∀ {z} (x : ∙-Ctxt) → NLQ x [ y ∙ · b · ] ⊢ z → NLQ x [ y ∙ ◆↓ · □↓ b · ] ⊢ z
     stop ( HOLE        ) f = resRP (resBD (focL refl (boxL (unfL pr (resPR f)))))
@@ -789,7 +789,7 @@ license in place, and then remove it at a later stage in the proof:
 \\[1\baselineskip]
 \begin{code}
   r⇂ : ∀ {y b c} (x : ∙-Ctxt) → NLQ x [ y ∙ ◆↓ · □↓ b · ] ⊢ · c · →  NLQ x [ y ] ⊢ · c ⇂ b ·
-  r⇂ x f = impLR (resPL (resRP (diaL (resPR (ifxR x f)))))
+  r⇂ x f = impLR (resPL (resRP (diaL (resPR (extR x f)))))
 \end{code}
 \\
 The proofs for left infixation, and extraction can be done in a
@@ -916,14 +916,14 @@ translation on proofs:
         upB     f    *′ = λ{ ( x , y  , z)        → (f *′) (((_ , x) , y) , z)  }
         upC     f    *′ = λ{ ((x , y) , z)        → (f *′) (((_ , x) , z) , y)  }
         upI*    f    *′ = λ{  (x , y)             → (f *′) ((_ , x) , y)        }
-        extRR   f    *′ = λ{ ( x , y  , z)        → (f *′) ((x , y) , z)        }
-        extLR   f    *′ = λ{ ((x , z) , y)        → (f *′) ((x , y) , z)        }
-        extLL   f    *′ = λ{ ((z , y) , x)        → (f *′) ( z , y  , x)        }
-        extRL   f    *′ = λ{ ( y , z  , x)        → (f *′) ( z , y  , x)        }
-        ifxRR   f    *′ = λ{ ((x , y) , z)        → (f *′) ( x , y  , z)        }
-        ifxLR   f    *′ = λ{ ((x , y) , z)        → (f *′) ((x , z) , y)        }
-        ifxLL   f    *′ = λ{ ( z , y  , x)        → (f *′) ((z , y) , x)        }
-        ifxRL   f    *′ = λ{ ( z , y  , x)        → (f *′) ( y , z  , x)        }
+        ifxRR   f    *′ = λ{ ( x , y  , z)        → (f *′) ((x , y) , z)        }
+        ifxLR   f    *′ = λ{ ((x , z) , y)        → (f *′) ((x , y) , z)        }
+        ifxLL   f    *′ = λ{ ((z , y) , x)        → (f *′) ( z , y  , x)        }
+        ifxRL   f    *′ = λ{ ( y , z  , x)        → (f *′) ( z , y  , x)        }
+        extRR   f    *′ = λ{ ((x , y) , z)        → (f *′) ( x , y  , z)        }
+        extLR   f    *′ = λ{ ((x , y) , z)        → (f *′) ((x , z) , y)        }
+        extLL   f    *′ = λ{ ( z , y  , x)        → (f *′) ((z , y) , x)        }
+        extRL   f    *′ = λ{ ( z , y  , x)        → (f *′) ( y , z  , x)        }
 \end{code}
 
 
@@ -1209,14 +1209,14 @@ translations of the rules of the same name given earlier:
       upC       f    *′ = λ{ ((x , y) , z) → (f *′) (((tt , x) , z) , y) }
       upI*      f    *′ = λ{ (x , y) → (f *′) ((tt , x) , y) }
       dnI*      f    *′ = λ{ ((tt , x) , y) → (f *′) (x , y) }
-      extRR     f    *′ = λ{ (x , (y , z)) → (f *′) ((x , y) , z) }
-      extLR     f    *′ = λ{ ((x , z) , y) → (f *′) ((x , y) , z) }
-      extLL     f    *′ = λ{ ((z , y) , x) → (f *′) (z , (y , x)) }
-      extRL     f    *′ = λ{ (y , (z , x)) → (f *′) (z , (y , x)) }
-      ifxRR     f    *′ = λ{ ((x , y) , z) → (f *′) (x , (y , z)) }
-      ifxLR     f    *′ = λ{ ((x , y) , z) → (f *′) ((x , z) , y) }
-      ifxLL     f    *′ = λ{ (z , (y , x)) → (f *′) ((z , y) , x) }
-      ifxRL     f    *′ = λ{ (z , (y , x)) → (f *′) (y , (z , x)) }
+      ifxRR     f    *′ = λ{ (x , (y , z)) → (f *′) ((x , y) , z) }
+      ifxLR     f    *′ = λ{ ((x , z) , y) → (f *′) ((x , y) , z) }
+      ifxLL     f    *′ = λ{ ((z , y) , x) → (f *′) (z , (y , x)) }
+      ifxRL     f    *′ = λ{ (y , (z , x)) → (f *′) (z , (y , x)) }
+      extRR     f    *′ = λ{ ((x , y) , z) → (f *′) (x , (y , z)) }
+      extLR     f    *′ = λ{ ((x , y) , z) → (f *′) ((x , z) , y) }
+      extLL     f    *′ = λ{ (z , (y , x)) → (f *′) ((z , y) , x) }
+      extRL     f    *′ = λ{ (z , (y , x)) → (f *′) (y , (z , x)) }
 \end{code}
 \begin{comment}
 \begin{code}
