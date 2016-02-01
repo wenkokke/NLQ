@@ -44,9 +44,9 @@ search ss = do
           , [withL1,withL2,withR]
           , [impRL,impRR,impLL,impLR,resRP,resPR,resLP,resPL]
           , [diaL,diaR,boxL,boxR,resBD,resDB]
-          , [extLL,extLR,extRL,extRR]
           , [ifxLL,ifxLR,ifxRL,ifxRR]
-          , [qrR',qrL']
+          , [extLL,extLR,extRL,extRR]
+          , [qR',qL']
           ]
 
     loop :: SSequent s -> Search m (Syn s)
@@ -125,43 +125,43 @@ search ss = do
     resDB (x :%⊢ SBOX k y)           = ResDB <$> loop (SDIA k x :%⊢ y)
     resDB _                          = empty
 
-    ifxRR,ifxLR,ifxLL,ifxRL :: SSequent s -> Search m (Syn s)
-    ifxRR (x :%∙ (y :%∙ SIFX z) :%⊢ w) = IfxRR <$> loop ((x :%∙ y) :%∙ SIFX z :%⊢ w)
-    ifxRR _                            = empty
-    ifxLR ((x :%∙ SIFX z) :%∙ y :%⊢ w) = IfxLR <$> loop ((x :%∙ y) :%∙ SIFX z :%⊢ w)
-    ifxLR _                            = empty
-    ifxLL ((SIFX z :%∙ y) :%∙ x :%⊢ w) = IfxLL <$> loop (SIFX z :%∙ (y :%∙ x) :%⊢ w)
-    ifxLL _                            = empty
-    ifxRL (y :%∙ (SIFX z :%∙ x) :%⊢ w) = IfxRL <$> loop (SIFX z :%∙ (y :%∙ x) :%⊢ w)
-    ifxRL _                            = empty
-
     extRR,extLR,extLL,extRL :: SSequent s -> Search m (Syn s)
-    extRR ((x :%∙ y) :%∙ SEXT z :%⊢ w) = ExtRR <$> loop (x :%∙ (y :%∙ SEXT z) :%⊢ w)
+    extRR (x :%∙ (y :%∙ SEXT z) :%⊢ w) = ExtRR <$> loop ((x :%∙ y) :%∙ SEXT z :%⊢ w)
     extRR _                            = empty
-    extLR ((x :%∙ y) :%∙ SEXT z :%⊢ w) = ExtLR <$> loop ((x :%∙ SEXT z) :%∙ y :%⊢ w)
+    extLR ((x :%∙ SEXT z) :%∙ y :%⊢ w) = ExtLR <$> loop ((x :%∙ y) :%∙ SEXT z :%⊢ w)
     extLR _                            = empty
-    extLL (SEXT z :%∙ (y :%∙ x) :%⊢ w) = ExtLL <$> loop ((SEXT z :%∙ y) :%∙ x :%⊢ w)
+    extLL ((SEXT z :%∙ y) :%∙ x :%⊢ w) = ExtLL <$> loop (SEXT z :%∙ (y :%∙ x) :%⊢ w)
     extLL _                            = empty
-    extRL (SEXT z :%∙ (y :%∙ x) :%⊢ w) = ExtRL <$> loop (y :%∙ (SEXT z :%∙ x) :%⊢ w)
+    extRL (y :%∙ (SEXT z :%∙ x) :%⊢ w) = ExtRL <$> loop (SEXT z :%∙ (y :%∙ x) :%⊢ w)
     extRL _                            = empty
 
-    qrL',qrR' :: SSequent s -> Search m (Syn s)
-    qrL' (x :%⊢ y) = msum (app <$> sFocus x)
+    ifxRR,ifxLR,ifxLL,ifxRL :: SSequent s -> Search m (Syn s)
+    ifxRR ((x :%∙ y) :%∙ SIFX z :%⊢ w) = IfxRR <$> loop (x :%∙ (y :%∙ SIFX z) :%⊢ w)
+    ifxRR _                            = empty
+    ifxLR ((x :%∙ y) :%∙ SIFX z :%⊢ w) = IfxLR <$> loop ((x :%∙ SIFX z) :%∙ y :%⊢ w)
+    ifxLR _                            = empty
+    ifxLL (SIFX z :%∙ (y :%∙ x) :%⊢ w) = IfxLL <$> loop ((SIFX z :%∙ y) :%∙ x :%⊢ w)
+    ifxLL _                            = empty
+    ifxRL (SIFX z :%∙ (y :%∙ x) :%⊢ w) = IfxRL <$> loop (y :%∙ (SIFX z :%∙ x) :%⊢ w)
+    ifxRL _                            = empty
+
+    qL',qR' :: SSequent s -> Search m (Syn s)
+    qL' (x :%⊢ y) = msum (app <$> sFocus x)
       where
         app (Focus k3 x (SStI (SUnitL (SQuan k1) (SImpR (SQuan k2) b c))) Refl)
           = case k1 %~ k2 of
             Proved Refl -> case k3 of
-              SWeak     -> qrL k1 x <$> prog (sTrace k1 x :%⊢> b) <*> prog (c :%<⊢ y)
+              SWeak     -> qL k1 x <$> prog (sTrace k1 x :%⊢> b) <*> prog (c :%<⊢ y)
               SStrong   -> case k1 of
                 SWeak   -> empty
-                SStrong -> qrL k1 x <$> prog (sTrace k1 x :%⊢> b) <*> prog (c :%<⊢ y)
+                SStrong -> qL k1 x <$> prog (sTrace k1 x :%⊢> b) <*> prog (c :%<⊢ y)
             _           -> empty
         app _   = empty
-    qrL'    _   = empty
+    qL'    _   = empty
 
-    qrR' (x :%⊢ SStO (SImpL (SQuan k1) b a)) = msum (maybeToList (app <$> sFollow x))
+    qR' (x :%⊢ SStO (SImpL (SQuan k1) b a)) = msum (maybeToList (app <$> sFollow x))
       where
         app (Trail k2 x Refl) = case k1 %~ k2 of
-          Proved Refl -> qrR k1 x <$> prog (sPlug x (SStI a) :%⊢ SStO b)
+          Proved Refl -> qR k1 x <$> prog (sPlug x (SStI a) :%⊢ SStO b)
           _           -> empty
-    qrR'  _            = empty
+    qR'  _            = empty

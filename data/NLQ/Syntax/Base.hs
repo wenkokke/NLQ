@@ -31,8 +31,8 @@ singletons [d|
     Solid  :: Kind
     Quan   :: Strength -> Kind
     Delim  :: Strength -> Kind
-    Ifx :: Kind
-    Ext :: Kind
+    Ext    :: Kind
+    Ifx    :: Kind
     deriving (Eq,Show)
 
   data Type :: * where
@@ -107,7 +107,7 @@ deriving instance Ord StructO
 deriving instance Ord Sequent
 
 kinds :: [Kind]
-kinds = [Solid,Quan Weak,Quan Strong,Delim Weak,Delim Strong,Ifx,Ext]
+kinds = [Solid,Quan Weak,Quan Strong,Delim Weak,Delim Strong,Ext,Ifx]
 
 infixr 3 :∙, :%∙
 infixr 7 :→, :%→
@@ -155,26 +155,26 @@ type     DELS x =  DIA  (Delim  Strong) x
 pattern  DELS x =  DIA  (Delim  Strong) x
 pattern SDELS x = SDIA (SDelim SStrong) x
 
-type     IFX x =  DIA  Ifx x
-pattern  IFX x =  DIA  Ifx x
-pattern SIFX x = SDIA SIfx x
 type     EXT x =  DIA  Ext x
 pattern  EXT x =  DIA  Ext x
 pattern SEXT x = SDIA SExt x
+type     IFX x =  DIA  Ifx x
+pattern  IFX x =  DIA  Ifx x
+pattern SIFX x = SDIA SIfx x
 
-type    a  :⇃ b = ( Dia  Ext ( Box  Ext a))  :→ b
-pattern a  :⇃ b = ( Dia  Ext ( Box  Ext a))  :→ b
-pattern a :%⇃ b = (SDia SExt (SBox SExt a)) :%→ b
-type    b  :⇂ a = b  :←  Dia  Ext ( Box  Ext a)
-pattern b  :⇂ a = b  :←  Dia  Ext ( Box  Ext a)
-pattern b :%⇂ a = b :%← SDia SExt (SBox SExt a)
+type    a  :⇃ b = ( Dia  Ifx ( Box  Ifx a))  :→ b
+pattern a  :⇃ b = ( Dia  Ifx ( Box  Ifx a))  :→ b
+pattern a :%⇃ b = (SDia SIfx (SBox SIfx a)) :%→ b
+type    b  :⇂ a = b  :←  Dia  Ifx ( Box  Ifx a)
+pattern b  :⇂ a = b  :←  Dia  Ifx ( Box  Ifx a)
+pattern b :%⇂ a = b :%← SDia SIfx (SBox SIfx a)
 
-type    a  :↿ b =  Dia  Ifx ( Box  Ifx (a  :→ b))
-pattern a  :↿ b =  Dia  Ifx ( Box  Ifx (a  :→ b))
-pattern a :%↿ b = SDia SIfx (SBox SIfx (a :%→ b))
-type    b  :↾ a =  Dia  Ifx ( Box  Ifx (b  :← a))
-pattern b  :↾ a =  Dia  Ifx ( Box  Ifx (b  :← a))
-pattern b :%↾ a = SDia SIfx (SBox SIfx (b :%← a))
+type    a  :↿ b =  Dia  Ext ( Box  Ext (a  :→ b))
+pattern a  :↿ b =  Dia  Ext ( Box  Ext (a  :→ b))
+pattern a :%↿ b = SDia SExt (SBox SExt (a :%→ b))
+type    b  :↾ a =  Dia  Ext ( Box  Ext (b  :← a))
+pattern b  :↾ a =  Dia  Ext ( Box  Ext (b  :← a))
+pattern b :%↾ a = SDia SExt (SBox SExt (b :%← a))
 
 
 
@@ -314,15 +314,15 @@ data Syn :: Sequent -> * where
   ResBD  :: Syn (x :⊢ BOX k y) -> Syn (DIA k x :⊢ y)
   ResDB  :: Syn (DIA k x :⊢ y) -> Syn (x :⊢ BOX k y)
 
-  IfxRR   :: Syn ((x :∙ y) :∙ IFX z :⊢ w) -> Syn (x :∙ (y :∙ IFX z) :⊢ w)
-  IfxLR   :: Syn ((x :∙ y) :∙ IFX z :⊢ w) -> Syn ((x :∙ IFX z) :∙ y :⊢ w)
-  IfxLL   :: Syn (IFX z :∙ (y :∙ x) :⊢ w) -> Syn ((IFX z :∙ y) :∙ x :⊢ w)
-  IfxRL   :: Syn (IFX z :∙ (y :∙ x) :⊢ w) -> Syn (y :∙ (IFX z :∙ x) :⊢ w)
+  ExtRR   :: Syn ((x :∙ y) :∙ EXT z :⊢ w) -> Syn (x :∙ (y :∙ EXT z) :⊢ w)
+  ExtLR   :: Syn ((x :∙ y) :∙ EXT z :⊢ w) -> Syn ((x :∙ EXT z) :∙ y :⊢ w)
+  ExtLL   :: Syn (EXT z :∙ (y :∙ x) :⊢ w) -> Syn ((EXT z :∙ y) :∙ x :⊢ w)
+  ExtRL   :: Syn (EXT z :∙ (y :∙ x) :⊢ w) -> Syn (y :∙ (EXT z :∙ x) :⊢ w)
 
-  ExtRR   :: Syn (x :∙ (y :∙ EXT z) :⊢ w) -> Syn ((x :∙ y) :∙ EXT z :⊢ w)
-  ExtLR   :: Syn ((x :∙ EXT z) :∙ y :⊢ w) -> Syn ((x :∙ y) :∙ EXT z :⊢ w)
-  ExtLL   :: Syn ((EXT z :∙ y) :∙ x :⊢ w) -> Syn (EXT z :∙ (y :∙ x) :⊢ w)
-  ExtRL   :: Syn (y :∙ (EXT z :∙ x) :⊢ w) -> Syn (EXT z :∙ (y :∙ x) :⊢ w)
+  IfxRR   :: Syn (x :∙ (y :∙ IFX z) :⊢ w) -> Syn ((x :∙ y) :∙ IFX z :⊢ w)
+  IfxLR   :: Syn ((x :∙ IFX z) :∙ y :⊢ w) -> Syn ((x :∙ y) :∙ IFX z :⊢ w)
+  IfxLL   :: Syn ((IFX z :∙ y) :∙ x :⊢ w) -> Syn (IFX z :∙ (y :∙ x) :⊢ w)
+  IfxRL   :: Syn (y :∙ (IFX z :∙ x) :⊢ w) -> Syn (IFX z :∙ (y :∙ x) :⊢ w)
 
   UnitLL :: Syn (PROD k (UNIT k) (StI a) :⊢ y) -> Syn (StI (UnitL k a) :⊢ y)
   UnitLR :: Syn (x :⊢> b) -> Syn (PROD k (UNIT k) x :⊢> UnitL k b)
@@ -362,6 +362,7 @@ up k       (x :%∙> y) f = DnB  (ResRP (unsafeCoerce (up k y (ResPR (unsafeCoer
 up SStrong (SDelW1 x) f = DnI' (ResBD (unsafeCoerce (up SStrong x (ResDB (unsafeCoerce f)))))
 up SWeak   (SDelW1 x) f = error "up: `strong' context used with `weak' quantifier"
 
+
 down :: SStrength k -> SContext x
      -> Syn (PROD (Quan k) (Trace k x) (StI a) :⊢ z)
      -> Syn (Plug x (StI (UnitL (Quan k) a)) :⊢ z)
@@ -384,16 +385,18 @@ down k x f = unsafeCoerce (init x (unsafeCoerce (move x f)))
       Proved Refl    -> ResBD (unsafeCoerce (move x (ResDB (UpI' (unsafeCoerce f)))))
       _              -> error "down: `strong' context used with `weak' quantifier"
 
-qrL :: SStrength k -> SContext x
+
+qL :: SStrength k -> SContext x
     -> Syn (Trace k x :⊢> b)
     -> Syn (c :<⊢ y)
     -> Syn (Plug x (StI (UnitL (Quan k) (ImpR (Quan k) b c))) :⊢ y)
-qrL k x f g = unsafeCoerce (down k x (ResRP (FocL Neg_ImpR (ImpRL f g))))
+qL k x f g = unsafeCoerce (down k x (ResRP (FocL Neg_ImpR (ImpRL f g))))
 
-qrR :: SStrength k -> SContext x
+
+qR :: SStrength k -> SContext x
     -> Syn (Plug x (StI a) :⊢ StO b)
     -> Syn (Trace k x :⊢ StO (ImpL (Quan k) b a))
-qrR k x f = ImpLR (ResPL (up k x f))
+qR k x f = ImpLR (ResPL (up k x f))
 
 
 
@@ -413,8 +416,8 @@ data USyn
    | UResRP  USyn      | UResPR  USyn | UResLP  USyn      | UResPL USyn
    | UDiaL   USyn      | UDiaR   USyn | UBoxL   USyn      | UBoxR USyn
    | UResBD  USyn      | UResDB  USyn
-   | UIfxRR  USyn      | UIfxLR  USyn | UIfxLL  USyn      | UIfxRL USyn
    | UExtRR  USyn      | UExtLR  USyn | UExtLL  USyn      | UExtRL USyn
+   | UIfxRR  USyn      | UIfxLR  USyn | UIfxLL  USyn      | UIfxRL USyn
    | UUnitLL USyn      | UUnitLR USyn | UUnitLI USyn
    | UDnB    USyn      | UUpB    USyn | UDnC    USyn      | UUpC USyn
    deriving (Eq,Ord)
@@ -443,14 +446,14 @@ forget (BoxL   f)   = UBoxL   (forget f)
 forget (BoxR   f)   = UBoxR   (forget f)
 forget (ResBD  f)   = UResBD  (forget f)
 forget (ResDB  f)   = UResDB  (forget f)
-forget (IfxRR  f)   = UIfxRR  (forget f)
-forget (IfxLR  f)   = UIfxLR  (forget f)
-forget (IfxLL  f)   = UIfxLL  (forget f)
-forget (IfxRL  f)   = UIfxRL  (forget f)
 forget (ExtRR  f)   = UExtRR  (forget f)
 forget (ExtLR  f)   = UExtLR  (forget f)
 forget (ExtLL  f)   = UExtLL  (forget f)
 forget (ExtRL  f)   = UExtRL  (forget f)
+forget (IfxRR  f)   = UIfxRR  (forget f)
+forget (IfxLR  f)   = UIfxLR  (forget f)
+forget (IfxLL  f)   = UIfxLL  (forget f)
+forget (IfxRL  f)   = UIfxRL  (forget f)
 forget (UnitLL f)   = UUnitLL (forget f)
 forget (UnitLR f)   = UUnitLR (forget f)
 forget (UnitLI f)   = UUnitLI (forget f)

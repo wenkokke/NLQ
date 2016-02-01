@@ -1,9 +1,9 @@
-{-# LANGUAGE GADTs          #-}
-{-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE RankNTypes     #-}
-{-# LANGUAGE TypeFamilies   #-}
-{-# LANGUAGE TypeOperators  #-}
-{-# LANGUAGE ImplicitParams #-}
+{-# LANGUAGE GADTs            #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE TypeFamilies     #-}
+{-# LANGUAGE TypeOperators    #-}
+{-# LANGUAGE FlexibleContexts #-}
 module NLQ.Semantics
        (HS,HI,HO,H,withHS,withHI,withHO,withH,hs,hi,ho,h,eta) where
 
@@ -117,14 +117,14 @@ eta (BoxL  f)   = eta f
 eta (BoxR  f)   = eta f
 eta (ResBD f)   = eta f
 eta (ResDB f)   = eta f
-eta (ExtRR f)   = \((x,y),z) -> eta f (x,(y,z))
-eta (ExtLR f)   = \((x,y),z) -> eta f ((x,z),y)
-eta (ExtLL f)   = \(z,(y,x)) -> eta f ((z,y),x)
-eta (ExtRL f)   = \(z,(y,x)) -> eta f (y,(z,x))
-eta (IfxRR f)   = \(x,(y,z)) -> eta f ((x,y),z)
-eta (IfxLR f)   = \((x,z),y) -> eta f ((x,y),z)
-eta (IfxLL f)   = \((z,y),x) -> eta f (z,(y,x))
-eta (IfxRL f)   = \(y,(z,x)) -> eta f (z,(y,x))
+eta (IfxRR f)   = \((x,y),z) -> eta f (x,(y,z))
+eta (IfxLR f)   = \((x,y),z) -> eta f ((x,z),y)
+eta (IfxLL f)   = \(z,(y,x)) -> eta f ((z,y),x)
+eta (IfxRL f)   = \(z,(y,x)) -> eta f (y,(z,x))
+eta (ExtRR f)   = \(x,(y,z)) -> eta f ((x,y),z)
+eta (ExtLR f)   = \((x,z),y) -> eta f ((x,y),z)
+eta (ExtLL f)   = \((z,y),x) -> eta f (z,(y,x))
+eta (ExtRL f)   = \(y,(z,x)) -> eta f (z,(y,x))
 eta (UnitLL  f) = \x -> eta f (EXPR(),x)
 eta (UnitLR  f) = \(_,x) -> eta f x
 eta (UnitLI  f) = \(_,x) -> eta f x
