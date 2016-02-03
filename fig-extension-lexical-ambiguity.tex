@@ -1,23 +1,14 @@
 \begin{figure}[h]
   \begin{mdframed}
     \centering
-    \vspace*{1\baselineskip}
-    \begin{minipage}{0.666\linewidth}
-      \centering
-      \(\text{Type}\;A,B\coloneqq\ldots\vsep A\& B\)
-    \end{minipage}%
-    \begin{minipage}{0.333\linewidth}
-      \centering
-      \(\text{Pol}(A \& B) \mapsto {+}\)
-    \end{minipage}
-    \\[1\baselineskip]
+    \[\text{Type}\;A,B\coloneqq\ldots\vsep A\& B\vsep A\oplus B\]
     \begin{pfbox}
-      \AXC{$\focus{A}\fCenter Δ$}
+      \AXC{$\struct{A}\fCenter Δ$}
       \RightLabel{L\&$_1$}
       \UIC{$\struct{A\& B}\fCenter Δ$}
     \end{pfbox}
     \begin{pfbox}
-      \AXC{$\focus{B}\fCenter Δ$}
+      \AXC{$\struct{B}\fCenter Δ$}
       \RightLabel{L\&$_2$}
       \UIC{$\struct{A\& B}\fCenter Δ$}
     \end{pfbox}
@@ -25,7 +16,24 @@
       \AXC{$Γ\fCenter\struct{A}$}
       \AXC{$Γ\fCenter\struct{B}$}
       \RightLabel{R\&}
-      \BIC{$Γ\fCenter\focus{A\& B}$}
+      \BIC{$Γ\fCenter\struct{A\& B}$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    \begin{pfbox}
+      \AXC{$\struct{A}\fCenter Δ$}
+      \AXC{$\struct{B}\fCenter Δ$}
+      \RightLabel{L$\oplus$}
+      \BIC{$\struct{A\oplus B}\fCenter Δ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\struct{A}$}
+      \RightLabel{R$\oplus_1$}
+      \UIC{$Γ\fCenter\struct{A\oplus B}$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$Γ\fCenter\struct{B}$}
+      \RightLabel{R$\oplus_2$}
+      \UIC{$Γ\fCenter\struct{A\oplus B}$}
     \end{pfbox}
     \\[1\baselineskip]
     \hrulefill
@@ -33,12 +41,12 @@
       \tr[(A\& B)] \mapsto \tr[A]\times\tr[B]
     \]
     \begin{pfblock}
-      \AXC{$x:\focus{A}\fCenter M:Δ$}
+      \AXC{$x:\struct{A}\fCenter M:Δ$}
       \RightLabel{L\&$_1$}
       \UIC{$z:\struct{A\& B}\fCenter \case{z}{x}{\_}{M}:Δ$}
     \end{pfblock}
     \begin{pfblock}
-      \AXC{$y:\focus{B}\fCenter M:Δ$}
+      \AXC{$y:\struct{B}\fCenter M:Δ$}
       \RightLabel{L\&$_2$}
       \UIC{$z:\struct{A\& B}\fCenter \case{z}{\_}{y}{M}:Δ$}
     \end{pfblock}
@@ -46,7 +54,7 @@
       \AXC{$x:Γ\fCenter\struct{M:A}$}
       \AXC{$x:Γ\fCenter\struct{N:B}$}
       \RightLabel{R\&}
-      \BIC{$x:Γ\fCenter\focus{(M,N):A\& B}$}
+      \BIC{$x:Γ\fCenter\struct{(M,N):A\& B}$}
     \end{pfblock}
     \vspace*{0.5\baselineskip}
   \end{mdframed}

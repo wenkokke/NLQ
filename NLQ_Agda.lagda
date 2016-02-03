@@ -119,6 +119,10 @@ data Polarity : Set where
   + : Polarity
   - : Polarity
 
+~_ : Polarity → Polarity
+~ + = -
+~ - = +
+
 record Polarised (A : Set) : Set where
   field
     Pol : A → Polarity
@@ -578,25 +582,22 @@ polarity $p$:
 \\
 We know that if we try to structuralise a positive type as a negative
 structure, or vice versa, it results in the primitive structure. The
-lemmas \AgdaFunction{lem-Neg-St} and \AgdaFunction{lem-Pos-St} encode
-this knowledge:
+lemma \AgdaFunction{lem-St} encodes this knowledge:
 \\[1\baselineskip]
 \begin{code}
-  lem-Neg-St : ∀ a → Pol(a) ≡ - → St { + } a ≡ · a ·
-  lem-Neg-St ( El        a    ) n = refl
-  lem-Neg-St ( Dia    k  a    ) ()
-  lem-Neg-St ( Box    k  a    ) n = refl
-  lem-Neg-St ( UnitL  k  a    ) ()
-  lem-Neg-St ( ImpR   k  a b  ) n = refl
-  lem-Neg-St ( ImpL   k  b a  ) n = refl
-
-  lem-Pos-St : ∀ a → Pol(a) ≡ + → St { - } a ≡ · a ·
-  lem-Pos-St ( El        a    ) p = refl
-  lem-Pos-St ( Dia    k  a    ) p = refl
-  lem-Pos-St ( Box    k  a    ) ()
-  lem-Pos-St ( UnitL  k  a    ) p = refl
-  lem-Pos-St ( ImpR   k  a b  ) ()
-  lem-Pos-St ( ImpL   k  b a  ) ()
+  lem-St : ∀ {p} a → Pol(a) ≡ ~ p → St {p} a ≡ · a ·
+  lem-St { + } ( El      a    ) pr = refl
+  lem-St { - } ( El      a    ) pr = refl
+  lem-St { + } ( Dia   k a    ) ()
+  lem-St { - } ( Dia   k a    ) pr = refl
+  lem-St { + } ( Box   k a    ) pr = refl
+  lem-St { - } ( Box   k a    ) ()
+  lem-St { + } ( UnitL k a    ) ()
+  lem-St { - } ( UnitL k a    ) pr = refl
+  lem-St { + } ( ImpR  k a b  ) pr = refl
+  lem-St { - } ( ImpR  k a b  ) ()
+  lem-St { + } ( ImpL  k b a  ) pr = refl
+  lem-St { - } ( ImpL  k b a  ) ()
 \end{code}
 \\
 The functions \AgdaFunction{st}, \AgdaFunction{stL} and
@@ -656,18 +657,18 @@ structuralise, and continue:\footnote{%
   mutual
     ax : ∀ {a} → NLQ · a · ⊢ · a ·
     ax {a} with Pol(a) | inspect Pol(a)
-    ... | + | P.[ p ]  rewrite lem-Pos-St  a p  = stL (focR p (axR′ p))
-    ... | - | P.[ n ]  rewrite lem-Neg-St  a n  = stR (focL n (axL′ n))
+    ... | + | P.[ p ]  rewrite lem-St  a p  = stL (focR p (axR′ p))
+    ... | - | P.[ n ]  rewrite lem-St  a n  = stR (focL n (axL′ n))
 
     axR : ∀ {b} → NLQ St b ⊢[ b ]
     axR {b} with Pol(b) | inspect Pol(b)
-    ... | + | P.[ p ]                           = axR′ p
-    ... | - | P.[ n ]  rewrite lem-Neg-St  b n  = unfR n (stR (focL n (axL′ n)))
+    ... | + | P.[ p ]                       = axR′ p
+    ... | - | P.[ n ]  rewrite lem-St  b n  = unfR n (stR (focL n (axL′ n)))
 
     axL : ∀ {a} → NLQ [ a ]⊢ St a
     axL {a} with Pol(a) | inspect Pol(a)
-    ... | + | P.[ p ]  rewrite lem-Pos-St  a p  = unfL p (stL (focR p (axR′ p)))
-    ... | - | P.[ n ]                           = axL′ n
+    ... | + | P.[ p ]  rewrite lem-St  a p  = unfL p (stL (focR p (axR′ p)))
+    ... | - | P.[ n ]                       = axL′ n
 
     axR′ : ∀ {b} → Pol(b) ≡ + → NLQ St b ⊢[ b ]
     axR′ { b = El        a    } p = axElR p
@@ -1123,56 +1124,35 @@ And we translate sequents as Agda functions:
       ([ a ]⊢  y  ) *′ = y * → ⟦ a ⟧ -
       (  x  ⊢[ b ]) *′ = x * → ⟦ b ⟧ +
 \end{code}
-\begin{comment}
-\begin{code}
-  unfR* : ∀ {x b} → Pol(b) ≡ - → (x ⊢ · b ·) * → (x ⊢[ b ]) *
-  unfR* {b = El      a  } pr f with Pol(a)
-  unfR* {b = El      a  } () f | +
-  unfR* {b = El      a  } pr f | - = λ x y → f x y
-  unfR* {b = Dia   _ b  } ()
-  unfR* {b = Box   _ b  } pr f     = λ x y → f x y
-  unfR* {b = UnitL _ b  } ()
-  unfR* {b = ImpR  _ a b} pr f     = λ x y → f x y
-  unfR* {b = ImpL  _ b a} pr f     = λ x y → f x y
-
-  unfL* : ∀ {a y} → Pol(a) ≡ + → (· a · ⊢ y) * → ([ a ]⊢ y) *
-  unfL* {a = El      a  } pr k with Pol(a)
-  unfL* {a = El      a  } pr k | + = λ x y → k y x
-  unfL* {a = El      a  } () k | -
-  unfL* {a = Dia   _ b  } pr k     = λ x y → k y x
-  unfL* {a = Box   _ b  } ()
-  unfL* {a = UnitL _ b  } pr k     = λ x y → k y x
-  unfL* {a = ImpR  _ a b} ()
-  unfL* {a = ImpL  _ b a} ()
-
-  focR* : ∀ {x b} → Pol(b) ≡ + → (x ⊢[ b ]) * → (x ⊢ · b ·) *
-  focR* {b = El      a  } pr f with Pol(a)
-  focR* {b = El      a  } pr f | + = λ x k → k (f x)
-  focR* {b = El      a  } () f | -
-  focR* {b = Dia   _ b  } pr f     = λ x k → k (f x)
-  focR* {b = Box   _ b  } ()
-  focR* {b = UnitL _ b  } pr f     = λ x k → k (f x)
-  focR* {b = ImpR  _ a b} ()
-  focR* {b = ImpL  _ b a} ()
-
-  focL* : ∀ {a y} → Pol(a) ≡ - → ([ a ]⊢ y) * → (· a · ⊢ y) *
-  focL* {a = El      a  } pr f with Pol(a)
-  focL* {a = El      a  } () f | +
-  focL* {a = El      a  } pr f | - = λ k x → k (f x)
-  focL* {a = Dia   _ b  } ()
-  focL* {a = Box   _ b  } pr f     = λ k x → k (f x)
-  focL* {a = UnitL _ b  } ()
-  focL* {a = ImpR  _ a b} pr f     = λ k x → k (f x)
-  focL* {a = ImpL  _ b a} pr f     = λ k x → k (f x)
-\end{code}
-\end{comment}
 \\
-The final part is the translation on proofs. All rules translate to
+The final part is the translation on proofs. Before we give the full
+translation on proofs, we will demonstrate that for all \AgdaBound{a},
+if there is a clash in polarity between the polarity of a type and the
+polarity of the translation, we obtain a ``continuation type''
+\AgdaBound{a} \AgdaFunction{ᴿ}:
+\\[1\baselineskip]
+\begin{code}
+  lem-⟦·⟧ : ∀ {p} (a : Type) → Pol(a) ≡ p → (⟦ a ⟧ ~ p) ≡ (⟦ a ⟧ p ᴿ)
+  lem-⟦·⟧ { + } ( El       a    ) pr rewrite pr = refl
+  lem-⟦·⟧ { - } ( El       a    ) pr rewrite pr = refl
+  lem-⟦·⟧ { + } ( Dia    k a    ) pr = refl
+  lem-⟦·⟧ { - } ( Dia    k a    ) ()
+  lem-⟦·⟧ { + } ( Box    k a    ) ()
+  lem-⟦·⟧ { - } ( Box    k a    ) pr = refl
+  lem-⟦·⟧ { + } ( UnitL  k a    ) pr = refl
+  lem-⟦·⟧ { - } ( UnitL  k a    ) ()
+  lem-⟦·⟧ { + } ( ImpR   k a b  ) ()
+  lem-⟦·⟧ { - } ( ImpR   k a b  ) pr = refl
+  lem-⟦·⟧ { + } ( ImpL   k a b  ) ()
+  lem-⟦·⟧ { - } ( ImpL   k a b  ) pr = refl
+\end{code}
+\\
+All rules translate to
 permutations on product types, insert units or map functions over
 product types. The actual applications and abstractions are hiding in
-the functions \AgdaFunction{unfR*}, \AgdaFunction{unfL*},
-\AgdaFunction{focR*} and \AgdaFunction{focL*}, which correspond to the
-translations of the rules of the same name given earlier:
+\AgdaFunction{unfR}, \AgdaFunction{unfL}, \AgdaFunction{focR} and
+\AgdaFunction{focL}, which correspond to the translations of the rules
+of the same name given earlier:
 \\[1\baselineskip]
 \begin{code}
   instance
@@ -1182,10 +1162,10 @@ translations of the rules of the same name given earlier:
       _*′ : ∀ {s} → NLQ s → s *
       axElR _        *′ = λ x → x
       axElL _        *′ = λ x → x
-      unfR  {x} {b} pr  f  *′ = unfR* {x} {b} pr (f *′)
-      unfL  {a} {y} pr  f  *′ = unfL* {a} {y} pr (f *′)
-      focR  {x} {b} pr  f  *′ = focR* {x} {b} pr (f *′)
-      focL  {a} {y} pr  f *′ = focL* {a} {y} pr (f *′)
+      unfR  {b = b} n  f  *′ rewrite lem-⟦·⟧ b n = λ x y → (f *′) x y
+      unfL  {a = a} p  f  *′ rewrite lem-⟦·⟧ a p = λ y x → (f *′) x y
+      focR  {b = b} p  f  *′ rewrite lem-⟦·⟧ b p = λ x k → k ((f *′) x)
+      focL  {a = a} n  f  *′ rewrite lem-⟦·⟧ a n = λ k x → k ((f *′) x)
       impRL     f g  *′ = λ{(x , y) → ((f *′) x , (g *′) y)}
       impRR     f    *′ = (f *′)
       impLL     f g  *′ = λ{(x , y) → ((g *′) x , (f *′) y)}

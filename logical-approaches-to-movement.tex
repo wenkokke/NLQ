@@ -652,19 +652,14 @@ The basis for the way in which NL$_\lambda$ represents quantifier
 movement is the following tree transformation, which is often used to
 represent quantifier raising:
 \begin{center}
-  \vspace*{0.5\baselineskip}
-  \begin{minipage}{0.3\linewidth}
-    \begin{tikzpicture}
-      \Tree [ john [ likes everyone ] ]
-    \end{tikzpicture}
+  \begin{minipage}{0.3\linewidth}\centering
+    \Tree [ john [ likes everyone ] ]
   \end{minipage}%
-  \begin{minipage}{0.02\linewidth}
+  \begin{minipage}{0.05\linewidth}\centering
     $\longleftrightarrow$
   \end{minipage}%
-  \begin{minipage}{0.4\linewidth}
-    \begin{tikzpicture}
-      \Tree [ everyone [ $\lambda x.$ [ john [ likes x ] ] ] ]
-    \end{tikzpicture}
+  \begin{minipage}{0.3\linewidth}\centering
+    \Tree [ everyone [ $\lambda x.$ [ john [ likes x ] ] ] ]
   \end{minipage}
 \end{center}
 \citeauthor{barker2015} implement this transformation informally by
@@ -1355,33 +1350,125 @@ In the previous sections, we have discussed quantifier movement, which
 is characterised by upwards movement, and insertion of a trace. In
 this section, we will focus on simpler kinds of movement: infixation
 and extraction. These are types of movement where a constituent
-\emph{only} moves up or \emph{only} moves down.
+\emph{only} moves down or \emph{only} moves up.
 
-In order to avoid confusion, we should probably discuss naming. In
-logic, the convention is to name a rule after its effect when read
-downwards (towards the endsequent). An example of this is contraction,
-which contracts two identical formulas when read downwards, but
-duplicates a formula when read upwards.
-Problems arise when naming constructs which encode linguistic
-movement. For instance, the quantification rules $\qup$ and $\qdown$
-are named as such because what they do from a linguistic perspective
-is raise the quantifier, and lower it. However, if you look up the
-these rules, you will see that from a logical perspective, they should
-have been named the other way around.
-We are faced with a similar choice with infixation and extraction;
-both can be used for upwards \emph{or} downwards movement, depending
-on which convention we follow. My choice is to assign the names from a
-linguistic perspective: the transformation which encodes
-\emph{downwards} movement in a tree will be called infixation, and the
-transformation which encodes \emph{upwards} movement will be called
-extraction.
+In linguistic terms, `extraction' means that in the syntax tree, a
+constituent is moved up from the position where it is interpreted. For
+instance,
+\eenumsentence{%
+  \item\label{ex:ext1a}``girl who irritated the Duchess''
+  \item\label{ex:ext1b}``girl whom the Duchess irritated''}
+\eenumsentence{%
+  \item\label{ex:ext2a}``book [the author of which] feared the ocean''
+  \item\label{ex:ext2b}``book which Vonnegut dedicated to O'Hare''}
+In (\ref{ex:ext1a}), the ``girl'' is interpreted in the
+subject-position of the relative clause. For this example, it suffices
+to give `which' the following definition:
+\begin{alignat*}{3}
+  &\text{who} &&: \tr[((\N\impr\N)\impl(\NP\impr\S))]\\
+  &\text{who} &&= \lambda{f}.\lambda{g}.\lambda{x}.f(x)\wedge g(x)
+\end{alignat*}
+We used a similar solution in
+\autoref{fig:example-changing-answer-type} to analyse (\ref{ex:ext2a}).
+In the presence of associativity, we could give a similar definition
+for `whom' in (\ref{ex:ext1b}), moving the NP to the right branch of
+the relative clause, and counting on associativity to push it inwards:
+\begin{alignat*}{3}
+  &\text{whom} &&: \tr[((\N\impr\N)\impl(\S\impl\NP))]\\
+  &\text{whom} &&= \lambda{f}.\lambda{g}.\lambda{x}.f(x)\wedge g(x)
+\end{alignat*}
+However, we do not want to add unrestricted associativity. The
+phenomenon becomes even more complicated when you look at sentences
+such as  (\ref{ex:ext2b}) where the ``book'' is interpreted deeply
+nested in the relative clause.
 
-\todo{Motivating example of infixation.}
+\citet{moortgat1999b} describes a logical extension which handles all
+these cases of extraction---we present it in
+\autoref{fig:extension-extraction}.
+The extension combines a fresh modality with a
+license---\citet{moortgat1999b} adds a new diamond/box pair
+($\diDn,\sqDn$), and adds structural postulates which allow extraction
+to take place \emph{only} in the presence of the $\diDn$.
+He then derives two new connectives, $\downharpoonleft$ and
+$\downharpoonright$, which we can use to give a definition for
+`which' that can analyse (\ref{ex:ext2b}):
+\begin{alignat*}{3}
+  &\text{which} &&: \tr[((\N\impr\N)\impl(\S\downharpoonright\NP))]\\
+  &\text{which} &&= \lambda{f}.\lambda{g}.\lambda{x}.f(x)\wedge g(x)
+\end{alignat*}
 
-\todo{Motivating example of extraction.}
+\input{fig-extension-infixation-and-extraction}
 
-\subsubsection{Reasoning with Gaps}
-\citet[][chapter 17.10]{barker2015} adopts two new inference rules in
+It should be mentioned that the structural postulates for extraction
+differentiate between left-branch and right-branch
+extraction. RR$\diDn$ and LR$\diDn$ encode the right-branch
+movements:
+\begin{center}
+  \begin{minipage}{0.23\linewidth}\centering
+  \Tree [ $Γ_1$ [ $Γ_2$ $\diDn Γ_3$ ] ]
+  \end{minipage}%
+  \begin{minipage}{0.05\linewidth}\centering
+    $\longrightarrow$
+  \end{minipage}%
+  \begin{minipage}{0.23\linewidth}\centering
+  \Tree [ [ $Γ_1$ $Γ_2$ ] $\diDn Γ_3$ ]
+  \end{minipage}%
+  \begin{minipage}{0.23\linewidth}\centering
+  \Tree [ [ $Γ_1$ $\diDn Γ_3$ ] $Γ_2$ ]
+  \end{minipage}%
+  \begin{minipage}{0.05\linewidth}\centering
+    $\longrightarrow$
+  \end{minipage}%
+  \begin{minipage}{0.23\linewidth}\centering
+  \Tree [ [ $Γ_1$ $Γ_2$ ] $\diDn Γ_3$ ]
+  \end{minipage}
+\end{center}
+On the other hand, LL$\diDn$ and RL$\diDn$ encode left-branch
+movements:
+\begin{center}
+  \begin{minipage}{0.23\linewidth}\centering
+  \Tree [ [ $\diDn Γ_3$ $Γ_2$ ] $Γ_1$ ]
+  \end{minipage}%
+  \begin{minipage}{0.05\linewidth}\centering
+    $\longrightarrow$
+  \end{minipage}%
+  \begin{minipage}{0.23\linewidth}\centering
+  \Tree [ $\diDn Γ_3$ [ $Γ_2$ $Γ_1$ ] ]
+  \end{minipage}%
+  \begin{minipage}{0.23\linewidth}\centering
+  \Tree [ $Γ_2$ [ $\diDn Γ_3$ $Γ_1$ ] ]
+  \end{minipage}%
+  \begin{minipage}{0.05\linewidth}\centering
+    $\longrightarrow$
+  \end{minipage}%
+  \begin{minipage}{0.23\linewidth}\centering
+  \Tree [ $\diDn Γ_3$ [ $Γ_2$ $Γ_1$ ] ]
+  \end{minipage}
+\end{center}
+\citet[][ch.\ 1.2.1 and 1.2.2]{moortgat1999b} further motivates the
+distinction between right- and left-branch extraction with more
+examples from English and Dutch. But one interesting consequence of
+this is that we can make the distinction between `who' and `whom'.
+On the other hand, we do have to assign `which' an ambiguous type, as
+it can capture both subject and object-gaps. If we wish to cover
+(\ref{ex:ext2a}) \emph{and} (\ref{ex:ext2b}), we can give
+`which' the following definition:
+\begin{alignat*}{3}
+  &\text{which} &&: \tr[{q(\NP,\NP,((\N\impr\N)\impl(\NP\impr\S))\&((\N\impr\N)\impl(\S\downharpoonright\NP)))}]\\
+  &\text{which} &&= \lambda{f}.(\lambda{g}.\lambda{h}.\lambda{x}.g(f(x))\wedge h(x),\lambda{g}.\lambda{h}.\lambda{x}.g(f(x))\wedge h(x))
+  \intertext{%
+    Or, if we adopt the additive disjunction ($\oplus$), as
+    \citet{lambek1961}, \citet{morrill2015} suggest:
+  }
+  &\text{which} &&: \tr[{q(\NP,\NP,((\N\impr\N)\impl((\NP\impr\S)\oplus(\S\downharpoonright\NP))))}]\\
+  &\text{which} &&\;f\;(\text{inj}_1\;g)\;h\;x = g(f(x))\wedge h(x)\\
+  &\text{which} &&\;f\;(\text{inj}_2\;g)\;h\;x = g(f(x))\wedge h(x)
+\end{alignat*}
+
+
+
+\paragraph*{Reasoning with gaps}
+\citet[][chapter 17.10]{barker2015} adopt two new inference rules in
 order to deal with gaps. However, these rules have a bit of an ad-hoc
 feel about them. They eliminate a logical connective, but also
 perform a structural function (movement) and they add an additional,
@@ -1399,7 +1486,7 @@ unrelated meaning to the quantificational slash ($\himpr$):
   \end{pfbox}
 \end{center}
 These rules are very similar to the rules we can derive for our
-infixation arrows:
+extraction arrows:
 \begin{center}
   \begin{pfbox}
     \AXC{$Σ[Γ\prod\struct{B}]\fCenter\struct{C}$}
@@ -1415,8 +1502,8 @@ infixation arrows:
 However, there are two important distinctions:
 \begin{enumerate*}[label=(\arabic*)]
 \item R${\downharpoonleft}$ and R${\downharpoonright}$ are \emph{not}
-  axiomatic rules, but they are derived from existing logical
-  connectives in display NL with infixation; and
+  axiomatic rules, but they are derived from existing, \emph{logical}
+  connectives in display NL with extraction; and
 \item R${\downharpoonleft}$ and R${\downharpoonright}$ distinguish
   between moving to the left- and right-hand side of the
   sub-structure.
@@ -1427,7 +1514,7 @@ general manner, and without having to resort to proof search with
 contexts. The second one \emph{may} be an advantage---there are be
 some situations where you require the distinction, and some where you
 do not. However, if you do not require the distinction, then you can
-always solve this using the extension for ambiguity (\&).
+always solve this using extensions for ambiguity (e.g.\ \&) as we did
+for `which'.
 
-\input{fig-extension-infixation}
-\input{fig-extension-extraction}
+\todo{Motivating example of infixation.}

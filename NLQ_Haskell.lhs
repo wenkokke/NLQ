@@ -296,13 +296,8 @@ clause into a right or a left gap. The semantics, however, stay the
 same:
 \\
 
-> type WHICH1 = QW NP NP ((N :→ N) :← (NP :⇃ S))
-> type WHICH2 = QW NP NP ((N :→ N) :← (S :⇂ NP))
->
-> which :: Word (WHICH1 :& WHICH2)
-> which = lex_ (which' , which')
->   where
->     which' f g h x = h x ∧ (g (f x))
+> which :: Word (QW NP NP (((N :→ N) :← (NP :→ S)) :& ((N :→ N) :← (S :⇂ NP))))
+> which = lex_ (\f -> (\g h x -> h x ∧ (g (f x)), \g h x -> h x ∧ (g (f x))))
 
 \\
 And with the lexicon over with, we can start writing examples!
