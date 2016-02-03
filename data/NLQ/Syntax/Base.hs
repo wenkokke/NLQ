@@ -23,56 +23,56 @@ singletons [d|
     deriving (Eq,Show)
 
   data Strength :: * where
-    Strong :: Strength
-    Weak   :: Strength
+    Strong  :: Strength
+    Weak    :: Strength
     deriving (Eq,Show)
 
   data Kind :: * where
-    Solid  :: Kind
-    Quan   :: Strength -> Kind
-    Delim  :: Strength -> Kind
-    Ext    :: Kind
-    Ifx    :: Kind
+    Solid   :: Kind
+    Quan    :: Strength -> Kind
+    Del     :: Strength -> Kind
+    Ext     :: Kind
+    Ifx     :: Kind
     deriving (Eq,Show)
 
   data Type :: * where
-    El    :: Atom -> Type
-    Dia   :: Kind -> Type -> Type
-    Box   :: Kind -> Type -> Type
-    UnitL :: Kind -> Type -> Type
-    (:&)  :: Type -> Type -> Type
-    ImpR  :: Kind -> Type -> Type -> Type
-    ImpL  :: Kind -> Type -> Type -> Type
+    El      :: Atom -> Type
+    Dia     :: Kind -> Type -> Type
+    Box     :: Kind -> Type -> Type
+    UnitL   :: Kind -> Type -> Type
+    (:&)    :: Type -> Type -> Type
+    ImpR    :: Kind -> Type -> Type -> Type
+    ImpL    :: Kind -> Type -> Type -> Type
     deriving (Show,Eq)
 
   data StructI :: * where
-    StI  :: Type -> StructI
-    DIA  :: Kind -> StructI -> StructI
-    B    :: StructI
-    C    :: StructI
-    I'   :: StructI
-    UNIT :: Kind -> StructI
-    PROD :: Kind -> StructI -> StructI -> StructI
+    StI    :: Type -> StructI
+    DIA    :: Kind -> StructI -> StructI
+    B      :: StructI
+    C      :: StructI
+    I'     :: StructI
+    UNIT   :: Kind -> StructI
+    PROD   :: Kind -> StructI -> StructI -> StructI
     deriving (Eq,Show)
 
   data StructO :: * where
-    StO  :: Type -> StructO
-    BOX  :: Kind -> StructO -> StructO
-    IMPR :: Kind -> StructI -> StructO -> StructO
-    IMPL :: Kind -> StructO -> StructI -> StructO
+    StO    :: Type -> StructO
+    BOX    :: Kind -> StructO -> StructO
+    IMPR   :: Kind -> StructI -> StructO -> StructO
+    IMPL   :: Kind -> StructO -> StructI -> StructO
     deriving (Eq,Show)
 
   data Sequent :: * where
-    (:⊢)  :: StructI -> StructO -> Sequent
-    (:<⊢) :: Type    -> StructO -> Sequent
-    (:⊢>) :: StructI -> Type    -> Sequent
+    (:⊢)   :: StructI -> StructO -> Sequent
+    (:<⊢)  :: Type    -> StructO -> Sequent
+    (:⊢>)  :: StructI -> Type    -> Sequent
     deriving (Eq,Show)
 
   data Context :: * where
-    HOLE  :: Context
-    DelW1 :: Context -> Context
-    (:<∙) :: Context -> StructI -> Context
-    (:∙>) :: StructI -> Context -> Context
+    HOLE   :: Context
+    DelW1  :: Context -> Context
+    (:<∙)  :: Context -> StructI -> Context
+    (:∙>)  :: StructI -> Context -> Context
     deriving (Eq,Show)
 
   |]
@@ -85,13 +85,13 @@ promote [d|
 
   plug :: Context -> StructI -> StructI
   plug HOLE      z = z
-  plug (DelW1 x) z = DIA (Delim Weak) (plug x z)
+  plug (DelW1 x) z = DIA (Del Weak) (plug x z)
   plug (x :<∙ y) z = PROD Solid (plug x z) y
   plug (x :∙> y) z = PROD Solid x (plug y z)
 
   trace :: Strength -> Context -> StructI
   trace k HOLE      = UNIT (Quan k)
-  trace k (DelW1 x) = PROD Solid I' (DIA (Delim Weak) (trace k x))
+  trace k (DelW1 x) = PROD Solid I' (DIA (Del Weak) (trace k x))
   trace k (x :∙> y) = PROD Solid (PROD Solid B x) (trace k y)
   trace k (x :<∙ y) = PROD Solid (PROD Solid C (trace k x)) y
 
@@ -107,7 +107,7 @@ deriving instance Ord StructO
 deriving instance Ord Sequent
 
 kinds :: [Kind]
-kinds = [Solid,Quan Weak,Quan Strong,Delim Weak,Delim Strong,Ext,Ifx]
+kinds = [Solid,Quan Weak,Quan Strong,Del Weak,Del Strong,Ext,Ifx]
 
 infixr 3 :∙, :%∙
 infixr 7 :→, :%→
@@ -141,19 +141,19 @@ type    y  :⇦ x =  ImpL  (Quan  Weak) y x
 pattern y  :⇦ x =  ImpL  (Quan  Weak) y x
 pattern y :%⇦ x = SImpL (SQuan SWeak) y x
 
-type     DelW a =  Dia  (Delim  Weak) a
-pattern  DelW a =  Dia  (Delim  Weak) a
-pattern SDelW a = SDia (SDelim SWeak) a
-type     DELW x =  DIA  (Delim  Weak) x
-pattern  DELW x =  DIA  (Delim  Weak) x
-pattern SDELW x = SDIA (SDelim SWeak) x
+type     DelW a =  Dia  (Del  Weak) a
+pattern  DelW a =  Dia  (Del  Weak) a
+pattern SDelW a = SDia (SDel SWeak) a
+type     DELW x =  DIA  (Del  Weak) x
+pattern  DELW x =  DIA  (Del  Weak) x
+pattern SDELW x = SDIA (SDel SWeak) x
 
-type     DelS a =  Dia  (Delim  Strong) a
-pattern  DelS a =  Dia  (Delim  Strong) a
-pattern SDelS a = SDia (SDelim SStrong) a
-type     DELS x =  DIA  (Delim  Strong) x
-pattern  DELS x =  DIA  (Delim  Strong) x
-pattern SDELS x = SDIA (SDelim SStrong) x
+type     DelS a =  Dia  (Del  Strong) a
+pattern  DelS a =  Dia  (Del  Strong) a
+pattern SDelS a = SDia (SDel SStrong) a
+type     DELS x =  DIA  (Del  Strong) x
+pattern  DELS x =  DIA  (Del  Strong) x
+pattern SDELS x = SDIA (SDel SStrong) x
 
 type     EXT x =  DIA  Ext x
 pattern  EXT x =  DIA  Ext x
@@ -192,13 +192,13 @@ deriving instance (Show (Trail z))
 
 sPlug :: SContext x -> SStructI z -> SStructI (Plug x z)
 sPlug SHOLE      z = z
-sPlug (SDelW1 x) z = SDIA (SDelim SWeak) (sPlug x z)
+sPlug (SDelW1 x) z = SDIA (SDel SWeak) (sPlug x z)
 sPlug (x :%<∙ y) z = SPROD SSolid (sPlug x z) y
 sPlug (x :%∙> y) z = SPROD SSolid x (sPlug y z)
 
 sTrace :: SStrength k -> SContext x -> SStructI (Trace k x)
 sTrace k       SHOLE      = SUNIT (SQuan k)
-sTrace SStrong (SDelW1 x) = SPROD SSolid SI' (SDIA (SDelim SWeak) (sTrace SStrong x))
+sTrace SStrong (SDelW1 x) = SPROD SSolid SI' (SDIA (SDel SWeak) (sTrace SStrong x))
 sTrace k       (x :%∙> y) = SPROD SSolid (SPROD SSolid SB x) (sTrace k y)
 sTrace k       (x :%<∙ y) = SPROD SSolid (SPROD SSolid SC (sTrace k x)) y
 
@@ -210,9 +210,9 @@ sFocus x = Focus SWeak SHOLE x Refl : sFocus' x
       where
         inx (Focus k x z Refl) = Focus k (x :%<∙ y) z Refl
         iny (Focus k y z Refl) = Focus k (x :%∙> y) z Refl
-    sFocus' (SDIA (SDelim SWeak) (x :: SStructI x)) = (inx <$> sFocus x)
+    sFocus' (SDIA (SDel SWeak) (x :: SStructI x)) = (inx <$> sFocus x)
       where
-        inx :: Focus x -> Focus (DIA (Delim Weak) x)
+        inx :: Focus x -> Focus (DIA (Del Weak) x)
         inx (Focus k x z Refl) = Focus SStrong (SDelW1 x) z Refl
     sFocus' x = []
 
@@ -224,7 +224,7 @@ sFollow ((SC :%∙ x) :%∙ y)      = case sFollow x of
 sFollow ((SB :%∙ x) :%∙ y)      = case sFollow y of
   Just (Trail k y Refl)        -> Just (Trail k (x :%∙> y) Refl)
   _                            -> Nothing
-sFollow (SI' :%∙ (SDIA (SDelim SWeak) x)) = case sFollow x of
+sFollow (SI' :%∙ (SDIA (SDel SWeak) x)) = case sFollow x of
   Just (Trail k x Refl)        -> Just (Trail k (SDelW1 x) Refl)
   _                            -> Nothing
 sFollow _                       = Nothing
@@ -240,17 +240,17 @@ testFocus = length (sFocus (SStI (SEl SNP) :%∙ (SStI ((SEl SNP) :%→ (SEl SS)
 data Pos :: Type -> * where
   Pos_Dia    :: Pos (Dia k a)
   Pos_UnitL  :: Pos (UnitL k a)
-  Pos_With   :: Pos (a1 :& a2)
 
 data Neg :: Type -> * where
   Neg_El     :: Neg (El a)
   Neg_Box    :: Neg (Box k a)
+  Neg_With   :: Neg (a1 :& a2)
   Neg_ImpR   :: Neg (ImpR k a b)
   Neg_ImpL   :: Neg (ImpL k b a)
 
 pol :: SType a -> Either (Pos a) (Neg a)
 pol (SEl a)       = Right Neg_El
-pol (_ :%& _)     = Left  Pos_With
+pol (_ :%& _)     = Right Neg_With
 pol (SDia _ _)    = Left  Pos_Dia
 pol (SBox _ _)    = Right Neg_Box
 pol (SUnitL _ _)  = Left  Pos_UnitL
@@ -294,9 +294,12 @@ data Syn :: Sequent -> * where
   FocR   :: Pos b -> Syn (x :⊢> b) -> Syn (x :⊢ StO b)
   FocL   :: Neg a -> Syn (a :<⊢ y) -> Syn (StI a :⊢ y)
 
-  WithL1 :: Syn (a1 :<⊢ y) -> Syn (StI (a1 :& a2) :⊢ y)
-  WithL2 :: Syn (a2 :<⊢ y) -> Syn (StI (a1 :& a2) :⊢ y)
-  WithR  :: Syn (x :⊢ StO b1) -> Syn (x :⊢ StO b2) -> Syn (x :⊢> b1 :& b2)
+  WthL1N :: Neg a1 -> Syn (a1 :<⊢ y) -> Syn ((a1 :& a2) :<⊢ y)
+  WthL2N :: Neg a2 -> Syn (a2 :<⊢ y) -> Syn ((a1 :& a2) :<⊢ y)
+  WthL1P :: Pos a1 -> Syn (StI a1 :⊢ y) -> Syn ((a1 :& a2) :<⊢ y)
+  WthL2P :: Pos a2 -> Syn (StI a2 :⊢ y) -> Syn ((a1 :& a2) :<⊢ y)
+  WthR   :: Syn (x  :⊢ StO b1) -> Syn (x  :⊢ StO b2) -> Syn (x  :⊢ StO (b1 :& b2))
+  WthRF  :: Syn (a :<⊢ StO b1) -> Syn (a :<⊢ StO b2) -> Syn (a :<⊢ StO (b1 :& b2))
 
   ImpRL  :: Syn (x :⊢> a) -> Syn (b :<⊢ y) -> Syn (ImpR k a b :<⊢ IMPR k x y)
   ImpRR  :: Syn (x :⊢ IMPR k (StI a) (StO b)) -> Syn (x :⊢ StO (ImpR k a b))
@@ -411,7 +414,8 @@ qR k x f = ImpLR (ResPL (up k x f))
 data USyn
    = UAxR              | UAxL
    | UUnfR   USyn      | UUnfL   USyn | UFocR   USyn      | UFocL USyn
-   | UWithL1 USyn      | UWithL2 USyn | UWithR  USyn USyn
+   | UWthL1P USyn      | UWthL2P USyn | UWthR   USyn USyn
+   | UWthL1N USyn      | UWthL2N USyn | UWthRF  USyn USyn
    | UImpRL  USyn USyn | UImpRR  USyn | UImpLL  USyn USyn | UImpLR USyn
    | UResRP  USyn      | UResPR  USyn | UResLP  USyn      | UResPL USyn
    | UDiaL   USyn      | UDiaR   USyn | UBoxL   USyn      | UBoxR USyn
@@ -429,9 +433,12 @@ forget (UnfR _ f)   = UUnfR   (forget f)
 forget (UnfL _ f)   = UUnfL   (forget f)
 forget (FocR _ f)   = UFocR   (forget f)
 forget (FocL _ f)   = UFocL   (forget f)
-forget (WithL1 f)   = UWithL1 (forget f)
-forget (WithL2 f)   = UWithL2 (forget f)
-forget (WithR  f g) = UWithR  (forget f) (forget g)
+forget (WthL1P _ f) = UWthL1P (forget f)
+forget (WthL1N _ f) = UWthL1N (forget f)
+forget (WthL2P _ f) = UWthL2P (forget f)
+forget (WthL2N _ f) = UWthL2N (forget f)
+forget (WthR   f g) = UWthR   (forget f) (forget g)
+forget (WthRF  f g) = UWthRF  (forget f) (forget g)
 forget (ImpRL  f g) = UImpRL  (forget f) (forget g)
 forget (ImpRR  f)   = UImpRR  (forget f)
 forget (ImpLL  f g) = UImpLL  (forget f) (forget g)

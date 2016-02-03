@@ -86,8 +86,8 @@ instance Show (Entry x) where
 
 -- ** Backward-Chaining Proof Search
 
-data Del (k :: Strength) (a :: *) where
-  MkDel :: SStrength k -> a -> Del k a
+data MkDel (k :: Strength) (a :: *) where
+  MkDel :: SStrength k -> a -> MkDel k a
 
 class Combine a b | a -> b where
   combine :: a -> b
@@ -95,9 +95,9 @@ class Combine a b | a -> b where
 instance Combine (Entry t) (Entry t) where
   combine = id
 
-instance (Combine x (Entry a)) => Combine (Del k x) (Entry (DIA (Delim k) a)) where
+instance (Combine x (Entry a)) => Combine (MkDel k x) (Entry (DIA (Del k) a)) where
   combine (MkDel k x) = case combine x of
-    (Entry a r) -> Entry (SDIA (SDelim k) a) r
+    (Entry a r) -> Entry (SDIA (SDel k) a) r
 
 instance (Combine x1 (Entry a1), Combine x2 (Entry a2))
          => Combine (x1,x2) (Entry (a1 :∙ a2)) where

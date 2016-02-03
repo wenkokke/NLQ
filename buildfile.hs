@@ -113,15 +113,15 @@ main =
       command_ [Cwd ".", EchoStdout True] "lhs2TeX" [src,"-o",out]
 
     -- compile NLQ_Haskell.lhs with GHC
-    toBuild ("NLQ_Haskell" <.> exe) %> \out -> do
+    toBuild ("NLQ_Haskell" <.> exe) ~> do
       let
-        src = out -<.> "lhs"
+        src = toBuild ("NLQ_Haskell" <.> "lhs")
         lcl = fromBuild src
       need [src]
       command_ [Cwd "_build", EchoStdout True] "ghc" ["-i../data","--make",lcl]
 
     -- run the generated Haskell file
-    phony "run" $ do
+    "test" ~> do
       need [toBuild ("NLQ_Haskell" <.> exe)]
       command_ [Cwd "_build", Shell, EchoStdout True] ("./NLQ_Haskell" <.> exe) []
 

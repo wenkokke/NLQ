@@ -41,7 +41,7 @@ search ss = do
   where
     nl = concat
           [ [axL,unfR,unfL,focR,focL]
-          , [withL1,withL2,withR]
+          , [wthL1, wthL2, wthR]
           , [impRL,impRR,impLL,impLR,resRP,resPR,resLP,resPL]
           , [diaL,diaR,boxL,boxR,resBD,resDB]
           , [ifxLL,ifxLR,ifxRL,ifxRR]
@@ -77,13 +77,18 @@ search ss = do
        { Right p -> FocL p <$> loop (a :%<⊢ y); _ -> empty }
     focL  _              = empty
 
-    withL1,withL2,withR :: SSequent s -> Search m (Syn s)
-    withL1 (SStI (a1 :%& a2) :%⊢ y) = WithL1 <$> prog (a1 :%<⊢ y)
-    withL1 _                        = empty
-    withL2 (SStI (a1 :%& a2) :%⊢ y) = WithL2 <$> prog (a2 :%<⊢ y)
-    withL2 _                        = empty
-    withR  (x :%⊢> b1 :%& b2)       = WithR  <$> prog (x :%⊢ SStO b1) <*> prog (x :%⊢ SStO b2)
-    withR  _                        = empty
+    wthL1, wthL2, wthR :: SSequent s -> Search m (Syn s)
+    wthL1 ((a1 :%& a2) :%<⊢ y)      = case pol a1 of
+      Left  p -> WthL1P p <$> prog (SStI a1  :%⊢ y)
+      Right n -> WthL1N n <$> prog (     a1 :%<⊢ y)
+    wthL1 _                         = empty
+    wthL2 ((a1 :%& a2) :%<⊢ y)      = case pol a2 of
+      Left  p -> WthL2P p <$> prog (SStI a2  :%⊢ y)
+      Right n -> WthL2N n <$> prog (     a2 :%<⊢ y)
+    wthL2 _                         = empty
+    wthR  (x  :%⊢ SStO (b1 :%& b2)) = WthR  <$> prog (x  :%⊢ SStO b1) <*> prog (x  :%⊢ SStO b2)
+    wthR  (a :%<⊢ SStO (b1 :%& b2)) = WthRF <$> prog (a :%<⊢ SStO b1) <*> prog (a :%<⊢ SStO b2)
+    wthR  _                         = empty
 
     impRL,impRR,impLL,impLR,resRP,resPR,resLP,resPL :: SSequent s -> Search m (Syn s)
     impRL (SImpR k1 a b :%<⊢ SIMPR k2 x y) = case k1 %~ k2 of

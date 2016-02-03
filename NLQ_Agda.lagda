@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[a4paper]{article}
 \usepackage{stmaryrd}
 \usepackage{comment}
 \usepackage{etoolbox}
@@ -13,6 +13,7 @@
 \setcounter{page}{54}
 
 \def\lamET{\lambda^{\rightarrow}_{\{\mathbf{e},\mathbf{t}\}}}%
+\DeclareUnicodeCharacter{738}{$^s$}
 \DeclareUnicodeCharacter{7487}{$^R$}
 \DeclareUnicodeCharacter{8852}{$\sqcup$}
 \DeclareUnicodeCharacter{8704}{$\forall$}
@@ -168,7 +169,7 @@ rules, defining all the copies at the same time.
   data Kind : Set where
     Solid   : Kind             -- solid       {⇒, ∙, ⇐}
     Quan    : Strength → Kind  -- hollow      {⇨, ∘, ⇦}
-    Delim   : Strength → Kind  -- reset       {◇, □}
+    Del     : Strength → Kind  -- reset       {◇, □}
     Ifx     : Kind             -- extraction  {↿, ↾, ◇↑, □↑}
     Ext     : Kind             -- infixation  {⇃, ⇂, ◇↓, □↓}
 
@@ -191,17 +192,18 @@ rules, defining all the copies at the same time.
 \end{comment}
 \\[1\baselineskip]
 \begin{code}
-  pattern _⇐_  b a  = ImpL   Solid         b a
-  pattern _⇒_  a b  = ImpR   Solid         a b
-  pattern _⇨_  a b  = ImpR   (Quan Weak)   a b
-  pattern _⇦_  b a  = ImpL   (Quan Weak)   b a
-  pattern QW   a    = UnitL  (Quan Weak)   a
-  pattern ◇_   a    = Dia    (Delim Weak)  a
-  pattern ◇↑_  a    = Dia    Ifx           a
-  pattern ◇↓_  a    = Dia    Ext           a
-  pattern □_   a    = Box    (Delim Weak)  a
-  pattern □↑_  a    = Box    Ifx           a
-  pattern □↓_  a    = Box    Ext           a
+  pattern _⇐_  b a  = ImpL   Solid          b a
+  pattern _⇒_  a b  = ImpR   Solid          a b
+  pattern _⇨_  a b  = ImpR   (Quan Weak)    a b
+  pattern _⇦_  b a  = ImpL   (Quan Weak)    b a
+  pattern QW   a    = UnitL  (Quan Weak)    a
+  pattern QS   a    = UnitL  (Quan Strong ) a
+  pattern ◇_   a    = Dia    (Del Weak)   a
+  pattern ◇↑_  a    = Dia    Ifx            a
+  pattern ◇↓_  a    = Dia    Ext            a
+  pattern □_   a    = Box    (Del Weak)   a
+  pattern □↑_  a    = Box    Ifx            a
+  pattern □↓_  a    = Box    Ext            a
 
   pattern _↿_  a b  = ◇↑ □↑ (a ⇒ b)
   pattern _↾_  b a  = ◇↑ □↑ (b ⇐ a)
@@ -234,14 +236,16 @@ polarity:
 \end{comment}
 \\[1\baselineskip]
 \begin{code}
-  pattern _∙_  x y  = PROD   Solid         x y
-  pattern _∘_  x y  = PROD   (Quan Weak)   x y
-  pattern ⟨_⟩  x    = DIA    (Delim Weak)  x
-  pattern ◆↑_  x    = DIA    Ifx           x
-  pattern ◆↓_  x    = DIA    Ext           x
-  pattern I         = UNIT   (Quan Weak)
-  pattern ■↑_  x    = BOX    Ifx           x
-  pattern ■↓_  x    = BOX    Ext           x
+  pattern _∙_   x y  = PROD   Solid         x y
+  pattern _∘_   x y  = PROD   (Quan Weak)   x y
+  pattern _∘ˢ_  x y  = PROD   (Quan Strong) x y
+  pattern ⟨_⟩   x    = DIA    (Del Weak)    x
+  pattern ⟨_⟩ˢ  x    = DIA    (Del Strong)  x
+  pattern ◆↑_   x    = DIA    Ifx           x
+  pattern ◆↓_   x    = DIA    Ext           x
+  pattern I          = UNIT   (Quan Weak)
+  pattern ■↑_   x    = BOX    Ifx           x
+  pattern ■↓_   x    = BOX    Ext           x
 \end{code}
 \\
 Since there is no pretty way to write the box we used for focusing in
@@ -326,10 +330,8 @@ for the polarity of the type \AgdaBound{a}/\AgdaBound{b}:
             → NLQ PROD (Quan k) ((C ∙ x) ∙ z) y ⊢ w
     upC     : ∀ {x y z w k}  → NLQ PROD (Quan k) ((C ∙ x) ∙ z) y ⊢ w
             → NLQ (PROD (Quan k) x y) ∙ z ⊢ w
-    upI*    : ∀ {x y w}      → NLQ (PROD (Quan Strong) (I* ∙ ⟨ x ⟩) y ⊢ w)
-            → NLQ (⟨ PROD (Quan Strong) x y ⟩ ⊢ w)
-    dnI*    : ∀ {x y w}      → NLQ (⟨ PROD (Quan Strong) x y ⟩ ⊢ w)
-            → NLQ (PROD (Quan Strong) (I* ∙ ⟨ x ⟩) y ⊢ w)
+    upI*    : ∀ {x y w}      → NLQ ((I* ∙ ⟨ x ⟩) ∘ˢ y ⊢ w) → NLQ (⟨ x ∘ˢ y ⟩ ⊢ w)
+    dnI*    : ∀ {x y w}      → NLQ (⟨ x ∘ˢ y ⟩ ⊢ w) → NLQ ((I* ∙ ⟨ x ⟩) ∘ˢ y ⊢ w)
 
     ifxRR   : ∀ {x y z w}    → NLQ ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NLQ (x ∙ (y ∙ ◆↑ z) ⊢ w)
     ifxLR   : ∀ {x y z w}    → NLQ ((x ∙ y) ∙ ◆↑ z ⊢ w)  → NLQ ((x ∙ ◆↑ z) ∙ y ⊢ w)
@@ -427,10 +429,10 @@ synonyms:
   pattern _∘>_  x y  = PROD2  (Quan Weak)   x y
   pattern _⇨>_  x y  = IMPR2  (Quan Weak)   x y
   pattern _⇦>_  y x  = IMPL2  (Quan Weak)   y x
-  pattern ◆>_   x    = DIA1   (Delim Weak)  x
+  pattern ◆>_   x    = DIA1   (Del Weak)    x
   pattern ◆↓>_  x    = DIA1   Ifx           x
   pattern ◆↑>_  x    = DIA1   Ext           x
-  pattern ■>_   x    = BOX1   (Delim Weak)  x
+  pattern ■>_   x    = BOX1   (Del Weak)    x
   pattern ■↓>_  x    = BOX1   Ifx           x
   pattern ■↑>_  x    = BOX1   Ext           x
 \end{code}
@@ -554,11 +556,11 @@ helper functions. These functions allow you to access the two sides of
 the isomorphism more easily:
 \\[1\baselineskip]
 \begin{code}
-  dp1 : ∀ {p} (s : SequentCtxt p) (w : Struct p) → NLQ s [ w ] → NLQ DP(s)[ w ]
-  dp1 s w f = to (dp s w) ⟨$⟩ f
+  dp1 : ∀ {p} (s : SequentCtxt p) {w : Struct p} → NLQ s [ w ] → NLQ DP(s)[ w ]
+  dp1 s {w} f = to (dp s w) ⟨$⟩ f
 
-  dp2 : ∀ {p} (s : SequentCtxt p) (w : Struct p) → NLQ DP(s)[ w ] → NLQ s [ w ]
-  dp2 s w f = from (dp s w) ⟨$⟩ f
+  dp2 : ∀ {p} (s : SequentCtxt p) {w : Struct p} → NLQ DP(s)[ w ] → NLQ s [ w ]
+  dp2 s {w} f = from (dp s w) ⟨$⟩ f
 \end{code}
 
 
@@ -725,8 +727,8 @@ And using the \AgdaFunction{trace} function, we can define upwards and
 downwards quantifier movement:
 \\[1\baselineskip]
 \begin{code}
-  q↑ : ∀ {y b c} → ∀ x → NLQ trace(x) ⊢[ b ] → NLQ [ c ]⊢ y → NLQ x [ · QW (b ⇨ c) · ] ⊢ y
-  q↑ x f g = ↑ x (resRP (focL refl (impRL f g)))
+  qL : ∀ {y b c} → ∀ x → NLQ trace(x) ⊢[ b ] → NLQ [ c ]⊢ y → NLQ x [ · QW (b ⇨ c) · ] ⊢ y
+  qL x f g = ↑ x (resRP (focL refl (impRL f g)))
     where
     ↑ : ∀ {a z} x → NLQ trace(x) ∘ · a · ⊢ z → NLQ x [ · QW a · ] ⊢ z
     ↑ x f = init x (move x f)
@@ -740,15 +742,19 @@ downwards quantifier movement:
       move  ( PROD1  x y  ) f = resLP (move x (resPL (upC f)))
       move  ( PROD2  x y  ) f = resRP (move y (resPR (upB f)))
 
-  q↓ : ∀ {a b} → ∀ x → NLQ x [ · a · ] ⊢ · b · → NLQ trace(x) ⊢ · b ⇦ a ·
-  q↓ x f = impLR (resPL (↓ x f))
+  qR : ∀ {a b} → ∀ x → NLQ x [ · a · ] ⊢ · b · → NLQ trace(x) ⊢ · b ⇦ a ·
+  qR x f = impLR (resPL (↓ x f))
     where
     ↓ : ∀ {y z} x → NLQ x [ y ] ⊢ z → NLQ trace(x) ∘ y ⊢ z
     ↓ ( HOLE        ) f = unitLI f
     ↓ ( PROD1  x y  ) f = dnC (resLP (↓ x (resPL f)))
     ↓ ( PROD2  x y  ) f = dnB (resRP (↓ y (resPR f)))
 \end{code}
-
+\\[1\baselineskip]
+\begin{code}
+  q : ∀ (x : ∙-Ctxt) {y a b c} → NLQ x [ · a · ] ⊢ · b · → NLQ [ c ]⊢ y → NLQ x [ · QW ((b ⇦ a) ⇨ c) · ] ⊢ y
+  q x f g  = qL x (unfR refl (qR x f)) g
+\end{code}
 
 
 \subsubsection{Infixation and Reasoning with Gaps}
@@ -1004,8 +1010,8 @@ A proof for this sentence is easily given:
 \\[1\baselineskip]
 \begin{code}
   syn0  : NLQ MARY ∙ SEES ∙ FOXES ⊢ · El S ·
-  syn0  =  q↑ (PROD2 _ (PROD2 _ HOLE)) (unfR refl
-        (  q↓ (PROD2 _ (PROD2 _ HOLE)) (resRP (resLP (focL refl
+  syn0  =  qL (PROD2 _ (PROD2 _ HOLE)) (unfR refl
+        (  qR (PROD2 _ (PROD2 _ HOLE)) (resRP (resLP (focL refl
         (  impLL axR (impRL axR axL))))))) axL
 \end{code}
 \\
@@ -1202,6 +1208,7 @@ of the same name given earlier:
 \begin{code}
 module Example2 where
   open Prelude
+  open import Function using (flip)
 \end{code}
 \end{comment}
 \\
@@ -1260,25 +1267,30 @@ embedded clause, \emph{before} we collapse ``some person''.
 \\[1\baselineskip]
 \begin{code}
   syn1a  : NLQ EVERYONE ∙ SAID ∙ ⟨ ( SOME ∙ GUEST ) ∙ LEFT ⟩ ⊢ · El S ·
-  syn1a  =  resRP (resRP (resBD (resLP (resLP (focL refl (impLL axR
-         (  unfL refl (resPL (resDB (resPR (resPR
-         (  q↑ (PROD1 HOLE _) (unfR refl
-         (  q↓ (PROD1 HOLE _) (resRP (resLP (focL refl (impLL (diaR (unfR refl
-         (  resRP (focL refl (impRL axR axL))))) (impRL axR axL))))))) axL))))))))))))
+  syn1a  =  (dp2 ((_ ∙> (_ ∙> (◆> ((HOLE <∙ _) <∙ _)))) <⊢ _)
+            (focL refl (impLL axR (unfL refl
+            (dp1 ((_ ∙> (_ ∙> (◆> (HOLE <∙ _)))) <⊢ _)
+            (flip (q (PROD1 HOLE _)) axL
+            (dp2 ((_ ∙> (HOLE <∙ _)) <⊢ _)
+            (focL refl (impLL (diaR (unfR refl (resRP (focL refl axL)))) axL
+            )))))))))
 
   syn1b  : NLQ EVERYONE ∙ SAID ∙ ⟨ ( SOME ∙ GUEST ) ∙ LEFT ⟩ ⊢ · El S ·
-  syn1b  =  q↑ (PROD1 HOLE _) (unfR refl
-         (  q↓ (PROD1 HOLE _) (resRP (resRP (resBD (resLP (resLP (focL refl
-         (  impLL axR (unfL refl (resPL (resDB (resPR (resLP (focL refl
-         (  impLL (diaR (unfR refl (resRP (focL refl (impRL axR axL)))))
-         (  impRL axR axL))))))))))))))))) axL
+  syn1b  =  (flip (q (PROD1 HOLE _)) axL
+            (dp2 ((_ ∙> (_ ∙> (◆> ((HOLE <∙ _) <∙ _)))) <⊢ _)
+            (focL refl (impLL axR (unfL refl
+            (dp1 ((_ ∙> (_ ∙> (◆> (HOLE <∙ _)))) <⊢ _)
+            (dp2 ((_ ∙> (HOLE <∙ _)) <⊢ _)
+            (focL refl (impLL (diaR (unfR refl (resRP (focL refl axL)))) axL
+            )))))))))
 
   syn1c  : NLQ EVERYONE ∙ SAID ∙ ⟨ ( SOME ∙ GUEST ) ∙ LEFT ⟩ ⊢ · El S ·
-  syn1c  =  q↑ (PROD1 HOLE _) (unfR refl
-         (  q↓ (PROD1 HOLE _) (resRP (resLP (focL refl
-         (  impLL (diaR (unfR refl (resLP (resLP (focL refl
-         (  impLL axR (unfL refl (resPL (resRP (focL refl (impRL axR axL))))))
-         ))))) (impRL axR axL))))))) axL
+  syn1c  =  (flip (q (PROD1 HOLE _)) axL
+            (dp2 ((_ ∙> (HOLE <∙ _)) <⊢ _)
+            (focL refl (flip impLL axL (diaR (unfR refl
+            (dp2 (((HOLE <∙ _) <∙ _) <⊢ _)
+            (focL refl (impLL axR (unfL refl (resPL (resRP (focL refl axL)
+            ))))))))))))
 \end{code}
 \\
 In order to assign an interpretation to our derivations, we give some

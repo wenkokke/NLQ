@@ -204,15 +204,15 @@ ambiguity grows exponentially with the length of the sentence.
 
 \subsubsection{Focused, polarised semantics}
 Instead of performing a separate CPS translation on the semantic
-terms, \citet{bastenhof2012}, \citet{moortgat2012}---based on work by
-\citet{girard1991} and \citet{curien2000}---integrate the
-CPS-semantics into the syntactic calculus. The result of this work is
-the focused Lambek-Grishin (LG) calculus, a bilinear variant of NL,
-with semantics inspired on \citepos{parigot1992}
-$\lambda\mu$-calculus. Focused NL, as presented in this thesis, is a
-fragment of focused LG. Below we will present the CPS-semantics for
-the the product-free NL fragment of focused LG. First of all, the
-translation on types. Let $A^R= A\ra R$:
+terms, \citet{bernardi2010}, \citet{bastenhof2012},
+\citet{moortgat2012}---based on work by \citet{girard1991} and
+\citet{curien2000}---integrate the CPS-semantics into the syntactic
+calculus. The result of this work is the focused Lambek-Grishin (LG)
+calculus, a bilinear variant of NL, with semantics inspired on
+\citepos{parigot1992} $\lambda\mu$-calculus. Focused NL, as presented
+in this thesis, is a fragment of focused LG. Below we will present the
+CPS-semantics for the the product-free NL fragment of focused
+LG. First of all, the translation on types. Let $A^R= A\ra R$:
 \[
   \begin{aligned}
     &\llbracket\alpha\rrbracket^+ &&=
@@ -1456,10 +1456,11 @@ it can capture both subject and object-gaps. If we wish to cover
 \begin{alignat*}{3}
   &\text{which} &&: \tr[{q(\NP,\NP,((\N\impr\N)\impl(\NP\impr\S))\&((\N\impr\N)\impl(\S\downharpoonright\NP)))}]\\
   &\text{which} &&= \lambda{f}.(\lambda{g}.\lambda{h}.\lambda{x}.g(f(x))\wedge h(x),\lambda{g}.\lambda{h}.\lambda{x}.g(f(x))\wedge h(x))
-  \intertext{%
-    Or, if we adopt the additive disjunction ($\oplus$), as
-    \citet{lambek1961}, \citet{morrill2015} suggest:
-  }
+\end{alignat*}
+Or, if we adopt the additive disjunction ($\oplus$), as
+\citet{lambek1961}, \citet{morrill2015} suggest, we can give the
+following definition:
+\begin{alignat*}{3}
   &\text{which} &&: \tr[{q(\NP,\NP,((\N\impr\N)\impl((\NP\impr\S)\oplus(\S\downharpoonright\NP))))}]\\
   &\text{which} &&\;f\;(\text{inj}_1\;g)\;h\;x = g(f(x))\wedge h(x)\\
   &\text{which} &&\;f\;(\text{inj}_2\;g)\;h\;x = g(f(x))\wedge h(x)
@@ -1516,5 +1517,3 @@ some situations where you require the distinction, and some where you
 do not. However, if you do not require the distinction, then you can
 always solve this using extensions for ambiguity (e.g.\ \&) as we did
 for `which'.
-
-\todo{Motivating example of infixation.}

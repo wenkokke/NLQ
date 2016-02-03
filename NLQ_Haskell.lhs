@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[a4paper]{article}
 
 %include lhs2TeX.fmt
 %options ghci -idata -fobject-code

@@ -60,6 +60,7 @@ end
 
 def format(file,str)
   str.
+    gsub('\\AgdaFunction{~}' ,'\\AgdaFunction{\~}').
     gsub('\\AgdaInductiveConstructor{-}' ,'\\AgdaInductiveConstructor{$-$}').
     gsub('\\AgdaInductiveConstructor{+}' ,'\\AgdaInductiveConstructor{$+$}')
 end

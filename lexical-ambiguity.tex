@@ -65,17 +65,83 @@ For a detailed discussion of the expressiveness of Lambek calculi
 enriched with `\&' (and its dual, `$\oplus$') we refer the reader to
 \citet{kanazawa1992}.
 
-Note that the focusing regime, as presented in
-\autoref{fig:extension-lexical-ambiguity}, preserves the proof of
-identity expansion. At the moment, however, it is unclear how to
-assign CPS-semantics to this regime---which may hint at an error.
-It is likely that, with the addition of connectives such as `\&' and
-`$\oplus$', we to reconsider our focusing regime---recent work by
-\citet{morrill2015} which adds a strong focusing regime to the
-displacement calculus (which includes both `\&' and `$\oplus$'), and
-by \citet{nigam2015} which describes a procedure for creating focused
-proof systems in an automated fashion, may be helpful in this (see
-\autoref{sec:integrate-focusing-and-display-logic}).
+Note that \autoref{fig:extension-lexical-ambiguity} does not present a
+focusing regime. This is because, in our formulation, the focusing
+regime for additives is significantly more complicated than the regime
+for multiplicatives---perhaps an artefact of the fact that it was
+formulated for a calculus with only multiplicatives. At any rate,
+below we present a focusing regime for `\&', based on recent work by
+\citet{morrill2015}:
+\\
+\makebox[\textwidth][c]{
+  \(\!
+    \text{if}~\text{Pol}(A)~=~{+}
+    \left\lbrace
+      \quad
+      \begin{aligned}
+        \\
+        \AXC{$\struct{A}\fCenter Δ$}
+        \RightLabel{L\&$_1$}
+        \UIC{$\focus{A\& B}\fCenter Δ$}
+        \DisplayProof
+        \\[1\baselineskip]
+        \AXC{$\struct{B}\fCenter Δ$}
+        \RightLabel{L\&$_2$}
+        \UIC{$\focus{A\& B}\fCenter Δ$}
+        \DisplayProof
+        \\[1\baselineskip]
+      \end{aligned}
+      \quad
+      \middle\vert
+      \quad
+      \begin{aligned}
+        \\
+        \AXC{$\focus{A}\fCenter Δ$}
+        \RightLabel{L\&$_1$}
+        \UIC{$\focus{A\& B}\fCenter Δ$}
+        \DisplayProof
+        \\[1\baselineskip]
+        \AXC{$\focus{B}\fCenter Δ$}
+        \RightLabel{L\&$_2$}
+        \UIC{$\focus{A\& B}\fCenter Δ$}
+        \DisplayProof
+        \\[1\baselineskip]
+      \end{aligned}
+      \quad
+    \right\rbrace
+    \text{if}~\text{Pol}(A)~=~{-}
+  \)
+}
+\begin{center}
+  \begin{pfbox}
+    \AXC{$Γ\fCenter\struct{A}$}
+    \AXC{$Γ\fCenter\struct{B}$}
+    \RightLabel{R\&}
+    \BIC{$Γ\fCenter\struct{A\& B}$}
+  \end{pfbox}
+  \begin{pfbox}
+    \AXC{$\focus{A}\fCenter\struct{B}$}
+    \AXC{$\focus{A}\fCenter\struct{C}$}
+    \RightLabel{R\&}
+    \BIC{$\focus{A}\fCenter\struct{B\& C}$}
+  \end{pfbox}
+\end{center}
+The R\&-rules expose a restriction in our syntax: because we
+encode focusing as left- and right-focused sequents, we cannot
+abstract over it, and therefore need two copies of the R\& rule.
+On the other hand, \citet{morrill2015} do not seem to have a syntactic
+restriction that ensures that at most one formula is be focused at a
+time, and the approach taken by \citet{laurent2004} critically depends
+on allowing empty structures---something that we do not want to allow
+in our grammar logic (see \autoref{sec:introduction}).
+
+At the moment it is unclear how to extend \citepos{moortgat2012}
+CPS-semantics to include additives.\footnote{%
+  It is for this reason that we do not include additives in our
+  Agda formalisation in appendix A, since we want to demonstrate
+  CPS-semantics.
+}
+
 
 % How much of an advantage does this method have over allowing multiple
 % lexical entriaes for a word? It is a more elegant solution for words
