@@ -1345,7 +1345,7 @@ This solution is implemented in the Agda verification of NLQ, and the
 final section of appendix A discusses the extended CPS-translation in
 more detail.
 
-\subsection{Infixation and Extraction}
+\subsection{Extraction and Infixation}
 In the previous sections, we have discussed quantifier movement, which
 is characterised by upwards movement, and insertion of a trace. In
 this section, we will focus on simpler kinds of movement: infixation
@@ -1447,12 +1447,14 @@ movements:
 \end{center}
 \citet[][ch.\ 1.2.1 and 1.2.2]{moortgat1999b} further motivates the
 distinction between right- and left-branch extraction with more
-examples from English and Dutch. But one interesting consequence of
-this is that we can make the distinction between `who' and `whom'.
-On the other hand, we do have to assign `which' an ambiguous type, as
-it can capture both subject and object-gaps. If we wish to cover
-(\ref{ex:ext2a}) \emph{and} (\ref{ex:ext2b}), we can give
-`which' the following definition:
+examples from English and Dutch.
+
+One interesting consequence of this distinction for English is that we
+can make the distinction between `who' and `whom' on the type-level,
+without resorting to using case-marking.
+We assign `which' an ambiguous type, as it can capture both subject
+and object-gaps. If we wish to cover (\ref{ex:ext2a}) \emph{and}
+(\ref{ex:ext2b}), we can give `which' the following definition:
 \begin{alignat*}{3}
   &\text{which} &&: \tr[{q(\NP,\NP,((\N\impr\N)\impl(\NP\impr\S))\&((\N\impr\N)\impl(\S\downharpoonright\NP)))}]\\
   &\text{which} &&= \lambda{f}.(\lambda{g}.\lambda{h}.\lambda{x}.g(f(x))\wedge h(x),\lambda{g}.\lambda{h}.\lambda{x}.g(f(x))\wedge h(x))
