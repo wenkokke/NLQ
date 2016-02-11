@@ -65,8 +65,6 @@ considered ambiguous, with both interpretations equal to $\LIKE(\MARY,
 framework in which terms are lifted into quantificational terms only
 when this is needed.
 
-\todo{How does \citet{hendriks1993} deal with scope ambiguity?}
-
 \vspace*{1\baselineskip}
 
 Another approach---popular in associative Lambek calculi---is to use
@@ -557,10 +555,10 @@ should be derivable for a syntactic implementation of quantification.
 \begin{quote}
   As a first approximation, [below we present] the connective $q(A, B,
   C)$ for `in situ' binding [..]. Use of a formula $q(A,B,C)$ binds a
-  variable x of type A, where the resource A is substituted for [..]
-  $q(A, B, C)$ in the binding domain B. Using $q(A,B,C)$ turns the
-  binding domain B into C. In the generalized quantifier case we have
-  typing $q(np, s, s)$ where it happens that $B = C = s$.
+  variable $x$ of type $A$, where the resource $A$ is substituted for
+  [..] $q(A, B, C)$ in the binding domain B. Using $q(A,B,C)$ turns
+  the binding domain $B$ into $C$. In the generalized quantifier case
+  we have typing $q(np, s, s)$ where it happens that $B = C = s$.
 \end{quote}
 \begin{pfblock}
   \AXC{$Δ[x:A]\fCenter M:B$}
@@ -645,7 +643,7 @@ into $q$L and $q$R (where $Σ'$ is some variation of $Σ$):
   please let me know.}
 We will discuss parasitic scope, and the motivation for this
 deconstruction, more extensively in the context of NLQ
-(\autoref{sec:parasitic scope}), but first we will introduce
+(\autoref{sec:parasitic-scope}), but first we will introduce
 NL$_\lambda$.
 
 The basis for the way in which NL$_\lambda$ represents quantifier
@@ -659,7 +657,7 @@ represent quantifier raising:
     $\longleftrightarrow$
   \end{minipage}%
   \begin{minipage}{0.3\linewidth}\centering
-    \Tree [ everyone [ $\lambda x.$ [ john [ likes x ] ] ] ]
+    \Tree [ everyone [ $\lambda x.$ [ john [ likes $x$ ] ] ] ]
   \end{minipage}
 \end{center}
 \citeauthor{barker2015} implement this transformation informally by
@@ -921,10 +919,9 @@ $q$R. For this, we will need the following definitions:
   \end{minipage}
   \begin{minipage}{0.45\linewidth}
     \begin{alignat*}{2}
-      &\trace(\Box)     \;&&\mapsto \mathbf{I}\\
-      &\trace(Σ\prodl Γ)\;&&\mapsto ((\mathbf{C}\prod \trace(Σ))\prod Γ)\\
-      &\trace(Γ\prodr Σ)\;&&\mapsto ((\mathbf{B}\prod Γ)\prod
-      \trace(Σ))
+      &\trace{\Box}     \;&&\mapsto \mathbf{I}\\
+      &\trace{Σ\prodl Γ}\;&&\mapsto ((\mathbf{C}\prod \trace{Σ})\prod Γ)\\
+      &\trace{Γ\prodr Σ}\;&&\mapsto ((\mathbf{B}\prod Γ)\prod \trace{Σ})
     \end{alignat*}
   \end{minipage}
 \end{center}
@@ -946,7 +943,7 @@ Given these definitions, we can show that the following rule for
 quantifier movement is admissible, by induction on the structure of
 the context:
 \begin{pfblock}
-  \AXC{$\trace(Σ)\hprod\struct{A}\fCenter Δ$}
+  \AXC{$\trace{Σ}\hprod\struct{A}\fCenter Δ$}
   \doubleLine\RightLabel{$\uparrow\downarrow$}
   \UIC{$Σ[\struct{\q[A]}]\fCenter Δ$}
 \end{pfblock}
@@ -956,7 +953,7 @@ flipped, and ours has a quantifying license built into it:
 \[
   Σ[Δ]\longleftrightarrow Δ\hprod\lambda x.Σ[x]
   \qquad
-  Σ[\struct{\q[A]}]\longleftrightarrow \trace(Σ)\hprod\struct{A}
+  Σ[\struct{\q[A]}]\longleftrightarrow \trace{Σ}\hprod\struct{A}
 \]
 Proof search with this derived rule is still complete; it merely
 enforces that the entire quantifier raising or lowering is done in a
@@ -975,14 +972,14 @@ call $\himpl\,\text{L}_\lambda$ and $\himpr\text{R}_\lambda$). We can
 do the same, using $\uparrow\downarrow$:
 \begin{center}
   \begin{pfbox}
-    \AXC{$\trace(Σ)\fCenter\struct{B\himpl A}$} \AXC{$\struct{C}\fCenter Δ$}
+    \AXC{$\trace{Σ}\fCenter\struct{B\himpl A}$} \AXC{$\struct{C}\fCenter Δ$}
     \RightLabel{$q$L}
     \BIC{$Σ[\struct{\q[(B\himpl A)\himpr C]}]\fCenter Δ$}
   \end{pfbox}
   \begin{pfbox}
     \AXC{$Σ[\struct{A}]\fCenter\struct{B}$}
     \RightLabel{$q$R}
-    \UIC{$\trace(Σ)\fCenter\struct{B\himpl A}$}
+    \UIC{$\trace{Σ}\fCenter\struct{B\himpl A}$}
   \end{pfbox}
 \end{center}
 If we permit ourselves the assumption that all quantifiers in natural
@@ -994,12 +991,12 @@ involving quantifier movement in a much more succinct manner:
   \AXC{$\vdots$}\noLine
   \UIC{$\struct{\NP}\prod\textsc{loves}\prod\struct{\NP}\fCenter\struct{\S}$}
   \RightLabel{\qdown}
-  \UIC{$\trace(\Box\prod\textsc{loves}\prod\struct{\NP})\fCenter\struct{{\S\himpl\NP}}$}
+  \UIC{$\trace{\Box\prod\textsc{loves}\prod\struct{\NP}}\fCenter\struct{{\S\himpl\NP}}$}
   \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
   \RightLabel{\qup}
   \BIC{$\textsc{everyone}\prod\textsc{loves}\prod\struct{\NP}\fCenter\struct{\S}$}
   \RightLabel{\qdown}
-  \UIC{$\trace(\textsc{everyone}\prod\textsc{loves}\prod\Box)\fCenter\struct{{\S\himpl\NP}}$}
+  \UIC{$\trace{\textsc{everyone}\prod\textsc{loves}\prod\Box}\fCenter\struct{{\S\himpl\NP}}$}
   \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
   \RightLabel{\qup}
   \BIC{$\textsc{everyone}\prod\textsc{loves}\prod\textsc{someone}\fCenter\struct{\S}$}
@@ -1345,23 +1342,24 @@ This solution is implemented in the Agda verification of NLQ, and the
 final section of appendix A discusses the extended CPS-translation in
 more detail.
 
-\subsection{Extraction and Infixation}
+\subsection{Extraction and gapped clauses}
 In the previous sections, we have discussed quantifier movement, which
 is characterised by upwards movement, and insertion of a trace. In
 this section, we will focus on simpler kinds of movement: infixation
 and extraction. These are types of movement where a constituent
 \emph{only} moves down or \emph{only} moves up.
 
+
 In linguistic terms, `extraction' means that in the syntax tree, a
 constituent is moved up from the position where it is interpreted. For
 instance,
 \eenumsentence{%
-  \item\label{ex:ext1a}``girl who irritated the Duchess''
-  \item\label{ex:ext1b}``girl whom the Duchess irritated''}
+  \item\label{ex:ext1a}``character who meets his author''
+  \item\label{ex:ext1b}``character whom Alice irritated''}
 \eenumsentence{%
   \item\label{ex:ext2a}``book [the author of which] feared the ocean''
   \item\label{ex:ext2b}``book which Vonnegut dedicated to O'Hare''}
-In (\ref{ex:ext1a}), the ``girl'' is interpreted in the
+In (\ref{ex:ext1a}), the ``character is interpreted in the
 subject-position of the relative clause. For this example, it suffices
 to give `which' the following definition:
 \begin{alignat*}{3}
@@ -1397,7 +1395,7 @@ $\downharpoonright$, which we can use to give a definition for
   &\text{which} &&= \lambda{f}.\lambda{g}.\lambda{x}.f(x)\wedge g(x)
 \end{alignat*}
 
-\input{fig-extension-infixation-and-extraction}
+\input{fig-extension-extraction}
 
 It should be mentioned that the structural postulates for extraction
 differentiate between left-branch and right-branch
@@ -1445,7 +1443,7 @@ movements:
   \Tree [ $\diDn Γ_3$ [ $Γ_2$ $Γ_1$ ] ]
   \end{minipage}
 \end{center}
-\citet[][ch.\ 1.2.1 and 1.2.2]{moortgat1999b} further motivates the
+\citet[][sec.\ 1.2.1 and 1.2.2]{moortgat1999b} further motivates the
 distinction between right- and left-branch extraction with more
 examples from English and Dutch.
 
@@ -1469,9 +1467,7 @@ following definition:
 \end{alignat*}
 
 
-
-\paragraph*{Reasoning with gaps}
-\citet[][chapter 17.10]{barker2015} adopt two new inference rules in
+\citet[][ch.\ 17.10]{barker2015} adopt two new inference rules in
 order to deal with gaps. However, these rules have a bit of an ad-hoc
 feel about them. They eliminate a logical connective, but also
 perform a structural function (movement) and they add an additional,

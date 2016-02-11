@@ -7,12 +7,16 @@ import Development.Shake
 import Development.Shake.FilePath
 
 
-toBuild,fromBuild :: FilePath -> FilePath
-toBuild   src = "_build" </> src
-fromBuild out = joinPath (filter (/="_build/") (splitPath out))
+local :: FilePath -> FilePath
+local out = joinPath (filter (`notElem` ["_build/","src/","doc/"]) (splitPath out))
 
-thesisFileList :: [FilePattern]
-thesisFileList =
+toBuild,toSrc,toDoc :: FilePath -> FilePath
+toBuild = ("_build" </>) . local
+toSrc   = ("src"    </>) . local
+toDoc   = ("doc"    </>) . local
+
+docFileList :: [FilePattern]
+docFileList =
   [ "main.tex"
   , "introduction.tex"
   , "display-calculus.tex"
@@ -23,16 +27,6 @@ thesisFileList =
   , "preamble.tex"
   , "fig-*.tex"
   , "cover.png"
-  , "NLQ_Agda.lagda"
-  , "NLQ_Haskell.lhs"
-  ]
-
-slidesFileList :: [FilePattern]
-slidesFileList =
-  [ "slides.tex"
-  , "main.bib"
-  , "preamble.tex"
-  , "lambek.pdf"
   ]
 
 main :: IO ()
@@ -43,80 +37,65 @@ main =
 
     -- compile main.tex with PdfLaTeX
     toBuild "main.pdf" %> \out -> do
-      let
-        src  = out -<.> "tex"
-        lcl  = fromBuild src
+      let src  = toDoc out -<.> "tex"
+          lcl  = local src
 
-      thesisFiles <- getDirectoryFiles "" thesisFileList
-      need (toBuild <$> ("NLQ_Agda.pdf" : "NLQ_Haskell.pdf" : thesisFiles))
+      docFiles <- getDirectoryFiles "doc" docFileList
+      need (toBuild <$> ("NLQ_Agda.pdf" : "NLQ_Haskell.pdf" : docFiles))
 
       command_ [Cwd "_build", EchoStdout True] "pdflatex" ["-draftmode", lcl]
       command_ [Cwd "_build", WithStdout True] "bibtex"   [dropExtension lcl]
       command_ [Cwd "_build", WithStdout True] "pdflatex" ["-draftmode", lcl]
       command_ [Cwd "_build", WithStdout True] "pdflatex" [lcl]
 
-    -- compile slides.tex with PdfLaTeX
-    toBuild "slides.pdf" %> \out -> do
-      let
-        src  = out -<.> "tex"
-        lcl  = fromBuild src
-
-      slidesFiles <- getDirectoryFiles "" slidesFileList
-      need (toBuild <$> slidesFiles)
-
-      command_ [Cwd "_build", EchoStdout True] "pdflatex" ["-draftmode", lcl]
-      command_ [Cwd "_build", WithStdout True] "pdflatex" [lcl]
-
     -- compile NLQ_Agda.lagda with Agda
     toBuild "NLQ_Agda.pdf" %> \out -> do
-      let
-        src = toBuild "NLQ_Agda.processed.pdf"
+      let src = toBuild "NLQ_Agda.processed.pdf"
       copyFile' src out
 
     toBuild "NLQ_Agda.processed.pdf" %> \out -> do
-      let
-        src = out -<.> "tex"
-        lcl = fromBuild src
+      let src = out -<.> "tex"
+          lcl = local src
 
       need [src, toBuild "agda.sty"]
       command_ [Cwd "_build", EchoStdout True] "pdflatex" [lcl]
 
     toBuild "NLQ_Agda.processed.tex" %> \out -> do
-      let
-        src    = toBuild "NLQ_Agda.tex"
-        script = "remove_implicit_args.rb"
+      let src    = toBuild "NLQ_Agda.tex"
+          script = "remove_implicit_args.rb"
       need [ src, script ]
       command_ [Cwd ".", WithStdout True] "ruby" [ script , "tex" , src , out ]
 
     toBuild <$> ["NLQ_Agda.tex", "agda.sty"] |%> \out -> do
-      need ["NLQ_Agda.lagda"]
+      let src = toDoc "NLQ_Agda.lagda"
+      need [src]
       command_ [Cwd ".", EchoStdout True] "agda"
         ["--latex"
         ,"--latex-dir=_build"
-        ,"-i."
+        ,"-idoc"
         ,"-i/usr/local/lib/agda/src"
-        ,"NLQ_Agda.lagda"
+        ,src
         ]
 
     -- compile NLQ_Haskell.lhs with lhs2TeX
     toBuild "NLQ_Haskell.pdf" %> \out -> do
-      let
-        src = out -<.> "tex"
-        lcl = fromBuild src
+      let src = out -<.> "tex"
+          lcl = local src
 
       need [src]
       command_ [Cwd "_build", EchoStdout True] "pdflatex" [lcl]
 
     toBuild "NLQ_Haskell.tex" %> \out -> do
-      let src = out -<.> "lhs"
+      let src = toDoc (out -<.> "lhs")
+
       need [src]
       command_ [Cwd ".", EchoStdout True] "lhs2TeX" [src,"-o",out]
 
     -- compile NLQ_Haskell.lhs with GHC
     toBuild ("NLQ_Haskell" <.> exe) ~> do
-      let
-        src = toBuild ("NLQ_Haskell" <.> "lhs")
-        lcl = fromBuild src
+      let src = toBuild ("NLQ_Haskell" <.> "lhs")
+          lcl = local src
+
       need [src]
       command_ [Cwd "_build", EchoStdout True] "ghc" ["-i../data","--make",lcl]
 
@@ -126,8 +105,8 @@ main =
       command_ [Cwd "_build", Shell, EchoStdout True] ("./NLQ_Haskell" <.> exe) []
 
     -- copy files into the _build directory
-    let static = map toBuild (thesisFileList ++ slidesFileList)
-    static |%> \out -> copyFile' (fromBuild out) out
+    let static = map toBuild docFileList
+    static |%> \out -> copyFile' (toDoc out) out
 
     -- copy files out of the _build directory
     let result = [ "thesis.pdf" , "main.pdf" , "slides.pdf" , "NLQ_Agda.pdf" , "NLQ_Haskell.pdf" ]
@@ -140,6 +119,6 @@ main =
       putNormal "Cleaning files in auto"
       removeFilesAfter "auto" ["//*"]
       putNormal "Cleaning temporary Agda files"
-      removeFilesAfter "." ["NLQ_Agda.agdai"]
+      removeFilesAfter "." [toDoc "NLQ_Agda.agdai"]
       putNormal "Cleaning temporary Haskell files"
-      removeFilesAfter "." ["NLQ_Haskell.hi","NLQ_Haskell.o"]
+      removeFilesAfter "." [toDoc "NLQ_Haskell.hi",toDoc "NLQ_Haskell.o"]

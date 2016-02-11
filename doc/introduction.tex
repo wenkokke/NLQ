@@ -31,15 +31,19 @@ interactions. There are two key techniques for this:
 \begin{enumerate*}[label=(\arabic*)]
 \item
   we use display calculus to get a general procedure for
-  cut-elimination; and
+  cut-elimination (\autoref{sec:display-calculus}); and
 \item
   we associate each syntactic extension with its own set of
   connectives (or \emph{modality}) and make sure that the inference
   rules in that extension only apply in the presence of these
-  connectives.
+  connectives (\autoref{sec:syntactic-approaches-to-scope}).
 \end{enumerate*}
 
-\todo{Key point: we need a normal-form for our calculus.}
+Another key point will be \emph{unique normal-forms}---in our proof
+search procedure, we only want to find a single proof for each
+interpretation that a sentence has. In our calculus, we will achieve
+this using \emph{focusing}
+(\autoref{sec:focusing-and-spurious-ambiguity}).
 
 The last key point in this thesis will be \emph{verification}. It is
 far too easy to make mistakes when writing down logical proofs in a
@@ -387,7 +391,7 @@ follows:
     \RightLabel{$\impl$E}
     \BIC{$\TV\prod\NP\fCenter(\NP\impr\S$}
     \RightLabel{$\impr$E}
-    \BIC{$\NP\prod(\TV\prod\NP)\fCenter:\S$}
+    \BIC{$\NP\prod(\TV\prod\NP)\fCenter\S$}
   \end{pfbox}
   \vspace*{-1\baselineskip}
   \begin{gather*}
@@ -416,14 +420,14 @@ product-free version of \citepos{lambek1961} sequent calculus.
 
 \input{fig-nl-sequent-calculus}
 
-One important property of sequent calculus, is the \emph{sub-formula}
+One important property of sequent calculus is the \emph{sub-formula}
 property---the property that a derivation of a sequent uses only
 proper sub-formulas of the formulas in that sequent.
 As a direct consequence of this property, we generally get an
 algorithm for proof search which is both easy to implement, and
 complete. This algorithm is backward-chaining proof search: we
 \begin{enumerate*}[label=(\arabic*)]
-\item start with the desired sequent;
+\item start with the desired endsequent;
 \item branch, applying each rule that can be applied; and
 \item repeat.
 \end{enumerate*}

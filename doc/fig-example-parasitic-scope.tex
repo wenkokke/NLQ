@@ -8,7 +8,7 @@
         \AXC{$\vdots$}\noLine
         \UIC{$\struct{\NP}\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
         \RightLabel{\qdown}
-        \UIC{$\trace(\Box\prodl\textsc{served}\prod\struct{\NP})\fCenter\struct{q(\NP,\S)}$}
+        \UIC{$\trace{\Box\prodl\textsc{served}\prod\struct{\NP}}\fCenter\struct{q(\NP,\S)}$}
         \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
         \RightLabel{\qup}
         \BIC{$\struct{q(\NP,\S,\S)}\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
@@ -23,21 +23,21 @@
         \RightLabel{DP}
         \UIC{$(\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prod\textsc{served}\prod\struct{\NP}\fCenter\struct{\S}$}
         \RightLabel{\qdown}
-        \UIC{$\trace((\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box)\fCenter\struct{q(\NP,\S)}$}
+        \UIC{$\trace{(\textsc{a}\prod\struct{\A}\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box}\fCenter\struct{q(\NP,\S)}$}
         \RightLabel{$=$}
-        \UIC{$(\B\prod(\textsc{a}\prod\struct{\A}\prod\textsc{waiter}))\prod\trace(\textsc{served}\prodr\Box)\fCenter\struct{q(\NP,\S)}$}
+        \UIC{$(\B\prod(\textsc{a}\prod\struct{\A}\prod\textsc{waiter}))\prod\trace{\textsc{served}\prodr\Box}\fCenter\struct{q(\NP,\S)}$}
         \RightLabel{\qdown}
-        \UIC{$\trace((\B\prod(\textsc{a}\prod\Box\prod\textsc{waiter}))\prod\trace(\textsc{served}\prodr\Box))\fCenter\struct{q(\A,q(\NP,\S))}$}
+        \UIC{$\trace{(\B\prod(\textsc{a}\prod\Box\prod\textsc{waiter}))\prod\trace{\textsc{served}\prodr\Box}}\fCenter\struct{q(\A,q(\NP,\S))}$}
         \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
         \RightLabel{\qup}
-        \BIC{$(\B\prod(\textsc{a}\prod\struct{(q(q(\A,q(\NP,\S),q(\NP,\S)),\S,\S))}\prod\textsc{waiter}))\prod\trace(\textsc{served}\prodr\Box)\fCenter\struct{q(\NP,\S)}$}
+        \BIC{$(\B\prod(\textsc{a}\prod\struct{(q(q(\A,q(\NP,\S),q(\NP,\S)),\S,\S))}\prod\textsc{waiter}))\prod\trace{\textsc{served}\prodr\Box}\fCenter\struct{q(\NP,\S)}$}
         \RightLabel{$=$}
-        \UIC{$\trace((\textsc{a}\prod\struct{(q(q(\A,q(\NP,\S),q(\NP,\S)),\S,\S))}\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box)\fCenter\struct{q(\NP,\S)}$}
+        \UIC{$\trace{(\textsc{a}\prod\struct{(q(q(\A,q(\NP,\S),q(\NP,\S)),\S,\S))}\prod\textsc{waiter})\prodr\textsc{served}\prodr\Box}\fCenter\struct{q(\NP,\S)}$}
         \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
         \RightLabel{\qup}
         \BIC{$(\textsc{a}\prod\struct{(q(q(\A,q(\NP,\S),q(\NP,\S)),\S,\S))}\prod\textsc{waiter})\prod\textsc{served}\prod\textsc{everyone}\fCenter\struct{\S}$}
         \RightLabel{\qdown}
-        \UIC{$\trace((\textsc{a}\prodr\Box\prodl\textsc{waiter})\prodl\textsc{served}\prod\textsc{everyone})\fCenter\struct{(q(q(\A,q(\NP,\S),q(\NP,\S)),\S,\S))}\himpr\S$}
+        \UIC{$\trace{(\textsc{a}\prodr\Box\prodl\textsc{waiter})\prodl\textsc{served}\prod\textsc{everyone}}\fCenter\struct{(q(q(\A,q(\NP,\S),q(\NP,\S)),\S,\S))}\himpr\S$}
         \AXC{}\RightLabel{Ax}\UIC{$\struct{\S}\fCenter\struct{\S}$}
         \RightLabel{\qup}
         \BIC{$(\textsc{a}\prod\textsc{different}\prod\textsc{waiter})\prod\textsc{served}\prod\textsc{everyone}\fCenter\struct{\S}$}

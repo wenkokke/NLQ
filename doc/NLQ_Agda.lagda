@@ -10,7 +10,7 @@
 \setlength{\mathindent}{0cm}
 
 %%% TODO UPDATE NUMBER MANUALLY -- SIGH
-\setcounter{page}{54}
+\setcounter{page}{59}
 
 \def\lamET{\lambda^{\rightarrow}_{\{\mathbf{e},\mathbf{t}\}}}%
 \DeclareUnicodeCharacter{738}{$^s$}
@@ -750,9 +750,14 @@ downwards quantifier movement:
     ↓ ( PROD1  x y  ) f = dnC (resLP (↓ x (resPL f)))
     ↓ ( PROD2  x y  ) f = dnB (resRP (↓ y (resPR f)))
 \end{code}
+\\
+These compose to form full quantifier movement:
 \\[1\baselineskip]
 \begin{code}
-  q : ∀ (x : ∙-Ctxt) {y a b c} → NLQ x [ · a · ] ⊢ · b · → NLQ [ c ]⊢ y → NLQ x [ · QW ((b ⇦ a) ⇨ c) · ] ⊢ y
+  q  : (x : ∙-Ctxt) → ∀ {y a b c}
+     → NLQ x [ · a · ] ⊢ · b ·
+     → NLQ [ c ]⊢ y
+     → NLQ x [ · QW ((b ⇦ a) ⇨ c) · ] ⊢ y
   q x f g  = qL x (unfR refl (qR x f)) g
 \end{code}
 
@@ -1107,15 +1112,15 @@ products:
       where
       _*′ : ∀ {p} → Struct p → Set
       _*′ {p} · a · = ⟦ a ⟧ p
-      B          *′ = ⊤
-      C          *′ = ⊤
-      I*         *′ = ⊤
-      DIA  k x   *′ = x *′
-      UNIT k     *′ = ⊤
-      PROD k x y *′ = x *′ × y *′
-      BOX  k x   *′ = x *′
-      IMPR k x y *′ = x *′ × y *′
-      IMPL k y x *′ = y *′ × x *′
+      B            *′ = ⊤
+      C            *′ = ⊤
+      I*           *′ = ⊤
+      DIA   k x    *′ = x *′
+      UNIT  k      *′ = ⊤
+      PROD  k x y  *′ = x *′ × y *′
+      BOX   k x    *′ = x *′
+      IMPR  k x y  *′ = x *′ × y *′
+      IMPL  k y x  *′ = y *′ × x *′
 \end{code}
 \\
 And we translate sequents as Agda functions:

@@ -3,9 +3,10 @@
 
 In this section, we will develop a display calculus
 \citep{belnap1982} for NL. We will start out by presenting a display
-calculus for NL based on work by \citet{moortgat2009,moortgat2012} and
-\citet{gore1998}. We will then continue by motivating our choice for
-display calculus over sequent calculus.
+calculus for NL based on work by \citet{moortgat2009},
+\citet{bernardi2010}, \citet{moortgat2012} and \citet{gore1998}. We
+will then continue by motivating our choice for display calculus over
+sequent calculus.
 In \autoref{sec:translation-to-lamET} we will relate our display
 calculus back to the framework discussed in \autoref{sec:introduction},
 by defining a translation from our display calculus back to \lamPET.
@@ -91,7 +92,7 @@ version of L$\impr$:\footnote{%
 \vspace*{1\baselineskip}
 
 Again, we use the product-free version of NL. Should the reader need a
-product, though, it is easily added \citep{moortgat2012}:
+product, though, it is easily added \citep[see][]{moortgat2012}:
 \begin{center}
   \begin{pfbox}
     \AXC{$\struct{A}\prod\struct{B}\fCenter{X}$}
@@ -521,7 +522,8 @@ words:\footnote{%
   Note that the second node is often considered to be \emph{linear}
   \lamET, i.e.\ the fragment of \lamET\ without contraction and
   weakening. This is because the syntactic calculus is not supposed
-  to do insertion or deletion. \todo{Reference as to further discussion?}
+  to do copying or deletion, and we may want to limit non-linearity to
+  lexical semantics.
 }
 \begin{center}
   \begin{tikzpicture}[center coordinate=(B)]
@@ -543,7 +545,7 @@ present the NL fragment in \autoref{fig:nl-focused-display-calculus}.
 
 \input{fig-nl-focused-display-calculus}
 
-Focused display calculus is a system with \emph{three} kinds of
+Our focused display calculus is a system with \emph{three} kinds of
 sequents: the original structural sequent $Γ\fCenter{Δ}$, and two
 focused sequents $\focus{A}\fCenter{Δ}$ and $Γ\fCenter\focus{B}$.
 There are four new rules which communicate between these different
@@ -551,12 +553,11 @@ sequents: left and right focusing and unfocusing. In addition, the
 axiom is split into a left- and a right-focused axiom.
 The crucial point is that all formulas are assigned a polarity, and
 that the axioms and the focusing and unfocusing rules are restricted to
-types of certain polarities, forcing the proofs into a normal form.
+formulas of certain polarities, forcing the proofs into a normal form.
 For complex types, this polarity is based on the main connective, but
-for atomic types, polarities are assigned. The choice of polarity
-affects the types of ambiguity that we choose to allow---this will be
-discussed further in
-\autoref{sec:continuations-and-scope-taking}.\footnote{%
+for atomic formulas, polarities are assigned. The choice of polarity
+affects the kinds of ambiguity that we allow---this will be discussed
+further in \autoref{sec:continuations-and-scope-taking}.\footnote{%
   For the remainder of this thesis, we will discuss extension in their
   focused form, and include the polarities of any new type. Should you
   wish to remove focusing, you can simply rewrite the focused sequents
@@ -784,9 +785,9 @@ Because it does not fall within the scope of this thesis, we will
 leave the problem of finding an elegant solution to integrating
 focusing and display calculus as future work.
 For the remainder of this thesis, we will \emph{assume} that focused
-NLQ is complete w.r.t.\ display NLQ.
+NLQ is complete with respect to display NLQ.
 However, we will continue to give proofs of \citepos{belnap1982}
-\textbf{C8} using display NLQ, so that, if it is found that the
-focused version of a particular extension is incomplete, the reader
+\textbf{C8} using display NLQ, so that---should we turn out to have
+made an error our the definition of our focusing regime---the reader
 can simply remove the focusing regime, and be left with a valid
 display calculus.

@@ -1,0 +1,54 @@
+\begin{figure}[h]
+  \begin{mdframed}
+    \centering
+    \begin{minipage}{0.66\linewidth}
+      \begin{alignat*}{4}
+        \text{Type}     &  \;&A,B&\coloneqq \ldots\vsep\diUp A\vsep\sqUp A\\
+        \text{Structure}&^+\;&Γ  &\coloneqq \ldots\vsep\diUp Γ\\
+        \text{Structure}&^-\;&Δ  &\coloneqq \ldots\vsep\sqUp Δ
+      \end{alignat*}
+    \end{minipage}%
+    \begin{minipage}{0.33\linewidth}
+      \begin{alignat*}{3}
+        &A \upharpoonleft  B\;&&\coloneqq\;\diUp\sqUp(A\impr B)\\
+        &B \upharpoonright A\;&&\coloneqq\;\diUp\sqUp(B\impl A)
+      \end{alignat*}
+    \end{minipage}
+    \\[1\baselineskip]
+    (copy of rules for $\{\di,\sq\}$ from
+    \autoref{fig:extension-scope-islands} for $\{\diUp,\sqUp\}$)
+    \\[1\baselineskip]
+    \begin{pfbox}
+      \AXC{$(Γ_1\prodΓ_2)\prod\diUpΓ_3\fCenterΔ$}
+      \RightLabel{RR\diUp}
+      \UIC{$Γ_1\prod(Γ_2\prod\diUpΓ_3)\fCenterΔ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$(Γ_1\prod\diUpΓ_3)\prodΓ_2\fCenterΔ$}
+      \RightLabel{LR\diUp}
+      \UIC{$Γ_1\prod(Γ_2\prod\diUpΓ_3)\fCenterΔ$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    \begin{pfbox}
+      \AXC{$\diUpΓ_1\prod(Γ_2\prodΓ_3)\fCenterΔ$}
+      \RightLabel{LL\diUp}
+      \UIC{$(\diUpΓ_1\prodΓ_2)\prodΓ_3\fCenterΔ$}
+    \end{pfbox}
+    \begin{pfbox}
+      \AXC{$\diUpΓ_1\prod(Γ_2\prodΓ_3)\fCenterΔ$}
+      \RightLabel{RL\diUp}
+      \UIC{$Γ_2\prod(\diUpΓ_1\prodΓ_3)\fCenterΔ$}
+    \end{pfbox}
+    \\[1\baselineskip]
+    \hrulefill
+    \\[1\baselineskip]
+    (copy of translations for $\{\di,\sq\}$ from
+    \autoref{fig:extension-scope-islands} for $\{\diUp,\sqUp\}$)
+    \\[1\baselineskip]
+    ({RR\diUp}, {LR\diUp}, {LL\diUp} and {RL\diUp} translate to
+    various combinations of associativity and commutativity)
+    \\[1\baselineskip]
+  \end{mdframed}
+  \caption{Extension of calculus in \autoref{fig:nl-display-calculus} which supports infixation.}
+  \label{fig:extension-infixation}
+\end{figure}

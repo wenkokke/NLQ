@@ -1,7 +1,7 @@
 \documentclass[a4paper]{article}
 
 %include lhs2TeX.fmt
-%options ghci -idata -fobject-code
+%options ghci -isrc -fobject-code
 
 %format E         = "\mathbf{e}"
 %format T         = "\mathbf{t}"
@@ -25,6 +25,7 @@
 %format :⇃        = "\downharpoonleft"
 %format :⇂        = "\downharpoonright"
 %format :⇨        = "\fatbslash"
+%format :⇦        = "\fatslash"
 %format :&        = "\mathbin{\&}"
 %format ∧         = "\mathbin{\wedge}"
 %format ⊃         = "\mathbin{\supset}"
@@ -34,7 +35,7 @@
 %format QS a b c  = "\mathbf{Q}^S(" "(" b "\!\!\fatslash" a ")" "\fatbslash" c ")"
 
 %%% TODO UPDATE NUMBER MANUALLY -- SIGH
-\setcounter{page}{76}
+\setcounter{page}{80}
 
 \usepackage{appendix}
 \usepackage{stmaryrd}
@@ -154,9 +155,6 @@ define a small lexicon of proper nouns, verbs and nouns:
 > author    = lex "author"                      ; authors    = plural <$ author
 > ocean     = lex "ocean"                       ; oceans     = plural <$ ocean
 > country   = lex "country"                     ; countries  = plural <$ country
->
-> say :: Word (IV :← DelW S)
-> say       = lex_ (\y x -> ("say" ∷ ETT) x y)  ; says = say
 
 \\
 If you ever get an error like the error given below, you have probably
@@ -171,7 +169,7 @@ forgotten to give an explicit type for a lexicon entry:
     In an equation for `alice': alice = lex "alice"
 \end{lstlisting}
 At this point, it is best to ignore the |plural| definitions and the
-A |flip| function; they will make sense soon enough.
+|flip| function; they will make sense soon enough.
 
 \vspace*{1\baselineskip}
 
@@ -264,8 +262,8 @@ examples, we will only use the last two of these meanings:
 > want     :: Word ((IV :← INF) :& ((IV :← INF) :← NP))
 > want      = lex_ ((want2 , want3))
 >   where
->   want2    f x  = ("want" ∷ TET) (f  x)  x
->   want3 y  f x  = ("want" ∷ TET) (f  y)  x
+>   want2    f x  = ("want" ∷ ETT) x (f x)
+>   want3 y  f x  = ("want" ∷ ETT) x (f y)
 > wants     = want
 
 \\
@@ -274,6 +272,14 @@ want, which we called |want|. For this, we have the |∷|-operator. This
 operator takes a string and the singleton for a semantic type |a|, and
 returns an expression of type |Hask a|.
 
+Using the same operator, and the delimiter |DelW|, we can give a
+definition of |say|:
+\\
+
+> say :: Word (IV :← DelW S)
+> say       = lex_ (\y x -> ("say" ∷ ETT) x y)  ; says = say
+
+\\
 Next, we define the double/parasitic quantifiers |same| and
 |different|. Note that the function |≡| used in these definitions is
 predefined, as is its negation:

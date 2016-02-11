@@ -10,6 +10,7 @@
 \addto\extrasenglish{\def\subsubsectionautorefname{section}}
 \usepackage{lmodern}%
 
+\usepackage{url}
 \usepackage{xcolor}
 \usepackage{mathtools}
 \usepackage{mdframed}
@@ -97,6 +98,7 @@
 
 \usepackage{bussproofs}%
 \def\NLBS     {the system presented in this thesis}
+\def\extraVskip{3pt}
 \EnableBpAbbreviations%
 \def\fCenter  {\mathbin{\vdash}}%
 \def\la       {\leftarrow}%
@@ -111,7 +113,6 @@
 \def\hprod    {\mathbin{\circ}}%
 \def\hprodl   {\mathbin{\circ}}%
 \def\hprodr   {\mathbin{\circ}}%
-\def\trace    {\ensuremath{\text{trace}}}%
 \def\unit     {\ensuremath{\mathbf{I}}}%
 \def\sq       {\ensuremath{\Box}}%
 \def\di       {\ensuremath{\Diamond}}%
@@ -175,6 +176,7 @@
 \newcommand{\snd}     [1]{\text{snd}\;#1}
 \newcommand{\add}     [2]{#1 + #2}
 \newcommand{\mathplus}[0]{+}
+\newcommand{\trace}   [1]{\overline{#1}}
 
 \renewcommand*{\&}{%
   \relax
