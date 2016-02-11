@@ -174,10 +174,6 @@ application:
   &\overline{M\;N} &&= \lambda k. \overline{N}\;(\lambda n.\overline{M}\;(\lambda m.k\;(m\;n)))\\
   &\overline{M\;N} &&= \lambda k. \overline{M}\;(\lambda m.\overline{N}\;(\lambda n.k\;(m\;n)))
 \end{alignat*}
-\note{Barker's CPS-translation \emph{is} recursive. However, he has a
-  strange way of presenting it. Instead of performing the translation
-  on the function-argument structure, he defines a new type of
-  application, and hides the recursion in there.}
 This does solve the problem at hand, and derives both the
 surface-scope and the inverse-scope interpretations. However, this
 solution results in a huge amount of spurious ambiguity.
@@ -638,9 +634,6 @@ into $q$L and $q$R (where $Σ'$ is some variation of $Σ$):
     \UIC{$Σ'\fCenter q(A,B)$}
   \end{pfbox}
 \end{center}
-\note{If you have a reference to a framework which does bound
-  variable capture in a safe way, and which predates NL$_\lambda$,
-  please let me know.}
 We will discuss parasitic scope, and the motivation for this
 deconstruction, more extensively in the context of NLQ
 (\autoref{sec:parasitic-scope}), but first we will introduce
@@ -843,7 +836,6 @@ explicit:\footnote{%
   but may feel unintuitive to people who are used to reading from
   left-to-right.
 }
-\note{This is a horrible, horrible mistake, isn't it?}
 \begin{center}
   \begin{pfbox}
     \AXC{$X\fCenter Y$}
@@ -1025,6 +1017,7 @@ semantic approaches to quantifier raising (see \autoref{sec:limitations})
 
 
 \subsubsection{Parasitic scope, double quantifiers}
+\label{sec:parasitic-scope}
 Parasitic scope is a interesting mechanism, put forward by
 \citet{barker2007}, which allows expressions to capture another
 quantifier's scope. Using this mechanism, a parasitic expression can
