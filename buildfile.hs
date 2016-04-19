@@ -91,18 +91,12 @@ main =
       need [src]
       command_ [Cwd ".", EchoStdout True] "lhs2TeX" [src,"-o",out]
 
-    -- compile NLQ_Haskell.lhs with GHC
-    toBuild ("NLQ_Haskell" <.> exe) ~> do
-      let src = toBuild ("NLQ_Haskell" <.> "lhs")
-          lcl = local src
-
-      need [src]
-      command_ [Cwd "_build", EchoStdout True] "ghc" ["-i../data","--make",lcl]
-
     -- run the generated Haskell file
     "test" ~> do
-      need [toBuild ("NLQ_Haskell" <.> exe)]
-      command_ [Cwd "_build", Shell, EchoStdout True] ("./NLQ_Haskell" <.> exe) []
+      unit $ command_ [] "cabal" ["configure","--builddir=_build","--enable-tests"]
+      unit $ command_ [] "cabal" ["install","--only-dependencies"]
+      unit $ command_ [] "cabal" ["build"]
+      unit $ command_ [] "cabal" ["test"]
 
     -- copy files into the _build directory
     let static = map toBuild docFileList
