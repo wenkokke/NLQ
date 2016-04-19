@@ -1,0 +1,58 @@
+name          : NLQ
+version       : 0.0.9.0
+synopsis      : A modular type-logical grammar for quantifier movement, scope islands, and more.
+homepage      : https://github.com/pepijnkokke/NLQ
+license       : AllRightsReserved
+author        : Pepijn Kokke
+maintainer    : pepijn.kokke@gmail.com
+copyright     : Copyright (c) 2015-2016 Pepijn Kokke
+category      : Language
+build-type    : Simple
+cabal-version : >=1.10
+
+source-repository head
+  type     : git
+  location : https://github.com/pepijnkokke/NLQ.git
+                     
+library
+  exposed-modules  : NLQ.Prelude
+  other-modules    : NLQ.Semantics
+                   , NLQ.Semantics.Postulate
+                   , NLQ.Syntax.Backward
+                   , NLQ.Syntax.Base
+  build-depends    : base >=4.8 && <4.9
+                   , singletons >=2.0 && <2.1
+                   , mtl >=2.2 && <2.3
+                   , containers >=0.5 && <0.6
+                   , parallel >=3.2 && <3.3
+                   , parsec >=3.1 && <3.2
+                   , split >=0.2 && <0.3
+                   , text >=1.2 && <1.3
+                   , directory >=1.2 && <1.3
+                   , filepath >=1.4 && <1.5
+                   , process >=1.2 && <1.3
+                   , deepseq >=1.4 && <1.5
+                   , hashable >=1.2 && <1.3
+                   , cereal >=0.5 && <0.6
+                   , unordered-containers >=0.2 && <0.3
+                   , void >=0.7 && <0.8
+                   , monad-supply >=0.6 && <0.7
+                   , template-haskell >=2.10 && <2.11
+                   , data-ordlist >=0.4 && <0.5 
+  hs-source-dirs   : src
+  default-language : Haskell2010
+
+
+test-suite run_example
+  type             : exitcode-stdio-1.0
+  hs-source-dirs   : doc
+  main-is          : NLQ_Haskell.lhs
+  build-depends    : base, NLQ==0.0.9.0
+  default-language : Haskell2010
+
+  
+executable example  
+  hs-source-dirs   : doc
+  main-is          : NLQ_Haskell.lhs
+  build-depends    : base, NLQ==0.0.9.0
+  default-language : Haskell2010
