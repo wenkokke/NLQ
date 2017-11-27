@@ -1,18 +1,18 @@
 name          : NLQ
 version       : 0.0.9.0
 synopsis      : A modular type-logical grammar for quantifier movement, scope islands, and more.
-homepage      : https://github.com/pepijnkokke/NLQ
+homepage      : https://github.com/wenkokke/NLQ
 license       : AllRightsReserved
-author        : Pepijn Kokke
-maintainer    : pepijn.kokke@gmail.com
-copyright     : Copyright (c) 2015-2016 Pepijn Kokke
+author        : Wen Kokke
+maintainer    : wen.kokke@gmail.com
+copyright     : Copyright (c) 2015-2016 wen Kokke
 category      : Language
 build-type    : Simple
 cabal-version : >=1.10
 
 source-repository head
   type     : git
-  location : https://github.com/pepijnkokke/NLQ.git
+  location : https://github.com/wenkokke/NLQ.git
                      
 library
   exposed-modules  : NLQ.Prelude
