@@ -35,6 +35,7 @@
 \DeclareUnicodeCharacter{8242}{$'$}
 \DeclareUnicodeCharacter{8801}{$\equiv$}
 \DeclareUnicodeCharacter{8594}{$\rightarrow$}
+\DeclareUnicodeCharacter{8802}{$\nequiv$}
 
 \begin{document}
 \begin{appendices}
@@ -146,6 +147,12 @@ module Syntax (Atom : Set) (PolarisedAtom : Polarised Atom) where
   open I.Equivalence using (from; to)
 \end{code}
 \end{comment}
+\begin{comment}
+\begin{code}
+  private instance PolarisedAtomInst = PolarisedAtom
+\end{code}
+\end{comment}
+
 
 
 
@@ -846,6 +853,12 @@ module Semantics
   open module NLQ = Syntax Atom PolarisedAtom hiding (_∘_)
 \end{code}
 \end{comment}
+\begin{comment}
+\begin{code}
+  private instance PolarisedAtomInst = PolarisedAtom
+  private instance TranslateAtomInst = TranslateAtom
+\end{code}
+\end{comment}
 \\
 The translation on types, structures and sequents is rather
 simple. Instead of translating sequents to sequents, we will translate
@@ -973,13 +986,14 @@ The translation function then follows, and with it we can instantiate
 the syntax and semantics modules:
 \\[1\baselineskip]
 \begin{code}
-  TranslateAtom : Translate Atom Set
-  TranslateAtom = record { _* = _*′ }
-    where
-      _*′  : Atom → Set
-      S   *′ = Bool
-      N   *′ = Entity → Bool
-      NP  *′ = Entity
+  instance
+    TranslateAtom : Translate Atom Set
+    TranslateAtom = record { _* = _*′ }
+      where
+        _*′  : Atom → Set
+        S   *′ = Bool
+        N   *′ = Entity → Bool
+        NP  *′ = Entity
 \end{code}
 \begin{comment}
 \begin{code}
@@ -1069,6 +1083,12 @@ module CPS-Semantics
   open Syntax Atom PolarisedAtom
 
   infixl 1 _ᴿ
+\end{code}
+\end{comment}
+\begin{comment}
+\begin{code}
+  private instance PolarisedAtomInst = PolarisedAtom
+  private instance TranslateAtomInst = TranslateAtom
 \end{code}
 \end{comment}
 \\

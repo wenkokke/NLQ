@@ -35,7 +35,7 @@ main =
 
     want [ "main.pdf" ]
 
-    -- compile main.tex with PdfLaTeX
+    -- compile main.tex with LaTeXMk
     toBuild "main.pdf" %> \out -> do
       let src  = toDoc out -<.> "tex"
           lcl  = local src
@@ -43,10 +43,11 @@ main =
       docFiles <- getDirectoryFiles "doc" docFileList
       need (toBuild <$> ("NLQ_Agda.pdf" : "NLQ_Haskell.pdf" : docFiles))
 
-      command_ [Cwd "_build", EchoStdout True] "pdflatex" ["-draftmode", lcl]
-      command_ [Cwd "_build", WithStdout True] "bibtex"   [dropExtension lcl]
-      command_ [Cwd "_build", WithStdout True] "pdflatex" ["-draftmode", lcl]
-      command_ [Cwd "_build", WithStdout True] "pdflatex" [lcl]
+      -- command_ [Cwd "_build", EchoStdout True] "lualatex" ["-draftmode", lcl]
+      -- command_ [Cwd "_build", WithStdout True] "bibtex"   [dropExtension lcl]
+      -- command_ [Cwd "_build", WithStdout True] "lualatex" ["-draftmode", lcl]
+      -- command_ [Cwd "_build", WithStdout True] "lualatex" [lcl]
+      command_ [Cwd "_build", WithStdout True] "latexmk"  ["-pdf", lcl]
 
     -- compile NLQ_Agda.lagda with Agda
     toBuild "NLQ_Agda.pdf" %> \out -> do
@@ -58,7 +59,8 @@ main =
           lcl = local src
 
       need [src, toBuild "agda.sty"]
-      command_ [Cwd "_build", EchoStdout True] "pdflatex" [lcl]
+      -- command_ [Cwd "_build", EchoStdout True] "pdflatex" [lcl]
+      command_ [Cwd "_build", WithStdout True] "latexmk"  ["-pdf", lcl]
 
     toBuild "NLQ_Agda.processed.tex" %> \out -> do
       let src    = toBuild "NLQ_Agda.tex"
@@ -73,7 +75,6 @@ main =
         ["--latex"
         ,"--latex-dir=_build"
         ,"-idoc"
-        ,"-i/usr/local/lib/agda/src"
         ,src
         ]
 
@@ -83,7 +84,8 @@ main =
           lcl = local src
 
       need [src]
-      command_ [Cwd "_build", EchoStdout True] "pdflatex" [lcl]
+      -- command_ [Cwd "_build", EchoStdout True] "pdflatex" [lcl]
+      command_ [Cwd "_build", WithStdout True] "latexmk"  ["-pdf", lcl]
 
     toBuild "NLQ_Haskell.tex" %> \out -> do
       let src = toDoc (out -<.> "lhs")
